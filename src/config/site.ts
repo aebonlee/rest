@@ -63,7 +63,7 @@ const site: SiteConfig = {
     { path: '/learning/regular', labelKey: 'site.nav.regular' },
     { path: '/learning/coaching', labelKey: 'site.nav.coaching' },
     { path: '/competition', labelKey: 'site.nav.competition' },
-    { path: '/projects', labelKey: 'site.nav.projectGuide' },
+    { path: '/project-guide', labelKey: 'site.nav.projectGuide' },
     { path: '/resources', labelKey: 'site.nav.resources' },
     {
       labelKey: 'site.nav.lms',
