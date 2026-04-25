@@ -234,10 +234,10 @@ const Navbar = (): ReactElement => {
                       {t('auth.orderHistory')}
                     </Link>
                     {isAdmin && (
-                      <a href={site.parentSite.url + '/admin'} className="dropdown-menu-item" target="_blank" rel="noopener noreferrer">
+                      <Link to="/admin" className="dropdown-menu-item">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
                         관리자
-                      </a>
+                      </Link>
                     )}
                     <div className="divider" />
                     <button onClick={handleSignOut} className="dropdown-menu-item logout">
