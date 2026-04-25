@@ -59,7 +59,6 @@ const Learning = (): ReactElement => {
                 className={`sidebar-item${selectedIndex === i ? ' active' : ''}`}
                 onClick={() => setSelectedIndex(i)}
               >
-                <span className="sidebar-item-icon">{tp.icon}</span>
                 {tp.title}
               </button>
             ))}

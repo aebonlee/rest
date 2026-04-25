@@ -172,7 +172,6 @@ const ProjectGuide = (): ReactElement => {
                 className={`sidebar-item ${p.id === selectedId ? 'active' : ''}`}
                 onClick={() => handleSelect(p.id)}
               >
-                <span className="sidebar-item-icon">{p.icon}</span>
                 <span className="sidebar-item-text">{p.title}</span>
               </button>
             ))}
