@@ -1,0 +1,93 @@
+/**
+ * 커리큘럼 데이터 — 쉬었음청년 AI교육
+ */
+
+export interface CurriculumDay {
+  day: number;
+  date: string;
+  title: string;
+  topics: string[];
+  hours: number;
+  type: 'prerequisite' | 'regular' | 'coaching';
+  project?: string;
+}
+
+export interface CoursePhase {
+  id: string;
+  name: string;
+  nameEn: string;
+  hours: number;
+  description: string;
+  descriptionEn: string;
+  color: string;
+  icon: string;
+  days: CurriculumDay[];
+}
+
+export const coursePhases: CoursePhase[] = [
+  {
+    id: 'prerequisite',
+    name: '선수과정',
+    nameEn: 'Prerequisite',
+    hours: 20,
+    description: 'AI·바이브코딩 기초 역량을 갖추기 위한 사전 학습',
+    descriptionEn: 'Pre-learning for AI and vibe coding fundamentals',
+    color: '#10B981',
+    icon: '📚',
+    days: [
+      { day: 1, date: '사전학습', title: 'AI 개론 및 프롬프트 기초', topics: ['AI 개념 이해', '생성AI 도구 소개', '프롬프트 기본 구조'], hours: 5, type: 'prerequisite' },
+      { day: 2, date: '사전학습', title: 'ChatGPT / Gemini 실습', topics: ['ChatGPT 활용법', 'Gemini 비교 실습', '프롬프트 패턴'], hours: 5, type: 'prerequisite' },
+      { day: 3, date: '사전학습', title: '국내 LLM(Solar 등) 탐색', topics: ['Solar API 소개', 'Solar vs ChatGPT 비교', '국내 LLM 생태계'], hours: 5, type: 'prerequisite' },
+      { day: 4, date: '사전학습', title: '웹 기초 & 개발환경 세팅', topics: ['HTML/CSS 기초', 'VS Code 설치', 'Git/GitHub 기본'], hours: 5, type: 'prerequisite' },
+    ]
+  },
+  {
+    id: 'regular',
+    name: '정규과정 DT',
+    nameEn: 'Regular DT Course',
+    hours: 52,
+    description: '디지털 전환(DT) 핵심 역량 + AI 바이브코딩 프로젝트 실습',
+    descriptionEn: 'Digital Transformation core competencies + AI vibe coding project practice',
+    color: '#0D2B5E',
+    icon: '🎓',
+    days: [
+      { day: 1, date: '6/1(일)', title: 'AI 기반 자동화 입문', topics: ['AI 자동화 개념', 'No-Code/Low-Code 도구', 'Make/Zapier 실습'], hours: 4, type: 'regular', project: '개인 미니프로젝트 시작' },
+      { day: 2, date: '6/2(월)', title: '프롬프트 엔지니어링 심화', topics: ['고급 프롬프트 기법', 'Chain-of-Thought', 'Few-shot Learning'], hours: 4, type: 'regular' },
+      { day: 3, date: '6/3(화)', title: '바이브코딩 기획 & 설계', topics: ['프로젝트 기획서 작성', 'UI/UX 설계', 'AI 기반 와이어프레임'], hours: 4, type: 'regular', project: '개인 미니프로젝트 발표' },
+      { day: 4, date: '6/4(수)', title: '바이브코딩 구현 I', topics: ['React 기초', 'Cursor/Copilot 활용', '컴포넌트 구현'], hours: 4, type: 'regular', project: '팀 미니프로젝트 시작' },
+      { day: 5, date: '6/5(목)', title: '바이브코딩 구현 II', topics: ['Supabase 연동', 'CRUD 구현', 'API 설계'], hours: 4, type: 'regular', project: '팀 미니프로젝트 발표' },
+      { day: 6, date: '6/7(토)', title: '실전 프로젝트 기획', topics: ['대회 주제 분석', '국내 LLM 활용 전략', '프로젝트 아이디어 도출'], hours: 4, type: 'regular', project: '실전 프로젝트 시작' },
+      { day: 7, date: '6/8(일)', title: '데이터 수집 & 전처리', topics: ['데이터 수집 기법', '전처리 파이프라인', 'Solar API 연동'], hours: 4, type: 'regular' },
+      { day: 8, date: '6/9(월)', title: 'AI 모델 활용 & Fine-tuning', topics: ['모델 선택 전략', 'Fine-tuning 기초', '프롬프트 최적화'], hours: 4, type: 'regular' },
+      { day: 9, date: '6/10(화)', title: '프론트엔드 구현', topics: ['UI 컴포넌트 개발', '반응형 디자인', '사용자 경험 최적화'], hours: 4, type: 'regular' },
+      { day: 10, date: '6/11(수)', title: '백엔드 & 배포', topics: ['Supabase 심화', '인증/권한 관리', '배포 자동화'], hours: 4, type: 'regular' },
+      { day: 11, date: '6/14(토)', title: '테스트 & 디버깅', topics: ['QA 전략', 'AI 디버깅 기법', '성능 최적화'], hours: 4, type: 'regular' },
+      { day: 12, date: '6/15(일)', title: '발표 자료 제작', topics: ['프레젠테이션 구성', '데모 준비', '피드백 반영'], hours: 4, type: 'regular' },
+      { day: 13, date: '6/21(토)', title: '최종 발표 & 평가', topics: ['프로젝트 발표', '상호 평가', '수료식'], hours: 4, type: 'regular', project: '실전 프로젝트 최종 발표' },
+    ]
+  },
+  {
+    id: 'coaching',
+    name: '기술코칭',
+    nameEn: 'Tech Coaching',
+    hours: 8,
+    description: '프로젝트 진행 중 1:1/팀별 기술 코칭 세션',
+    descriptionEn: 'One-on-one and team-based technical coaching during project phase',
+    color: '#F59E0B',
+    icon: '🔧',
+    days: [
+      { day: 1, date: '6/12(목)', title: '기술코칭 1회차', topics: ['프로젝트 진행 점검', '기술 이슈 해결', '아키텍처 리뷰'], hours: 2, type: 'coaching' },
+      { day: 2, date: '6/13(금)', title: '기술코칭 2회차', topics: ['코드 리뷰', 'UI/UX 개선', '성능 최적화'], hours: 2, type: 'coaching' },
+      { day: 3, date: '6/19(목)', title: '기술코칭 3회차', topics: ['배포 지원', 'Solar API 최적화', '발표 준비'], hours: 2, type: 'coaching' },
+      { day: 4, date: '6/20(금)', title: '기술코칭 4회차', topics: ['최종 점검', '발표 리허설', '제출 준비'], hours: 2, type: 'coaching' },
+    ]
+  }
+];
+
+export const projectExamples = [
+  { title: 'AI 취업 코칭 챗봇', description: '구직자 맞춤형 이력서/면접 코칭 AI', llm: 'Solar + ChatGPT' },
+  { title: '지역 문화 추천 서비스', description: '위치 기반 문화행사·맛집 추천 AI', llm: 'Solar' },
+  { title: 'AI 학습 도우미', description: '개인 맞춤형 학습 경로 추천 시스템', llm: 'Solar + Gemini' },
+  { title: '건강 관리 어시스턴트', description: 'AI 기반 운동/식단 추천 서비스', llm: 'ChatGPT' },
+  { title: '환경 데이터 분석 대시보드', description: '공공데이터 기반 환경 모니터링', llm: 'Solar' },
+];
