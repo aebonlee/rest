@@ -18,9 +18,8 @@ const site: SiteConfig = {
   },
   brand: {
     parts: [
-      { text: 'AI', className: 'brand-dream' },
-      { text: 'Reboot', className: 'brand-it' },
-      { text: 'Academy', className: 'brand-biz' }
+      { text: 'AI ', className: 'brand-dream' },
+      { text: 'Reboot', className: 'brand-it' }
     ]
   },
   themeColor: '#0D2B5E',
