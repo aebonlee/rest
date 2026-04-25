@@ -12,6 +12,8 @@ const Curriculum = lazy(() => import('../pages/Curriculum'));
 const Schedule = lazy(() => import('../pages/Schedule'));
 const Competition = lazy(() => import('../pages/Competition'));
 const Resources = lazy(() => import('../pages/Resources'));
+const Instructor = lazy(() => import('../pages/Instructor'));
+const Learning = lazy(() => import('../pages/Learning'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Auth 페이지
@@ -59,6 +61,8 @@ const PublicLayout = (): ReactElement => {
             <Route path="/schedule" element={<Schedule />} />
             <Route path="/competition" element={<Competition />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/instructor" element={<Instructor />} />
+            <Route path="/learning/:phase" element={<Learning />} />
 
             {/* Auth */}
             {site.features.auth && (

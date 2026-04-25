@@ -317,6 +317,196 @@ html[data-color="purple"] {
 .qna-reply-form { margin-top: 12px; }
 .qna-reply-form textarea { width: 100%; padding: 10px; border: 1.5px solid var(--border-light); border-radius: 8px; font-size: 14px; font-family: inherit; resize: vertical; box-sizing: border-box; }
 
+/* -- Sidebar Layout (학습 노트) -- */
+.sidebar-layout {
+    max-width: var(--container-max);
+    margin: 0 auto;
+    padding: 32px 24px;
+    display: flex;
+    gap: 32px;
+    align-items: flex-start;
+}
+
+.sidebar {
+    width: 260px;
+    flex-shrink: 0;
+    position: sticky;
+    top: calc(var(--nav-height) + 24px);
+    max-height: calc(100vh - var(--nav-height) - 48px);
+    overflow-y: auto;
+}
+
+.sidebar-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 12px;
+    box-shadow: var(--shadow-sm);
+}
+
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    background: none;
+    font-family: inherit;
+    text-align: left;
+    width: 100%;
+}
+
+.sidebar-item:hover {
+    color: var(--primary-blue);
+    background: rgba(13, 43, 94, 0.06);
+}
+
+.sidebar-item.active {
+    color: #fff;
+    background: var(--primary-gradient);
+    font-weight: 600;
+}
+
+.sidebar-item-icon {
+    flex-shrink: 0;
+    font-size: 16px;
+}
+
+.sidebar-content {
+    flex: 1;
+    min-width: 0;
+}
+
+/* -- Topic Card -- */
+.topic-card {
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-sm);
+}
+
+.topic-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+
+.topic-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-md);
+    background: rgba(13, 43, 94, 0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.topic-card-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.topic-card-body {
+    color: var(--text-secondary);
+    line-height: 1.8;
+}
+
+.topic-card-body h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 20px 0 8px;
+}
+
+.topic-card-body ul {
+    padding-left: 20px;
+    margin: 8px 0 16px;
+}
+
+.topic-card-body li {
+    margin-bottom: 6px;
+}
+
+/* -- Instructor -- */
+.instructor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 24px;
+}
+
+.instructor-card {
+    display: flex;
+    gap: 20px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    box-shadow: var(--shadow-md);
+}
+
+.instructor-icon {
+    font-size: 48px;
+    flex-shrink: 0;
+}
+
+.instructor-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.instructor-role {
+    font-size: 15px;
+    color: var(--primary-blue);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.instructor-affiliation {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+}
+
+.instructor-specialties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.specialty-tag {
+    font-size: 13px;
+    background: var(--bg-light-gray);
+    color: var(--text-secondary);
+    padding: 4px 10px;
+    border-radius: 6px;
+}
+
+.instructor-email {
+    font-size: 14px;
+    color: var(--primary-blue);
+    text-decoration: none;
+}
+
+.instructor-email:hover {
+    text-decoration: underline;
+}
+
 /* -- Responsive -- */
 @media (max-width: 1024px) {
     .hero-info-cards { grid-template-columns: repeat(2, 1fr); }
@@ -327,6 +517,7 @@ html[data-color="purple"] {
     .project-detail { grid-template-columns: 1fr; }
     .llm-cards { grid-template-columns: 1fr; }
     .info-grid { grid-template-columns: 1fr; }
+    .sidebar { width: 220px; }
 }
 
 @media (max-width: 768px) {
@@ -337,4 +528,34 @@ html[data-color="purple"] {
     .page-header { padding-top: calc(var(--nav-height) + 24px); padding-bottom: 32px; }
     .page-header h2 { font-size: 28px; }
     .form-row { grid-template-columns: 1fr; }
+
+    /* 사이드바 → 가로 스크롤 탭 */
+    .sidebar-layout {
+        flex-direction: column;
+        gap: 16px;
+        padding: 16px;
+    }
+    .sidebar {
+        width: 100%;
+        position: static;
+        max-height: none;
+        overflow-y: visible;
+    }
+    .sidebar-menu {
+        flex-direction: row;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        gap: 6px;
+        padding: 8px;
+    }
+    .sidebar-item {
+        white-space: nowrap;
+        flex-shrink: 0;
+        font-size: 13px;
+        padding: 8px 12px;
+    }
+    .topic-card { padding: 20px; }
+    .instructor-grid { grid-template-columns: 1fr; }
+    .instructor-card { flex-direction: column; text-align: center; padding: 24px; }
+    .instructor-icon { align-self: center; }
 }

@@ -170,8 +170,13 @@ export const translations: Record<string, Record<string, unknown>> = {
     },
     site: {
       nav: {
+        about: 'About',
         curriculum: '커리큘럼',
         schedule: '일정표',
+        instructor: '강사소개',
+        prerequisite: '선수과정',
+        regular: '정규과정',
+        coaching: '기술코칭',
         competition: '경진대회',
         resources: '리소스',
         lms: '학습관리',
@@ -211,6 +216,24 @@ export const translations: Record<string, Record<string, unknown>> = {
       resources: {
         title: '리소스',
         subtitle: 'AI 도구, LLM, 개발 도구, 참고 문서 모음'
+      },
+      instructor: {
+        title: '강사소개',
+        subtitle: 'AI Reboot Academy 교육진 안내'
+      },
+      learning: {
+        prerequisite: {
+          title: '선수과정 학습 노트',
+          subtitle: 'AI 기초·프롬프트·LLM·개발환경 (4일, 20H)'
+        },
+        regular: {
+          title: '정규과정 학습 노트',
+          subtitle: '바이브코딩·웹개발·프로젝트 (13일, 52H)'
+        },
+        coaching: {
+          title: '기술코칭 학습 노트',
+          subtitle: '전문가 1:1 코칭 (4회, 8H)'
+        }
       }
     }
   },
@@ -271,8 +294,13 @@ export const translations: Record<string, Record<string, unknown>> = {
     common: { learnMore: 'Learn More', contactUs: 'Contact' },
     site: {
       nav: {
+        about: 'About',
         curriculum: 'Curriculum',
         schedule: 'Schedule',
+        instructor: 'Instructors',
+        prerequisite: 'Prerequisites',
+        regular: 'Main Course',
+        coaching: 'Coaching',
         competition: 'Competition',
         resources: 'Resources',
         lms: 'LMS',
@@ -300,7 +328,13 @@ export const translations: Record<string, Record<string, unknown>> = {
       curriculum: { title: 'Curriculum', subtitle: 'Prerequisites 20H + DT Course 52H + Coaching 8H = 80 Hours Total' },
       schedule: { title: 'Schedule', subtitle: 'June 1 - June 22, 2026 Education Schedule' },
       competition: { title: 'AI Reboot Competition', subtitle: 'AI Service Development Competition Guide' },
-      resources: { title: 'Resources', subtitle: 'AI Tools, LLMs, Dev Tools, and References' }
+      resources: { title: 'Resources', subtitle: 'AI Tools, LLMs, Dev Tools, and References' },
+      instructor: { title: 'Instructors', subtitle: 'AI Reboot Academy Teaching Staff' },
+      learning: {
+        prerequisite: { title: 'Prerequisites Notes', subtitle: 'AI Basics, Prompts, LLM, Dev Setup (4 Days, 20H)' },
+        regular: { title: 'Main Course Notes', subtitle: 'Vibe Coding, Web Dev, Projects (13 Days, 52H)' },
+        coaching: { title: 'Coaching Notes', subtitle: 'Expert 1:1 Coaching (4 Sessions, 8H)' }
+      }
     }
   }
 };

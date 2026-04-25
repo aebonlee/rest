@@ -50,9 +50,19 @@ const site: SiteConfig = {
     { name: 'orange', color: '#C87200' },
   ],
   menuItems: [
-    { path: '/', labelKey: 'nav.home' },
-    { path: '/curriculum', labelKey: 'site.nav.curriculum' },
-    { path: '/schedule', labelKey: 'site.nav.schedule' },
+    {
+      labelKey: 'site.nav.about',
+      path: '/curriculum',
+      activePath: '/curriculum',
+      dropdown: [
+        { path: '/curriculum', labelKey: 'site.nav.curriculum' },
+        { path: '/schedule', labelKey: 'site.nav.schedule' },
+        { path: '/instructor', labelKey: 'site.nav.instructor' },
+      ]
+    },
+    { path: '/learning/prerequisite', labelKey: 'site.nav.prerequisite' },
+    { path: '/learning/regular', labelKey: 'site.nav.regular' },
+    { path: '/learning/coaching', labelKey: 'site.nav.coaching' },
     { path: '/competition', labelKey: 'site.nav.competition' },
     { path: '/resources', labelKey: 'site.nav.resources' },
     {
@@ -70,9 +80,9 @@ const site: SiteConfig = {
     },
   ],
   footerLinks: [
-    { path: '/', labelKey: 'nav.home' },
     { path: '/curriculum', labelKey: 'site.nav.curriculum' },
     { path: '/schedule', labelKey: 'site.nav.schedule' },
+    { path: '/instructor', labelKey: 'site.nav.instructor' },
     { path: '/resources', labelKey: 'site.nav.resources' },
   ],
   familySites: [
