@@ -16,7 +16,7 @@ const SEOHead = ({ title, description, path = '', ogImage, noindex = false }: SE
   const DEFAULT_DESC = site.description;
   const fullTitle = title ? `${title} | ${SITE}` : SITE;
   const desc = description || DEFAULT_DESC;
-  const image = ogImage || `${BASE}/assets/images/og-default.png`;
+  const image = ogImage || `${BASE}/og-image.png`;
 
   // useLanguage is called to stay consistent with original (future i18n SEO)
   useLanguage();
@@ -32,6 +32,9 @@ const SEOHead = ({ title, description, path = '', ogImage, noindex = false }: SE
       <meta property="og:description" content={desc} />
       <meta property="og:url" content={`${BASE}${path}`} />
       <meta property="og:image" content={image} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
+      <meta property="og:site_name" content="DreamIT Biz" />
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={desc} />
