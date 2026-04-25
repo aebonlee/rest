@@ -15,7 +15,7 @@ const instructors: InstructorInfo[] = [
   {
     name: '이애본',
     role: '총괄 책임교수',
-    affiliation: '경기대학교 / 드림아이티비즈',
+    affiliation: '한신대학교 AI·SW대학 겸임교수 / 드림아이티비즈(DreamIT Biz) 대표',
     specialties: ['AI·SW 교육', '바이브코딩', '경영정보학', '인적자원관리'],
     email: 'aebon@dreamitbiz.com',
     icon: '👩‍🏫',
