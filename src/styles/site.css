@@ -517,7 +517,7 @@ html[data-color="purple"] {
     .project-detail { grid-template-columns: 1fr; }
     .llm-cards { grid-template-columns: 1fr; }
     .info-grid { grid-template-columns: 1fr; }
-    .sidebar { width: 220px; }
+    .sidebar { width: 240px; }
 }
 
 @media (max-width: 768px) {
@@ -560,6 +560,8 @@ html[data-color="purple"] {
     .instructor-icon { align-self: center; }
 
     /* 프로젝트 안내 반응형 */
+    .pgd-hero-card { flex-direction: column; align-items: center; text-align: center; }
+    .pg-card-tags { justify-content: center; }
     .pg-grid { grid-template-columns: 1fr; }
     .pgd-meta-grid { grid-template-columns: 1fr; }
     .pgd-impl-grid { grid-template-columns: 1fr; }
@@ -678,8 +680,53 @@ html[data-color="purple"] {
 /* ============================================
    Project Guide Detail — 프로젝트 상세
    ============================================ */
+/* Project Guide Hero Card (sidebar 상단) */
+.pgd-hero-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 24px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-left: 4px solid var(--primary-blue);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 32px;
+}
+
+.pgd-hero-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    flex-shrink: 0;
+}
+
+.pgd-hero-title {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.pgd-hero-subtitle {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+/* 사이드바 아이템 텍스트 말줄임 */
+.sidebar-item-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .pgd-content {
-    max-width: 900px;
+    max-width: none;
 }
 
 .pgd-badge {
