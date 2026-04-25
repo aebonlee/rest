@@ -154,3 +154,32 @@
     margin-bottom: 8px;
     line-height: 1.7;
 }
+
+/* ── Footer Responsive ── */
+@media (max-width: 768px) {
+    .footer {
+        padding: 40px 0 24px;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+        gap: 32px;
+    }
+
+    .footer-brand h3 {
+        font-size: 20px;
+    }
+
+    .footer-links ul {
+        columns: 1;
+    }
+
+    .footer-info {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+
+    .footer-bottom {
+        font-size: 12px;
+    }
+}
