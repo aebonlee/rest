@@ -2,6 +2,7 @@ import { useState, useEffect, type ReactElement } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { PROJECT_DATA, type ProjectData } from '../data/projectDetails';
+import FlowDiagram from '../components/FlowDiagram';
 
 const Section = ({ icon, title, children }: { icon: string; title: string; children: React.ReactNode }) => (
   <section className="pgd-section">
@@ -31,7 +32,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
     <Section icon="🏗️" title="시스템 아키텍처">
       <p>{project.architecture.description}</p>
       <div className="pgd-diagram">
-        <pre>{project.architecture.diagram}</pre>
+        <FlowDiagram projectId={project.id} color={project.color} />
       </div>
       <div className="pgd-components">
         {project.architecture.components.map((comp, i) => (

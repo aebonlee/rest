@@ -107,6 +107,11 @@ html[data-color="purple"] {
 .course-card-desc { font-size: 14px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 16px; }
 .course-card-days { font-size: 13px; color: var(--text-light); background: var(--bg-light-gray); padding: 6px 14px; border-radius: 20px; display: inline-block; }
 
+/* -- Section -- */
+.section {
+    padding: var(--section-padding) 0;
+}
+
 /* -- Section Alt -- */
 .section-alt { background: var(--bg-light-gray); }
 
@@ -136,22 +141,27 @@ html[data-color="purple"] {
 .competition-card ul { text-align: left; max-width: 400px; margin: 0 auto 24px; list-style: none; }
 .competition-card ul li { padding: 8px 0; font-size: 15px; color: var(--text-primary); }
 .competition-card ul li::before { content: '\2705 '; }
-.competition-overview { display: flex; flex-direction: column; gap: 24px; }
-.competition-info-card { background: var(--bg-white); border-radius: 16px; padding: 32px; box-shadow: var(--shadow-md); }
-.competition-info-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); }
+.competition-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.competition-overview > .competition-info-card:first-child { grid-column: 1 / -1; }
+.competition-info-card { background: var(--bg-white); border-radius: 16px; padding: 32px; box-shadow: var(--shadow-md); transition: var(--transition-base); }
+.competition-info-card:hover { box-shadow: var(--shadow-lg); }
+.competition-info-card h3 { font-size: 20px; font-weight: 700; margin-bottom: 20px; color: var(--text-primary); display: flex; align-items: center; gap: 10px; }
+.competition-info-card h3::before { font-size: 24px; }
 .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.info-item { padding: 12px; background: var(--bg-light-gray); border-radius: 8px; }
-.info-item strong { display: block; font-size: 13px; color: var(--text-light); margin-bottom: 4px; }
-.info-item span { font-size: 15px; color: var(--text-primary); }
+.info-item { padding: 16px; background: var(--bg-light-gray); border-radius: 12px; border-left: 3px solid var(--primary-blue); }
+.info-item strong { display: block; font-size: 13px; color: var(--primary-blue); margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.02em; }
+.info-item span { font-size: 15px; color: var(--text-primary); line-height: 1.5; }
 .benefit-list { list-style: none; padding: 0; }
-.benefit-list li { padding: 10px 0; border-bottom: 1px solid var(--border-light); font-size: 15px; }
-.benefit-list li::before { content: '\1F3AF '; }
+.benefit-list li { padding: 12px 0; border-bottom: 1px solid var(--border-light); font-size: 15px; display: flex; align-items: center; gap: 8px; }
+.benefit-list li:last-child { border-bottom: none; }
+.benefit-list li::before { content: '\1F3AF'; flex-shrink: 0; }
 .llm-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-.llm-card { padding: 20px; border: 1px solid var(--border-light); border-radius: 12px; position: relative; }
+.llm-card { padding: 20px; border: 1px solid var(--border-light); border-radius: 12px; position: relative; transition: var(--transition-base); }
+.llm-card:hover { border-color: var(--primary-blue-light); box-shadow: var(--shadow-sm); }
 .llm-card h4 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
 .llm-card p { font-size: 13px; color: var(--text-secondary); }
 .llm-badge { position: absolute; top: 12px; right: 12px; font-size: 11px; padding: 2px 8px; border-radius: 4px; background: var(--bg-light-gray); color: var(--text-secondary); }
-.llm-badge.recommended { background: #0D2B5E; color: #fff; }
+.llm-badge.recommended { background: var(--primary-blue); color: #fff; }
 
 /* -- Eligibility -- */
 .eligibility-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
@@ -517,6 +527,8 @@ html[data-color="purple"] {
     .project-detail { grid-template-columns: 1fr; }
     .llm-cards { grid-template-columns: 1fr; }
     .info-grid { grid-template-columns: 1fr; }
+    .competition-overview { grid-template-columns: 1fr; }
+    .competition-overview > .competition-info-card:first-child { grid-column: auto; }
     .sidebar { width: 240px; }
 }
 
@@ -567,7 +579,7 @@ html[data-color="purple"] {
     .pgd-impl-grid { grid-template-columns: 1fr; }
     .pgd-components { grid-template-columns: 1fr; }
     .pgd-db-tables { grid-template-columns: 1fr; }
-    .pgd-diagram pre { font-size: 0.6rem; }
+    .pgd-diagram { padding: 12px; }
 }
 
 /* ============================================
@@ -807,7 +819,7 @@ html[data-color="purple"] {
     color: var(--primary-blue);
 }
 
-/* Architecture diagram */
+/* Architecture diagram (SVG) */
 .pgd-diagram {
     background: var(--bg-light-gray);
     border: 1px solid var(--border-light);
@@ -815,14 +827,15 @@ html[data-color="purple"] {
     padding: 20px;
     margin: 16px 0;
     overflow-x: auto;
+    display: flex;
+    justify-content: center;
 }
 
-.pgd-diagram pre {
-    font-family: 'Courier New', monospace;
-    font-size: 0.76rem;
-    line-height: 1.6;
-    white-space: pre;
-    margin: 0;
+.flow-diagram-svg {
+    width: 100%;
+    height: auto;
+    max-width: 600px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 .pgd-components {
