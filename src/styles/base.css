@@ -257,6 +257,47 @@ h4 { line-height: 1.45; letter-spacing: -0.01em; }
 .mb-3 { margin-bottom: 24px; }
 .mb-4 { margin-bottom: 32px; }
 
+
+/* Page Header (inner pages — gradient banner) */
+/* navbar가 fixed이므로 padding-top에 --nav-height를 포함 */
+.page-header {
+    background: var(--hero-bg);
+    padding: calc(var(--nav-height) + 60px) 0 60px;
+    text-align: center;
+    color: var(--text-white);
+    position: relative;
+    overflow: hidden;
+}
+
+.page-header h2 {
+    font-size: 36px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.page-header p {
+    font-size: 17px;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.7;
+}
+
+.page-title {
+    font-size: 42px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: -0.02em;
+}
+
+.page-description {
+    font-size: 18px;
+    color: rgba(255, 255, 255, 0.85);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
 /* Loading Spinner */
 .loading-spinner {
     width: 40px;
