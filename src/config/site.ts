@@ -49,6 +49,7 @@ const site: SiteConfig = {
     { name: 'orange', color: '#C87200' },
   ],
   menuItems: [
+    { path: '/about', labelKey: 'nav.about' },
     {
       labelKey: 'site.nav.about',
       path: '/curriculum',
