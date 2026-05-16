@@ -123,6 +123,11 @@ body {
     transition: background 0.3s ease, color 0.3s ease;
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 #root {
     min-height: 100vh;
 }

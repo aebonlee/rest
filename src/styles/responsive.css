@@ -236,6 +236,11 @@
         --nav-height: 80px;
     }
 
+    /* Touch target minimum size */
+    .btn, .nav-login-btn, button:not(.mobile-toggle) {
+        min-height: 44px;
+    }
+
     /* ── Navbar 2-row structure ── */
     .nav-wrapper {
         flex-wrap: wrap;
@@ -642,31 +647,24 @@
     h4 { line-height: 1.5; letter-spacing: 0; }
 
     .hero {
-        height: 580px;
-        min-height: 0;             /* override base min-height */
+        height: auto;
+        min-height: 0;
         padding-bottom: 40px;
     }
 
     .hero-content {
         display: flex;
         flex-direction: column;
-        justify-content: center;
-        height: 100%;
+        justify-content: flex-start;
     }
 
     .hero-title {
         line-height: 1.25;
-        height: 170px;             /* fixed: 34px × 1.25 × 4lines = 170px */
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
     }
 
     .hero-description {
         line-height: 1.8;
         margin-bottom: 20px;
-        height: 58px;              /* fixed: 16px × 1.8 × 2lines = 58px */
-        overflow: hidden;
     }
 
     .section-header {
@@ -927,21 +925,15 @@
         line-height: 1.8;
     }
 
-    .hero {
-        height: 520px;
-    }
-
     .hero-title {
         font-size: 26px;
         line-height: 1.3;
         letter-spacing: -0.01em;
         margin-bottom: 12px;
-        height: 136px;             /* fixed: 26px × 1.3 × 4lines = 135px */
     }
 
     .hero-description {
         font-size: 15px;
-        height: 54px;              /* fixed: 15px × 1.8 × 2lines = 54px */
         margin-bottom: 16px;
     }
 

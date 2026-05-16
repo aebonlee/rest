@@ -533,7 +533,9 @@ html[data-color="purple"] {
 }
 
 @media (max-width: 768px) {
-    .hero-info-cards { grid-template-columns: 1fr; }
+    .hero-info-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .hero-info-card { padding: 12px 14px; font-size: 13px; }
+    .hero-info-icon { font-size: 22px; }
     .course-cards { grid-template-columns: 1fr; }
     .dashboard-stats { grid-template-columns: 1fr; }
     .quick-links { grid-template-columns: repeat(2, 1fr); }

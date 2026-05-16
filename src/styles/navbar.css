@@ -558,24 +558,9 @@
     display: flex;
   }
 
-  /* 모바일 메뉴 숨김 → 활성화 시 표시 */
+  /* 모바일 메뉴: 1100px responsive.css의 slide-in 패턴 유지 */
   .nav-menu {
-    display: none;
-    position: fixed;
-    top: 60px;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    flex-direction: column;
-    background: var(--bg-white);
-    padding: 16px 0;
-    overflow-y: auto;
-    z-index: 999;
-    border-top: 1px solid var(--border-light);
-  }
-
-  .nav-menu.active {
-    display: flex;
+    z-index: 1000;
   }
 
   .nav-link {
