@@ -49,12 +49,12 @@ const site: SiteConfig = {
     { name: 'orange', color: '#C87200' },
   ],
   menuItems: [
-    { path: '/about', labelKey: 'nav.about' },
     {
       labelKey: 'site.nav.about',
-      path: '/curriculum',
-      activePath: '/curriculum',
+      path: '/about',
+      activePath: '/about',
       dropdown: [
+        { path: '/about', labelKey: 'nav.about' },
         { path: '/curriculum', labelKey: 'site.nav.curriculum' },
         { path: '/schedule', labelKey: 'site.nav.schedule' },
         { path: '/instructor', labelKey: 'site.nav.instructor' },
@@ -63,6 +63,16 @@ const site: SiteConfig = {
     { path: '/learning/prerequisite', labelKey: 'site.nav.prerequisite' },
     { path: '/learning/regular', labelKey: 'site.nav.regular' },
     { path: '/learning/coaching', labelKey: 'site.nav.coaching' },
+    {
+      labelKey: 'site.nav.assessment',
+      path: '/assessment/prerequisite',
+      activePath: '/assessment',
+      dropdown: [
+        { path: '/assessment/prerequisite', labelKey: 'site.nav.assessmentPre' },
+        { path: '/assessment/diagnostic', labelKey: 'site.nav.assessmentDiag' },
+        { path: '/assessment/summative', labelKey: 'site.nav.assessmentSum' },
+      ]
+    },
     { path: '/competition', labelKey: 'site.nav.competition' },
     { path: '/project-guide', labelKey: 'site.nav.projectGuide' },
     { path: '/resources', labelKey: 'site.nav.resources' },
