@@ -89,7 +89,7 @@ const Assessment = (): ReactElement => {
                 <strong>합격 기준:</strong> {set.passingScore}점 이상
               </span>
               <span>
-                <strong>문항 수:</strong> 객관식 {set.mcq.length}개 + 단답식 {set.short.length}개
+                <strong>문항 수:</strong> 객관식 {set.mcq.length}문항
               </span>
             </div>
           </div>
@@ -114,7 +114,7 @@ const Assessment = (): ReactElement => {
             </button>
           </div>
 
-          {/* 객관식 15문항 */}
+          {/* 객관식 20문항 */}
           <h2
             style={{
               fontSize: '22px',
@@ -127,7 +127,7 @@ const Assessment = (): ReactElement => {
           >
             객관식 ({set.mcq.length}문항)
           </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px', marginBottom: '48px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {set.mcq.map((q) => (
               <div
                 key={q.no}
@@ -160,50 +160,6 @@ const Assessment = (): ReactElement => {
                     );
                   })}
                 </ol>
-              </div>
-            ))}
-          </div>
-
-          {/* 단답식 5문항 */}
-          <h2
-            style={{
-              fontSize: '22px',
-              fontWeight: 700,
-              marginBottom: '20px',
-              color: 'var(--text-primary, #1a1a1a)',
-              borderLeft: '4px solid var(--primary-blue, #0046C8)',
-              paddingLeft: '12px',
-            }}
-          >
-            단답식 ({set.short.length}문항)
-          </h2>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {set.short.map((q) => (
-              <div
-                key={q.no}
-                style={{
-                  background: 'var(--bg-card, #fff)',
-                  border: '1px solid var(--border-color, #e5e7eb)',
-                  borderRadius: '12px',
-                  padding: '20px 24px',
-                }}
-              >
-                <p style={{ margin: '0 0 12px', fontWeight: 600, color: 'var(--text-primary, #1a1a1a)' }}>
-                  {q.no}. {q.question}
-                </p>
-                <div
-                  style={{
-                    background: 'var(--bg-secondary, #f8f9fa)',
-                    border: '1px dashed var(--border-color, #e5e7eb)',
-                    borderRadius: '8px',
-                    padding: '12px 16px',
-                    minHeight: '44px',
-                    color: revealed ? 'var(--primary-blue, #0046C8)' : 'var(--text-muted, #9ca3af)',
-                    fontWeight: revealed ? 700 : 400,
-                  }}
-                >
-                  {revealed ? `정답: ${q.answer}` : '— 답안 작성란 —'}
-                </div>
               </div>
             ))}
           </div>

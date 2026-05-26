@@ -28,13 +28,6 @@ export interface MCQuestion {
   explanation?: string;
 }
 
-export interface ShortQuestion {
-  no: number;
-  question: string;
-  answer: string;
-  explanation?: string;
-}
-
 export interface AssessmentSet {
   type: AssessmentType;
   title: string;
@@ -43,7 +36,6 @@ export interface AssessmentSet {
   duration: string;
   passingScore: number;
   mcq: MCQuestion[];
-  short: ShortQuestion[];
 }
 
 const prerequisite: AssessmentSet = {
@@ -185,32 +177,45 @@ const prerequisite: AssessmentSet = {
       ],
       answer: 1,
     },
-  ],
-  short: [
     {
-      no: 1,
-      question: 'AI 코딩 에디터로서 자연어 대화·다중 파일 편집·코드베이스 인덱싱을 지원하는 도구의 이름은?',
-      answer: 'Cursor',
+      no: 16,
+      question: 'CSS Grid에서 가로 3열 동일 너비 그리드를 만드는 가장 표준적인 속성은?',
+      options: [
+        'grid-columns: 3',
+        'grid-template-columns: repeat(3, 1fr)',
+        'flex: 3',
+        'display: grid-3',
+      ],
+      answer: 1,
     },
     {
-      no: 2,
-      question: 'HTML 문서에서 콘텐츠의 최상위 영역을 의미하는 시맨틱 태그를 쓰시오.',
-      answer: '<main>',
+      no: 17,
+      question: 'JavaScript의 falsy 값이 아닌 것은?',
+      options: ['0', '""(빈 문자열)', '[](빈 배열)', 'null'],
+      answer: 2,
     },
     {
-      no: 3,
-      question: 'JavaScript ES6에서 객체나 배열의 속성을 변수로 풀어내는 문법의 명칭은?',
-      answer: '구조 분해 할당 (Destructuring)',
+      no: 18,
+      question: 'React에서 배열을 리스트로 렌더링할 때 반드시 추가해야 하는 prop은?',
+      options: ['ref', 'id', 'key', 'name'],
+      answer: 2,
     },
     {
-      no: 4,
-      question: 'React 컴포넌트의 동적 상태를 관리하기 위해 사용하는 Hook의 이름은?',
-      answer: 'useState',
+      no: 19,
+      question: 'Vite로 생성된 프로젝트에서 개발 서버를 실행하는 표준 npm 스크립트는?',
+      options: ['npm start', 'npm run serve', 'npm run dev', 'npm run launch'],
+      answer: 2,
     },
     {
-      no: 5,
-      question: 'Vite의 빌드 산출물이 기본적으로 생성되는 디렉터리명은?',
-      answer: 'dist',
+      no: 20,
+      question: 'AI에게 코드 결과물의 형식을 강제하고 싶을 때 가장 효과적인 프롬프트 기법은?',
+      options: [
+        '"잘 만들어줘"라고 모호하게 요청',
+        '"JSON 형식으로, 다음 키를 포함하여 응답하라"처럼 출력 스키마를 명시',
+        '대답 길이를 제한 없이 둔다',
+        '예시 없이 자유롭게 작성하게 둔다',
+      ],
+      answer: 1,
     },
   ],
 };
@@ -369,32 +374,60 @@ const diagnostic: AssessmentSet = {
       ],
       answer: 0,
     },
-  ],
-  short: [
     {
-      no: 1,
-      question: 'React Router에서 페이지 이동을 함수형으로 처리할 때 사용하는 Hook의 이름은?',
-      answer: 'useNavigate',
+      no: 16,
+      question: 'React Router에서 로그인이 필요한 페이지를 보호할 때 가장 적절한 패턴은?',
+      options: [
+        '컴포넌트 내부에서 alert만 띄우기',
+        '인증 상태를 검사하고 비로그인 시 Navigate로 리다이렉트하는 AuthGuard 래퍼',
+        'window.location.href를 직접 변경',
+        '서버 응답에서 401만 받고 별도 처리 없음',
+      ],
+      answer: 1,
     },
     {
-      no: 2,
-      question: 'Supabase의 인증 상태 변화를 구독할 때 사용하는 메서드명은?',
-      answer: 'onAuthStateChange',
+      no: 17,
+      question: 'Supabase 클라이언트 초기화 시 필요한 두 가지 인자는?',
+      options: [
+        'username, password',
+        'project URL, anon key',
+        'API endpoint, secret key',
+        'host, port',
+      ],
+      answer: 1,
     },
     {
-      no: 3,
-      question: '경진대회에서 활용해야 하는, 한국어에 최적화된 업스테이지의 대표 LLM 이름은?',
-      answer: 'Solar',
+      no: 18,
+      question: 'OpenAI 호환 LLM API 응답에서 어시스턴트의 텍스트 콘텐츠가 위치하는 일반적인 JSON 경로는?',
+      options: [
+        'response.text',
+        'data.result',
+        'choices[0].message.content',
+        'output.value',
+      ],
+      answer: 2,
     },
     {
-      no: 4,
-      question: 'LLM 호출 비용·길이 제한을 통제하기 위해 응답 토큰 수 상한을 지정하는 파라미터명은?',
-      answer: 'max_tokens',
+      no: 19,
+      question: 'AI 응답을 한국어로만 유도하기에 가장 적절한 시스템 프롬프트는?',
+      options: [
+        '"한국 사람이야"',
+        '"반드시 한국어로만 답하라. 영어 단어를 사용하지 말 것."',
+        '"되도록 한국어"',
+        '시스템 프롬프트 없이 한국어로 질문만 던진다',
+      ],
+      answer: 1,
     },
     {
-      no: 5,
-      question: 'Supabase Storage에서 파일을 묶어 보관하는 논리적 컨테이너 단위의 이름은?',
-      answer: '버킷 (Bucket)',
+      no: 20,
+      question: '컴포넌트 props로 함수(이벤트 핸들러)를 전달할 때 권장되는 명명 규칙은?',
+      options: [
+        'click, change 처럼 동사형',
+        'onClick, onChange 처럼 on 접두사 + 이벤트명',
+        'handle 접두사만 단독 사용 (handle)',
+        '명사형으로 click_func 처럼 작성',
+      ],
+      answer: 1,
     },
   ],
 };
@@ -543,32 +576,55 @@ const summative: AssessmentSet = {
       ],
       answer: 1,
     },
-  ],
-  short: [
     {
-      no: 1,
-      question: 'React 프로젝트에서 라우트별로 번들을 분리해 초기 로드를 줄이는 기법의 일반 명칭은?',
-      answer: '코드 스플리팅 (Code Splitting)',
+      no: 16,
+      question: 'React.lazy로 코드 스플리팅을 적용할 때, 비동기 컴포넌트가 로딩되는 동안 표시할 UI를 지정하는 컴포넌트는?',
+      options: ['React.Fallback', 'React.Loader', 'Suspense', 'ErrorBoundary'],
+      answer: 2,
     },
     {
-      no: 2,
-      question: 'gh-pages 패키지를 사용해 dist 폴더를 배포하는 npm 표준 스크립트 명령은?',
-      answer: 'npx gh-pages -d dist',
+      no: 17,
+      question: 'AI 리부트 경진대회 출품 시 PRD(제품 요구사항 문서)에 반드시 포함되어야 하는 항목은?',
+      options: [
+        '발표자 셀카 사진',
+        '문제 정의 / 사용자 / 핵심 기능 / 사용 LLM / MVP 범위',
+        '경쟁사 단점 분석만',
+        '서버 비밀 키 목록',
+      ],
+      answer: 1,
     },
     {
-      no: 3,
-      question: 'Supabase에서 행 단위 접근 제어를 담당하는 보안 기능의 약어는?',
-      answer: 'RLS (Row Level Security)',
+      no: 18,
+      question: 'gh-pages 패키지로 GitHub Pages에 dist 폴더를 자동 배포하는 npm 스크립트 구성으로 가장 일반적인 것은?',
+      options: [
+        '"deploy": "git push origin gh-pages"',
+        '"deploy": "gh-pages -d dist"',
+        '"deploy": "vercel deploy"',
+        '"deploy": "scp -r dist server:/var/www"',
+      ],
+      answer: 1,
     },
     {
-      no: 4,
-      question: 'AI 리부트 경진대회 평가 기준 중 "국내 LLM 활용도"의 가중치(%)는?',
-      answer: '25%',
+      no: 19,
+      question: 'Supabase의 `VITE_SUPABASE_ANON_KEY`가 빌드 산출물에 노출되어도 비교적 안전한 이유는?',
+      options: [
+        '키가 임의로 만료되기 때문',
+        'anon key는 RLS 정책에 의해 권한이 제한되어 있어 직접 데이터를 마음대로 변경할 수 없기 때문',
+        'GitHub Pages가 자동으로 암호화하기 때문',
+        '실제로는 키가 아니기 때문',
+      ],
+      answer: 1,
     },
     {
-      no: 5,
-      question: '데모 시연 시 권장되는 발표 시간 길이(범위)는?',
-      answer: '3분 (5~10분 발표 중 라이브 데모 약 3분)',
+      no: 20,
+      question: '발표 자료 첫 슬라이드(타이틀)에 가장 적합한 구성은?',
+      options: [
+        '소스코드 전체 스크린샷',
+        '서비스명 + 한 줄 가치 제안(Value Proposition) + 팀명',
+        '경쟁사 비방',
+        '아무 내용 없는 빈 화면',
+      ],
+      answer: 1,
     },
   ],
 };
