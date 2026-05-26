@@ -208,6 +208,94 @@ ac5b1a3  feat(about): 회사소개 페이지 콘텐츠 보강 + 아이콘 이모
 
 ---
 
+## 10. 후속 작업: 관리자 수강생 관리 필터링 버그 수정 (2026-05-27 동일자)
+
+### 10-1. 문제 발견
+사용자 보고: "관리자모드에 수강생관리는 rest 사이트에서 가입한 회원만 관리가 되어야지 전체 회원을 보여주면 어떻게"
+
+### 10-2. 원인 분석
+| 위치 | 코드 | 문제 |
+|------|------|------|
+| `src/pages/admin/AdminStudents.tsx:15` | `client.from('user_profiles').select('*').order(...)` | 사이트 필터 없이 전체 회원 조회 |
+| Supabase 스키마 | `user_profiles`는 91개 사이트가 공유하는 **글로벌 테이블** | 필터 없으면 모든 사이트 가입자 노출 |
+| 대조군: `AdminDashboard.tsx:24` | `.like('visited_sites', '%rest.dreamitbiz.com%')` | 통계는 이미 필터링하고 있었음 — Students 페이지만 누락 |
+
+`user_profiles`에는 두 가지 사이트 식별 컬럼이 존재:
+- `signup_domain` (text): 최초 가입한 사이트 hostname
+- `visited_sites` (text[]): 접속 이력이 있는 사이트 hostname 배열
+
+`AuthContext.tsx:54`에서 가입 시 `window.location.hostname`을 `signup_domain`에 저장 → **"가입자"는 `signup_domain` 기준, "방문자"는 `visited_sites` 기준**으로 명확하게 구분 가능.
+
+### 10-3. 수정 내용 (커밋 `5d154a6`)
+
+#### `src/pages/admin/AdminStudents.tsx`
+- `site.url`에서 hostname 동적 추출 (`new URL(site.url).hostname` → `'rest.dreamitbiz.com'`)
+- 기본 필터: `signup_domain = 'rest.dreamitbiz.com'` (사용자 요구사항)
+- 토글 추가: "본 사이트 가입자" / "본 사이트 방문자(visited_sites contains)"
+- 키워드 검색 (이름·이메일·전화) 추가
+- 가입처 컬럼 추가, 카운터(N명/전체 X명) 표시, 빈 상태 메시지 추가
+
+#### 쿼리 변경 비교
+```ts
+// Before — 전체 회원 노출
+const { data } = await client
+  .from('user_profiles')
+  .select('*')
+  .order('last_sign_in_at', { ascending: false });
+
+// After — 본 사이트 가입자만 (기본)
+const REST_HOSTNAME = new URL(site.url).hostname;
+const query = client
+  .from('user_profiles')
+  .select('*')
+  .order('last_sign_in_at', { ascending: false });
+
+if (scope === 'signup') {
+  query.eq('signup_domain', REST_HOSTNAME);
+} else {
+  query.contains('visited_sites', [REST_HOSTNAME]);
+}
+const { data } = await query;
+```
+
+### 10-4. 부수 작업
+`src/data/learningData.ts` — `ContentSection` 타입에 `code`/`table`/`callout` 필드 추가
+- 이전 작업에서 Learning 렌더러는 새 필드 지원으로 업데이트했지만 타입 정의는 누락된 상태였음
+- 빌드 통과를 위해 타입 확장 — 기존 콘텐츠 렌더링에는 영향 없음 (모두 optional)
+- 추후 "학습노트 콘텐츠 고도화" 작업의 사전 준비
+
+### 10-5. 변경 파일
+| 파일 | 변경 |
+|------|------|
+| `src/pages/admin/AdminStudents.tsx` | 전면 재작성 (+138/-22) |
+| `src/data/learningData.ts` | ContentSection 타입 확장 (+3 lines) |
+| `src/pages/Learning.tsx` | (선행 작업) 새 섹션 타입 렌더링 추가 |
+
+### 10-6. 빌드 & 배포
+- `tsc -b --noEmit` 0 error
+- `npm run build` 성공 (3.22s)
+- `npx gh-pages -d dist` Published ✓
+
+### 10-7. 검증 체크리스트
+- [x] 기본 진입 시 본 사이트 가입자만 표시 (signup_domain 필터)
+- [x] "본 사이트 방문자" 토글로 visited_sites 포함 조회 가능
+- [x] 키워드 검색 정상 동작
+- [x] 가입처 컬럼이 signup_domain 값을 표시
+- [x] 검색 결과 0건 / 가입자 0명 시 명확한 빈 상태 메시지
+- [x] AdminDashboard 통계와의 차이(가입자 vs 방문자) 사용자에게 안내함
+
+### 10-8. 잠재적 후속 작업 (선택)
+- `AdminDashboard.tsx`의 수강생 카운트도 `signup_domain` 기준으로 통일 (현재는 `visited_sites` like 사용)
+- 회원 상세 보기 모달 / 회원 차단·승급 액션 (`role` 변경)
+- CSV 내보내기 (수강생 명단 다운로드)
+
+### 10-9. 커밋 이력 (2026-05-27 추가분)
+```
+5d154a6  fix(admin): 수강생 관리에 본 사이트 가입자 필터 적용
+```
+
+---
+
 **작성자**: Ph.D Aebon Lee (aebon@kyonggi.ac.kr)
 **작업일**: 2026-05-27
 **관련 사이트**: rest.dreamitbiz.com (AI Reboot Academy)
