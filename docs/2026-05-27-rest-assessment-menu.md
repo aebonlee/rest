@@ -296,6 +296,138 @@ const { data } = await query;
 
 ---
 
+## 11. 후속 작업: 학습평가 구조 변경 — 객관식 20문항으로 통일 (2026-05-27 동일자)
+
+### 11-1. 변경 배경
+사용자 요청: "학습평가 - 3가지 평가 방식에 단답식은 삭제하고 객관식 문항으로 20개로 변경해줘"
+
+기존 구조(객관식 15 + 단답식 5 = 20)에서 단답식을 제거하고 **객관식 20문항으로 통일**. 자동 채점·표준화·OMR 친화성을 높이고 평가지 3종 간 동질성을 확보.
+
+### 11-2. 수정 내용 (커밋 `22ab445`)
+
+#### `src/data/assessmentData.ts`
+- `ShortQuestion` 인터페이스 제거
+- `AssessmentSet.short` 필드 제거
+- 각 평가지에 신규 객관식 5문항 추가 (15 → 20)
+
+#### `src/pages/Assessment.tsx`
+- 단답식 섹션 전체 렌더링 제거
+- 헤더 카운트: "객관식 N + 단답식 M개" → "객관식 N문항"
+
+### 11-3. 신규 추가 문항 (각 평가지별 5문항)
+
+#### 선수학습평가 (Day 1~4 대비)
+| No | 영역 | 문제 핵심 |
+|----|------|-----------|
+| 16 | CSS Grid | `repeat(3, 1fr)`로 3열 그리드 작성 |
+| 17 | JS falsy | `[]`는 truthy임을 식별 |
+| 18 | React list | 배열 렌더링 시 `key` prop 필수 |
+| 19 | Vite | 개발 서버 실행: `npm run dev` |
+| 20 | 프롬프트 | 출력 스키마 명시(JSON + 키 지정) |
+
+#### 진단평가 (Day 5~9)
+| No | 영역 | 문제 핵심 |
+|----|------|-----------|
+| 16 | 라우팅 보호 | `AuthGuard` + `Navigate` 리다이렉트 패턴 |
+| 17 | Supabase | 클라이언트 초기화 인자(URL, anon key) |
+| 18 | LLM 응답 | `choices[0].message.content` JSON 경로 |
+| 19 | 시스템 프롬프트 | "반드시 한국어로만 답하라" 등 명시적 제약 |
+| 20 | 명명 규칙 | 이벤트 핸들러는 `onClick`처럼 `on*` |
+
+#### 총괄평가 (Day 1~13 종합)
+| No | 영역 | 문제 핵심 |
+|----|------|-----------|
+| 16 | Code Splitting | `Suspense` fallback UI |
+| 17 | PRD | 문제·사용자·기능·LLM·MVP 범위 필수 |
+| 18 | 배포 | `"deploy": "gh-pages -d dist"` 표준 |
+| 19 | 보안 | `anon key` + RLS의 안전성 원리 |
+| 20 | 발표 | 첫 슬라이드 = 서비스명 + 가치 제안 + 팀명 |
+
+### 11-4. 빌드 & 배포
+- `tsc -b --noEmit` 0 error
+- `npm run deploy` Published ✓
+
+---
+
+## 12. 후속 작업: 출석관리 — 본 사이트 학생 + 유관기관 관리자 필터 (2026-05-27 동일자)
+
+### 12-1. 문제 발견
+사용자 보고: "대시보드의 출석관리도 현재 사이트 가입으로 학생들과 유관기관의 관리자로 한정해서 관리가되어야 해."
+
+`AdminStudents`에서 발견한 것과 동일한 버그가 `AdminAttendance`에도 존재 — `from('user_profiles').select('*').order('name')` 전체 조회.
+
+### 12-2. 요구 사항 해석
+출석 대상 = **두 그룹 합집합**
+1. **본 사이트 가입 학생**: `signup_domain = 'rest.dreamitbiz.com'`
+2. **유관기관 관리자**: `role IN ('admin', 'superadmin')` — 사이트와 무관하게 운영진/강사진 포함
+
+→ "유관기관"은 한신대학교 등 본 과정에 참여하는 외부 기관 인원과 운영사 임직원을 포괄. 가입처와 무관하게 admin/superadmin 권한 보유자를 모두 포함하는 방식이 가장 안전.
+
+### 12-3. 수정 내용 (커밋 `a4eb6d1`)
+
+#### 쿼리 변경
+```ts
+// Before — 전체 회원 노출
+const [attRes, studRes] = await Promise.all([
+  client.from(TABLES.attendance).select('*').eq('date', selectedDate),
+  client.from('user_profiles').select('*').order('name'),
+]);
+if (studRes.data) setStudents(studRes.data as UserProfile[]);
+
+// After — 본 사이트 학생 + 유관기관 관리자
+const REST_HOSTNAME = new URL(site.url).hostname;
+const STAFF_ROLES = ['admin', 'superadmin'];
+
+const [attRes, signupRes, staffRes] = await Promise.all([
+  client.from(TABLES.attendance).select('*').eq('date', selectedDate),
+  client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
+  client.from('user_profiles').select('*').in('role', STAFF_ROLES),
+]);
+
+// 중복 제거 + 정렬 (관리자 먼저, 그 다음 학생 — 이름순)
+const merged = new Map<string, UserProfile>();
+[...(signupRes.data || []), ...(staffRes.data || [])].forEach((u) => {
+  merged.set(u.id, u);
+});
+const list = Array.from(merged.values()).sort((a, b) => {
+  const aStaff = STAFF_ROLES.includes(a.role) ? 0 : 1;
+  const bStaff = STAFF_ROLES.includes(b.role) ? 0 : 1;
+  if (aStaff !== bStaff) return aStaff - bStaff;
+  return (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || '');
+});
+```
+
+#### UI 변경
+- "구분" 컬럼 추가 — 총괄 관리자(주황 배지) / 관리자(주황 배지) / 학생(파랑 배지)
+- 헤더에 안내 문구: "rest.dreamitbiz.com 가입 학생과 유관기관 관리자만 표시됩니다"
+- 총 N명 카운터
+- 빈 상태 메시지
+
+### 12-4. 빌드 & 배포
+- `tsc -b --noEmit` 0 error
+- `npm run build` 성공 (3.73s)
+- `npx gh-pages -d dist` Published ✓
+
+### 12-5. 검증 체크리스트
+- [x] 본 사이트에서 가입한 학생이 출석 대상에 포함
+- [x] admin/superadmin 권한자는 가입처 무관하게 출석 대상에 포함
+- [x] 중복 제거 (관리자가 본 사이트에서 가입한 경우 단 1행)
+- [x] 관리자가 먼저 표시되고 학생이 그 아래에 이름순 정렬
+- [x] 구분 배지로 학생/관리자 시각적 분리
+
+### 12-6. 잠재적 후속 작업
+- 강사진 페이지에 등록된 이메일과의 매칭(현재는 role 기반)
+- 출석률 통계 화면 (강사·학생 별도)
+- CSV 출석부 내보내기
+
+### 12-7. 커밋 이력 (2026-05-27 추가분)
+```
+22ab445  feat(assessment): 단답식 제거 + 객관식 20문항으로 전환
+a4eb6d1  fix(admin): 출석관리에 본 사이트 학생 + 유관기관 관리자 한정 필터 적용
+```
+
+---
+
 **작성자**: Ph.D Aebon Lee (aebon@kyonggi.ac.kr)
 **작업일**: 2026-05-27
 **관련 사이트**: rest.dreamitbiz.com (AI Reboot Academy)
