@@ -1,75 +1,59 @@
 import SEOHead from '../components/SEOHead';
+import { Link } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import site from '../config/site';
 
-interface FeatureItem {
+interface ReasonItem {
   emoji: string;
   title: string;
   desc: string;
 }
 
-interface ProgramItem {
+interface BizArea {
   emoji: string;
-  phase: string;
-  duration: string;
-  desc: string;
-}
-
-interface StepItem {
-  no: string;
   title: string;
   desc: string;
 }
 
-const FEATURES: FeatureItem[] = [
+const REASONS: ReasonItem[] = [
   {
-    emoji: '🚀',
-    title: 'AI 리부트',
-    desc: '쉬었음청년의 재도약을 위한 맞춤형 AI 교육. 4주 80시간 단기 집중 트랙으로 빠르게 현장 역량을 회복합니다.',
+    emoji: '🧑‍🏫',
+    title: '강사가 직접 운영합니다',
+    desc: '이 사이트는 외주 제작이 아닌, 본 과정의 총괄 책임교수가 직접 설계·개발·운영합니다. 교육 내용과 동일한 기술 스택(React·Supabase·국내 LLM)으로 만들어 살아 있는 교재로 기능합니다.',
   },
   {
-    emoji: '💻',
-    title: '바이브코딩',
-    desc: 'Cursor·Claude Code·GitHub Copilot 등 AI 코딩 도구로 자연어 대화 기반 개발 워크플로우를 학습합니다.',
-  },
-  {
-    emoji: '🏆',
-    title: '경진대회 출품',
-    desc: '국내 LLM(Solar/HyperCLOVA X/EXAONE) 활용 AI 서비스 개발 — AI 리부트 경진대회 출품을 목표로 합니다.',
+    emoji: '📚',
+    title: '과정의 교재이자 결과물',
+    desc: '강의 자료·과제·평가·팀 프로젝트가 한 곳에서 흐르도록 LMS 형태로 통합했습니다. 수강생이 학습하는 동안 사이트 자체가 “바이브코딩으로 무엇을 만들 수 있는가”의 살아 있는 사례가 됩니다.',
   },
   {
     emoji: '🤝',
-    title: '팀·커뮤니티',
-    desc: '팀 프로젝트, 1:1 기술코칭, 동기 네트워크로 학습 이후에도 지속 가능한 성장 기반을 제공합니다.',
+    title: '교육 종료 후에도 이어집니다',
+    desc: '강사의 회사(DreamIT Biz)가 지속적으로 사이트를 운영합니다. 단발성 강의가 아닌, 수강 이후의 커뮤니티·후속 코칭·경진대회 출품까지 함께 갑니다.',
   },
 ];
 
-const PROGRAMS: ProgramItem[] = [
+const BIZ_AREAS: BizArea[] = [
   {
-    emoji: '📘',
-    phase: '선수과정',
-    duration: '4일 · 20H',
-    desc: 'AI 기초·LLM 이해·프롬프트 엔지니어링·개발환경 세팅. 정규과정 진입을 위한 사전 준비.',
+    emoji: '🎓',
+    title: '대학·기관 위탁교육',
+    desc: '한신대학교 AI·SW대학을 포함한 교육기관과 협력하여 AI·SW 정규/특강 과정을 설계하고 운영합니다.',
   },
   {
-    emoji: '⚡',
-    phase: '정규과정 (DT)',
-    duration: '13일 · 52H',
-    desc: '바이브코딩·웹개발(HTML/CSS/JS/React)·Supabase·LLM API 연동·팀 프로젝트·배포·발표.',
+    emoji: '🏢',
+    title: '기업 맞춤형 AI 교육',
+    desc: '국내 LLM과 바이브코딩 도구를 활용한 사내 교육·리스킬링 프로그램을 기업 요구에 맞게 설계·진행합니다.',
   },
   {
-    emoji: '🎯',
-    phase: '기술코칭',
-    duration: '4회 · 8H',
-    desc: '전문가 1:1 멘토링. 프로젝트 코드리뷰, 디버깅 지원, 발표 리허설, 경진대회 출품 컨설팅.',
+    emoji: '🌐',
+    title: '교육 플랫폼 운영',
+    desc: '대학 강의·자격증·진로·연구 등 분야별 90여 개의 교육 사이트를 자체 인프라(Supabase + GitHub Pages)로 운영 중입니다.',
   },
-];
-
-const STEPS: StepItem[] = [
-  { no: '01', title: '문제 정의', desc: '쉬었음청년이 마주한 디지털 전환 격차와 진로 단절 문제에서 출발했습니다.' },
-  { no: '02', title: '솔루션 설계', desc: 'AI 도구로 코드 진입 장벽을 낮추고, 4주 단기로 실전 프로젝트까지 완주하는 트랙을 설계했습니다.' },
-  { no: '03', title: '국내 LLM 중심', desc: 'Solar(업스테이지)·HyperCLOVA X(네이버)·EXAONE(LG)을 활용해 한국어 서비스를 제작합니다.' },
-  { no: '04', title: '경진대회 연결', desc: '교육 산출물이 곧 AI 리부트 경진대회 출품작이 되는 결과 중심 커리큘럼입니다.' },
+  {
+    emoji: '📝',
+    title: '교재·콘텐츠 출판',
+    desc: 'AI·바이브코딩·경영정보 분야의 교육 자료와 도서, 온라인 강좌를 제작·배포합니다.',
+  },
 ];
 
 const ROW_LABEL: React.CSSProperties = {
@@ -92,21 +76,21 @@ export default function About(): ReactElement {
     <>
       <SEOHead
         title="회사소개 | AI Reboot Academy"
-        description="드림아이티비즈(DreamIT Biz)가 운영하는 쉬었음청년 AI·바이브코딩 교육과정. 4주 80시간 집중 트랙으로 AI 리부트 경진대회 출품까지 완주합니다."
+        description="본 사이트는 강사의 소속 회사 드림아이티비즈(DreamIT Biz)가 운영합니다. 회사 대표인 이애본 박사가 본 과정의 총괄 책임교수로 참여하며, 강의 운영을 위해 직접 사이트를 설계·개발했습니다."
         path="/about"
       />
 
       <section className="page-header">
         <div className="container">
           <h1>회사소개</h1>
-          <p>드림아이티비즈가 만드는 쉬었음청년 AI·바이브코딩 교육</p>
+          <p>본 사이트를 운영하는 강사의 소속 회사 · 드림아이티비즈(DreamIT Biz)</p>
         </div>
       </section>
 
       <section className="section" style={{ padding: '60px 0' }}>
         <div className="container">
 
-          {/* ───── 미션 박스 ───── */}
+          {/* ───── 이 사이트에 대해 (운영 주체 명시) ───── */}
           <div style={{
             background: 'var(--bg-secondary, #f8f9fa)',
             borderLeft: '4px solid var(--primary-blue, #0046C8)',
@@ -122,21 +106,89 @@ export default function About(): ReactElement {
               letterSpacing: '0.1em',
               color: 'var(--primary-blue, #0046C8)',
               margin: '0 0 12px',
-            }}>OUR MISSION</p>
+            }}>ABOUT THIS SITE</p>
             <h2 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 16px', color: 'var(--text-primary, #1a1a1a)' }}>
-              AI로 다시 시작하는 청년에게,<br />가장 빠른 재도약의 길을 만듭니다.
+              본 사이트는 강사의 회사가 직접 운영합니다.
             </h2>
             <p style={{ margin: 0, fontSize: '15px' }}>
-              <strong>AI Reboot Academy</strong>는 쉬었음청년을 대상으로 한 4주 80시간 AI·바이브코딩 집중 교육 플랫폼입니다.
-              AI 코딩 도구와 국내 LLM을 활용해 빠르게 실전 프로젝트를 완성하고, <strong>AI 리부트 경진대회</strong> 출품까지
-              완주하도록 돕습니다. 단순 강의가 아닌 <strong>결과물 중심</strong>의 트랙으로, 교육 종료 시점에 포트폴리오와
-              운영 가능한 서비스를 동시에 확보합니다.
+              <strong>AI Reboot Academy</strong>는 본 과정의 총괄 책임교수인 <strong>이애본 박사</strong>가 대표로 있는{' '}
+              <strong>드림아이티비즈(DreamIT Biz)</strong>가 운영합니다. 강사가 본 과정을 진행하기 위해
+              직접 기획·설계·개발한 사이트로, 강의 자료·과제·평가·팀 프로젝트가 하나의 LMS로 통합되어 있습니다.
+              따라서 회사 소개는 곧 <strong>본 강의의 운영 주체와 강사의 배경</strong>을 함께 설명하는 페이지입니다.
             </p>
           </div>
 
-          {/* ───── 주요 특징 4종 (이모지) ───── */}
+          {/* ───── 강사 프로필 카드 ───── */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
-            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>주요 특징</span>
+            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>총괄 책임교수 / 운영사 대표</span>
+          </h3>
+          <div style={{
+            display: 'flex',
+            gap: '24px',
+            padding: '32px',
+            background: 'var(--bg-card, #fff)',
+            border: '1px solid var(--border-color, #e5e7eb)',
+            borderRadius: '12px',
+            marginBottom: '56px',
+            flexWrap: 'wrap',
+          }}>
+            <div style={{
+              width: '120px',
+              height: '120px',
+              borderRadius: '50%',
+              background: 'var(--bg-secondary, #f0f4ff)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '64px',
+              lineHeight: 1,
+              flexShrink: 0,
+            }}>
+              <span role="img" aria-label="이애본 박사">👩‍🏫</span>
+            </div>
+            <div style={{ flex: 1, minWidth: '280px' }}>
+              <h4 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary, #1a1a1a)' }}>
+                이애본 (Ph.D Aebon Lee)
+              </h4>
+              <p style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+                총괄 책임교수 · DreamIT Biz 대표
+              </p>
+              <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
+                한신대학교 AI·SW대학 겸임교수 · 드림아이티비즈 대표.<br />
+                대학 강의와 기업 교육 현장에서 AI·SW·경영정보 분야를 가르치며, 본 과정은 회사 대표인 강사가 직접 설계하고
+                운영하는 단기 집중 트랙입니다.
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
+                {['AI·SW 교육', '바이브코딩', '경영정보학', '인적자원관리', '에듀테크 운영'].map((tag) => (
+                  <span key={tag} style={{
+                    padding: '4px 12px',
+                    background: 'var(--bg-secondary, #f0f4ff)',
+                    color: 'var(--primary-blue, #0046C8)',
+                    borderRadius: '999px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                  }}>{tag}</span>
+                ))}
+              </div>
+              <Link to="/instructor" style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                fontSize: '13.5px',
+                fontWeight: 600,
+                color: 'var(--primary-blue, #0046C8)',
+                textDecoration: 'none',
+              }}>
+                강사진 상세 보기 →
+              </Link>
+            </div>
+          </div>
+
+          {/* ───── 이 사이트를 강사가 직접 만든 이유 ───── */}
+          <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
+            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>
+              왜 강사가 직접 사이트를 만들었나
+            </span>
           </h3>
           <div style={{
             display: 'grid',
@@ -144,15 +196,12 @@ export default function About(): ReactElement {
             gap: '20px',
             marginBottom: '56px',
           }}>
-            {FEATURES.map((item, i) => (
+            {REASONS.map((r, i) => (
               <div key={i} style={{
-                display: 'flex',
-                gap: '16px',
                 padding: '24px',
                 background: 'var(--bg-card, #fff)',
                 border: '1px solid var(--border-color, #e5e7eb)',
                 borderRadius: '12px',
-                transition: 'transform 0.2s, box-shadow 0.2s',
               }}>
                 <div style={{
                   width: '56px',
@@ -165,103 +214,78 @@ export default function About(): ReactElement {
                   flexShrink: 0,
                   fontSize: '28px',
                   lineHeight: 1,
-                }}>
-                  <span role="img" aria-label={item.title}>{item.emoji}</span>
-                </div>
-                <div>
-                  <strong style={{ fontSize: '16px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '6px' }}>
-                    {item.title}
-                  </strong>
-                  <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.6 }}>
-                    {item.desc}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {/* ───── 교육 프로그램 구성 ───── */}
-          <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
-            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>
-              교육 프로그램 구성 (총 80H)
-            </span>
-          </h3>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '20px',
-            marginBottom: '56px',
-          }}>
-            {PROGRAMS.map((p, i) => (
-              <div key={i} style={{
-                padding: '24px',
-                background: 'var(--bg-card, #fff)',
-                border: '1px solid var(--border-color, #e5e7eb)',
-                borderTop: '4px solid var(--primary-blue, #0046C8)',
-                borderRadius: '12px',
-              }}>
-                <div style={{ fontSize: '32px', marginBottom: '12px', lineHeight: 1 }}>
-                  <span role="img" aria-label={p.phase}>{p.emoji}</span>
-                </div>
-                <strong style={{ fontSize: '17px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '4px' }}>
-                  {p.phase}
-                </strong>
-                <span style={{
-                  display: 'inline-block',
-                  padding: '3px 10px',
-                  background: 'var(--bg-secondary, #f0f4ff)',
-                  color: 'var(--primary-blue, #0046C8)',
-                  fontSize: '12px',
-                  fontWeight: 600,
-                  borderRadius: '999px',
                   marginBottom: '14px',
-                }}>{p.duration}</span>
+                }}>
+                  <span role="img" aria-label={r.title}>{r.emoji}</span>
+                </div>
+                <strong style={{ fontSize: '16px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '8px' }}>
+                  {r.title}
+                </strong>
                 <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
-                  {p.desc}
+                  {r.desc}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* ───── 우리가 만드는 방식 ───── */}
+          {/* ───── 소속 회사 소개 ───── */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
-            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>우리가 만드는 방식</span>
+            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>강사의 소속 회사</span>
           </h3>
           <div style={{
+            padding: '32px 36px',
+            background: 'var(--bg-card, #fff)',
+            border: '1px solid var(--border-color, #e5e7eb)',
+            borderRadius: '12px',
+            marginBottom: '24px',
+            lineHeight: 1.8,
+          }}>
+            <p style={{
+              fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
+              color: 'var(--primary-blue, #0046C8)', margin: '0 0 8px',
+            }}>COMPANY</p>
+            <h4 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 12px', color: 'var(--text-primary, #1a1a1a)' }}>
+              드림아이티비즈 (DreamIT Biz)
+            </h4>
+            <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.8 }}>
+              드림아이티비즈는 본 과정의 강사가 대표로 운영하는 <strong>에듀테크 전문 회사</strong>입니다.
+              대학·기관 위탁교육과 기업 맞춤형 AI 교육을 중심으로, 자체 인프라로 90여 개의 교육 사이트를
+              설계·운영합니다. 본 과정 또한 회사의 교육 운영 사례 중 하나로, 강사가 대표 자격이자
+              책임교수 자격으로 동시에 참여합니다.
+            </p>
+          </div>
+
+          {/* 회사 사업 영역 */}
+          <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '16px',
             marginBottom: '56px',
           }}>
-            {STEPS.map((s, i) => (
+            {BIZ_AREAS.map((b, i) => (
               <div key={i} style={{
-                padding: '24px',
+                padding: '20px 22px',
                 background: 'var(--bg-card, #fff)',
                 border: '1px solid var(--border-color, #e5e7eb)',
-                borderRadius: '12px',
-                position: 'relative',
+                borderTop: '3px solid var(--primary-blue, #0046C8)',
+                borderRadius: '10px',
               }}>
-                <div style={{
-                  fontSize: '36px',
-                  fontWeight: 900,
-                  color: 'var(--primary-blue-light, #4A8FE7)',
-                  opacity: 0.35,
-                  lineHeight: 1,
-                  marginBottom: '8px',
-                }}>{s.no}</div>
+                <div style={{ fontSize: '28px', lineHeight: 1, marginBottom: '10px' }}>
+                  <span role="img" aria-label={b.title}>{b.emoji}</span>
+                </div>
                 <strong style={{ fontSize: '15px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '6px' }}>
-                  {s.title}
+                  {b.title}
                 </strong>
-                <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.6 }}>
-                  {s.desc}
+                <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.65 }}>
+                  {b.desc}
                 </p>
               </div>
             ))}
           </div>
 
-          {/* ───── 운영사 정보 (회사 상세) ───── */}
+          {/* ───── 회사 상세 정보 + 연락처 ───── */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
-            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>운영사 정보</span>
+            <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>회사 정보 / 문의</span>
           </h3>
           <div style={{
             display: 'grid',
@@ -269,7 +293,6 @@ export default function About(): ReactElement {
             gap: '20px',
             marginBottom: '56px',
           }}>
-            {/* 회사 정보 카드 */}
             <div style={{
               padding: '28px 32px',
               background: 'var(--bg-card, #fff)',
@@ -278,20 +301,16 @@ export default function About(): ReactElement {
             }}>
               <p style={{
                 fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
-                color: 'var(--primary-blue, #0046C8)', margin: '0 0 12px',
-              }}>COMPANY</p>
-              <h4 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary, #1a1a1a)' }}>
-                {c.name}
-              </h4>
-              <p style={{ margin: '0 0 20px', fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.6 }}>
-                100여 개 교육 사이트를 운영하는 에듀테크 전문 기업.<br />
-                기업·기관·개인 맞춤형 디지털 교육 플랫폼을 설계·구축·운영합니다.
-              </p>
-
+                color: 'var(--primary-blue, #0046C8)', margin: '0 0 16px',
+              }}>회사 정보</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
                 <div style={{ display: 'flex' }}>
+                  <span style={ROW_LABEL}>상호</span>
+                  <span style={ROW_VALUE}>{c.name}</span>
+                </div>
+                <div style={{ display: 'flex' }}>
                   <span style={ROW_LABEL}>대표자</span>
-                  <span style={ROW_VALUE}>{c.ceo} (Ph.D Aebon Lee)</span>
+                  <span style={ROW_VALUE}>{c.ceo} (본 과정 책임교수 겸직)</span>
                 </div>
                 <div style={{ display: 'flex' }}>
                   <span style={ROW_LABEL}>사업자번호</span>
@@ -316,7 +335,6 @@ export default function About(): ReactElement {
               </div>
             </div>
 
-            {/* 연락처 카드 */}
             <div style={{
               padding: '28px 32px',
               background: 'var(--bg-card, #fff)',
@@ -325,17 +343,13 @@ export default function About(): ReactElement {
             }}>
               <p style={{
                 fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
-                color: 'var(--primary-blue, #0046C8)', margin: '0 0 12px',
-              }}>CONTACT</p>
-              <h4 style={{ fontSize: '20px', fontWeight: 700, margin: '0 0 20px', color: 'var(--text-primary, #1a1a1a)' }}>
-                문의 / 제휴
-              </h4>
-
+                color: 'var(--primary-blue, #0046C8)', margin: '0 0 16px',
+              }}>연락처</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '14px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="이메일">📧</span>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>이메일</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>이메일 (강사 직통)</div>
                     <a href={`mailto:${c.email}`} style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
                       {c.email}
                     </a>
@@ -356,16 +370,16 @@ export default function About(): ReactElement {
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                     <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="카카오톡">💬</span>
                     <div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>카카오톡</div>
+                      <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>카카오톡 ID</div>
                       <span style={{ color: 'var(--text-primary, #1a1a1a)', fontWeight: 600 }}>@{c.kakao}</span>
                     </div>
                   </div>
                 )}
 
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="웹사이트">🌐</span>
+                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="본 사이트">🌐</span>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>본 사이트</div>
+                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>회사 본 사이트</div>
                     <a href={site.parentSite.url} target="_blank" rel="noopener noreferrer"
                        style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
                       www.dreamitbiz.com
@@ -376,12 +390,17 @@ export default function About(): ReactElement {
             </div>
           </div>
 
-          {/* ───── 패밀리 사이트 ───── */}
+          {/* ───── 회사가 운영하는 다른 사이트 ───── */}
           {site.familySites && site.familySites.length > 0 && (
             <>
-              <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
-                <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>패밀리 사이트</span>
+              <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary, #1a1a1a)' }}>
+                <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>
+                  회사가 운영하는 다른 교육 사이트
+                </span>
               </h3>
+              <p style={{ fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 20px', lineHeight: 1.7 }}>
+                강사의 회사가 동일한 인프라로 운영 중인 사이트 예시입니다. 본 과정도 이 운영 체계 위에서 안정적으로 진행됩니다.
+              </p>
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
@@ -401,7 +420,6 @@ export default function About(): ReactElement {
                     color: 'var(--text-primary, #1a1a1a)',
                     fontSize: '14px',
                     fontWeight: 600,
-                    transition: 'border-color 0.2s',
                   }}>
                     <span role="img" aria-label="link" style={{ fontSize: '18px', lineHeight: 1 }}>🔗</span>
                     <span>{fs.name}</span>
@@ -420,7 +438,8 @@ export default function About(): ReactElement {
             color: 'var(--text-muted, #9ca3af)',
             borderTop: '1px solid var(--border-color, #e5e7eb)',
           }}>
-            Copyright © 2025-2026 {c.name}. All Rights Reserved.
+            Copyright © 2025-2026 {c.name}. All Rights Reserved.<br />
+            본 사이트는 {c.ceo} 대표(총괄 책임교수)가 직접 설계·운영합니다.
           </div>
         </div>
       </section>
