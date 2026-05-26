@@ -7,6 +7,9 @@ export interface ContentSection {
   subtitle?: string;
   text?: string;
   items?: string[];
+  code?: { lang?: string; content: string };
+  table?: { headers: string[]; rows: string[][] };
+  callout?: { type: 'tip' | 'warn' | 'info'; text: string };
 }
 
 export interface Topic {

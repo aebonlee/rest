@@ -7,6 +7,7 @@ import {
   regularTopics,
   coachingTopics,
   type Topic,
+  type ContentSection,
 } from '../data/learningData';
 
 const phaseMap: Record<string, { topics: Topic[]; titleKey: string; subtitleKey: string }> = {
@@ -26,6 +27,117 @@ const phaseMap: Record<string, { topics: Topic[]; titleKey: string; subtitleKey:
     subtitleKey: 'site.learning.coaching.subtitle',
   },
 };
+
+const calloutColors: Record<string, { bg: string; border: string; emoji: string; label: string }> = {
+  tip:  { bg: '#ecfdf5', border: '#10b981', emoji: '💡', label: 'TIP' },
+  warn: { bg: '#fef2f2', border: '#ef4444', emoji: '⚠️', label: '주의' },
+  info: { bg: '#eff6ff', border: '#3b82f6', emoji: 'ℹ️', label: '참고' },
+};
+
+const renderSection = (section: ContentSection, idx: number): ReactElement => (
+  <div key={idx} style={{ marginBottom: '20px' }}>
+    {section.subtitle && (
+      <h4 style={{
+        fontSize: '15px',
+        fontWeight: 700,
+        margin: '24px 0 10px',
+        color: 'var(--text-primary, #1a1a1a)',
+        borderLeft: '3px solid var(--primary-blue, #0046C8)',
+        paddingLeft: '10px',
+      }}>{section.subtitle}</h4>
+    )}
+    {section.text && (
+      <p style={{ margin: '0 0 12px', lineHeight: 1.75, color: 'var(--text-primary, #1a1a1a)' }}>
+        {section.text}
+      </p>
+    )}
+    {section.items && (
+      <ul style={{ margin: '0 0 12px', paddingLeft: '20px', lineHeight: 1.85, color: 'var(--text-primary, #1a1a1a)' }}>
+        {section.items.map((item, j) => <li key={j}>{item}</li>)}
+      </ul>
+    )}
+    {section.code && (
+      <pre style={{
+        background: '#0f172a',
+        color: '#e2e8f0',
+        padding: '16px 18px',
+        borderRadius: '8px',
+        overflowX: 'auto',
+        fontSize: '13px',
+        lineHeight: 1.6,
+        fontFamily: "'JetBrains Mono', 'Consolas', 'Courier New', monospace",
+        margin: '8px 0 12px',
+      }}>
+        {section.code.lang && (
+          <div style={{
+            fontSize: '11px',
+            color: '#94a3b8',
+            marginBottom: '8px',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            fontWeight: 600,
+          }}>{section.code.lang}</div>
+        )}
+        <code>{section.code.content}</code>
+      </pre>
+    )}
+    {section.table && (
+      <div style={{ overflowX: 'auto', margin: '8px 0 16px' }}>
+        <table style={{
+          width: '100%',
+          borderCollapse: 'collapse',
+          fontSize: '13.5px',
+          border: '1px solid var(--border-color, #e5e7eb)',
+        }}>
+          <thead>
+            <tr style={{ background: 'var(--bg-secondary, #f0f4ff)' }}>
+              {section.table.headers.map((h, i) => (
+                <th key={i} style={{
+                  padding: '10px 12px',
+                  textAlign: 'left',
+                  fontWeight: 700,
+                  color: 'var(--text-primary, #1a1a1a)',
+                  borderBottom: '2px solid var(--primary-blue, #0046C8)',
+                }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {section.table.rows.map((row, ri) => (
+              <tr key={ri} style={{ borderBottom: '1px solid var(--border-color, #e5e7eb)' }}>
+                {row.map((cell, ci) => (
+                  <td key={ci} style={{
+                    padding: '10px 12px',
+                    color: 'var(--text-primary, #1a1a1a)',
+                    verticalAlign: 'top',
+                    lineHeight: 1.6,
+                  }}>{cell}</td>
+                ))}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    )}
+    {section.callout && (
+      <div style={{
+        background: calloutColors[section.callout.type].bg,
+        borderLeft: `4px solid ${calloutColors[section.callout.type].border}`,
+        padding: '12px 16px',
+        borderRadius: '0 8px 8px 0',
+        margin: '8px 0 14px',
+        fontSize: '13.5px',
+        lineHeight: 1.7,
+        color: '#1a1a1a',
+      }}>
+        <strong style={{ marginRight: '8px' }}>
+          {calloutColors[section.callout.type].emoji} {calloutColors[section.callout.type].label}
+        </strong>
+        {section.callout.text}
+      </div>
+    )}
+  </div>
+);
 
 const Learning = (): ReactElement => {
   const { phase } = useParams<{ phase: string }>();
@@ -50,7 +162,6 @@ const Learning = (): ReactElement => {
       </section>
 
       <div className="sidebar-layout">
-        {/* 왼쪽 사이드바 */}
         <aside className="sidebar">
           <nav className="sidebar-menu">
             {topics.map((tp, i) => (
@@ -65,7 +176,6 @@ const Learning = (): ReactElement => {
           </nav>
         </aside>
 
-        {/* 오른쪽 콘텐츠 */}
         <div className="sidebar-content">
           <div className="topic-card">
             <div className="topic-card-header">
@@ -73,20 +183,10 @@ const Learning = (): ReactElement => {
               <div className="topic-card-title">{topic.title}</div>
             </div>
             <div className="topic-card-body">
-              <p>{topic.description}</p>
-              {topic.content.map((section, idx) => (
-                <div key={idx}>
-                  {section.subtitle && <h4>{section.subtitle}</h4>}
-                  {section.text && <p>{section.text}</p>}
-                  {section.items && (
-                    <ul>
-                      {section.items.map((item, j) => (
-                        <li key={j}>{item}</li>
-                      ))}
-                    </ul>
-                  )}
-                </div>
-              ))}
+              <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                {topic.description}
+              </p>
+              {topic.content.map((section, idx) => renderSection(section, idx))}
             </div>
           </div>
         </div>
