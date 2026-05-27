@@ -1799,6 +1799,970 @@ AI 답변 받음
       { subtitle: '다음 시간 예고' },
       { text: 'Day 3에서는 정적인 페이지에 상호작용을 더하는 JavaScript를 학습합니다. 변수·함수부터 비동기 처리까지, React를 다루기 위한 기반을 다집니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-2-html',
+        title: 'HTML 시맨틱 완전 정복',
+        icon: '📄',
+        summary: 'div의 무덤에서 벗어나기 — 시맨틱 태그 22종 완전 정리, 접근성·SEO 효과 측정, 실제 페이지 구조 작성 패턴.',
+        content: [
+          { subtitle: '시맨틱 태그 22종 전체 카탈로그' },
+          { table: {
+            headers: ['카테고리', '태그', '의미'],
+            rows: [
+              ['문서 구조', '<header>', '페이지/섹션 머리 영역'],
+              ['문서 구조', '<nav>', '주요 탐색 링크 모음'],
+              ['문서 구조', '<main>', '본문 영역 (한 페이지 1개)'],
+              ['문서 구조', '<article>', '독립된 콘텐츠 단위'],
+              ['문서 구조', '<section>', '주제별 그룹화'],
+              ['문서 구조', '<aside>', '부가 콘텐츠 (사이드바)'],
+              ['문서 구조', '<footer>', '하단 정보 (저작권, 연락처)'],
+              ['텍스트', '<h1>~<h6>', '제목 계층'],
+              ['텍스트', '<p>', '단락'],
+              ['텍스트', '<blockquote>', '인용문'],
+              ['텍스트', '<cite>', '인용 출처'],
+              ['텍스트', '<time>', '날짜·시간 (machine readable)'],
+              ['텍스트', '<address>', '연락처 정보'],
+              ['미디어', '<figure>', '독립 미디어 + 캡션'],
+              ['미디어', '<figcaption>', '미디어 캡션'],
+              ['미디어', '<picture>', '반응형 이미지'],
+              ['상호작용', '<details>', '접고 펴는 영역'],
+              ['상호작용', '<summary>', 'details의 표시 부분'],
+              ['상호작용', '<dialog>', '모달 다이얼로그'],
+              ['목록', '<dl>', '정의 목록 (term-description)'],
+              ['목록', '<dt>', '용어'],
+              ['목록', '<dd>', '용어의 정의'],
+            ],
+          } },
+
+          { subtitle: '실전 페이지 구조 — 4개 표준 템플릿' },
+          { code: { lang: 'html', content: `<!-- 템플릿 1 · 회사 홈페이지 -->
+<body>
+  <header>
+    <h1>DreamIT Biz</h1>
+    <nav>
+      <a href="/about">소개</a>
+      <a href="/services">서비스</a>
+      <a href="/contact">문의</a>
+    </nav>
+  </header>
+
+  <main>
+    <section id="hero">
+      <h2>AI 교육의 새 기준</h2>
+      <p>전문가가 직접 운영하는 4주 부트캠프</p>
+    </section>
+
+    <section id="programs">
+      <h2>프로그램</h2>
+      <article>
+        <h3>AI Reboot Academy</h3>
+        <p>...</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 DreamIT Biz. All rights reserved.</p>
+    <address>aebon@dreamitbiz.com</address>
+  </footer>
+</body>` } },
+          { code: { lang: 'html', content: `<!-- 템플릿 2 · 블로그 글 -->
+<body>
+  <header><nav>...</nav></header>
+  <main>
+    <article>
+      <header>
+        <h1>바이브코딩의 5가지 원칙</h1>
+        <p>By 이애본 · <time datetime="2026-05-27">2026년 5월 27일</time></p>
+      </header>
+
+      <p>본문 첫 단락...</p>
+
+      <section>
+        <h2>1. 컨텍스트 주입</h2>
+        <p>...</p>
+      </section>
+
+      <footer>
+        <p>태그: AI, 바이브코딩</p>
+      </footer>
+    </article>
+
+    <aside>
+      <h2>관련 글</h2>
+      <ul>...</ul>
+    </aside>
+  </main>
+  <footer>...</footer>
+</body>` } },
+
+          { subtitle: 'ARIA 속성 — 시맨틱이 부족할 때' },
+          { items: [
+            'role — 요소의 역할 명시 (role="button"으로 div도 버튼처럼)',
+            'aria-label — 화면에 표시 안 되는 이름',
+            'aria-labelledby — 다른 요소를 이름으로 참조',
+            'aria-describedby — 추가 설명 연결',
+            'aria-hidden — 스크린리더가 무시',
+            'aria-live — 동적 변경 알림 (polite / assertive)',
+          ] },
+          { callout: { type: 'tip', text: '"네이티브 HTML 시맨틱이 ARIA보다 항상 낫다" — W3C 1순위 규칙. <button>이 있으면 <div role="button">을 쓰지 마세요.' } },
+
+          { subtitle: '접근성 자가 점검 10개' },
+          { items: [
+            '1. <h1>이 페이지에 1개만 있는가?',
+            '2. 제목 계층(h1→h2→h3)이 순서대로인가?',
+            '3. 이미지에 alt 속성이 있는가?',
+            '4. 폼 요소에 <label>이 연결되었는가?',
+            '5. 버튼은 <button>으로, 링크는 <a>로 사용했는가?',
+            '6. 색만으로 정보를 전달하지 않는가?',
+            '7. 키보드 Tab으로 모든 인터랙티브 요소 접근 가능?',
+            '8. 포커스 표시(outline)가 명확한가?',
+            '9. 텍스트와 배경의 대비 4.5:1 이상?',
+            '10. lang 속성이 <html>에 있는가?',
+          ] },
+
+          { subtitle: 'SEO 효과 — 시맨틱 → 검색 순위' },
+          { text: 'Google·Naver 크롤러는 시맨틱 태그로 페이지 구조를 이해합니다. <article>로 감싸진 본문은 단순 <div>보다 검색 결과에서 상위에 노출될 가능성이 높습니다.' },
+          { code: { lang: 'html', content: `<!-- SEO 메타 태그 표준 세트 -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="페이지 요약 (160자 이내)" />
+  <meta name="author" content="작성자" />
+
+  <!-- Open Graph (SNS 공유) -->
+  <meta property="og:title" content="제목" />
+  <meta property="og:description" content="요약" />
+  <meta property="og:image" content="https://example.com/og.png" />
+  <meta property="og:type" content="website" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+
+  <!-- 정규 URL -->
+  <link rel="canonical" href="https://example.com/page" />
+</head>` } },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            '본인 포트폴리오 페이지를 4개 표준 템플릿 중 1개 골라 시맨틱 HTML로 작성',
+            'Chrome 확장 "axe DevTools" 설치 후 접근성 점수 측정 → 90+ 달성',
+            'Lighthouse SEO 점수 95+ 달성',
+            '본인 페이지를 화면 잠그고 키보드만으로 탐색 가능 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-flex',
+        title: 'Flexbox 완전 정복',
+        icon: '↔️',
+        summary: 'CSS Flexbox의 모든 속성을 정렬 시각화·실전 패턴 12종·디버깅 도구와 함께 마스터.',
+        content: [
+          { subtitle: 'Flexbox는 1차원 레이아웃' },
+          { text: 'Flexbox는 가로 또는 세로 한 방향(axis)으로 요소를 정렬·분배합니다. 2차원(행+열)은 Grid의 영역. "한 줄에 가로로" 같은 단순 정렬은 Flexbox가 압도적으로 직관적입니다.' },
+
+          { subtitle: 'Flex 부모(Container) 속성 6종' },
+          { table: {
+            headers: ['속성', '값', '의미'],
+            rows: [
+              ['display', 'flex / inline-flex', 'Flex 컨테이너 활성화'],
+              ['flex-direction', 'row / column / row-reverse / column-reverse', '주축 방향'],
+              ['flex-wrap', 'nowrap / wrap / wrap-reverse', '한 줄 넘침 처리'],
+              ['justify-content', 'flex-start / center / space-between / space-around / space-evenly', '주축 정렬'],
+              ['align-items', 'stretch / center / flex-start / flex-end / baseline', '교차축 정렬'],
+              ['gap', '<length>', '요소 간 간격 (margin 대체)'],
+            ],
+          } },
+
+          { subtitle: 'Flex 자식(Item) 속성 6종' },
+          { table: {
+            headers: ['속성', '값', '의미'],
+            rows: [
+              ['flex-grow', '0 / 양수', '여유 공간 분배 비율'],
+              ['flex-shrink', '0 / 양수', '부족 시 축소 비율'],
+              ['flex-basis', 'auto / <length>', '기본 크기'],
+              ['flex', '<grow> <shrink> <basis>', '위 3개 단축'],
+              ['align-self', 'auto / stretch / center / ...', '개별 교차축 정렬'],
+              ['order', '<integer>', '시각적 순서 변경'],
+            ],
+          } },
+
+          { subtitle: '실전 패턴 12종' },
+          { code: { lang: 'css', content: `/* 1. 가로 메뉴 - 양 끝 정렬 */
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* 2. 가운데 정렬 (수직+수평) */
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+/* 3. 사이드바 + 본문 */
+.layout {
+  display: flex;
+  gap: 24px;
+}
+.sidebar { flex: 0 0 250px; }   /* 고정 너비 */
+.main    { flex: 1; }           /* 나머지 */
+
+/* 4. 카드 동일 높이 */
+.cards {
+  display: flex;
+  gap: 16px;
+  align-items: stretch;         /* 기본값, 명시적 */
+}` } },
+
+          { code: { lang: 'css', content: `/* 5. 푸터 하단 고정 (sticky footer) */
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.main { flex: 1; }              /* 남는 공간 차지 */
+
+/* 6. 입력 + 버튼 한 줄 */
+.search {
+  display: flex;
+  gap: 8px;
+}
+.search input { flex: 1; }
+.search button { flex-shrink: 0; }
+
+/* 7. 자동 줄바꿈 태그 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* 8. 모바일에서 세로로 */
+.row {
+  display: flex;
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .row { flex-direction: column; }
+}` } },
+
+          { code: { lang: 'css', content: `/* 9. 첫 번째만 강조 (order) */
+.list { display: flex; }
+.list .pinned { order: -1; }    /* 다른 모든 요소보다 앞 */
+
+/* 10. 카드의 텍스트 영역만 늘이기 */
+.card {
+  display: flex;
+  flex-direction: column;
+}
+.card .body { flex: 1; }        /* 카드 높이가 다양해도 푸터 정렬 */
+
+/* 11. 동일 너비 컬럼 N개 */
+.equal-cols {
+  display: flex;
+  gap: 16px;
+}
+.equal-cols > * { flex: 1; }    /* 모두 1:1:1 */
+
+/* 12. 비율 분할 (2:1) */
+.split {
+  display: flex;
+  gap: 16px;
+}
+.split .main  { flex: 2; }
+.split .aside { flex: 1; }` } },
+
+          { subtitle: '디버깅 — Chrome DevTools Flex 인스펙터' },
+          { items: [
+            'DevTools → Elements → 요소 선택',
+            '"flex" 배지 클릭 (요소 옆에 표시됨)',
+            'Flex 컨테이너 시각화 — 주축·교차축 표시',
+            'justify-content·align-items를 GUI로 변경하며 즉시 확인',
+            'flex-direction 토글 버튼',
+          ] },
+
+          { subtitle: '흔한 함정 5가지' },
+          { table: {
+            headers: ['함정', '증상', '해결'],
+            rows: [
+              ['min-width: auto', '자식이 부모 밖으로', '명시적 min-width: 0'],
+              ['gap 지원 안됨', '구식 브라우저', 'margin: 0 8px 8px 0 대체'],
+              ['flex-shrink 의도치 않음', '이미지가 작아짐', '아이콘에 flex-shrink: 0'],
+              ['중첩 시 align-self 무시', 'flex 안 flex', 'align-self 명시'],
+              ['order 접근성 깨짐', 'tab 순서가 시각과 다름', 'DOM 순서 유지'],
+            ],
+          } },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            '12개 패턴을 모두 직접 코딩 + 동작 확인',
+            'Flexbox Froggy (flexboxfroggy.com) 24레벨 완주',
+            '본인 포트폴리오의 상단 네비게이션을 Flexbox로 재구성',
+            '"카드가 동일 높이" 패턴으로 프로젝트 카드 갤러리',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-grid',
+        title: 'CSS Grid 완전 정복',
+        icon: '⊞',
+        summary: '2차원 레이아웃의 절대 강자 Grid — 12 컬럼 시스템·자동 줄바꿈·grid-template-areas까지 모든 기법 학습.',
+        content: [
+          { subtitle: 'Grid가 Flexbox보다 강력한 시나리오' },
+          { items: [
+            '대시보드처럼 행+열 동시 제어가 필요한 경우',
+            '카드 갤러리에서 화면 크기에 따라 자동 줄바꿈',
+            '12 컬럼 그리드 시스템 (Bootstrap 등)',
+            '복잡한 매거진 스타일 레이아웃',
+            'grid-template-areas로 시각적 영역 정의',
+          ] },
+
+          { subtitle: 'Grid 부모 속성 핵심 10종' },
+          { table: {
+            headers: ['속성', '예', '의미'],
+            rows: [
+              ['display', 'grid', '활성화'],
+              ['grid-template-columns', 'repeat(3, 1fr)', '열 정의'],
+              ['grid-template-rows', 'auto 1fr auto', '행 정의'],
+              ['grid-template-areas', '"header header" "nav main"', '영역 이름'],
+              ['gap', '20px', '셀 간격'],
+              ['column-gap', '20px', '열 간격만'],
+              ['row-gap', '12px', '행 간격만'],
+              ['justify-items', 'start / center / end / stretch', '셀 안 가로 정렬'],
+              ['align-items', '동일', '셀 안 세로 정렬'],
+              ['place-items', 'center', 'justify+align 단축'],
+            ],
+          } },
+
+          { subtitle: '실전 패턴 — 12 컬럼 시스템' },
+          { code: { lang: 'css', content: `/* Bootstrap 스타일 12 컬럼 그리드 */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.col-12 { grid-column: span 12; }   /* 전체 폭 */
+.col-6  { grid-column: span 6;  }   /* 절반 */
+.col-4  { grid-column: span 4;  }   /* 1/3 */
+.col-3  { grid-column: span 3;  }   /* 1/4 */
+
+/* 사용 */
+<div class="grid">
+  <header class="col-12">상단</header>
+  <nav class="col-3">사이드</nav>
+  <main class="col-9">본문</main>
+  <footer class="col-12">하단</footer>
+</div>` } },
+
+          { subtitle: '실전 패턴 — 자동 반응형' },
+          { code: { lang: 'css', content: `/* 카드가 최소 280px 이상이면 자동으로 열 수 조절 */
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* auto-fit vs auto-fill 차이
+   - auto-fit:  남는 공간을 기존 카드가 늘려서 차지
+   - auto-fill: 남는 공간을 빈 셀로 유지 (카드가 작게 유지) */` } },
+
+          { subtitle: '실전 패턴 — grid-template-areas' },
+          { code: { lang: 'css', content: `/* 시각적으로 영역을 그리듯 정의 */
+.layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "nav    main"
+    "footer footer";
+  min-height: 100vh;
+  gap: 16px;
+}
+
+.layout > header { grid-area: header; }
+.layout > nav    { grid-area: nav; }
+.layout > main   { grid-area: main; }
+.layout > footer { grid-area: footer; }
+
+/* 모바일에서 1열로 재배치 */
+@media (max-width: 768px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "nav"
+      "main"
+      "footer";
+  }
+}` } },
+
+          { subtitle: '단위 — fr / minmax / auto' },
+          { table: {
+            headers: ['단위', '의미', '예'],
+            rows: [
+              ['fr', 'fraction — 남는 공간 비율', '1fr 2fr → 1:2'],
+              ['minmax(min, max)', '최소·최대 한계', 'minmax(200px, 1fr)'],
+              ['auto', '콘텐츠 크기에 맞춤', '버튼·로고 등 가변 크기'],
+              ['repeat(N, X)', '반복', 'repeat(3, 1fr) = 1fr 1fr 1fr'],
+              ['min-content', '최소 콘텐츠 크기', '단어 단위 줄바꿈'],
+              ['max-content', '최대 콘텐츠 크기', '줄바꿈 없는 너비'],
+            ],
+          } },
+
+          { subtitle: 'Grid 자식 속성' },
+          { code: { lang: 'css', content: `.item {
+  /* 시작과 끝 라인 명시 */
+  grid-column-start: 1;
+  grid-column-end: 3;     /* = 1번 라인부터 3번까지 = 2칸 차지 */
+
+  /* 단축 */
+  grid-column: 1 / 3;
+  grid-column: span 2;    /* 시작에서 2칸 */
+
+  /* 행도 마찬가지 */
+  grid-row: 1 / span 2;
+
+  /* 영역 한 번에 */
+  grid-area: 1 / 1 / 3 / 3;   /* row-start / col-start / row-end / col-end */
+}` } },
+
+          { subtitle: 'Grid Garden 게임으로 학습' },
+          { text: 'cssgridgarden.com — Grid의 28레벨 인터랙티브 학습 게임. 1~2시간이면 완주 가능. 강의 종료 후 가정 학습용으로 적극 추천.' },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            '12 컬럼 시스템으로 본인 페이지 재구성',
+            'auto-fit + minmax로 반응형 카드 갤러리',
+            'grid-template-areas로 대시보드 레이아웃 (헤더·사이드·본문·푸터)',
+            'CSS Grid Garden 28레벨 완주',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-responsive',
+        title: '반응형 + 다크모드 마스터',
+        icon: '📱',
+        summary: '모바일 퍼스트, 표준 브레이크포인트, CSS 변수 다크모드, 시스템 설정 자동 감지까지 — 모든 사용자에게 최적 경험을 제공하는 기법.',
+        content: [
+          { subtitle: '모바일 퍼스트 철학' },
+          { text: '2024년 기준 한국 웹 트래픽의 70% 이상이 모바일. "모바일 먼저 디자인하고 데스크탑으로 확장"하는 게 표준. 반대로 하면 거의 항상 모바일에서 무너집니다.' },
+          { code: { lang: 'css', content: `/* 모바일 퍼스트 — 기본은 모바일 스타일 */
+.container {
+  padding: 16px;
+  font-size: 14px;
+}
+
+/* 태블릿 이상 */
+@media (min-width: 768px) {
+  .container {
+    padding: 24px;
+    font-size: 15px;
+  }
+}
+
+/* 데스크탑 이상 */
+@media (min-width: 1024px) {
+  .container {
+    padding: 40px;
+    max-width: 1280px;
+    margin: 0 auto;
+    font-size: 16px;
+  }
+}` } },
+
+          { subtitle: '표준 브레이크포인트 (2026 기준)' },
+          { table: {
+            headers: ['이름', '너비', '주요 기기'],
+            rows: [
+              ['모바일', '< 640px', 'iPhone SE, 갤럭시 S 일반'],
+              ['모바일 가로', '640~767px', 'iPhone Plus 가로'],
+              ['태블릿', '768~1023px', 'iPad mini, 갤럭시 탭'],
+              ['노트북', '1024~1279px', '13" 노트북, iPad Pro'],
+              ['데스크탑', '1280~1535px', '일반 모니터'],
+              ['대형', '≥ 1536px', '24"+ 모니터'],
+            ],
+          } },
+
+          { subtitle: '뷰포트 단위 — vw / vh / svh' },
+          { code: { lang: 'css', content: `/* 화면 너비/높이 비율 */
+.hero {
+  width: 100vw;       /* 뷰포트 너비 100% */
+  height: 100vh;      /* 뷰포트 높이 100% */
+}
+
+/* 모바일 주소창 대응 — Safari 등에서 vh가 변하는 문제 */
+.hero {
+  height: 100svh;     /* small viewport height — 주소창 보일 때 */
+  /* 또는 */
+  height: 100dvh;     /* dynamic — 주소창 변화 자동 반영 */
+  /* 또는 */
+  height: 100lvh;     /* large — 주소창 숨김 시 */
+}` } },
+
+          { subtitle: '터치 타깃 표준' },
+          { text: 'Apple Human Interface Guidelines: 최소 44×44 포인트. Google Material Design: 48×48 dp. 작으면 손가락이 인접 버튼을 잘못 누르는 빈도 증가.' },
+          { code: { lang: 'css', content: `.btn {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 16px;
+  font-size: 15px;     /* 모바일 가독성 */
+}
+
+/* 인접 인터랙티브 요소 간 최소 8px 여백 */
+.btn + .btn {
+  margin-left: 8px;
+}` } },
+
+          { subtitle: '다크모드 구현 — CSS 변수 방식' },
+          { code: { lang: 'css', content: `/* src/styles/theme.css */
+:root {
+  /* 라이트 모드 (기본) */
+  --bg-primary:   #ffffff;
+  --bg-secondary: #f8f9fa;
+  --text-primary: #1a1a1a;
+  --text-muted:   #6b7280;
+  --border:       #e5e7eb;
+  --primary:      #0046C8;
+}
+
+[data-theme="dark"] {
+  /* 다크 모드 오버라이드 */
+  --bg-primary:   #1a1a1a;
+  --bg-secondary: #2a2a2a;
+  --text-primary: #f0f0f0;
+  --text-muted:   #a0a0a0;
+  --border:       #3a3a3a;
+  --primary:      #4A8FE7;   /* 약간 밝게 */
+}
+
+/* 컴포넌트는 변수만 참조 */
+.card {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}` } },
+
+          { subtitle: '시스템 설정 자동 감지' },
+          { code: { lang: 'css', content: `/* prefers-color-scheme — 사용자 OS 설정 따르기 */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-primary: #1a1a1a;
+    /* ... 다크 변수 ... */
+  }
+}` } },
+          { code: { lang: 'typescript', content: `// React로 토글 + 시스템 설정 감지
+import { useState, useEffect } from 'react';
+
+type Theme = 'light' | 'dark' | 'auto';
+
+export function useTheme() {
+  const [theme, setTheme] = useState<Theme>(
+    () => (localStorage.getItem('theme') as Theme) || 'auto'
+  );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme === 'auto') {
+      const mql = window.matchMedia('(prefers-color-scheme: dark)');
+      root.setAttribute('data-theme', mql.matches ? 'dark' : 'light');
+    } else {
+      root.setAttribute('data-theme', theme);
+    }
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  return { theme, setTheme };
+}` } },
+
+          { subtitle: '반응형 이미지 — srcset / picture' },
+          { code: { lang: 'html', content: `<!-- srcset: 해상도별 이미지 자동 선택 -->
+<img
+  src="hero-1024.jpg"
+  srcset="hero-640.jpg 640w, hero-1024.jpg 1024w, hero-1920.jpg 1920w"
+  sizes="(max-width: 768px) 100vw, 1024px"
+  alt="히어로 이미지"
+/>
+
+<!-- picture: 화면 크기별 다른 이미지 -->
+<picture>
+  <source media="(max-width: 768px)" srcset="hero-mobile.jpg">
+  <source media="(min-width: 769px)" srcset="hero-desktop.jpg">
+  <img src="hero-desktop.jpg" alt="히어로">
+</picture>` } },
+
+          { subtitle: '폰트 반응형 — clamp()' },
+          { code: { lang: 'css', content: `/* 화면 크기에 따라 폰트 자동 조절 */
+h1 {
+  font-size: clamp(24px, 5vw, 48px);
+  /* 최소 24px, 이상적 5vw, 최대 48px */
+}
+
+p {
+  font-size: clamp(14px, 1.5vw, 18px);
+  line-height: 1.6;
+}` } },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            '본인 페이지를 모바일 퍼스트로 재작성',
+            'CSS 변수 + data-theme로 다크모드 토글 구현',
+            'prefers-color-scheme 자동 감지 추가',
+            '터치 타깃 44px 이상 확보',
+            'Chrome DevTools 디바이스 모드로 5개 기기에서 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-practice',
+        title: '실습 · 포트폴리오 페이지 (3시간)',
+        icon: '🧪',
+        summary: 'HTML/CSS 학습 내용을 모두 결합해 본인의 포트폴리오 페이지를 완성하는 실전 실습. 단계별 가이드 + 평가 기준 포함.',
+        content: [
+          { subtitle: '프로젝트 목표' },
+          { text: '학습한 시맨틱 HTML · Flexbox · Grid · 반응형 · 다크모드를 모두 적용한 본인 포트폴리오 1페이지를 완성합니다. 졸업 후에도 실제 사용 가능한 결과물 확보가 목표.' },
+
+          { subtitle: '페이지 구성 (8개 섹션)' },
+          { items: [
+            '1. Hero — 이름·직함·한 줄 자기소개',
+            '2. About — 짧은 자기 소개 (3~4문장)',
+            '3. Skills — 보유 기술 태그 (8~12개)',
+            '4. Projects — 프로젝트 카드 갤러리 (3개 이상)',
+            '5. Experience — 경력 또는 학력 타임라인',
+            '6. Contact — 이메일·SNS 링크',
+            '7. (선택) Blog — 작성한 글 목록',
+            '8. Footer — 저작권·연락처',
+          ] },
+
+          { subtitle: '단계별 가이드' },
+          { code: { lang: 'text', content: `[0단계 · 환경 셋업 (10분)]
+- Vite 프로젝트 생성 or 기존 프로젝트 사용
+- src/pages/Portfolio.tsx 신규
+- src/styles/portfolio.css 신규
+
+[1단계 · 시맨틱 HTML 골격 (30분)]
+- 8개 섹션을 시맨틱 태그로 구조화
+- <header>, <main>, <section>, <article>, <footer>
+- 콘텐츠는 가짜 텍스트 (Lorem ipsum) 무방
+
+[2단계 · CSS 변수 + 디자인 토큰 (20분)]
+- :root에 색·간격·폰트 변수 정의
+- [data-theme="dark"] 오버라이드 추가
+- 모든 스타일은 변수 참조
+
+[3단계 · 레이아웃 (60분)]
+- Hero: Flexbox 가운데 정렬
+- Skills: Flexbox + flex-wrap
+- Projects: Grid auto-fit
+- Experience: 시간순 세로 정렬
+
+[4단계 · 반응형 (40분)]
+- 모바일 퍼스트로 시작
+- 768px → 2열로 변경
+- 1024px → 3열 또는 그 이상
+- DevTools 디바이스 모드로 검증
+
+[5단계 · 다크모드 (20분)]
+- 토글 버튼 추가
+- localStorage로 설정 저장
+- prefers-color-scheme 자동 감지
+
+[6단계 · 폴리싱 (20분)]
+- 호버 효과 (transition)
+- 폰트·줄간격 미세 조정
+- 이미지 최적화 (alt 텍스트)` } },
+
+          { subtitle: '코드 골격 — Portfolio.tsx' },
+          { code: { lang: 'tsx', content: `import { useState, useEffect } from 'react';
+import './portfolio.css';
+
+export default function Portfolio() {
+  const [theme, setTheme] = useState<'light' | 'dark'>(() =>
+    (localStorage.getItem('theme') as 'light' | 'dark') || 'light'
+  );
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  return (
+    <div className="portfolio">
+      <header>
+        <nav className="nav">
+          <h1>홍길동</h1>
+          <button onClick={() => setTheme(t => t === 'light' ? 'dark' : 'light')}>
+            {theme === 'light' ? '🌙' : '☀️'}
+          </button>
+        </nav>
+      </header>
+
+      <main>
+        <section id="hero" className="hero">
+          <h2>안녕하세요, AI 개발자 홍길동입니다</h2>
+          <p>국내 LLM 활용 서비스를 만듭니다.</p>
+        </section>
+
+        <section id="skills" className="skills">
+          <h2>Skills</h2>
+          <div className="tags">
+            {['React', 'TypeScript', 'Supabase', 'Solar API'].map(s => (
+              <span key={s} className="tag">{s}</span>
+            ))}
+          </div>
+        </section>
+
+        <section id="projects" className="projects">
+          <h2>Projects</h2>
+          <div className="grid">
+            {/* 프로젝트 카드들 */}
+          </div>
+        </section>
+
+        {/* 나머지 섹션 */}
+      </main>
+
+      <footer>
+        <p>© 2026 홍길동. Made with bare HTML/CSS love.</p>
+      </footer>
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준 (자가 채점 100점)' },
+          { table: {
+            headers: ['항목', '배점', '확인 방법'],
+            rows: [
+              ['시맨틱 HTML', '20', 'axe DevTools 점수 90+'],
+              ['반응형', '20', '320px / 768px / 1280px 모두 정상'],
+              ['다크모드 동작', '15', '토글 + localStorage 저장'],
+              ['Grid 적용', '15', '카드 갤러리 auto-fit 사용'],
+              ['Flexbox 적용', '10', '네비게이션·태그 영역'],
+              ['CSS 변수 사용', '10', '하드코딩된 색·크기 0개'],
+              ['접근성', '5', 'Lighthouse 90+'],
+              ['배포', '5', 'GitHub Pages에 공개 URL'],
+            ],
+          } },
+
+          { subtitle: '확장 과제 (시간 남으면)' },
+          { items: [
+            '스크롤 시 헤더 색 변경 (sticky + scroll 이벤트)',
+            'IntersectionObserver로 섹션 진입 시 페이드인 애니메이션',
+            '5가지 컬러 테마 토글 (파랑·빨강·녹색·보라·주황)',
+            '본인 GitHub Repo 자동 연동 (Octokit)',
+            'Lighthouse 4지표 모두 95+',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-troubleshooting',
+        title: '트러블슈팅 · CSS 디버깅',
+        icon: '🔧',
+        summary: 'CSS가 안 먹는다·레이아웃이 깨진다·반응형이 이상하다 — 가장 흔한 문제 15종과 체계적 디버깅 방법.',
+        content: [
+          { subtitle: 'CSS가 적용 안 될 때 — 디버깅 체크리스트' },
+          { items: [
+            '1. 파일이 import 되었는가? — index.css 또는 컴포넌트 .css',
+            '2. 선택자가 정확한가? — DevTools에서 "Computed" 탭 확인',
+            '3. 우선순위가 다른 규칙에 밀리는가? — Specificity 점수 비교',
+            '4. !important 남용으로 추적 불가능?',
+            '5. 캐시 — Cmd+Shift+R 강력 새로고침',
+            '6. 빌드 산출물이 최신인가? — npm run dev 재시작',
+            '7. CSS 파일에 오타? — 닫지 않은 괄호 1개로 그 아래 전체 무효',
+          ] },
+
+          { subtitle: '레이아웃이 깨질 때 — 흔한 원인 15가지' },
+          { table: {
+            headers: ['#', '증상', '원인', '해결'],
+            rows: [
+              ['1', '요소가 부모 밖으로', 'overflow 미설정', 'overflow: hidden 또는 auto'],
+              ['2', '가로 스크롤 발생', '자식이 100vw + padding', 'box-sizing: border-box'],
+              ['3', 'Flex 자식이 작아짐', 'min-width 기본값', 'min-width: 0'],
+              ['4', 'Grid가 안 정렬됨', 'display: grid 누락', '부모에 명시'],
+              ['5', '이미지가 큼', '기본 inline 동작', 'width: 100%'],
+              ['6', '여백이 합쳐짐', 'margin collapse', 'padding으로 변경 또는 flex 사용'],
+              ['7', '버튼이 가로 정렬 안됨', 'display: inline', 'flex 컨테이너'],
+              ['8', '폰트가 부모와 다름', 'inherit 안됨', 'font-family 명시'],
+              ['9', 'position: absolute 위치 이상', '부모에 relative 없음', '부모 relative 추가'],
+              ['10', '다크모드에서 일부 색 안 변함', '변수 미사용', '변수로 통일'],
+              ['11', '모바일에서 hover 안됨', '터치 디바이스', ':hover + :focus 같이'],
+              ['12', '클릭이 안됨', 'pointer-events: none', '확인'],
+              ['13', 'z-index 안 먹음', 'position 미설정', 'relative/absolute 추가'],
+              ['14', '폼 입력이 모바일에서 작음', '폰트 16px 미만', 'font-size: 16px 이상'],
+              ['15', '클래스명 충돌', '전역 CSS', 'CSS Module 또는 prefix'],
+            ],
+          } },
+
+          { subtitle: 'Specificity 계산법' },
+          { text: 'CSS 우선순위는 점수제로 계산됩니다. 점수가 높은 규칙이 이깁니다.' },
+          { table: {
+            headers: ['선택자 유형', '점수'],
+            rows: [
+              ['인라인 스타일 (style="...")', '1000'],
+              ['ID (#header)', '100'],
+              ['클래스 (.card), 속성 ([type="text"]), 가상클래스 (:hover)', '10'],
+              ['태그 (div), 가상요소 (::before)', '1'],
+              ['전체 (*), 결합자 (>, +)', '0'],
+              ['!important', '∞ (남용 금지)'],
+            ],
+          } },
+          { code: { lang: 'css', content: `/* 예시 */
+.card .title  { color: red; }    /* 10 + 10 = 20 */
+#hero h1      { color: blue; }   /* 100 + 1 = 101  ← 이깁니다 */
+h1.title      { color: green; }  /* 1 + 10 = 11 */
+div .card .title { color: yellow; } /* 1 + 10 + 10 = 21 */` } },
+
+          { subtitle: 'Chrome DevTools 활용' },
+          { items: [
+            'Elements 탭 → 요소 클릭 → Styles 탭에서 적용된 규칙 확인',
+            '취소선 그어진 속성 → 다른 규칙에 의해 무효화됨',
+            'Computed 탭 → 최종 적용된 값 확인',
+            '"+ .cls" 입력으로 즉석 클래스 추가 테스트',
+            'Filter → "color" 입력해 색 관련 규칙만 보기',
+            'Device toolbar (Cmd+Shift+M) → 기기별 검증',
+          ] },
+
+          { subtitle: 'CSS 디버깅용 작은 트릭' },
+          { code: { lang: 'css', content: `/* 모든 요소에 빨간 outline — 레이아웃 시각화 */
+* { outline: 1px solid red; }
+
+/* 특정 영역만 */
+.debug-area * { outline: 1px solid red; }
+
+/* 더 정교한 디버깅 */
+* {
+  background: rgba(255, 0, 0, 0.05);
+  outline: 1px solid rgba(255, 0, 0, 0.2);
+}` } },
+
+          { subtitle: 'AI에게 CSS 디버깅 도움 요청 양식' },
+          { code: { lang: 'text', content: `[CSS 디버깅 양식]
+
+[문제 화면 스크린샷 또는 설명]
+모바일에서 카드가 화면 밖으로 나옵니다.
+
+[현재 코드]
+\`\`\`css
+.card {
+  width: 100vw;
+  padding: 24px;
+  background: white;
+}
+\`\`\`
+
+[기대하는 결과]
+카드가 화면 안에 들어맞아야 함.
+
+[브라우저/기기]
+iPhone 13 Pro (Safari) / Chrome DevTools 모바일 모드
+
+[이미 시도한 것]
+- max-width: 100vw 추가했지만 동일
+- overflow-x: hidden은 부모에 적용했지만 동일
+
+질문:
+근본 원인과 가장 단순한 해결 방법은?` } },
+          { callout: { type: 'tip', text: '정답 예시: width: 100vw + padding의 합이 100vw 초과. box-sizing: border-box 또는 width: auto + padding으로 해결.' } },
+
+          { subtitle: '실습 — 의도적 버그 5개 만들고 고치기' },
+          { items: [
+            '1. width: 100vw + padding으로 가로 스크롤 만들기 → 고치기',
+            '2. flex 자식의 min-width 기본값으로 이미지가 부모 밖 → 고치기',
+            '3. position: absolute의 부모에 relative 없는 상태 → 고치기',
+            '4. !important 남용 시뮬레이션 → 우선순위로 해결하는 법',
+            '5. z-index가 안 먹는 상황 → 분석',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-resources',
+        title: '심화 자료 + AI에게 CSS 요청법',
+        icon: '📚',
+        summary: 'HTML/CSS 학습 심화 자료 + AI에게 CSS 작성을 요청할 때 효과적인 프롬프트 패턴 7가지.',
+        content: [
+          { subtitle: '심화 학습 자료' },
+          { items: [
+            'MDN — developer.mozilla.org/ko/docs/Web/CSS (CSS 표준 한국어 문서)',
+            'CSS-Tricks — css-tricks.com (실전 패턴 모음)',
+            'Web.dev — web.dev/learn/css (Google 공식 CSS 학습)',
+            '도서 『모던 CSS』 안주연 — 최신 CSS 기능 정리',
+            'YouTube "Kevin Powell" (영문, 무료) — CSS 최고의 강사',
+            '한국어 YouTube "코딩애플", "노마드코더"',
+          ] },
+
+          { subtitle: '심화 주제 — 본 강의 이후 학습' },
+          { items: [
+            'CSS-in-JS (styled-components, Emotion)',
+            'Tailwind CSS — 유틸리티 우선 프레임워크',
+            'CSS 컨테이너 쿼리 — 부모 크기 기반 반응형',
+            'CSS 서브그리드 — 중첩 Grid',
+            '@layer — 우선순위 관리',
+            'Houdini — JavaScript로 CSS 확장',
+          ] },
+
+          { subtitle: 'AI에게 CSS 요청할 때 효과적인 7가지 패턴' },
+          { code: { lang: 'text', content: `[패턴 1 · 디자인 참조 명시]
+"Stripe.com 스타일의 그라데이션 카드"
+"Apple HIG 따른 버튼 스타일"
+"Linear.app 같은 미니멀 폼"
+
+[패턴 2 · 측정 가능한 값 제시]
+나쁨: "예쁘게 만들어줘"
+좋음: "padding 16px, border-radius 12px, shadow 0 4px 8px rgba(0,0,0,0.1)"
+
+[패턴 3 · 변수 사용 강제]
+"var(--primary-blue), var(--text-primary) 등 CSS 변수만 사용"
+
+[패턴 4 · 반응형 명시]
+"768px 미만 1열, 768~1023 2열, 1024 이상 3열"
+
+[패턴 5 · 다크모드 함께]
+"라이트와 다크 모드 둘 다 자연스럽게 보이도록"
+
+[패턴 6 · 호버/포커스 명시]
+"hover 시 background 0.1 어둡게 + transform translateY(-2px)"
+
+[패턴 7 · 제약 조건 명시]
+"min-height 44px (터치 타깃), 모바일에서 폰트 16px 이상"` } },
+
+          { subtitle: '디자인 영감 사이트 (북마크 추천)' },
+          { items: [
+            'Awwwards — awwwards.com (최고 디자인 갤러리)',
+            'Mobbin — mobbin.com (실제 앱 UI 패턴)',
+            'Dribbble — dribbble.com (디자이너 커뮤니티)',
+            'Refactoring UI — refactoringui.com (실전 가이드)',
+            'Tailwind UI — tailwindui.com (유료, 고품질 컴포넌트)',
+          ] },
+
+          { subtitle: 'Day 2 학습 효과 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['시맨틱 HTML', 'div만 사용', '주요 5개 태그', '22개 모두 적재적소'],
+              ['Flexbox', 'display: flex만', '5개 패턴 가능', '12개 패턴 + 단축속성'],
+              ['Grid', '없음', '기본 grid-template-columns', 'areas + auto-fit 자유롭게'],
+              ['반응형', '데스크탑만', '모바일 1개 미디어 쿼리', '모바일 퍼스트 + 5+ 브레이크포인트'],
+              ['다크모드', '없음', 'CSS 변수 사용', '시스템 감지 + localStorage'],
+            ],
+          } },
+
+          { subtitle: '다음 단계' },
+          { text: 'Day 2에서 시각적 UI 기초를 다졌다면, Day 3는 그 UI에 상호작용을 추가하는 JavaScript를 학습합니다. 변수·함수·배열 메서드·비동기 — React 진입의 마지막 관문입니다.' },
+        ],
+      },
+    ],
   },
 
   {
