@@ -4266,6 +4266,1078 @@ return (
       { subtitle: '다음 시간 예고' },
       { text: 'Day 5에서는 React 심화. React Router로 멀티페이지 SPA를, Context API로 전역 상태를, AuthGuard로 인증 보호를 학습합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-4-concepts',
+        title: 'React 핵심 개념 — Why React?',
+        icon: '⚛️',
+        summary: '왜 React가 표준이 되었나, Virtual DOM, Component·Props·State 3대 개념, 선언적 UI의 의미를 학습합니다.',
+        content: [
+          { subtitle: 'React가 만들어진 이유' },
+          { text: '2013년 Facebook이 News Feed의 복잡한 UI 상태 관리 문제로 React를 만들었습니다. 좋아요 알림, 댓글, 친구 요청 등 수많은 동적 상태가 동시에 변경되는 화면을 jQuery로는 유지보수가 거의 불가능했습니다. React는 "데이터가 바뀌면 UI는 자동으로 재계산된다"는 선언적 접근으로 이 문제를 해결했습니다.' },
+
+          { subtitle: '명령형 vs 선언적' },
+          { table: {
+            headers: ['패러다임', '코드 스타일', '예'],
+            rows: [
+              ['명령형 (jQuery)', '"어떻게" 직접 지시', '$("#cnt").text(count+1)'],
+              ['선언적 (React)', '"무엇을" 표현', 'setCount(count+1) → UI 자동 갱신'],
+            ],
+          } },
+
+          { subtitle: 'Virtual DOM — 성능의 비밀' },
+          { text: '실제 DOM 조작은 비쌉니다 (브라우저 reflow·repaint). React는 메모리에 가벼운 JS 객체(Virtual DOM)를 두고, 변경이 있으면 diff 계산 후 변경된 부분만 실제 DOM에 반영합니다.' },
+          { code: { lang: 'text', content: `state 변경 → 새 VDOM 생성 → 이전 VDOM과 비교 → 차이만 실제 DOM에 반영
+
+[예시]
+이전 VDOM: <ul><li>A</li><li>B</li></ul>
+새 VDOM:   <ul><li>A</li><li>B</li><li>C</li></ul>
+
+React는 "C li만 추가" 만 실제 DOM에 적용` } },
+
+          { subtitle: '3대 개념 한눈에' },
+          { table: {
+            headers: ['개념', '비유', '특성'],
+            rows: [
+              ['Component', '레고 블록', '재사용 가능한 UI 단위'],
+              ['Props', '블록의 옵션', '부모 → 자식 (읽기 전용)'],
+              ['State', '블록의 변동 데이터', '자신만 변경 가능, 변경 시 리렌더'],
+            ],
+          } },
+
+          { subtitle: '함수형 vs 클래스 컴포넌트' },
+          { text: '2019년 Hook 도입 이후 거의 모든 신규 코드는 함수형. 클래스는 레거시 유지보수에만.' },
+          { code: { lang: 'tsx', content: `// 함수형 (현재 표준)
+function Greeting({ name }: { name: string }) {
+  const [count, setCount] = useState(0);
+  return <h1>안녕 {name}, {count}회 인사</h1>;
+}
+
+// 클래스 (레거시)
+class Greeting extends React.Component {
+  state = { count: 0 };
+  render() {
+    return <h1>안녕 {this.props.name}, {this.state.count}회</h1>;
+  }
+}` } },
+
+          { subtitle: '단방향 데이터 흐름' },
+          { text: 'React는 항상 부모 → 자식 방향. 자식이 부모 상태를 직접 바꿀 수 없고, 콜백 함수(props)로 알려야 합니다.' },
+          { code: { lang: 'tsx', content: `function Parent() {
+  const [count, setCount] = useState(0);
+  return <Child count={count} onIncrement={() => setCount(c => c + 1)} />;
+}
+
+function Child({ count, onIncrement }: { count: number; onIncrement: () => void }) {
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={onIncrement}>+1</button>
+    </div>
+  );
+}` } },
+
+          { subtitle: 'Why React (2026 기준)' },
+          { items: [
+            '커뮤니티 1위 — 라이브러리·튜토리얼·인재 풀',
+            'JSX — UI를 JavaScript 표현식으로 통합',
+            '컴포넌트 기반 — 재사용·테스트·유지보수 용이',
+            'React Native — 모바일 앱 동일 코드',
+            '대안: Vue (간결), Svelte (성능), Solid (React-like + 성능)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-jsx',
+        title: 'JSX 완전 정복',
+        icon: '📝',
+        summary: 'JSX 문법 규칙 12개, 조건부 렌더링·리스트 렌더링·이벤트 처리 등 실전 패턴.',
+        content: [
+          { subtitle: 'JSX란?' },
+          { text: 'JavaScript XML — JS 안에서 HTML 같은 문법을 쓸 수 있게 하는 확장 문법. 빌드 시 React.createElement() 호출로 변환됩니다.' },
+          { code: { lang: 'tsx', content: `// JSX
+const el = <h1 className="title">안녕</h1>;
+
+// 변환 결과 (자동)
+const el = React.createElement('h1', { className: 'title' }, '안녕');` } },
+
+          { subtitle: 'JSX 12대 규칙' },
+          { items: [
+            '1. 대문자로 시작 = 컴포넌트, 소문자 = HTML 태그',
+            '2. 하나의 부모 요소만 반환 (Fragment <>...</> 가능)',
+            '3. class → className',
+            '4. for → htmlFor (label의 for 속성)',
+            '5. onclick → onClick (camelCase)',
+            '6. JS 표현식은 {} 안에',
+            '7. style은 객체 {{ color: "red" }}',
+            '8. 주석은 {/* ... */}',
+            '9. 자체 종료 태그 필수 (<img />, <br />)',
+            '10. inline-if는 && 또는 삼항',
+            '11. 리스트는 map + key',
+            '12. 인접 텍스트와 표현식 결합 시 공백 주의',
+          ] },
+
+          { subtitle: 'Fragment — 부모 없이 그룹화' },
+          { code: { lang: 'tsx', content: `// ❌ 두 요소 반환 불가
+function App() {
+  return (
+    <h1>Title</h1>
+    <p>Body</p>
+  );  // 에러
+}
+
+// ✅ Fragment 사용
+function App() {
+  return (
+    <>
+      <h1>Title</h1>
+      <p>Body</p>
+    </>
+  );
+}
+
+// 또는 명시적
+function App() {
+  return (
+    <React.Fragment key="item">
+      <h1>Title</h1>
+      <p>Body</p>
+    </React.Fragment>
+  );
+}` } },
+
+          { subtitle: '조건부 렌더링 5가지' },
+          { code: { lang: 'tsx', content: `// 1) if-else (return 분기)
+function Status({ isLoading }) {
+  if (isLoading) return <p>로딩 중…</p>;
+  return <p>완료</p>;
+}
+
+// 2) 삼항 연산자 (JSX 안)
+{user ? <p>안녕, {user.name}</p> : <button>로그인</button>}
+
+// 3) && 단축 (truthy일 때만 렌더)
+{isAdmin && <button>관리자 메뉴</button>}
+
+// 4) 변수에 할당 (복잡한 경우)
+let content;
+if (status === 'loading') content = <Spinner />;
+else if (status === 'error') content = <ErrorBox />;
+else content = <UserList />;
+return <div>{content}</div>;
+
+// 5) 객체 매핑
+const views = {
+  loading: <Spinner />,
+  error: <ErrorBox />,
+  success: <UserList />,
+};
+return views[status];` } },
+          { callout: { type: 'warn', text: '⚠️ && 의 함정: count && <p>...</p> 에서 count가 0이면 화면에 "0"이 표시됩니다. count > 0 && <p>...</p> 로 boolean으로 만드세요.' } },
+
+          { subtitle: '리스트 렌더링 + key' },
+          { code: { lang: 'tsx', content: `const users = [
+  { id: 1, name: '홍길동' },
+  { id: 2, name: '김철수' },
+];
+
+return (
+  <ul>
+    {users.map(u => (
+      <li key={u.id}>{u.name}</li>
+    ))}
+  </ul>
+);
+
+// ⚠️ 절대 금지: key={index}
+// 정렬·삭제 시 React가 잘못된 요소 재사용 → 버그
+
+// 안정된 ID가 없으면 useId Hook (React 18+)
+const id = useId();` } },
+
+          { subtitle: '이벤트 처리' },
+          { code: { lang: 'tsx', content: `// 기본 — 화살표 함수
+<button onClick={() => console.log('클릭')}>버튼</button>
+
+// 함수 분리
+function handleClick() {
+  console.log('클릭');
+}
+<button onClick={handleClick}>버튼</button>
+
+// 이벤트 객체
+<input onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+  setValue(e.target.value);
+}} />
+
+// 인자 전달 — 화살표 함수 래핑
+<button onClick={() => deleteItem(id)}>삭제</button>
+
+// ❌ 즉시 실행됨
+<button onClick={deleteItem(id)}>삭제</button>  // 렌더 즉시 실행!
+
+// ✅ 함수 참조
+<button onClick={() => deleteItem(id)}>삭제</button>` } },
+
+          { subtitle: 'JSX 동적 속성' },
+          { code: { lang: 'tsx', content: `// className 조건부
+<div className={isActive ? 'card active' : 'card'}>
+
+// 다중 조건 — 라이브러리 없이
+<div className={[
+  'card',
+  isActive && 'active',
+  isLarge && 'large',
+].filter(Boolean).join(' ')}>
+
+// style 객체
+<div style={{
+  color: isActive ? 'blue' : 'gray',
+  fontSize: \`\${size}px\`,
+  padding: '12px 16px',
+}}>
+
+// HTML 속성 전개
+const props = { id: 'main', 'data-track': true };
+<div {...props} className="extra">` } },
+
+          { subtitle: 'children prop' },
+          { code: { lang: 'tsx', content: `// 컴포넌트 사이에 들어가는 내용 = children
+function Card({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="card">
+      {children}
+    </div>
+  );
+}
+
+// 사용
+<Card>
+  <h2>제목</h2>
+  <p>본문</p>
+  <button>액션</button>
+</Card>` } },
+
+          { subtitle: '실습 — JSX 패턴 익히기' },
+          { items: [
+            '5종류 조건부 렌더링을 한 컴포넌트에 모두 사용',
+            'map + key로 사용자 목록 (의도적으로 key=index 버그 만들고 정렬 후 확인)',
+            'children prop으로 Card 컴포넌트 만들고 다양한 자식 넣기',
+            '이벤트 핸들러로 카운터·토글·삭제 3종 구현',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-state',
+        title: 'useState 깊이 보기',
+        icon: '🔄',
+        summary: 'useState의 모든 패턴 — 함수형 업데이트, 객체·배열 상태, lazy 초기화, 다중 상태 관리 전략까지.',
+        content: [
+          { subtitle: 'useState 기본' },
+          { code: { lang: 'tsx', content: `import { useState } from 'react';
+
+function Counter() {
+  // useState(초기값) → [현재값, 갱신함수] 반환
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={() => setCount(count + 1)}>+1</button>
+    </div>
+  );
+}` } },
+
+          { subtitle: '함수형 업데이트 — 매우 중요' },
+          { code: { lang: 'tsx', content: `// ❌ 직접 값 전달 — 빠른 연속 클릭 시 문제
+<button onClick={() => {
+  setCount(count + 1);  // count가 stale closure
+  setCount(count + 1);  // 같은 값 + 1, 결국 +1 만 됨
+}}>+2</button>
+
+// ✅ 함수형 업데이트 — 최신 값 보장
+<button onClick={() => {
+  setCount(c => c + 1);  // 이전 값 → 새 값
+  setCount(c => c + 1);  // 정상적으로 +2
+}}>+2</button>
+
+// 비동기 안에서도 안전
+async function delayedIncrement() {
+  await sleep(1000);
+  setCount(c => c + 1);  // 1초 후 최신 count 기준
+}` } },
+
+          { subtitle: '객체 상태 관리' },
+          { code: { lang: 'tsx', content: `const [user, setUser] = useState({ name: '', age: 0, email: '' });
+
+// ❌ 직접 변경 — React 감지 못 함
+user.name = '홍길동';
+setUser(user);  // 같은 참조, 리렌더 안 됨
+
+// ✅ 새 객체로 교체
+setUser({ ...user, name: '홍길동' });
+
+// ✅ 함수형 + 전개
+setUser(prev => ({ ...prev, name: '홍길동' }));
+
+// 여러 필드 동시 갱신
+setUser(prev => ({
+  ...prev,
+  name: '홍길동',
+  age: 30,
+}));
+
+// 중첩 객체 (얕은 복사 주의)
+const [user, setUser] = useState({
+  name: '홍길동',
+  address: { city: '서울', district: '강남' },
+});
+
+// city만 바꾸려면
+setUser(prev => ({
+  ...prev,
+  address: { ...prev.address, city: '부산' },
+}));` } },
+
+          { subtitle: '배열 상태 관리' },
+          { code: { lang: 'tsx', content: `const [items, setItems] = useState<string[]>([]);
+
+// 추가
+setItems(prev => [...prev, '새 항목']);
+setItems(prev => ['맨 앞', ...prev]);
+
+// 삭제 (ID 기준)
+setItems(prev => prev.filter(i => i.id !== targetId));
+
+// 수정
+setItems(prev => prev.map(i =>
+  i.id === targetId ? { ...i, done: true } : i
+));
+
+// 정렬 (불변성 유지)
+setItems(prev => [...prev].sort((a, b) => a.localeCompare(b)));
+
+// 비우기
+setItems([]);` } },
+
+          { subtitle: 'Lazy 초기화 — 무거운 초기값' },
+          { code: { lang: 'tsx', content: `// ❌ 매 렌더마다 실행됨 (낭비)
+const [todos, setTodos] = useState(JSON.parse(localStorage.getItem('todos') || '[]'));
+
+// ✅ 함수로 감싸기 — 첫 렌더에만 실행
+const [todos, setTodos] = useState(() => {
+  return JSON.parse(localStorage.getItem('todos') || '[]');
+});` } },
+
+          { subtitle: '다중 상태 vs 하나의 객체 — 선택 기준' },
+          { code: { lang: 'tsx', content: `// 패턴 1: 다중 useState (각각 독립)
+const [name, setName] = useState('');
+const [age, setAge] = useState(0);
+const [email, setEmail] = useState('');
+
+// 패턴 2: 하나의 객체
+const [user, setUser] = useState({ name: '', age: 0, email: '' });
+
+// 선택 기준:
+// - 함께 변경되는 값 → 객체 (폼 입력 등)
+// - 독립적 변경 → 다중 useState (개별 UI 상태)
+// - 4개 이상 + 복잡한 갱신 → useReducer 검토` } },
+
+          { subtitle: 'useReducer — useState의 강력한 대안' },
+          { code: { lang: 'tsx', content: `import { useReducer } from 'react';
+
+type State = { count: number; step: number };
+type Action =
+  | { type: 'increment' }
+  | { type: 'decrement' }
+  | { type: 'setStep'; step: number }
+  | { type: 'reset' };
+
+function reducer(state: State, action: Action): State {
+  switch (action.type) {
+    case 'increment': return { ...state, count: state.count + state.step };
+    case 'decrement': return { ...state, count: state.count - state.step };
+    case 'setStep':   return { ...state, step: action.step };
+    case 'reset':     return { count: 0, step: 1 };
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, { count: 0, step: 1 });
+  return (
+    <div>
+      <p>{state.count} (step: {state.step})</p>
+      <button onClick={() => dispatch({ type: 'increment' })}>+</button>
+      <button onClick={() => dispatch({ type: 'decrement' })}>−</button>
+      <input value={state.step} onChange={e => dispatch({ type: 'setStep', step: +e.target.value })} />
+    </div>
+  );
+}` } },
+
+          { subtitle: '상태 끌어올리기 (Lifting State Up)' },
+          { text: '두 자매 컴포넌트가 같은 상태를 공유해야 할 때, 공통 부모로 상태를 올립니다.' },
+          { code: { lang: 'tsx', content: `function Parent() {
+  // 두 자매가 공유하는 상태
+  const [text, setText] = useState('');
+
+  return (
+    <>
+      <Input value={text} onChange={setText} />
+      <Display value={text} />
+    </>
+  );
+}
+
+function Input({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return <input value={value} onChange={e => onChange(e.target.value)} />;
+}
+
+function Display({ value }: { value: string }) {
+  return <p>입력: {value}</p>;
+}` } },
+
+          { subtitle: '실습 — useState 다양한 패턴' },
+          { items: [
+            '함수형 업데이트로 +2 버튼 (2번 호출) 정상 동작',
+            '폼 객체 상태 (name·email·phone)를 하나의 useState로 관리',
+            '할 일 목록 배열 — 추가·삭제·완료 토글·정렬',
+            'useReducer로 카운터 + step + 리셋 구현',
+            '상태 끌어올리기로 검색창 + 결과 영역 연결',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-effect',
+        title: 'useEffect 깊이 보기',
+        icon: '🔁',
+        summary: 'useEffect 의존성 배열 4가지 케이스, cleanup, 데이터 fetch 패턴, 무한 루프 방지까지 — Hook의 가장 중요한 도구.',
+        content: [
+          { subtitle: 'useEffect는 무엇을 하는가' },
+          { text: '컴포넌트의 사이드 이펙트(외부 시스템과의 동기화)를 다루는 Hook. fetch, 구독, 타이머, DOM 직접 조작 등이 모두 사이드 이펙트입니다.' },
+
+          { subtitle: '의존성 배열 4가지 패턴' },
+          { code: { lang: 'tsx', content: `// 1) 의존성 [dep1, dep2] — dep 변경 시 실행
+useEffect(() => {
+  fetchUser(userId);
+}, [userId]);
+
+// 2) 빈 배열 [] — 마운트 시 1회만
+useEffect(() => {
+  console.log('컴포넌트 시작');
+}, []);
+
+// 3) 배열 생략 — 매 렌더마다 (거의 안 씀, 무한 루프 위험)
+useEffect(() => {
+  console.log('렌더 발생');
+});
+
+// 4) cleanup — return하는 함수가 정리 작업
+useEffect(() => {
+  const id = setInterval(() => console.log('tick'), 1000);
+  return () => clearInterval(id);   // 언마운트·재실행 직전 호출
+}, []);` } },
+
+          { subtitle: '데이터 fetch 표준 패턴' },
+          { code: { lang: 'tsx', content: `function UserProfile({ userId }: { userId: number }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;     // race condition 방지
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch(\`/api/users/\${userId}\`);
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (!cancelled) {
+          setUser(data);
+        }
+      } catch (err: any) {
+        if (!cancelled) setError(err.message);
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    }
+
+    load();
+    return () => { cancelled = true; };   // cleanup
+  }, [userId]);
+
+  if (loading) return <p>로딩…</p>;
+  if (error)   return <p>오류: {error}</p>;
+  if (!user)   return <p>없음</p>;
+  return <h1>{user.name}</h1>;
+}` } },
+
+          { subtitle: 'AbortController로 더 우아하게' },
+          { code: { lang: 'tsx', content: `useEffect(() => {
+  const controller = new AbortController();
+
+  fetch(\`/api/users/\${userId}\`, { signal: controller.signal })
+    .then(r => r.json())
+    .then(setUser)
+    .catch(err => {
+      if (err.name === 'AbortError') return;
+      setError(err.message);
+    });
+
+  return () => controller.abort();   // 진행 중 요청도 취소
+}, [userId]);` } },
+
+          { subtitle: '무한 루프 — 가장 흔한 함정' },
+          { code: { lang: 'tsx', content: `// ❌ 무한 루프
+useEffect(() => {
+  setData([...data, 'new']);   // data 변경
+}, [data]);                     // → data 의존성 → 다시 실행 → 무한
+
+// ✅ 함수형 업데이트로 의존성 제거
+useEffect(() => {
+  setData(prev => [...prev, 'new']);
+}, []);   // 마운트 시 1회만
+
+// ❌ 객체 의존성 — 매번 새 객체라 무한 루프
+useEffect(() => { ... }, [{ id: 1 }]);  // 매 렌더 새 객체
+
+// ✅ 원시값으로 분해
+useEffect(() => { ... }, [id]);` } },
+
+          { subtitle: 'ESLint react-hooks/exhaustive-deps 규칙' },
+          { text: '의존성 배열에 사용된 변수를 자동으로 검사. 누락 시 경고. 거의 항상 따르는 게 안전합니다.' },
+          { code: { lang: 'json', content: `// .eslintrc 또는 eslint.config.js
+{
+  "rules": {
+    "react-hooks/exhaustive-deps": "warn"
+  }
+}` } },
+
+          { subtitle: 'cleanup이 중요한 시나리오' },
+          { table: {
+            headers: ['시나리오', 'cleanup 안 하면'],
+            rows: [
+              ['setInterval', '계속 실행 → 메모리 누수'],
+              ['이벤트 리스너', '언마운트 후에도 호출 → 에러'],
+              ['WebSocket 구독', '연결 누적 → 서버 부하'],
+              ['Supabase channel', '동일'],
+              ['진행 중 fetch', '언마운트 후 setState → 경고'],
+            ],
+          } },
+
+          { subtitle: '여러 effect를 분리해야 할 때' },
+          { code: { lang: 'tsx', content: `// ❌ 한 effect에 다 넣기
+useEffect(() => {
+  fetchUser(userId);
+  trackPageView(pathname);
+}, [userId, pathname]);
+// userId 바뀌어도 trackPageView 실행됨 (의도 X)
+
+// ✅ 관심사 분리
+useEffect(() => {
+  fetchUser(userId);
+}, [userId]);
+
+useEffect(() => {
+  trackPageView(pathname);
+}, [pathname]);` } },
+
+          { subtitle: 'Custom Hook으로 추출' },
+          { code: { lang: 'tsx', content: `// 재사용 가능한 useFetch Hook
+function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    fetch(url)
+      .then(r => r.json())
+      .then(d => !cancelled && setData(d))
+      .catch(e => !cancelled && setError(e.message))
+      .finally(() => !cancelled && setLoading(false));
+    return () => { cancelled = true; };
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// 사용
+function UserList() {
+  const { data: users, loading, error } = useFetch<User[]>('/api/users');
+  if (loading) return <p>로딩…</p>;
+  if (error) return <p>오류: {error}</p>;
+  return <ul>{users?.map(u => <li key={u.id}>{u.name}</li>)}</ul>;
+}` } },
+
+          { subtitle: '실습 — useEffect 마스터' },
+          { items: [
+            '4가지 의존성 패턴 모두 사용한 디버깅용 컴포넌트',
+            'fetch + AbortController로 user 로드 + 컴포넌트 언마운트 시 취소 확인',
+            '의도적으로 무한 루프 만들고 → 해결',
+            'useFetch custom hook 작성 + 2개 컴포넌트에서 재사용',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-vite',
+        title: 'Vite + React + TS 실전 셋업',
+        icon: '⚡',
+        summary: 'Vite 프로젝트 생성부터 폴더 구조, tsconfig, ESLint·Prettier, 별칭 경로까지 — 본 과정 프로젝트의 베이스.',
+        content: [
+          { subtitle: '프로젝트 생성' },
+          { code: { lang: 'bash', content: `# Vite + React + TS 프로젝트 생성
+npm create vite@latest my-app -- --template react-ts
+cd my-app
+npm install
+npm run dev    # http://localhost:5173
+
+# package.json 스크립트
+# - dev:     개발 서버 (HMR)
+# - build:   tsc -b && vite build
+# - preview: dist 폴더로 빌드 산출물 미리보기
+# - lint:    ESLint (선택)` } },
+
+          { subtitle: '권장 폴더 구조' },
+          { code: { lang: 'text', content: `my-app/
+├── public/              # 정적 자산 (favicon, robots.txt)
+├── src/
+│   ├── assets/          # 이미지·폰트 (import로 사용)
+│   ├── components/      # 재사용 컴포넌트 (Button, Card, ...)
+│   ├── pages/           # 라우트 단위 페이지 (Home, About, ...)
+│   ├── hooks/           # custom hooks (useAuth, useFetch, ...)
+│   ├── contexts/        # React Context (AuthContext, ThemeContext)
+│   ├── utils/           # 순수 유틸 함수 (formatDate, supabase, ...)
+│   ├── types/           # TypeScript 타입 정의 (interfaces)
+│   ├── styles/          # 전역 CSS, 변수
+│   ├── App.tsx          # 최상위 컴포넌트 + Router
+│   ├── main.tsx         # 진입점 (ReactDOM.createRoot)
+│   └── vite-env.d.ts    # Vite 환경 타입
+├── .env.local           # 로컬 환경변수 (gitignore)
+├── .gitignore
+├── index.html
+├── package.json
+├── tsconfig.json
+├── tsconfig.node.json
+└── vite.config.ts` } },
+
+          { subtitle: 'tsconfig 권장 설정' },
+          { code: { lang: 'json', content: `{
+  "compilerOptions": {
+    "target": "ES2022",
+    "useDefineForClassFields": true,
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+
+    "strict": true,                  // 매우 권장
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,  // 배열 접근 시 undefined 체크
+
+    "baseUrl": ".",
+    "paths": {                        // 별칭 경로
+      "@/*": ["src/*"]
+    },
+
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}` } },
+
+          { subtitle: '별칭 경로 (Path Alias) — @/' },
+          { code: { lang: 'typescript', content: `// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src'),
+    },
+  },
+});
+
+// 사용 — 깊은 경로가 ../../../ 가 아닌 @/
+import { Button } from '@/components/Button';
+import { useAuth } from '@/hooks/useAuth';
+import { supabase } from '@/utils/supabase';` } },
+
+          { subtitle: 'ESLint + Prettier 셋업' },
+          { code: { lang: 'bash', content: `# Vite 템플릿에 이미 ESLint 기본 설치됨
+
+# Prettier 추가
+npm install -D prettier eslint-config-prettier
+
+# .prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "printWidth": 100
+}
+
+# eslint.config.js 끝에 prettier 추가 (충돌 방지)
+import prettier from 'eslint-config-prettier';
+export default [
+  // ... 기존 설정
+  prettier,
+];` } },
+
+          { subtitle: '환경변수 (.env)' },
+          { code: { lang: 'bash', content: `# .env.local (gitignore)
+VITE_API_URL=https://api.example.com
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+
+# 사용 — 반드시 VITE_ 접두사 필요
+const url = import.meta.env.VITE_API_URL;
+
+# 타입 정의 (src/vite-env.d.ts)
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+  readonly VITE_SUPABASE_URL: string;
+  readonly VITE_SUPABASE_ANON_KEY: string;
+}
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}` } },
+
+          { subtitle: 'HMR — Hot Module Replacement' },
+          { text: 'Vite의 최강 기능. 코드 저장 시 페이지를 새로고침하지 않고 변경된 모듈만 즉시 갱신. React state도 보존됩니다.' },
+          { items: [
+            '컴포넌트 수정 → 1초 이내 화면 반영 + state 유지',
+            'CSS 수정 → 새로고침 없이 즉시 적용',
+            'TypeScript 타입 변경 → 즉시 검증',
+            '환경변수 변경 → dev 서버 재시작 필요',
+          ] },
+
+          { subtitle: 'package.json 스크립트 권장 추가' },
+          { code: { lang: 'json', content: `{
+  "scripts": {
+    "dev":       "vite",
+    "build":     "tsc -b && vite build",
+    "preview":   "vite preview",
+    "typecheck": "tsc -b --noEmit",
+    "lint":      "eslint . --ext .ts,.tsx --max-warnings 0",
+    "format":    "prettier --write \\"src/**/*.{ts,tsx,css}\\"",
+    "verify":    "npm run typecheck && npm run lint",
+    "predeploy": "npm run build",
+    "deploy":    "gh-pages -d dist"
+  }
+}` } },
+
+          { subtitle: '실습 — 본인 프로젝트 베이스 셋업' },
+          { items: [
+            'Vite + React + TS 프로젝트 생성',
+            '권장 폴더 구조 생성 + 각 폴더에 .gitkeep 추가',
+            'tsconfig strict + paths 설정',
+            '@/ 별칭으로 import 1개 이상 사용',
+            'Prettier + ESLint 충돌 없이 동작 확인',
+            'npm run verify 통과',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-practice',
+        title: '실습 · 사용자 목록 React 버전 (2시간)',
+        icon: '🧪',
+        summary: 'Day 3의 바닐라 JS 사용자 목록을 React로 재작성하면서 두 패러다임의 차이를 직접 비교 학습합니다.',
+        content: [
+          { subtitle: '프로젝트 목표' },
+          { text: 'Day 3에서 만든 바닐라 JS 사용자 목록과 동일 기능을 React + TypeScript로 재구현. 같은 기능을 두 방식으로 만들어보면서 React의 가치(컴포넌트·선언적·상태 관리)를 체감합니다.' },
+
+          { subtitle: '요구 사양 (Day 3와 동일)' },
+          { items: [
+            'JSONPlaceholder 사용자 10명 fetch',
+            '카드 형태 렌더링 (이름, 이메일, 도시)',
+            '검색창 — 실시간 필터',
+            '정렬 — 이름 / 이메일 / 도시 토글',
+            '로딩 / 에러 / 빈 상태',
+            '카드 클릭 → 첫 글 모달',
+          ] },
+
+          { subtitle: '컴포넌트 분할 설계' },
+          { code: { lang: 'text', content: `App
+└── UserListPage
+    ├── SearchBar (input)
+    ├── SortSelector (select)
+    ├── StatusMessage (로딩/에러/빈)
+    ├── UserCardList
+    │   └── UserCard (× N)
+    └── PostModal (dialog)` } },
+
+          { subtitle: 'TypeScript 타입 정의' },
+          { code: { lang: 'typescript', content: `// src/types/jsonplaceholder.ts
+export interface User {
+  id: number;
+  name: string;
+  username: string;
+  email: string;
+  address: {
+    street: string;
+    city: string;
+    zipcode: string;
+  };
+  phone: string;
+  website: string;
+}
+
+export interface Post {
+  id: number;
+  userId: number;
+  title: string;
+  body: string;
+}
+
+export type SortKey = 'name' | 'email' | 'city';` } },
+
+          { subtitle: '커스텀 Hook — useFetch + useDebounce' },
+          { code: { lang: 'typescript', content: `// src/hooks/useFetch.ts
+import { useState, useEffect } from 'react';
+
+export function useFetch<T>(url: string) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    setLoading(true);
+    setError(null);
+
+    fetch(url, { signal: controller.signal })
+      .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+      })
+      .then(setData)
+      .catch(err => {
+        if (err.name !== 'AbortError') setError(err.message);
+      })
+      .finally(() => setLoading(false));
+
+    return () => controller.abort();
+  }, [url]);
+
+  return { data, loading, error };
+}
+
+// src/hooks/useDebounce.ts
+import { useEffect, useState } from 'react';
+
+export function useDebounce<T>(value: T, delay = 300): T {
+  const [debounced, setDebounced] = useState(value);
+  useEffect(() => {
+    const t = setTimeout(() => setDebounced(value), delay);
+    return () => clearTimeout(t);
+  }, [value, delay]);
+  return debounced;
+}` } },
+
+          { subtitle: '메인 페이지 컴포넌트' },
+          { code: { lang: 'tsx', content: `// src/pages/UserListPage.tsx
+import { useState, useMemo } from 'react';
+import { useFetch } from '@/hooks/useFetch';
+import { useDebounce } from '@/hooks/useDebounce';
+import type { User, Post, SortKey } from '@/types/jsonplaceholder';
+
+const API = 'https://jsonplaceholder.typicode.com';
+
+export default function UserListPage() {
+  const { data: users, loading, error } = useFetch<User[]>(\`\${API}/users\`);
+  const [keyword, setKeyword] = useState('');
+  const [sortBy, setSortBy] = useState<SortKey>('name');
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+
+  const debouncedKeyword = useDebounce(keyword, 300);
+
+  const filtered = useMemo(() => {
+    if (!users) return [];
+    const k = debouncedKeyword.toLowerCase();
+    return users
+      .filter(u =>
+        u.name.toLowerCase().includes(k) ||
+        u.email.toLowerCase().includes(k)
+      )
+      .sort((a, b) => {
+        const aVal = sortBy === 'city' ? a.address.city : a[sortBy];
+        const bVal = sortBy === 'city' ? b.address.city : b[sortBy];
+        return aVal.localeCompare(bVal);
+      });
+  }, [users, debouncedKeyword, sortBy]);
+
+  if (loading) return <p>로딩 중…</p>;
+  if (error) return <p>오류: {error}</p>;
+
+  return (
+    <div>
+      <header>
+        <h1>사용자 목록</h1>
+        <input
+          type="search"
+          placeholder="이름·이메일 검색"
+          value={keyword}
+          onChange={e => setKeyword(e.target.value)}
+        />
+        <select value={sortBy} onChange={e => setSortBy(e.target.value as SortKey)}>
+          <option value="name">이름순</option>
+          <option value="email">이메일순</option>
+          <option value="city">도시순</option>
+        </select>
+      </header>
+
+      {filtered.length === 0 ? (
+        <p>검색 결과 없음</p>
+      ) : (
+        <ul>
+          {filtered.map(u => (
+            <UserCard
+              key={u.id}
+              user={u}
+              onClick={() => setSelectedUserId(u.id)}
+            />
+          ))}
+        </ul>
+      )}
+
+      {selectedUserId !== null && (
+        <PostModal
+          userId={selectedUserId}
+          onClose={() => setSelectedUserId(null)}
+        />
+      )}
+    </div>
+  );
+}
+
+function UserCard({ user, onClick }: { user: User; onClick: () => void }) {
+  return (
+    <li onClick={onClick} style={{ cursor: 'pointer' }}>
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
+      <small>{user.address.city}</small>
+    </li>
+  );
+}
+
+function PostModal({ userId, onClose }: { userId: number; onClose: () => void }) {
+  const { data: posts } = useFetch<Post[]>(\`\${API}/users/\${userId}/posts\`);
+  const first = posts?.[0];
+  if (!first) return null;
+  return (
+    <dialog open>
+      <h2>{first.title}</h2>
+      <p>{first.body}</p>
+      <button onClick={onClose}>닫기</button>
+    </dialog>
+  );
+}` } },
+
+          { subtitle: 'Day 3 (바닐라 JS) vs Day 4 (React) 비교' },
+          { table: {
+            headers: ['항목', '바닐라 JS', 'React'],
+            rows: [
+              ['DOM 조작', '직접 (innerHTML 등)', '자동 (VDOM)'],
+              ['상태 관리', '전역 변수', 'useState'],
+              ['이벤트 위임', '수동 (querySelectorAll)', '자동 (onClick prop)'],
+              ['컴포넌트 분리', 'HTML/JS 따로', 'JSX로 통합'],
+              ['재사용성', '함수·클래스', 'props로 쉽게'],
+              ['코드 라인 수', '많음', '적음 + 가독성↑'],
+              ['초기 설정', '바로 시작', 'Vite 셋업 필요'],
+            ],
+          } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ TypeScript 타입 모두 정의 (any 0개)',
+            '☐ useFetch + useDebounce custom hook 사용',
+            '☐ useMemo로 필터링·정렬 최적화',
+            '☐ 로딩·에러·빈 상태 모두 처리',
+            '☐ AbortController로 진행 중 요청 취소',
+            '☐ key prop 안정된 ID 사용',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-resources',
+        title: '심화 자료 + React 안티패턴 모음',
+        icon: '📚',
+        summary: 'React 학습 심화 자료 + 가장 흔한 안티패턴 12가지와 해결법.',
+        content: [
+          { subtitle: 'React 안티패턴 12가지' },
+          { table: {
+            headers: ['#', '안티패턴', '문제', '해결'],
+            rows: [
+              ['1', '상태 직접 변경 (count++)', '리렌더 안 됨', 'setCount(c => c+1)'],
+              ['2', 'key={index}', '정렬·삭제 시 버그', '안정된 ID 사용'],
+              ['3', 'Hook을 조건문 안', 'Rendered fewer hooks 에러', '항상 최상단'],
+              ['4', 'useEffect 의존성 누락', 'stale closure', 'ESLint 규칙 준수'],
+              ['5', 'onClick={fn()}', '렌더 즉시 실행', 'onClick={fn} 또는 () => fn()'],
+              ['6', '인라인 함수 남용', '자식 리렌더 폭증', 'useCallback (측정 후)'],
+              ['7', 'props drilling 5단계+', '유지보수 지옥', 'Context API'],
+              ['8', '거대 컴포넌트 (500줄+)', '재사용 불가', '분할 + custom hook'],
+              ['9', 'any 타입 남용', 'TS 의미 무력화', '구체적 타입'],
+              ['10', 'div className="card"', '시맨틱 결여', 'article/section 등'],
+              ['11', '에러 처리 없음', '사용자 빈 화면', 'try-catch + ErrorBoundary'],
+              ['12', '테스트 0개', '리팩토링 두려움', '핵심 1~2개 단위 테스트'],
+            ],
+          } },
+
+          { subtitle: '심화 자료' },
+          { items: [
+            'React 공식 문서: react.dev (한국어 ko.react.dev)',
+            '도서 『리액트를 다루는 기술』 김민준 (개정판)',
+            '도서 『Effective React』 (영문, 2024)',
+            'YouTube "노마드코더" React 시리즈',
+            'YouTube "Web Dev Simplified" — 짧고 명확',
+            'Dan Abramov 블로그: overreacted.io (한국어 번역 있음)',
+          ] },
+
+          { subtitle: '심화 주제 — 본 강의 이후' },
+          { items: [
+            'React Server Components (Next.js·Remix)',
+            'TanStack Query — 서버 상태 캐싱',
+            'Zustand·Jotai — 가벼운 전역 상태',
+            'React Compiler — 자동 메모이제이션',
+            'Testing Library + Vitest',
+            'React Native — 모바일 앱',
+          ] },
+
+          { subtitle: 'Day 4 학습 효과 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['컴포넌트 작성', 'props 기본만', 'children + 타입', 'composition + render props'],
+              ['useState', '기본 사용', '함수형 업데이트', 'useReducer 적재적소'],
+              ['useEffect', '의존성 비움', '데이터 fetch', 'cleanup + AbortController'],
+              ['JSX 패턴', '기본 렌더링', '조건부 + 리스트', 'Fragment + render prop'],
+              ['Custom Hook', '없음', '1개 작성', '재사용 가능한 hook 다수'],
+            ],
+          } },
+
+          { subtitle: '다음 단계' },
+          { text: 'Day 5에서는 React Router + Context + lazy로 실제 SPA 구조를 완성합니다. 본 Day 4의 모든 개념이 토대가 됩니다.' },
+        ],
+      },
+    ],
   },
 
   {
