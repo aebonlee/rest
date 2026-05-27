@@ -36,8 +36,20 @@ export const prerequisiteTopics: Topic[] = [
     id: 'pre-1',
     title: 'Day 1 · AI 기초와 LLM 이해',
     icon: '🤖',
-    description: 'AI/ML/DL/LLM의 차이부터 Transformer 아키텍처, 토큰화 메커니즘, 주요 LLM 비교까지 — 바이브코딩을 위한 개념적 토대를 다집니다.',
+    description: 'AI/ML/DL/LLM의 차이부터 Transformer 아키텍처, 토큰화 메커니즘, 주요 LLM 비교까지 — 바이브코딩을 위한 개념적 토대를 다집니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'AI/ML/DL/LLM 위계와 역사 개요', '4개념 위계도 본인 노트에 정리'],
+          ['S2', '50분', 'Transformer · Self-Attention · 토큰화', '한국어 토큰화 직접 실측'],
+          ['S3', '50분', '주요 LLM 6종 비교 + 산업별 활용 사례', '본인 주력 모델 1개 선정'],
+          ['S4', '50분', '한계(할루시네이션 외) + 3종 비교 실습', '동일 질문 모델별 비교표 작성'],
+        ],
+      } },
+      { callout: { type: 'info', text: '각 세션 사이 5~10분 휴식 권장. 본 강의는 노트북 + 인터넷이 필수. 실습용 ChatGPT/Claude/Solar 계정을 강의 전에 미리 준비해 두세요.' } },
+
       { subtitle: '학습 목표', items: [
         'AI · ML · DL · LLM 개념 위계를 정확히 구분한다',
         'Transformer · 토큰화 · 컨텍스트 윈도우 등 핵심 용어를 이해한다',
@@ -92,6 +104,62 @@ export const prerequisiteTopics: Topic[] = [
       ] },
       { callout: { type: 'warn', text: '코드·법률·의료 등 정확성이 중요한 영역에서는 반드시 출처 확인이 필요합니다. AI 응답을 "초안"으로 다루고 검증은 사람이 수행해야 합니다.' } },
 
+      { subtitle: 'AI 60년 역사 — 주요 변곡점' },
+      { table: {
+        headers: ['시기', '사건', '의미'],
+        rows: [
+          ['1950', '튜링 테스트 제안', '"기계가 생각할 수 있는가" 철학 출발'],
+          ['1956', '다트머스 회의', '"Artificial Intelligence" 용어 탄생'],
+          ['1980s', '전문가 시스템 전성기', '규칙 기반 — 의료·금융 진단'],
+          ['1997', '딥블루 vs 카스파로프', '체스에서 인간 챔피언 격파'],
+          ['2012', 'AlexNet (ImageNet 우승)', '딥러닝 시대 개막'],
+          ['2017', 'Transformer 논문', 'LLM의 기술적 토대'],
+          ['2022', 'ChatGPT 공개', '일반인에게 LLM 보급 시작'],
+          ['2024~', '에이전트·코딩·1M context', '바이브코딩 시대 본격화'],
+        ],
+      } },
+
+      { subtitle: '산업별 LLM 활용 사례' },
+      { table: {
+        headers: ['산업', '활용 영역', '예시'],
+        rows: [
+          ['교육', '맞춤 학습·자동 채점', 'Khan Academy Khanmigo'],
+          ['금융', '리포트 작성·고객 응대', 'BloombergGPT'],
+          ['의료', '진료 요약·문헌 검색', 'Glass Health'],
+          ['법률', '판례 분석·계약서 검토', 'Harvey AI'],
+          ['소프트웨어', '코드 생성·리뷰·디버깅', 'Cursor, Claude Code'],
+          ['고객지원', '챗봇·티켓 분류', 'Intercom Fin'],
+        ],
+      } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "LLM이 한국어를 영어보다 못하나요?" — 학습 데이터 비중 차이로 일반적으로 영어 성능이 더 높습니다. 다만 Solar/HyperCLOVA X 등 국산 모델은 한국어 비중을 높여 격차를 줄였습니다.',
+        'Q. "AI가 거짓말을 하는데 왜 그대로 두나요?" — LLM은 사실 검증 능력 없이 통계적으로 가장 그럴듯한 다음 토큰을 예측합니다. 사실성 보장은 RAG·검색 도구와의 결합으로 보완합니다.',
+        'Q. "온프레미스로 LLM을 돌릴 수 있나요?" — 가능합니다. KoAlpaca·Llama 등 오픈소스 모델을 GPU 서버에 올릴 수 있으나, 30B+ 모델은 고성능 GPU(A100/H100급)가 필요합니다.',
+        'Q. "GPT vs Claude 무엇이 더 좋나요?" — 작업에 따라 다릅니다. 코드·긴 문맥은 Claude, 도구 사용·범용은 GPT가 강한 경향. 본인 작업으로 실측이 가장 정확.',
+        'Q. "토큰을 줄여 비용을 절감하는 방법은?" — 시스템 프롬프트 축약, 대화 누적 시 요약 후 재시작, 한국어 비중 높은 모델 선택, 캐싱 활용.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. AI ⊃ ML ⊃ DL ⊃ LLM 위계를 한 줄로 설명하시오.',
+        '2. Transformer의 핵심 메커니즘 1개를 답하시오. (정답: Self-Attention)',
+        '3. 한국어 한 문장이 영어 동일 문장보다 토큰이 더 많이 소모되는 이유는?',
+        '4. LLM의 "지식 컷오프"는 무엇을 의미하는가?',
+        '5. 경진대회에서 국내 LLM을 사용해야 하는 이유 2개를 답하시오.',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) AI는 광의의 인공지능, ML은 데이터로 학습, DL은 신경망 기반 ML, LLM은 거대 언어 모델로 DL의 응용  2) Self-Attention  3) 한국어 학습 데이터 비중이 낮아 1글자가 2~3토큰으로 쪼개짐  4) 학습 데이터 수집 마감 시점, 이후 정보는 모름  5) ① 대회 평가 25% 가중치 ② 한국어 토큰 효율 ③ 데이터 주권' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        '논문: "Attention Is All You Need" (Vaswani et al., 2017) — Transformer 원전',
+        '도서: 『AI 만들기』 박상길 — 한국어 AI 입문서',
+        'YouTube: 3Blue1Brown "But what is a GPT?" — 시각적 설명 최고봉',
+        '강의: Andrej Karpathy "Neural Networks: Zero to Hero" (무료 YouTube 시리즈)',
+        '뉴스레터: AI Korea 슬랙 / 잡고AI / 데이터 엘리먼츠',
+      ] },
+
       { subtitle: '실습 (60분)' },
       { items: [
         'ChatGPT / Claude / Solar에 동일 한국어 질문 입력 후 응답 비교표 작성',
@@ -99,6 +167,9 @@ export const prerequisiteTopics: Topic[] = [
         '동일 프롬프트를 temperature=0과 temperature=1로 각 3회씩 호출해 결정성 차이 관찰',
         '학습 노트에 "내가 사용할 주력 모델" 1개 선정 + 이유 기록',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 2에서는 오늘 사용한 프롬프트를 체계화합니다. R-C-I-F 4요소, Zero/Few-shot, Chain-of-Thought 등 실전 패턴을 학습해 "같은 모델로 더 좋은 결과"를 얻는 방법을 익힙니다.' },
     ],
   },
 
@@ -106,8 +177,19 @@ export const prerequisiteTopics: Topic[] = [
     id: 'pre-2',
     title: 'Day 2 · 프롬프트 엔지니어링',
     icon: '✍️',
-    description: '프롬프트의 4요소(R-C-I-F)를 기반으로 Zero/Few-shot, Chain-of-Thought 등 핵심 패턴을 실습하고, 한국어 작성 시 흔히 실패하는 안티패턴을 체계적으로 학습합니다.',
+    description: '프롬프트의 4요소(R-C-I-F)를 기반으로 Zero/Few-shot, Chain-of-Thought 등 핵심 패턴을 실습하고, 한국어 작성 시 흔히 실패하는 안티패턴을 체계적으로 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '프롬프트 4요소(R-C-I-F) + 실전 템플릿', '본인 업무 프롬프트 1개 4요소로 재작성'],
+          ['S2', '50분', '4대 패턴: Zero/Few-shot, CoT, Self-consistency', '각 패턴 1개씩 직접 실습'],
+          ['S3', '50분', '한국어 작성 5원칙 + 안티패턴 5종', '실패 프롬프트 1개 → 개선 사이클 2회'],
+          ['S4', '50분', '실전 — 본인 업무에 적용 + 평가', '평가표 작성 + 동료 리뷰'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '프롬프트 4요소(R-C-I-F)를 명시적으로 작성한다',
         'Zero/Few-shot, Chain-of-Thought, Self-consistency를 구분해서 적용한다',
@@ -186,13 +268,69 @@ export const prerequisiteTopics: Topic[] = [
       } },
       { callout: { type: 'tip', text: '"개선 사이클": ① 결과 부족 발견 → ② 무엇이 부족한지 한 문장으로 명시 → ③ 프롬프트의 부족한 요소(R/C/I/F 중)를 보강 → ④ 재호출. 보통 2~3회 반복으로 원하는 품질에 도달합니다.' } },
 
+      { subtitle: '고급 패턴 — 역할극(Role-Play) 프롬프트' },
+      { code: { lang: 'text', content: `[역할] 너는 30년 경력의 시니어 한의사다. 환자의 증상을 듣고 한방·서양의학
+       관점에서 균형 잡힌 조언을 한다. 의학적 단정은 피하고 "의심해 볼 수 있다"
+       형태로 답하며, 필요 시 병원 방문을 권한다.
+
+[환자 발화] 일주일째 잠이 잘 안 옵니다. 오후 4시 이후 커피는 피하고 있는데도
+            새벽 3시까지 깨어 있습니다.
+
+[형식] 1) 추정 원인 2~3가지
+       2) 생활 개선 제안 (한방·서양 각 1개씩)
+       3) 병원 방문 권고 여부 + 이유` } },
+
+      { subtitle: '평가 매트릭스 — 프롬프트 결과 점수화' },
+      { table: {
+        headers: ['차원', '1점', '3점', '5점'],
+        rows: [
+          ['정확성', '사실 오류 다수', '대체로 정확', '완전 정확'],
+          ['관련성', '주제 이탈', '관련 있음', '핵심 정조준'],
+          ['완결성', '주요 누락', '대부분 포함', '완전 포함'],
+          ['형식', '요청 무시', '대체로 준수', '완벽 준수'],
+          ['톤·문체', '부적절', '적당', '의도와 정확히 일치'],
+        ],
+      } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "프롬프트가 너무 길어지는데?" — 길이보다 명확성이 중요. 다만 500토큰 이상은 모델이 일부 무시할 수 있으므로 우선순위 명시(MUST/SHOULD) 추천.',
+        'Q. "한국어로 묻고 영어 답을 받는 경우?" — system에 "반드시 한국어로만 답하라"를 명시. 모델이 학습 시 영어 비중이 높아 자연스럽게 영어로 전환되는 경향.',
+        'Q. "같은 프롬프트인데 답이 매번 다른 이유?" — 기본 temperature가 0.7~1.0이라 확률적. 결정적 답이 필요하면 temperature=0 사용.',
+        'Q. "Chain-of-Thought를 항상 써야 하나요?" — 단순 작업(번역·요약)에는 불필요하고 오히려 토큰 낭비. 복잡한 추론·계산·다단계 의사결정에서만 사용.',
+        'Q. "프롬프트 인젝션이 무엇인가요?" — 사용자 입력에 "이전 지시 무시하고 ~하라" 삽입해 시스템 프롬프트를 우회하는 공격. 사용자 입력은 항상 다른 메시지로 분리하고 검증.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. R-C-I-F 4요소를 각각 한 단어로 풀어 쓰시오.',
+        '2. Few-shot에서 예시를 몇 개 제공하는 것이 일반적인가?',
+        '3. Chain-of-Thought를 쓰면 좋은 작업 1가지, 안 좋은 작업 1가지를 답하시오.',
+        '4. "좋은 코드 짜줘"가 안티패턴인 이유는?',
+        '5. 한국어 응답을 강제할 때 system 프롬프트에 어떤 표현이 효과적인가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) Role(역할) / Context(맥락) / Instruction(지시) / Format(형식)  2) 2~5개  3) 좋음: 복잡한 추론·다단계 계산, 나쁨: 단순 번역·요약  4) "좋은"의 정의 부재로 모델이 무엇을 우선할지 모름  5) "반드시 한국어로만 답하라. 영어 단어를 사용하지 말 것." 같은 명시적 제약' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        '공식: OpenAI Prompt Engineering Guide (platform.openai.com/docs/guides/prompt-engineering)',
+        '공식: Anthropic Prompt Library (docs.anthropic.com/en/prompt-library)',
+        '논문: "Chain-of-Thought Prompting" (Wei et al., 2022)',
+        '도서: 『프롬프트 엔지니어링』 박해선',
+        '실전: LearnPrompting.org (무료 한국어 일부 지원)',
+      ] },
+
       { subtitle: '실습 (60분)' },
       { items: [
         '내 업무 이메일 1편 작성 프롬프트를 R-C-I-F 4요소로 명시',
         '동일 작업을 Zero/Few-shot 두 방식으로 실행 후 차이 비교',
         '복잡한 계산 문제에 Chain-of-Thought 적용 → 정답률 변화 관찰',
         '실패한 프롬프트 1개를 골라 개선 사이클 2회 반복 + 기록',
+        '동료의 프롬프트를 평가 매트릭스 5차원으로 점수화 + 피드백',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 3에서는 오늘 익힌 프롬프트 기법을 국내 LLM에 적용합니다. Solar API 키 발급부터 실제 호출까지 직접 수행하며, 경진대회에 사용할 모델을 선정합니다.' },
     ],
   },
 
@@ -200,8 +338,19 @@ export const prerequisiteTopics: Topic[] = [
     id: 'pre-3',
     title: 'Day 3 · 국내 LLM 탐색',
     icon: '🇰🇷',
-    description: 'AI 리부트 경진대회 필수 요건인 국내 LLM(Solar/HyperCLOVA X/EXAONE)의 API 호출법과 한국어 처리 성능을 실측 비교하며 경진대회에 적합한 모델을 선정합니다.',
+    description: 'AI 리부트 경진대회 필수 요건인 국내 LLM(Solar/HyperCLOVA X/EXAONE)의 API 호출법과 한국어 처리 성능을 실측 비교하며 경진대회에 적합한 모델을 선정합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '국내 LLM 4종 비교 + 왜 국산을 쓰는가', '비교표 본인 노트 작성'],
+          ['S2', '50분', 'Solar API 키 발급 + curl/TypeScript 첫 호출', 'curl 호출 성공'],
+          ['S3', '50분', '한국어 토큰 효율 실측 + 모델별 응답 비교', '3개 질문 × 3개 모델 = 9개 응답 분석'],
+          ['S4', '50분', '폴백·캐싱 전략 + 경진대회 모델 선정', '주력/2순위 모델 결정'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '국내 LLM 4종(Solar, HyperCLOVA X, EXAONE, KoAlpaca)의 특징을 비교한다',
         'Solar API 키 발급부터 첫 호출까지 직접 수행한다',
@@ -293,13 +442,79 @@ export async function askSolar(prompt: string): Promise<string> {
         '도구 사용·에이전트 필요 → HyperCLOVA X (function calling 지원)',
       ] },
 
+      { subtitle: '폴백(Fallback) 패턴 — 운영 안정성' },
+      { code: { lang: 'typescript', content: `// src/utils/llm.ts
+import { askSolar }       from './solar';
+import { askHyperCLOVA }  from './hyperclova';
+
+export async function askWithFallback(prompt: string): Promise<string> {
+  try {
+    return await askSolar(prompt);          // 1순위
+  } catch (err) {
+    console.warn('Solar 실패, HyperCLOVA로 폴백', err);
+    try {
+      return await askHyperCLOVA(prompt);   // 2순위
+    } catch (err2) {
+      console.error('모든 LLM 실패', err2);
+      return '죄송합니다. 일시적으로 응답할 수 없습니다.';
+    }
+  }
+}` } },
+
+      { subtitle: '응답 캐싱 — 비용 절감' },
+      { code: { lang: 'typescript', content: `// 같은 질문은 캐시에서 (메모리 캐시 단순 예)
+const cache = new Map<string, { data: string; ts: number }>();
+const TTL = 1000 * 60 * 60; // 1시간
+
+export async function cachedAsk(prompt: string): Promise<string> {
+  const hit = cache.get(prompt);
+  if (hit && Date.now() - hit.ts < TTL) return hit.data;
+
+  const result = await askSolar(prompt);
+  cache.set(prompt, { data: result, ts: Date.now() });
+  return result;
+}` } },
+      { callout: { type: 'tip', text: '프로덕션에서는 메모리 캐시 대신 Redis나 Supabase 테이블 사용. 자주 묻는 질문 상위 100개만 캐싱해도 비용이 30~50% 줄어드는 경우가 많습니다.' } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "Solar API 무료 크레딧이 있나요?" — Upstage는 신규 가입 시 일정 크레딧을 제공하며 무료 티어에서도 학습용 호출이 가능합니다.',
+        'Q. "HyperCLOVA X는 어떻게 신청하나요?" — 네이버 CLOVA Studio에서 신청. 사업자 인증·서비스 설명 검토 후 승인됩니다.',
+        'Q. "EXAONE을 일반 개발자가 쓸 수 있나요?" — 현재 LG 그룹 계열 및 파트너 중심 제공. 일반 공개 API는 제한적.',
+        'Q. "오픈소스 모델을 로컬에서 돌리려면?" — KoAlpaca 7B는 RTX 4090 1대로 가능. 30B 이상은 다중 GPU 필요. Ollama·LM Studio 같은 툴이 진입 장벽 낮춰줍니다.',
+        'Q. "비용이 가장 적게 드는 조합은?" — Solar Mini + 캐싱 + 짧은 system 프롬프트. 일반 챗봇 기준 월 10만원 이하로 운영 가능.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. Solar API의 URL을 답하시오.',
+        '2. OpenAI 호환 응답에서 텍스트가 위치하는 JSON 경로는?',
+        '3. 동일 한국어 문장의 토큰 수는 GPT와 Solar 중 어느 쪽이 더 많은가?',
+        '4. 폴백 전략에서 1순위 실패 시 무엇을 해야 하는가?',
+        '5. 경진대회에서 국내 LLM 활용도의 평가 가중치는?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) https://api.upstage.ai/v1/chat/completions  2) choices[0].message.content  3) GPT (한국어 토큰화 비효율로 더 많음)  4) 2순위 모델로 자동 재시도 + 모니터링 로그  5) 25%' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Upstage Console (console.upstage.ai) — Solar API 키 발급·문서',
+        'CLOVA Studio (clovastudio.ncloud.com) — HyperCLOVA X',
+        'Hugging Face Korean Models — beomi/KoAlpaca 등 오픈소스',
+        '벤치마크: KMMLU·Ko-Arena (한국어 모델 성능 비교)',
+        '커뮤니티: r/LocalLLaMA, 페이스북 "AI 한국어 처리" 그룹',
+      ] },
+
       { subtitle: '실습 (60분)' },
       { items: [
         'Upstage 콘솔에서 Solar API 키 발급 후 .env.local 저장',
         'curl 또는 Postman으로 첫 호출 성공 + 응답 JSON 구조 분석',
         '동일 한국어 질문 3개를 ChatGPT/Solar/HyperCLOVA X에 비교 호출',
+        '폴백·캐싱 함수 구현 + 1순위 강제 실패 시뮬레이션',
         '학습 노트에 "경진대회 출품작에 쓸 모델 1순위/2순위" 결정 + 근거 작성',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 4에서는 모든 LLM API 호출의 토대가 되는 개발환경을 구축합니다. VS Code·Cursor·Node·Git·GitHub Pages 셋업으로 정규과정 13일을 흔들림 없이 시작할 수 있게 합니다.' },
     ],
   },
 
@@ -307,8 +522,19 @@ export async function askSolar(prompt: string): Promise<string> {
     id: 'pre-4',
     title: 'Day 4 · 개발환경 세팅',
     icon: '⚙️',
-    description: 'VS Code·Cursor·Node 22·Git·GitHub Pages까지 정규과정 13일을 흔들림 없이 진행할 수 있는 개발환경을 한 번에 구축하고 점검합니다.',
+    description: 'VS Code·Cursor·Node 22·Git·GitHub Pages까지 정규과정 13일을 흔들림 없이 진행할 수 있는 개발환경을 한 번에 구축하고 점검합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'VS Code + 8개 확장 + 단축키', 'Vite React-TS 프로젝트 실행'],
+          ['S2', '50분', 'Cursor vs Claude Code vs Copilot 비교', 'AI 에디터 1개 선정·설치'],
+          ['S3', '50분', 'Git + GitHub + PAT', '"hello-rest" 저장소 첫 push 성공'],
+          ['S4', '50분', '.env·.gitignore·보안 + 첫 GitHub Pages 배포', '실제 URL에서 페이지 표시'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'VS Code 또는 Cursor에 필수 확장 프로그램을 설치한다',
         'Node.js 22 LTS와 npm을 정상 동작 상태로 셋업한다',
@@ -407,6 +633,111 @@ nul
 *.log` } },
       { callout: { type: 'warn', text: '.env 파일은 절대 커밋하지 마세요. API 키, DB 비밀번호 등이 GitHub에 노출되면 24시간 내 자동 봇이 스캔해 악용합니다. 만약 실수로 푸시했다면 즉시 키를 폐기하고 재발급하세요.' } },
 
+      { subtitle: 'VS Code 필수 단축키 (15개)' },
+      { table: {
+        headers: ['단축키 (Win)', '단축키 (Mac)', '기능'],
+        rows: [
+          ['Ctrl+P', 'Cmd+P', '파일 빠른 열기'],
+          ['Ctrl+Shift+P', 'Cmd+Shift+P', '명령 팔레트'],
+          ['Ctrl+`', 'Ctrl+`', '터미널 토글'],
+          ['Ctrl+B', 'Cmd+B', '사이드바 토글'],
+          ['Ctrl+/', 'Cmd+/', '주석 토글'],
+          ['Alt+↑/↓', 'Opt+↑/↓', '줄 이동'],
+          ['Shift+Alt+↑/↓', 'Shift+Opt+↑/↓', '줄 복제'],
+          ['Ctrl+D', 'Cmd+D', '다음 동일 단어 선택'],
+          ['Ctrl+F', 'Cmd+F', '현재 파일 검색'],
+          ['Ctrl+Shift+F', 'Cmd+Shift+F', '전체 프로젝트 검색'],
+          ['F2', 'F2', '심볼 일괄 이름 변경'],
+          ['F12', 'F12', '정의로 이동'],
+          ['Alt+F12', 'Opt+F12', '정의 미리보기 (열지 않고)'],
+          ['Ctrl+Space', 'Ctrl+Space', '자동완성 강제'],
+          ['Ctrl+K Ctrl+S', 'Cmd+K Cmd+S', '단축키 설정 열기'],
+        ],
+      } },
+
+      { subtitle: 'Git 충돌(Conflict) 해결' },
+      { code: { lang: 'bash', content: `# 충돌이 발생한 상황 (pull 또는 merge 시)
+git pull
+# Auto-merging src/App.tsx
+# CONFLICT (content): Merge conflict in src/App.tsx
+
+# 1) 충돌 파일 확인
+git status
+
+# 2) 파일을 열면 표시됨
+# <<<<<<< HEAD
+# 내가 작성한 내용
+# =======
+# 동료가 작성한 내용
+# >>>>>>> origin/main
+
+# 3) 둘 중 선택 또는 합치고 마커(<<<, ===, >>>)는 모두 삭제
+# 4) 해결 후
+git add src/App.tsx
+git commit -m "merge: resolve conflict"
+git push` } },
+      { callout: { type: 'warn', text: 'VS Code의 Git 확장에서 충돌 부위 위에 "Accept Current / Incoming / Both / Compare" 버튼이 떠 클릭으로 해결 가능합니다. 처음에는 GUI 권장.' } },
+
+      { subtitle: 'npm 패키지 관리 — 핵심 명령' },
+      { code: { lang: 'bash', content: `npm install              # package.json의 모든 의존성 설치
+npm install <패키지>      # 새 패키지 추가 + package.json 업데이트
+npm install -D <패키지>   # dev 의존성으로 추가
+npm uninstall <패키지>   # 제거
+npm update               # 모든 패키지 최신화 (semver 범위 내)
+npm outdated             # 오래된 패키지 확인
+npm audit                # 보안 취약점 검사
+npm audit fix            # 자동 수정 시도
+npm run <스크립트>        # package.json scripts 실행
+
+# package-lock.json은 반드시 커밋 — 팀원 간 동일 버전 보장` } },
+
+      { subtitle: '첫 GitHub Pages 배포 (Day 4 완성 체크)' },
+      { code: { lang: 'bash', content: `# 1) Vite 프로젝트에서
+npm install -D gh-pages
+
+# 2) package.json에 추가
+# "scripts": {
+#   "predeploy": "npm run build",
+#   "deploy":    "gh-pages -d dist"
+# }
+
+# 3) vite.config.ts
+# base: '/<리포지토리명>/'   ← 또는 커스텀 도메인이면 '/'
+
+# 4) 배포
+npm run deploy
+
+# 5) GitHub 저장소 → Settings → Pages → Branch: gh-pages → Save
+# 6) 약 1~3분 후 https://<유저>.github.io/<리포>/ 접근` } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "Node는 LTS와 Current 중 무엇을 받나요?" — 학습·실무 모두 LTS. Current는 최신 기능 실험용. 22 LTS가 안정적.',
+        'Q. "Yarn·pnpm은 안 쓰나요?" — npm으로 충분. 회사 표준이 별도면 따라가되, 본 과정은 npm 통일.',
+        'Q. "Windows에서 권한 오류가 자주 나요" — Windows Defender 폴더 액세스 제어, OneDrive 동기화 폴더 제외 권장. 가능하면 D:\\projects 같이 시스템 외부 폴더 사용.',
+        'Q. "GitHub Desktop과 git 명령 중 어느 쪽?" — 둘 다 OK. 초반 1주는 GUI, 그 뒤 CLI 권장. 충돌 해결은 GUI가 직관적.',
+        'Q. ".env.local과 .env의 차이?" — .env는 모든 환경 공통, .env.local은 개인 비밀(자동으로 gitignore됨). 협업 시 .env.example만 공유.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. Node 22 LTS의 npm 버전을 확인하는 명령은?',
+        '2. Git에서 마지막 커밋 메시지를 수정하는 명령은?',
+        '3. .env 파일을 절대 커밋하지 말아야 하는 이유는?',
+        '4. GitHub PAT는 어디서 발급하는가?',
+        '5. Vite의 dev 서버 기본 포트는?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) npm --version  2) git commit --amend  3) API 키·DB 비밀번호 등이 GitHub에 노출되면 봇이 스캔해 도용  4) GitHub Settings → Developer settings → Personal access tokens  5) 5173' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Node.js 공식: nodejs.org/ko (한국어 문서 잘 정비됨)',
+        'Git Book: git-scm.com/book/ko/v2 (무료, 한국어)',
+        'VS Code 단축키 PDF: code.visualstudio.com/shortcuts',
+        'GitHub Docs: docs.github.com/ko',
+        'Cursor 공식: cursor.sh/docs',
+      ] },
+
       { subtitle: '실습 (60분)' },
       { items: [
         'VS Code(또는 Cursor) + 8개 추천 확장 설치 완료',
@@ -414,6 +745,19 @@ nul
         'GitHub 계정 생성 + PAT 발급 + 자격 증명 매니저 저장',
         '"hello-rest" 저장소 만들고 첫 commit + push 성공',
         '.env 파일에 더미 변수 1개 작성 + .gitignore로 제외 확인',
+        '의도적으로 동일 파일 두 곳에서 수정 → 충돌 발생 → 해결 경험',
+        'gh-pages로 첫 페이지 배포 → 실제 URL에서 표시 확인',
+      ] },
+
+      { subtitle: '선수과정 마무리 — 정규과정 진입 점검' },
+      { items: [
+        '✅ VS Code/Cursor + 확장 + 단축키 5개 이상 익숙',
+        '✅ Node 22 + npm 정상 동작',
+        '✅ Git push·pull·merge·conflict 해결 경험',
+        '✅ GitHub Pages 배포 1회 성공',
+        '✅ AI 모델 3종 비교 + 주력 모델 선정',
+        '✅ 프롬프트 4요소로 본인 업무 1건 처리',
+        '✅ 국내 LLM(Solar) API 직접 호출 성공',
       ] },
     ],
   },
@@ -427,8 +771,19 @@ export const regularTopics: Topic[] = [
     id: 'reg-1',
     title: 'Day 1 · 바이브코딩 개론',
     icon: '🎵',
-    description: '"AI와 대화하며 코딩하기"라는 새로운 패러다임의 정의와 철학, 도구 비교(Cursor/Claude Code/Copilot/Bolt), 효과적 협업의 5원칙을 학습합니다.',
+    description: '"AI와 대화하며 코딩하기"라는 새로운 패러다임의 정의와 철학, 도구 비교(Cursor/Claude Code/Copilot/Bolt), 효과적 협업의 5원칙을 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '바이브코딩 정의 + 전통 코딩과의 차이', '본인 패러다임 이해도 자가 평가'],
+          ['S2', '50분', 'AI 코딩 도구 5종 비교 + 선정', '주력 도구 1개 결정'],
+          ['S3', '50분', '효과적 협업 5원칙 + 실패 패턴 회피', '5원칙 본인 워크플로우 반영'],
+          ['S4', '50분', 'Cursor 첫 페이지 만들기 실습', '동작하는 React 컴포넌트 1개'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '바이브코딩의 정의와 전통 코딩과의 차이를 설명한다',
         'Cursor / Claude Code / Copilot / Bolt의 적합 시나리오를 구분한다',
@@ -485,13 +840,90 @@ export const regularTopics: Topic[] = [
       } },
       { callout: { type: 'tip', text: '경진대회 출품작은 코드 가독성도 평가됩니다. AI 생성 코드는 반드시 본인이 이해한 뒤 변수명·구조를 다듬고, 본인의 코드로 만들어 두세요. 발표 시 "이 부분이 어떻게 동작하나요?" 질문에 답할 수 있어야 합니다.' } },
 
+      { subtitle: 'Cursor 핵심 단축키' },
+      { table: {
+        headers: ['단축키', '기능'],
+        rows: [
+          ['Cmd/Ctrl+L', '채팅 패널 열기 (질문)'],
+          ['Cmd/Ctrl+K', '인라인 코드 편집 (현재 위치에서 AI 요청)'],
+          ['Cmd/Ctrl+I', '에이전트 모드 (다파일 자동 편집)'],
+          ['@파일명', '특정 파일을 컨텍스트로 첨부'],
+          ['@web', '실시간 웹 검색 결과를 컨텍스트로'],
+          ['@docs', '공식 문서 참조 컨텍스트'],
+          ['Tab', 'AI 자동완성 수락'],
+          ['Esc', 'AI 자동완성 거부'],
+        ],
+      } },
+
+      { subtitle: 'AI 요청 → 코드 검수 워크플로우' },
+      { code: { lang: 'text', content: `[1단계] 요청
+  Cmd+K → "이 함수를 useMemo로 최적화하라"
+
+[2단계] AI 변경 제안 표시
+  diff 형태로 변경 전/후 비교
+
+[3단계] 사람의 검수 (가장 중요)
+  ① 변경 의미를 줄 단위로 이해했는가?
+  ② 의존성 배열이 정확한가?
+  ③ 동일 동작이 유지되는가?
+  ④ 부작용은 없는가?
+
+[4단계] 수락 (Accept) 또는 수정 후 수락
+  필요 시 추가 질문: "왜 useCallback이 아닌 useMemo인가?"
+
+[5단계] 실행·검증
+  npm run dev → 화면 확인 → 로직 동작 확인` } },
+
+      { subtitle: '바이브코딩 학습 곡선' },
+      { table: {
+        headers: ['단계', '기간', '특징'],
+        rows: [
+          ['1주차: 충격', '~1주', '"이게 다 되네?" — 무비판적 활용'],
+          ['2주차: 환멸', '~2주', '잘못된 코드에 데임 — "역시 AI는…"'],
+          ['3주차: 균형', '~1개월', '검수의 중요성 체득, 본인이 모르는 영역 식별'],
+          ['4주차: 숙련', '~3개월', 'AI를 도구로, 본인은 의사결정자로'],
+        ],
+      } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "AI가 다 짜주면 내가 안 배우는 거 아닌가요?" — 검수 과정에서 배웁니다. AI 코드를 "왜 이렇게 짰지?"라고 물으며 읽으면 학습 효과가 가장 큽니다.',
+        'Q. "Cursor 구독료가 부담돼요" — 학생/연구자 할인이 있고, 무료 GitHub Copilot (학생)·Codeium 같은 무료 대안도 있습니다.',
+        'Q. "AI가 가짜 API를 만들어내요" — 환각. 항상 공식 문서 링크로 검증하거나 @docs 컨텍스트를 활용하세요.',
+        'Q. "팀 전체가 바이브코딩으로 가도 되나요?" — 시니어 1명 이상의 검수 체계는 필수. AI 코드 품질은 검수자 역량에 비례합니다.',
+        'Q. "회사에서 AI 코드 사용 금지인 경우?" — 라이선스·보안 우려 때문. 사내 LLM 도입 추세이므로 점차 변할 것. 우선 정책 확인.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. 바이브코딩에서 사람의 핵심 역할 2가지를 답하시오.',
+        '2. Cursor에서 채팅 패널을 여는 단축키는?',
+        '3. 효과적 AI 협업 5원칙 중 "한 번에 한 작업"이 중요한 이유는?',
+        '4. AI가 만든 가짜 API를 식별하는 방법은?',
+        '5. AI 코드를 본인 것으로 만들기 위해 발표 전 해야 할 일은?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 문제 정의·검증·결정 / 2) Cmd(Ctrl)+L  3) 거대 요구는 모델이 일부 placeholder 처리 → 품질 저하  4) 공식 docs·실제 호출로 검증  5) 줄 단위 이해 + 변수명·구조 다듬어 본인 코드로 변환' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Cursor 공식 가이드: cursor.sh/docs',
+        'Claude Code: docs.claude.com/en/docs/claude-code',
+        '서적 추천: 『AI 시대의 개발자』 (트위터·유튜브에서 무료 글 다수)',
+        'YouTube: ThePrimeagen, Theo (AI 코딩 비판적 시각)',
+        '국내: 바이브코딩 커뮤니티 (Discord, Facebook 그룹)',
+      ] },
+
       { subtitle: '실습 (90분)' },
       { items: [
         'Cursor 설치 → 첫 프로젝트 열기 → Cmd+L로 채팅 인터페이스 확인',
         '"반응형 카운터 컴포넌트를 React + TypeScript로 만들어라"로 첫 코드 생성',
         '생성된 코드를 줄 단위로 읽고 본인이 100% 이해할 때까지 질문',
         '의도적으로 거대 요구를 한 번 해보고 어떤 부분이 placeholder가 되는지 관찰',
+        '같은 요청을 Cursor·Copilot·Bolt 3개로 실행 후 결과 비교',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 2부터는 웹 개발의 기초 HTML/CSS를 학습합니다. AI에게 효과적으로 CSS를 요청하는 패턴도 함께 익히며, 본인 포트폴리오 페이지를 만들어 봅니다.' },
     ],
   },
 
@@ -499,8 +931,19 @@ export const regularTopics: Topic[] = [
     id: 'reg-2',
     title: 'Day 2 · HTML/CSS 기초',
     icon: '🌐',
-    description: '시맨틱 HTML, CSS 박스 모델, Flexbox·Grid, 미디어 쿼리를 코드 예제와 함께 학습합니다. AI에게 효과적으로 CSS 작성을 요청하는 패턴도 함께 익힙니다.',
+    description: '시맨틱 HTML, CSS 박스 모델, Flexbox·Grid, 미디어 쿼리를 코드 예제와 함께 학습합니다. AI에게 효과적으로 CSS 작성을 요청하는 패턴도 함께 익힙니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'HTML 시맨틱 태그 + 박스 모델', '포트폴리오 골격 HTML'],
+          ['S2', '50분', 'Flexbox 정복', '상단 네비게이션 바'],
+          ['S3', '50분', 'Grid + 반응형', '카드 갤러리 (3열→1열)'],
+          ['S4', '50분', '다크모드 + AI에게 CSS 요청', '완성된 포트폴리오 페이지'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '시맨틱 HTML 태그를 의미에 맞게 사용한다',
         'CSS 박스 모델·선택자·우선순위를 이해한다',
@@ -629,13 +1072,58 @@ export const regularTopics: Topic[] = [
         '디자인 시스템 변수 명시 — "var(--text-primary) 사용"',
       ] },
 
+      { subtitle: 'CSS 선택자 우선순위' },
+      { table: {
+        headers: ['우선순위', '선택자', '점수 (Specificity)'],
+        rows: [
+          ['1 (최고)', '인라인 스타일 + !important', '∞'],
+          ['2', 'ID 선택자 (#header)', '100'],
+          ['3', '클래스·속성·가상클래스', '10'],
+          ['4', '태그·가상요소', '1'],
+          ['5 (최저)', '전체 선택자 (*)', '0'],
+        ],
+      } },
+      { callout: { type: 'warn', text: '!important는 마지막 수단. 남용하면 디버깅 지옥. CSS Module이나 CSS-in-JS로 스코프를 분리하면 우선순위 문제 자체가 줄어듭니다.' } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "div만 써도 동작은 되는데 왜 시맨틱 태그?" — 접근성(스크린리더), SEO, 코드 가독성. 시각장애인이나 검색엔진은 <main>·<nav>로 구조를 이해.',
+        'Q. "Flexbox와 Grid 둘 다 알아야 하나요?" — 네. 1차원은 Flex, 2차원은 Grid라는 원칙만 기억하면 충분.',
+        'Q. "Tailwind CSS 안 쓰나요?" — 본 과정은 기초가 목적이라 순수 CSS. 익숙해진 뒤 Tailwind 도입은 자연스러움.',
+        'Q. "vw·vh·rem·em 무엇을 쓰나요?" — 기본 px·rem, 화면 비율은 vw/vh. em은 부모 의존이라 예측 어려움 — 신중히 사용.',
+        'Q. "다크모드 어떻게 구현하나요?" — CSS 변수 + [data-theme="dark"] 셀렉터. JS로 body에 data-theme 토글.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. <main> 태그는 한 페이지에 몇 개까지 허용되나?',
+        '2. Flexbox에서 가로 정렬을 양 끝으로 분산하는 justify-content 값은?',
+        '3. Grid에서 "최소 280px씩, 가능한 한 많은 열로 자동 분할"하는 속성은?',
+        '4. 모바일 퍼스트의 의미는?',
+        '5. CSS 우선순위에서 ID와 클래스 중 더 강한 것은?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 1개  2) space-between  3) grid-template-columns: repeat(auto-fit, minmax(280px, 1fr))  4) 기본 스타일은 모바일, min-width 미디어 쿼리로 큰 화면 확장  5) ID (10배 강함)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'MDN: developer.mozilla.org/ko/docs/Web/CSS (CSS 표준 문서)',
+        'CSS Tricks: css-tricks.com/snippets/css/a-guide-to-flexbox',
+        'Grid Garden: cssgridgarden.com (게임으로 Grid 학습)',
+        'Flexbox Froggy: flexboxfroggy.com (게임으로 Flex 학습)',
+        '한국어 강의: 코딩애플 YouTube, 노마드코더',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '시맨틱 HTML로 본인 포트폴리오 페이지 골격 작성',
         'Flexbox로 상단 네비게이션 바 구현 (로고-메뉴-CTA 3분할)',
         'Grid로 프로젝트 카드 갤러리 (3열 → 모바일에서 1열)',
-        'AI에게 다크모드 변환 CSS를 요청하고 검토 후 적용',
+        'CSS 변수로 다크모드 토글 구현',
+        'AI에게 "iOS 스타일 카드 디자인"을 요청하고 검토 후 적용',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 3에서는 정적인 페이지에 상호작용을 더하는 JavaScript를 학습합니다. 변수·함수부터 비동기 처리까지, React를 다루기 위한 기반을 다집니다.' },
     ],
   },
 
@@ -643,8 +1131,19 @@ export const regularTopics: Topic[] = [
     id: 'reg-3',
     title: 'Day 3 · JavaScript 기초',
     icon: '📜',
-    description: '변수 선언 3종, 함수 표현 방식, ES6+ 핵심 문법, 배열 메서드, 비동기 처리(Promise/async-await)까지 — React를 다루기 위한 JS 기반을 단단히 다집니다.',
+    description: '변수 선언 3종, 함수 표현 방식, ES6+ 핵심 문법, 배열 메서드, 비동기 처리(Promise/async-await)까지 — React를 다루기 위한 JS 기반을 단단히 다집니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'var/let/const + 함수 4가지', '기본 함수 5개 작성'],
+          ['S2', '50분', 'ES6+ 문법 (Destructuring/Spread/Template)', '간단한 데이터 변환 코드'],
+          ['S3', '50분', '배열 메서드 5종 (map/filter/reduce/find/forEach)', '사용자 목록 가공'],
+          ['S4', '50분', '비동기 + fetch + async/await', 'JSONPlaceholder 호출 완성'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'var · let · const 차이와 사용 가이드라인을 이해한다',
         '배열 메서드(map/filter/reduce/find)를 적재적소에 사용한다',
@@ -757,13 +1256,66 @@ const [a, b] = await Promise.all([
   fetchB(),
 ]);` } },
 
+      { subtitle: 'JavaScript의 7가지 falsy 값' },
+      { code: { lang: 'javascript', content: `// 다음 7개만 falsy, 나머지는 모두 truthy
+false
+0
+-0
+0n          // BigInt zero
+""          // 빈 문자열
+null
+undefined
+NaN
+
+// 주의: [], {}, "0" 등은 truthy
+if ([]) console.log('실행됨');         // 빈 배열도 truthy
+if ({}) console.log('실행됨');         // 빈 객체도 truthy
+if ("0") console.log('실행됨');        // "0" 문자열도 truthy
+
+// 값 존재 검사 패턴
+const value = data?.user?.email ?? '기본값';
+// optional chaining: data 또는 user 없으면 undefined
+// nullish coalescing: undefined·null이면 '기본값'` } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "TypeScript 안 쓰면 안 되나요?" — 본 과정은 TS 사용. JS만 알면 React 입문은 가능하나 협업·유지보수에 큰 차이.',
+        'Q. "==과 === 무엇을 쓰나요?" — 항상 ===. ==은 타입 변환 후 비교로 예측 불가. (예: 0 == "" → true)',
+        'Q. "this가 헷갈려요" — 화살표 함수 위주로 쓰면 this 문제가 거의 사라짐. 일반 함수의 this는 호출 방식에 따라 변함.',
+        'Q. "비동기를 동기처럼 쓸 수 있나요?" — async/await로 동기처럼 보이게 작성 가능. 다만 await는 async 함수 안에서만 사용.',
+        'Q. "콜백 vs Promise vs async/await — 뭘 써야?" — 신규 코드는 무조건 async/await. Promise는 .then 체인이 필요할 때만. 콜백은 setTimeout 등 일부 API에만.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. const로 선언한 객체의 속성을 변경할 수 있는가?',
+        '2. forEach가 map과 다른 점은?',
+        '3. async 함수의 반환값은 무엇으로 감싸지는가?',
+        '4. spread(...) 연산자가 객체와 배열에 어떻게 다르게 동작하는가?',
+        '5. fetch가 4xx/5xx 응답에 대해 reject를 발생시키는가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 예 (참조는 고정, 내용은 가변)  2) forEach는 새 배열을 반환하지 않음  3) Promise  4) 객체에선 속성 복사, 배열에선 요소 복사 (둘 다 얕은 복사)  5) 아니오 — 응답이 와서 정상 resolve. status로 직접 확인 필요' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'MDN JavaScript: developer.mozilla.org/ko/docs/Web/JavaScript',
+        '도서: 『모던 자바스크립트 Deep Dive』 이웅모',
+        '도서: 『You Don\'t Know JS』 시리즈 (영문 무료, github)',
+        '강의: 노마드코더 "바닐라JS로 크롬앱 만들기" (무료)',
+        '실전: javascript.info (한국어 번역 있음)',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '사용자 목록(JSON)을 받아 활성 사용자만 필터 + 나이순 정렬 + 이름만 추출',
         'fetch로 JSONPlaceholder API 호출하는 async 함수 작성',
         'Promise.all로 3개 API 병렬 호출 + 합쳐서 반환',
+        '에러 처리(try-catch) + 4xx/5xx 상태 코드 분기',
         'AI에게 본인이 작성한 코드를 리뷰 받고 개선점 적용',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 4부터 React 본격 시작. 오늘 배운 JS 문법(화살표 함수, 구조 분해, async/await)이 React 코드에 그대로 등장합니다.' },
     ],
   },
 
@@ -771,8 +1323,19 @@ const [a, b] = await Promise.all([
     id: 'reg-4',
     title: 'Day 4 · React 기초',
     icon: '⚛️',
-    description: '컴포넌트 · Props · State · JSX · 핵심 Hook(useState/useEffect)을 코드와 함께 학습하고, 흔한 안티패턴을 회피하는 방법을 익힙니다.',
+    description: '컴포넌트 · Props · State · JSX · 핵심 Hook(useState/useEffect)을 코드와 함께 학습하고, 흔한 안티패턴을 회피하는 방법을 익힙니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'React 3대 개념 + Vite 프로젝트 생성', '첫 컴포넌트 렌더링'],
+          ['S2', '50분', 'JSX + Props', '재사용 가능한 Greeting 컴포넌트'],
+          ['S3', '50분', 'useState + 이벤트 처리', '카운터·짝수 강조'],
+          ['S4', '50분', 'useEffect + fetch + 리스트 렌더링', '사용자 목록 페이지'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '컴포넌트·Props·State 개념을 정확히 구분한다',
         'JSX 규칙(camelCase, className, fragment)을 자유롭게 작성한다',
@@ -912,13 +1475,65 @@ return (
         ],
       } },
 
+      { subtitle: 'React 렌더링 사이클 이해' },
+      { code: { lang: 'text', content: `1) 초기 렌더 (Mount)
+   ① 컴포넌트 함수 호출
+   ② useState/useEffect 등 Hook 초기화
+   ③ JSX 반환 → 가상 DOM 생성
+   ④ 실제 DOM에 적용 (commit)
+   ⑤ useEffect cleanup(이전 effect) → 새 effect 실행
+
+2) 리렌더 (Update)
+   - 트리거: state 변경, props 변경, parent 리렌더
+   ① 컴포넌트 함수 재호출
+   ② Hook은 동일 순서로 호출 (이 순서가 깨지면 에러)
+   ③ JSX 반환 → 가상 DOM 재생성
+   ④ 이전 가상 DOM과 diff → 변경된 DOM만 업데이트
+   ⑤ 의존성 변경된 useEffect cleanup + 재실행
+
+3) 언마운트 (Unmount)
+   ① 모든 useEffect cleanup 실행
+   ② DOM에서 제거` } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "props는 왜 읽기 전용인가요?" — 일방향 데이터 흐름 유지. 자식이 props를 바꾸면 부모 상태와 불일치해 예측 불가.',
+        'Q. "useState 초기값을 함수로 줘야 하는 경우?" — 무거운 계산(localStorage 파싱 등)은 useState(() => 계산함수())로. 매 렌더가 아닌 첫 렌더에만 실행.',
+        'Q. "Class 컴포넌트 안 쓰나요?" — 신규 프로젝트는 함수형 + Hook이 표준. Class는 레거시 유지보수에만.',
+        'Q. "리렌더가 자주 일어나서 느려요" — React.memo, useMemo, useCallback으로 최적화. 단, 측정 후 적용. 조기 최적화는 가독성만 해침.',
+        'Q. "Context와 props 무엇을 쓰나요?" — 3단계 이상 깊으면 Context, 2단계 이하면 props가 더 단순.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. 컴포넌트 이름의 첫 글자는 대문자/소문자 중 어느 것인가?',
+        '2. JSX에서 if-else를 쓸 수 있는가?',
+        '3. useEffect의 두 번째 인자 [] (빈 배열)는 무엇을 의미하는가?',
+        '4. 리스트 렌더링 시 key prop을 index로 주면 안 되는 이유는?',
+        '5. 상태를 직접 수정(count++)하면 어떻게 되는가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 대문자 (소문자는 HTML 태그로 인식)  2) 안 됨. 삼항연산자 또는 if는 return 밖에서  3) 마운트 시 1회만 실행  4) 정렬·삭제 시 React가 잘못된 요소를 재사용 → 버그  5) React가 변화를 감지 못해 리렌더 안 됨 (setCount 사용 필수)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'React 공식 문서: react.dev (한국어 번역 ko.react.dev)',
+        'React Hooks 자세히: react.dev/reference/react',
+        '강의: 노마드코더 "React로 영화 웹 서비스 만들기"',
+        '도서: 『리액트를 다루는 기술』 김민준 (개정판)',
+        'YouTube: 코딩 알려주는 누나, 코딩애플 React 시리즈',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         'Vite + React + TS로 새 프로젝트 생성',
-        '입력값에 따라 인사말을 보여주는 Greeting 컴포넌트 구현',
-        '카운터 + 리셋 + 짝수 강조 표시 컴포넌트 구현',
-        'JSONPlaceholder에서 사용자 목록을 fetch + 렌더링',
+        '입력값에 따라 인사말을 보여주는 Greeting 컴포넌트 구현 (Props 연습)',
+        '카운터 + 리셋 + 짝수 강조 표시 컴포넌트 구현 (useState 연습)',
+        'JSONPlaceholder에서 사용자 목록을 fetch + 렌더링 (useEffect 연습)',
+        '의도적으로 key={index} 버그 만들어보고 정렬 후 버그 관찰 → 수정',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 5에서는 React 심화. React Router로 멀티페이지 SPA를, Context API로 전역 상태를, AuthGuard로 인증 보호를 학습합니다.' },
     ],
   },
 
@@ -926,8 +1541,19 @@ return (
     id: 'reg-5',
     title: 'Day 5 · React 심화 + 라우팅',
     icon: '🔀',
-    description: 'React Router v6, Context API 전역 상태, React.lazy 코드 스플리팅, AuthGuard 인증 보호 패턴까지 — 실제 SPA에 필요한 심화 주제를 학습합니다.',
+    description: 'React Router v6, Context API 전역 상태, React.lazy 코드 스플리팅, AuthGuard 인증 보호 패턴까지 — 실제 SPA에 필요한 심화 주제를 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'React Router v6 + 동적 라우트', '5페이지 SPA 골격'],
+          ['S2', '50분', 'Context API로 인증 상태 관리', 'AuthContext 구현'],
+          ['S3', '50분', 'AuthGuard 패턴 + 보호된 라우트', '/admin 접근 제어'],
+          ['S4', '50분', 'React.lazy + Suspense 코드 스플리팅', '청크 분할 확인'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'React Router v6로 멀티페이지 SPA를 구성한다',
         'Context API로 전역 상태(인증, 테마)를 관리한다',
@@ -1052,13 +1678,45 @@ export default function App() {
         '상태가 깊은 트리로 전달될 때만 사용 (얕은 트리는 props drilling이 더 간단)',
       ] },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "BrowserRouter vs HashRouter?" — 일반 사이트는 BrowserRouter. GitHub Pages처럼 SPA를 서버 설정 없이 호스팅할 때만 HashRouter 또는 404.html 트릭 사용.',
+        'Q. "Context와 Redux 무엇을 쓰나요?" — 소규모는 Context로 충분. 폼·서버 데이터 캐시·복잡한 상태는 Zustand·Jotai·TanStack Query가 더 적합.',
+        'Q. "useNavigate vs Link 차이?" — Link는 클릭 가능한 a 태그(접근성 ↑), useNavigate는 함수형 이동(이벤트 핸들러 안). 사용자 클릭은 Link, 로그인 성공 후 자동 이동은 useNavigate.',
+        'Q. "Lazy 로딩 후 첫 진입이 느려요" — 청크 다운로드 시간. preload 또는 prefetch 힌트로 개선 가능. 그래도 초기 번들 절감이 더 큰 이득.',
+        'Q. "Outlet은 언제 쓰나요?" — 중첩 라우트. <Route path="/admin" element={<AdminLayout/>}> 안에 자식 라우트가 있을 때 자식 위치 지정.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. React Router v6에서 path="/users/:id"의 id 값을 읽는 Hook은?',
+        '2. 보호된 라우트 패턴의 이름은?',
+        '3. React.lazy와 함께 반드시 써야 하는 컴포넌트는?',
+        '4. Context를 잘못 쓰면 발생하는 성능 문제는?',
+        '5. Navigate 컴포넌트의 replace prop은 무엇을 의미하는가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) useParams  2) AuthGuard (또는 RequireAuth)  3) Suspense  4) Context 값이 바뀔 때 모든 소비자 리렌더  5) 브라우저 history를 교체 (뒤로 가기 시 이전 페이지로 안 돌아감)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'React Router 공식: reactrouter.com',
+        'React Context: react.dev/learn/passing-data-deeply-with-context',
+        '대안: Zustand (zustand-demo.pmnd.rs), Jotai (jotai.org)',
+        'TanStack Query: tanstack.com/query (서버 상태 관리)',
+        '강의: 노마드코더 "노마드 챌린지" 시리즈',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '5페이지 SPA 구조 만들기 (Home/About/Users/UserDetail/NotFound)',
         '/users/:id 동적 라우트 + useParams로 ID 표시',
         'AuthContext + AuthGuard로 /admin 라우트 보호',
         '모든 페이지를 React.lazy로 코드 스플리팅 적용 + Network 탭에서 청크 확인',
+        '로그인 후 원래 가려던 페이지로 되돌아가는 로직 구현 (state.from)',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 6부터는 백엔드. Supabase로 회원가입·로그인·데이터베이스 CRUD·파일 업로드를 단 4시간에 풀세트로 구현합니다.' },
     ],
   },
 
@@ -1066,8 +1724,19 @@ export default function App() {
     id: 'reg-6',
     title: 'Day 6 · Supabase 백엔드',
     icon: '🗄️',
-    description: 'Supabase 프로젝트 셋업부터 Auth(회원가입/소셜로그인), Database(CRUD), RLS(행 단위 보안), Storage(파일 업로드)까지 풀스택 백엔드를 코드로 구축합니다.',
+    description: 'Supabase 프로젝트 셋업부터 Auth(회원가입/소셜로그인), Database(CRUD), RLS(행 단위 보안), Storage(파일 업로드)까지 풀스택 백엔드를 코드로 구축합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '프로젝트 생성 + 클라이언트 초기화 + Auth', '이메일 회원가입·로그인 성공'],
+          ['S2', '50분', 'PostgreSQL 테이블 설계 + CRUD', '게시판 테이블 + 글 작성·조회'],
+          ['S3', '50분', 'RLS 정책 (가장 중요)', '본인 글만 수정·삭제 보장'],
+          ['S4', '50분', 'Storage 업로드 + 통합 실습', '프로필 사진 업로드'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'Supabase 프로젝트 생성 + .env 연동을 완료한다',
         'Email/Google/Kakao OAuth 인증을 구현한다',
@@ -1209,13 +1878,46 @@ const { data: { publicUrl } } = supabase.storage
   .from('avatars')
   .getPublicUrl(\`\${userId}/profile.jpg\`);` } },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "RLS 없이도 동작은 되는데 꼭 필요한가요?" — 절대 필수. anon key가 노출된 상황에서 RLS 없으면 누구나 모든 데이터 접근·수정 가능.',
+        'Q. "service_role key는 언제 쓰나요?" — 서버 측(Edge Function·백엔드)에서만. RLS를 우회하므로 클라이언트 노출 시 치명적.',
+        'Q. "PostgreSQL을 처음 배우는데?" — Supabase Dashboard에서 SQL 에디터로 연습. ChatGPT에게 "SQL 학습 로드맵" 요청도 효과적.',
+        'Q. "관계형 테이블 조인은?" — supabase.from(\'posts\').select(\'*, author:users(name)\')처럼 자동 조인 지원.',
+        'Q. "월 무료 한도는?" — 500MB DB, 1GB Storage, 50K MAU, 5GB 트래픽. 학습·MVP에는 충분.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. Supabase 클라이언트 초기화에 필요한 인자 2가지는?',
+        '2. RLS의 정식 명칭은?',
+        '3. auth.uid()는 SQL 정책에서 무엇을 반환하는가?',
+        '4. INSERT 정책에 USING이 아닌 WITH CHECK를 쓰는 이유는?',
+        '5. Storage 버킷의 공개 URL은 어떻게 얻는가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) project URL, anon key  2) Row Level Security  3) 현재 로그인한 사용자의 UUID  4) INSERT는 새 행이므로 기존 행 검사가 아닌 새 행 검사 필요  5) supabase.storage.from(버킷).getPublicUrl(경로)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Supabase 공식: supabase.com/docs (한국어 일부)',
+        'RLS 깊이 학습: supabase.com/docs/guides/auth/row-level-security',
+        '강의: Supabase YouTube 공식 채널',
+        '한국어 블로그: dev.to에서 "Supabase 한국어" 검색',
+        '실전 예제: github.com/supabase/supabase 의 examples 폴더',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         'Supabase 프로젝트 생성 + .env 설정 + 클라이언트 초기화',
         '이메일 회원가입/로그인 폼 구현 (테스트 계정으로 동작 확인)',
         '"posts" 테이블 생성 (id/title/body/author_id/created_at) + RLS 활성화',
+        'RLS 정책 4종 (SELECT·INSERT·UPDATE·DELETE) 각각 작성',
         '게시판 CRUD UI 구현 (글 작성·목록·수정·삭제)',
+        '의도적으로 다른 사용자 글 수정 시도 → RLS가 차단하는지 확인',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 7부터는 팀 프로젝트 본격 시작. PRD 작성·사용자 스토리·MoSCoW 우선순위로 4주 안에 완성할 범위를 결정합니다.' },
     ],
   },
 
@@ -1223,8 +1925,19 @@ const { data: { publicUrl } } = supabase.storage
     id: 'reg-7',
     title: 'Day 7 · AI 서비스 설계',
     icon: '📐',
-    description: 'PRD 작성, 사용자 스토리, MoSCoW 우선순위, AI 통합 아키텍처 — 경진대회 출품작이 될 서비스의 기획 단계를 체계화합니다.',
+    description: 'PRD 작성, 사용자 스토리, MoSCoW 우선순위, AI 통합 아키텍처 — 경진대회 출품작이 될 서비스의 기획 단계를 체계화합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '팀 아이디어 브레인스토밍 + 1개 선정', '팀별 핵심 아이디어 1개'],
+          ['S2', '50분', 'PRD 8섹션 작성 (AI와 함께)', 'PRD 문서 v1'],
+          ['S3', '50분', '사용자 스토리 + MoSCoW', 'MVP 범위 확정'],
+          ['S4', '50분', 'AI 통합 아키텍처 도식화 + 와이어프레임', '아키텍처도 + 와이어프레임'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '제품 요구사항 문서(PRD)의 8개 섹션을 채울 수 있다',
         '사용자 스토리를 INVEST 원칙에 맞게 작성한다',
@@ -1306,13 +2019,74 @@ so that 다음 학습 방향을 결정할 수 있다.
         'Supabase Edge Function은 무료 플랜에서도 사용 가능',
       ] },
 
+      { subtitle: '브레인스토밍 — Crazy 8s 기법' },
+      { code: { lang: 'text', content: `[Crazy 8s 진행 방법] — 30분 안에 아이디어 8개 도출
+
+준비물: A4 1장 (8칸으로 접기), 펜
+인원: 팀당 3~5명
+
+[1단계 · 5분] 문제 정의
+  "쉬었음청년의 어떤 어려움을 도울 것인가?"
+  팀원이 한 줄씩 답변 — 공감되는 1개 선정
+
+[2단계 · 8분] Crazy 8s 본 작업
+  타이머 8분 → 각자 1칸당 1분, 8개 솔루션 스케치
+  말 없이, 빠르게, 평가 없이
+
+[3단계 · 7분] 공유
+  돌아가며 본인 8개 중 1~2개 발표 (30초씩)
+
+[4단계 · 10분] 투표·결정
+  닷 보팅(각자 3표) → 최다 득표 1개 선정
+  선정된 아이디어로 PRD 작성 진입` } },
+
+      { subtitle: '아키텍처 도식 — 손그림 + Excalidraw' },
+      { items: [
+        'Excalidraw (excalidraw.com) — 무료, 손그림 느낌, 브라우저에서 즉시',
+        'draw.io (app.diagrams.net) — 정식 도표, 다양한 템플릿',
+        'Mermaid — 텍스트로 다이어그램 작성, GitHub README에 자동 렌더',
+        'AI 활용: ChatGPT에게 "다음 아키텍처를 Mermaid 코드로" 요청',
+      ] },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "아이디어가 진부한 것 같아요" — 진부한 아이디어 + 좋은 실행이 새 아이디어 + 나쁜 실행보다 낫습니다. 진부함은 검증된 시장.',
+        'Q. "팀원 의견이 갈려요" — 닷 보팅이나 무게 점수 투표. 결정자는 사전에 정해두세요.',
+        'Q. "MVP에서 빼고 싶지 않은 게 너무 많아요" — Day 12 배포까지 시간 역산. 안 빼면 모든 게 미완성. "다음 버전에서"로 미루기.',
+        'Q. "LLM을 어디에 써야 할지 모르겠어요" — "사용자가 자유 텍스트로 표현하는 곳" + "전문가의 의견이 필요한 곳"이 1순위 후보.',
+        'Q. "기획서를 너무 자세히 쓰면 시간 낭비 아닌가요?" — 8섹션 1페이지로 충분. 너무 자세하면 변경 비용↑. PRD는 살아있는 문서.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. PRD 8섹션 중 가장 먼저 작성해야 하는 섹션은?',
+        '2. INVEST 원칙의 N은 무엇을 의미하는가?',
+        '3. MoSCoW의 W는?',
+        '4. AI 서비스에서 LLM API 키를 클라이언트에 두면 안 되는 이유는?',
+        '5. MVP의 정의를 한 줄로 답하시오.',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) Problem (문제 정의) — 모든 결정의 기준  2) Negotiable (협상 가능)  3) Won\'t (이번엔 안 함)  4) 봇이 24시간 안에 키 스캔해 도용 → 비용 폭증  5) 핵심 가치를 검증할 수 있는 최소 기능의 제품' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        '도서: 『Inspired』 마티 케이건 (PM 필독서)',
+        '도서: 『린 스타트업』 에릭 리스',
+        'PRD 템플릿: 노션 templates에서 "PRD" 검색',
+        'Excalidraw: excalidraw.com (즉시 사용 가능)',
+        'IDEO Design Kit (한국어 번역 PDF 있음) — 디자인 씽킹 도구',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
-        '팀 아이디어 브레인스토밍 — 30분 동안 10개 이상 아이디어 발산',
-        '1개 선정 후 PRD 8섹션 채우기 (AI와 함께 작성)',
+        'Crazy 8s로 팀 아이디어 8개 발산 + 1개 선정',
+        'PRD 8섹션 채우기 (AI와 함께 작성)',
         '핵심 사용자 스토리 5개 작성 + INVEST 원칙 점검',
-        'MoSCoW로 4주에 만들 범위 확정 + 와이어프레임 손그림',
+        'MoSCoW로 4주에 만들 범위 확정',
+        'Excalidraw 또는 손그림으로 와이어프레임 + 아키텍처 도식화',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 8에서는 오늘 설계한 LLM 통합을 코드로 구현합니다. Solar API 호출·스트리밍·에러 처리·비용 관리를 모두 실습합니다.' },
     ],
   },
 
@@ -1320,8 +2094,19 @@ so that 다음 학습 방향을 결정할 수 있다.
     id: 'reg-8',
     title: 'Day 8 · LLM API 연동',
     icon: '🔌',
-    description: 'OpenAI 호환 형식, messages 배열 구조, 스트리밍 응답, temperature/max_tokens 튜닝, 에러 처리·재시도까지 — 프로덕션 품질의 LLM 통합을 코드로 구현합니다.',
+    description: 'OpenAI 호환 형식, messages 배열 구조, 스트리밍 응답, temperature/max_tokens 튜닝, 에러 처리·재시도까지 — 프로덕션 품질의 LLM 통합을 코드로 구현합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'REST API 기본 + Solar 표준 호출', 'fetch 호출 성공'],
+          ['S2', '50분', 'messages 배열 + 다중 턴 대화', '대화형 챗봇 골격'],
+          ['S3', '50분', '스트리밍 응답 + 토큰 단위 표시', '실시간 챗 UI'],
+          ['S4', '50분', '에러 처리·재시도·비용 관리', '안정적인 프로덕션 함수'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'fetch로 Solar API를 호출하고 응답을 파싱한다',
         'messages 배열 + system/user/assistant 역할을 활용한다',
@@ -1472,13 +2257,45 @@ export async function chatWithRetry(
 → 1만 명 × 10턴 = 약 12만 원
 대화 누적 시 system이 매번 포함되므로 길이 관리가 비용 관리` } },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "스트리밍이 꼭 필요한가요?" — UX 차이가 큼. 응답 5초 vs 즉시 표시는 체감 천양지차. 챗봇은 사실상 필수.',
+        'Q. "대화 기록이 너무 길어지면?" — 토큰 한도 초과 위험. 일정 길이 넘으면 이전 대화를 요약해서 system 메시지에 합치는 패턴.',
+        'Q. "함수 호출(function calling)은 무엇인가요?" — LLM이 정의된 함수를 호출하도록 유도. 예: "오늘 날씨" → get_weather() 함수 호출 → 결과를 다시 LLM이 자연어로 변환.',
+        'Q. "비용을 줄이려면?" — ① 짧은 system 프롬프트 ② 캐싱 ③ Mini/Lite 모델로 분류 + Pro 모델로 생성 (라우팅) ④ max_tokens 제한.',
+        'Q. "Rate limit에 자주 걸려요" — 지수 백오프 재시도 + 동시 요청 수 제한 (Semaphore 패턴). 유료 플랜 업그레이드는 마지막 카드.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. messages 배열의 role 값 3가지를 답하시오.',
+        '2. 응답을 결정적으로 만들려면 temperature를 얼마로 설정하나?',
+        '3. 스트리밍 응답에서 마지막에 오는 시그널은?',
+        '4. 429 응답 코드는 무엇을 의미하는가?',
+        '5. 비용을 줄이는 캐싱 전략 1가지를 답하시오.',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) system, user, assistant  2) 0 (또는 0에 가까운 값)  3) [DONE]  4) Too Many Requests (rate limit 초과)  5) 자주 묻는 질문 상위 N개를 Redis/DB에 캐싱' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'OpenAI API 문서: platform.openai.com/docs (표준이므로 학습 추천)',
+        'Solar 문서: developers.upstage.ai',
+        'Server-Sent Events (SSE) MDN: developer.mozilla.org/ko/docs/Web/API/Server-sent_events',
+        '스트리밍 패턴: vercel.ai 라이브러리 GitHub',
+        '비용 계산기: openai.com/api/pricing',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         'fetch로 Solar API 동기 호출 → 응답 JSON 구조 파악',
         '대화형 messages 배열 + 후속 질문 처리 구현',
         '스트리밍 응답으로 챗 UI 구현 (토큰 단위 표시)',
         'temperature 0.0 / 0.7 / 1.5 응답 차이 비교 노트',
+        '의도적으로 rate limit 유발 → 재시도 로직 동작 확인',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 9부터는 실제 팀 프로젝트의 프론트엔드 본 개발. 디자인 토큰·컴포넌트 분리·4가지 상태 UI로 완성도를 끌어올립니다.' },
     ],
   },
 
@@ -1486,8 +2303,19 @@ export async function chatWithRetry(
     id: 'reg-9',
     title: 'Day 9 · 프로젝트 프론트엔드 개발',
     icon: '🎨',
-    description: '디자인 토큰 · 컴포넌트 분리 · 로딩/에러/빈 상태 UI · 모바일 우선 반응형 — 실전 프론트엔드 품질을 결정하는 핵심 패턴을 한꺼번에 적용합니다.',
+    description: '디자인 토큰 · 컴포넌트 분리 · 로딩/에러/빈 상태 UI · 모바일 우선 반응형 — 실전 프론트엔드 품질을 결정하는 핵심 패턴을 한꺼번에 적용합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '디자인 토큰(CSS 변수) + 다크모드 대응', '토큰 시스템 구축'],
+          ['S2', '50분', 'Atomic Design — Atom/Molecule/Organism', '재사용 컴포넌트 5개'],
+          ['S3', '50분', '4가지 상태 UI (로딩·에러·빈·성공)', '데이터 의존 페이지 1개'],
+          ['S4', '50분', '모바일 퍼스트 반응형 + 터치 타깃', '모바일/태블릿/PC 검증'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '디자인 시스템 토큰(색·간격·타이포)을 CSS 변수로 정의한다',
         'Atomic Design 원칙으로 컴포넌트를 단계별로 분리한다',
@@ -1611,13 +2439,45 @@ export async function chatWithRetry(
   font-size: var(--font-base);
 }` } },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "디자인 시스템을 처음부터 직접 만들어야 하나요?" — 시간 부족하면 shadcn/ui, Radix UI 등 기성품 활용. 본 과정은 학습 목적이라 직접.',
+        'Q. "Atomic Design을 엄격히 지켜야 하나요?" — 가이드일 뿐. 작은 프로젝트는 components/ 하위에 단순 분류로도 충분.',
+        'Q. "디자인 시안이 없어요" — Figma Community 무료 템플릿 활용. AI에게 "Stripe 스타일 랜딩 페이지 컴포넌트 구조"도 물어보기.',
+        'Q. "로딩 스피너 vs 스켈레톤 UI?" — 즉시 끝나는 작업은 스피너, 카드형 데이터는 스켈레톤이 체감 빠름.',
+        'Q. "다크모드 색 어떻게 정하나요?" — 명도만 반전하면 어색. 채도도 약간 낮추기. Tailwind dark mode 색 참고 추천.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. CSS 변수의 장점 1가지를 답하시오.',
+        '2. Atomic Design 5단계의 두 번째는?',
+        '3. 비동기 컴포넌트의 4가지 상태는?',
+        '4. 모바일 퍼스트의 미디어 쿼리는 max-width vs min-width 중 어느 것?',
+        '5. 터치 타깃 최소 권장 크기는?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 일관성·다크모드·테마 변경 용이 (이 중 하나)  2) Molecule  3) 로딩·에러·빈·성공  4) min-width  5) 44×44px (Apple HIG) 또는 48dp (Material)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Atomic Design 원전: bradfrost.com/blog/post/atomic-web-design',
+        'Tailwind CSS: tailwindcss.com (디자인 토큰 표준 참고)',
+        'shadcn/ui: ui.shadcn.com (복붙형 컴포넌트)',
+        'Apple HIG: developer.apple.com/design/human-interface-guidelines',
+        'Material Design: m3.material.io',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '팀 프로젝트 색·간격·타이포를 CSS 변수로 추출 + 다크모드 대응',
         '핵심 페이지 1개를 Atom→Molecule→Organism 순으로 재구성',
         '비동기 데이터를 가진 컴포넌트에 4가지 상태 UI 모두 구현',
         '모바일/태블릿/데스크탑 3종에서 정상 동작 확인 (DevTools 리사이즈)',
+        '터치 타깃 44px 이상 확보 + 실제 모바일에서 손가락 클릭 테스트',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 10에서는 오늘 만든 프론트엔드를 Day 6의 Supabase 백엔드와 연결합니다. Realtime·파일 업로드까지 풀세트 통합.' },
     ],
   },
 
@@ -1625,8 +2485,19 @@ export async function chatWithRetry(
     id: 'reg-10',
     title: 'Day 10 · 프로젝트 백엔드 연동',
     icon: '🔗',
-    description: 'Supabase Realtime 구독, 파일 업로드 + 미리보기, 폼 검증 분리, .env 환경별 분리 — 실제 프로젝트의 백엔드 연동 흐름을 빈틈없이 학습합니다.',
+    description: 'Supabase Realtime 구독, 파일 업로드 + 미리보기, 폼 검증 분리, .env 환경별 분리 — 실제 프로젝트의 백엔드 연동 흐름을 빈틈없이 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'React-Supabase CRUD 연동', '동작하는 CRUD 화면'],
+          ['S2', '50분', 'Realtime 구독 + 다른 탭 동기화', '실시간 반영 동작'],
+          ['S3', '50분', '파일 업로드 + Storage + 미리보기', '프로필 사진 변경'],
+          ['S4', '50분', '폼 검증 + .env 환경 분리 + 통합 테스트', '프로덕션 빌드 검증'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'Supabase 테이블 CRUD를 React 컴포넌트와 연동한다',
         'Realtime 구독으로 실시간 데이터 변경을 반영한다',
@@ -1759,13 +2630,45 @@ VITE_SUPABASE_ANON_KEY=prod_key_...
 # .env.local — gitignore 대상, 개인 비밀
 VITE_PERSONAL_DEBUG_KEY=...` } },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "Realtime이 동작하지 않아요" — ① 테이블의 Replication 활성화 확인 ② RLS가 SELECT를 허용하는지 ③ supabase.removeChannel 호출 누락 (메모리 누수).',
+        'Q. "파일 업로드 용량 제한은?" — 기본 50MB. 프로젝트 설정에서 조정 가능. 큰 파일은 멀티파트 업로드 필요.',
+        'Q. ".env 변수가 안 읽혀요" — Vite는 반드시 VITE_ 접두사 필요. .env 변경 후 dev 서버 재시작 필수.',
+        'Q. "프로덕션 빌드에서만 에러가 나요" — 환경변수 누락이 1순위. .env.production 또는 배포 플랫폼 환경변수 설정 확인.',
+        'Q. "이미지가 너무 커서 느려요" — 업로드 전 클라이언트에서 압축 (browser-image-compression 라이브러리) 또는 Supabase Image Transformation 활용.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. Vite 환경변수에 반드시 붙어야 하는 접두사는?',
+        '2. Realtime 채널을 컴포넌트 언마운트 시 어떻게 정리하는가?',
+        '3. Storage upload의 upsert: true 옵션은 무엇을 의미하는가?',
+        '4. 클라이언트 검증만 신뢰하면 안 되는 이유는?',
+        '5. .env.local과 .env.production 중 어느 것을 git에 커밋해야 하는가?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) VITE_  2) supabase.removeChannel(channel)  3) 같은 경로에 파일이 있으면 덮어쓰기  4) DevTools로 우회 가능 → DB 또는 Edge Function에서 재검증 필요  5) 둘 다 커밋 금지 (.env.example만 공유, 실제 키는 배포 플랫폼 환경변수로)' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Supabase Realtime: supabase.com/docs/guides/realtime',
+        'Supabase Storage: supabase.com/docs/guides/storage',
+        'Vite 환경변수: vite.dev/guide/env-and-mode',
+        '이미지 압축: github.com/Donaldcwl/browser-image-compression',
+        '폼 라이브러리: react-hook-form.com (대형 폼에 추천)',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '프로젝트 핵심 테이블 1개를 Supabase에 생성 + React CRUD 화면 구현',
         'Realtime 구독으로 다른 탭에서 추가한 데이터가 즉시 반영되도록',
         '프로필 사진 업로드 기능 — 즉시 미리보기 + Storage 저장 + URL 반영',
         '.env.development와 .env.production을 분리하고 빌드별 차이 확인',
+        '프로덕션 빌드(npm run build && npm run preview)에서 실제 동작 확인',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 11에서는 만들어놓은 모든 기능을 테스트·디버깅. Chrome DevTools·React DevTools·Lighthouse로 품질을 끌어올립니다.' },
     ],
   },
 
@@ -1773,8 +2676,19 @@ VITE_PERSONAL_DEBUG_KEY=...` } },
     id: 'reg-11',
     title: 'Day 11 · 테스트 및 디버깅',
     icon: '🐛',
-    description: 'Chrome DevTools 4대 탭, React DevTools Profiler, Lighthouse 4지표, AI 코드 리뷰 — 실서비스 품질로 끌어올리기 위한 점검 도구를 종합 학습합니다.',
+    description: 'Chrome DevTools 4대 탭, React DevTools Profiler, Lighthouse 4지표, AI 코드 리뷰 — 실서비스 품질로 끌어올리기 위한 점검 도구를 종합 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'Chrome DevTools 4탭 마스터', '느린 API 1개 식별·개선'],
+          ['S2', '50분', 'React DevTools Profiler', '리렌더 원인 발견·수정'],
+          ['S3', '50분', 'Lighthouse 4지표 + 개선', '4지표 80점 이상'],
+          ['S4', '50분', 'AI 코드 리뷰 + 자주 발생하는 에러 5종', '진짜 문제 1개 이상 개선'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'Chrome DevTools의 4대 탭(Console/Network/Sources/Performance)을 활용한다',
         'React DevTools로 컴포넌트 상태·리렌더 원인을 추적한다',
@@ -1857,13 +2771,69 @@ lighthouse https://rest.dreamitbiz.com --view
 \`\`\`` } },
       { callout: { type: 'tip', text: 'AI 리뷰는 100% 신뢰하지 말고 "후보 발견 도구"로 사용하세요. AI가 지적한 것 중 50%는 실제 문제, 30%는 스타일 차이, 20%는 잘못된 지적입니다. 본인이 판단해 적용하세요.' } },
 
+      { subtitle: '디버깅 멘탈 모델' },
+      { code: { lang: 'text', content: `[과학적 디버깅 5단계]
+
+1. 재현
+   - 정확히 어떤 조작에서 발생하는가?
+   - 100% 재현되는가, 일부만 재현되는가?
+   - 재현되지 않으면 일단 멈추고 더 많은 정보 수집
+
+2. 가설
+   - "X가 원인일 것이다" — 1개 가설부터
+   - 너무 많은 가설은 검증 비용 폭발
+
+3. 실험
+   - 가설을 확인하는 최소 실험 설계
+   - console.log·breakpoint·테스트 케이스
+
+4. 검증
+   - 실험 결과가 가설을 지지/반박하는가?
+   - 가설 기각 시 2번으로
+
+5. 수정·재현 시도
+   - 진짜 원인이 맞다면 수정
+   - 수정 후 재현되지 않으면 종결` } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "console.log 너무 많이 써요" — 학습 단계는 OK. 익숙해지면 브레이크포인트가 더 효율적. Sources 탭에서 줄 번호 클릭.',
+        'Q. "Lighthouse 90+ 받기 어려워요" — 이미지 최적화·코드 스플리팅·폰트 preload·CDN. 90+는 진짜 빠른 사이트의 기준.',
+        'Q. "에러가 production에서만 나요" — Sentry 같은 에러 모니터링 도입. 무료 플랜으로 시작 가능.',
+        'Q. "useMemo·useCallback 언제 쓰나요?" — Profiler로 측정 후 적용. 조기 최적화는 코드만 복잡하게.',
+        'Q. "테스트 코드를 꼭 써야 하나요?" — 본 4주에서는 필수 아님. 다만 핵심 비즈니스 로직(LLM 호출 함수 등) 1~2개는 Vitest로 작성 권장.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. Network 탭에서 1초 이상 걸리는 호출을 식별하는 방법은?',
+        '2. React DevTools의 Highlight updates 옵션은 무엇을 시각화하는가?',
+        '3. Lighthouse Performance 점수의 핵심 지표 1개를 답하시오.',
+        '4. "Maximum update depth exceeded" 에러의 원인은?',
+        '5. AI 리뷰를 100% 신뢰하면 안 되는 이유는?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) Time 컬럼 정렬 + 시간 기준 필터  2) 리렌더가 발생한 컴포넌트 영역  3) LCP·FID·CLS 중 하나 (Core Web Vitals)  4) setState가 무한 루프 — useEffect 의존성 또는 조건 점검  5) 환각·잘못된 지적이 30~50% 섞임 → 본인이 판단 필요' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'Chrome DevTools: developer.chrome.com/docs/devtools',
+        'React DevTools: react.dev/learn/react-developer-tools',
+        'Lighthouse: developer.chrome.com/docs/lighthouse',
+        'Web.dev: web.dev/learn (성능·접근성 학습)',
+        '도서: 『도메인 주도 설계 시작하기』 최범균 (이후 단계)',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         'Network 탭으로 우리 프로젝트의 모든 API 호출 점검 + 1초 이상 호출 1개 이상 개선',
         'React DevTools Profiler로 5초 녹화 → 리렌더 원인 1개 발견 + 수정',
         'Lighthouse 실행 → 4지표 80점 이상 달성',
         'AI 리뷰로 핵심 컴포넌트 1개 점검 + 진짜 문제 1개 이상 개선',
+        '5단계 디버깅 멘탈 모델로 실제 버그 1개 해결 + 과정 기록',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 12에서는 배포. GitHub Pages·CNAME·발표 자료 8슬라이드 구성까지 — 외부에 공개할 준비를 완성합니다.' },
     ],
   },
 
@@ -1871,8 +2841,19 @@ lighthouse https://rest.dreamitbiz.com --view
     id: 'reg-12',
     title: 'Day 12 · 배포와 발표 준비',
     icon: '🚀',
-    description: 'Vite 빌드·GitHub Pages 자동화·CNAME·base path 설정과 5~10분 발표 자료 8슬라이드 권장 구성을 마무리합니다.',
+    description: 'Vite 빌드·GitHub Pages 자동화·CNAME·base path 설정과 5~10분 발표 자료 8슬라이드 권장 구성을 마무리합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', 'Vite 빌드 + gh-pages 자동 배포', '첫 GitHub Pages 배포'],
+          ['S2', '50분', 'CNAME 커스텀 도메인 + Vite base', '실제 도메인 접근'],
+          ['S3', '50분', '배포 후 체크리스트 + SPA 404 해결', '모든 라우트 동작'],
+          ['S4', '50분', '8슬라이드 발표 자료 작성', '슬라이드 v1 완성'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         'Vite 프로덕션 빌드 결과물을 이해한다',
         'gh-pages 패키지로 자동 배포를 설정한다',
@@ -1967,13 +2948,70 @@ export default defineConfig({
         ],
       } },
 
+      { subtitle: 'SPA 404 트릭 (GitHub Pages용)' },
+      { code: { lang: 'html', content: `<!-- public/404.html — GitHub Pages는 404 시 이 파일을 서빙 -->
+<!doctype html>
+<html>
+<head>
+  <script>
+    // 현재 경로를 쿼리로 변환해 index.html로 보내기
+    var l = window.location;
+    var path = l.pathname.slice(1).split('/').join('/');
+    l.replace(l.protocol + '//' + l.host + '/?/' + path + l.search + l.hash);
+  </script>
+</head>
+<body></body>
+</html>` } },
+      { code: { lang: 'html', content: `<!-- index.html에 추가 — 쿼리를 다시 경로로 복원 -->
+<script>
+  (function(l) {
+    if (l.search[1] === '/') {
+      var decoded = l.search.slice(1).split('&').map(s => s.replace(/~and~/g, '&')).join('?');
+      window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+    }
+  }(window.location));
+</script>` } },
+      { callout: { type: 'info', text: 'SPA는 클라이언트 라우팅이라 /about에서 새로고침하면 GitHub Pages가 about.html을 찾다 404. 위 트릭으로 모든 404를 index.html로 보내 React Router가 처리하게 합니다.' } },
+
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "Vercel/Netlify와 비교해 GitHub Pages는?" — 정적만 가능(서버 없음), 무료, 커스텀 도메인 지원. SPA는 모두 OK. Edge Function이 필요하면 Vercel.',
+        'Q. "배포 후 변경이 반영 안 돼요" — CDN 캐시. Ctrl+Shift+R(강력 새로고침) 또는 5~30분 대기.',
+        'Q. "HTTPS는 자동인가요?" — GitHub Pages는 무료 HTTPS 제공. 커스텀 도메인도 자동 인증서.',
+        'Q. "환경변수가 빌드에 안 들어가요" — VITE_ 접두사 + 빌드 시점에 .env.production 존재 필요.',
+        'Q. "여러 사이트를 한 저장소에서?" — 권장 안 함. 1 repo = 1 site가 가장 단순. 모노레포는 학습 후.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. gh-pages 패키지가 배포하는 기본 브랜치명은?',
+        '2. 커스텀 도메인을 위해 public 폴더에 둬야 하는 파일은?',
+        '3. Vite base가 "/"이 아닌 경우는?',
+        '4. SPA 404 문제를 해결하는 표준 파일명은?',
+        '5. predeploy 스크립트의 역할은?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) gh-pages  2) CNAME (확장자 없음)  3) GitHub 기본 URL <user>.github.io/<repo>/ 사용 시 "/<repo>/"  4) public/404.html  5) deploy 직전 자동 실행되는 사전 작업 — 보통 npm run build' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        'gh-pages 패키지: github.com/tschaub/gh-pages',
+        'Vite 배포 가이드: vite.dev/guide/static-deploy',
+        'GitHub Pages: docs.github.com/ko/pages',
+        '발표 디자인: Pitch.com, Canva (무료 템플릿)',
+        '도메인 등록: 가비아·Cloudflare·Namecheap',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         'gh-pages로 팀 프로젝트 GitHub Pages 배포 성공',
         'CNAME + DNS 설정으로 커스텀 도메인 연결',
+        '404.html 트릭으로 SPA 라우팅 새로고침 문제 해결',
         '배포 후 체크리스트 6개 모두 통과',
         '발표 자료 8슬라이드 1차 초안 + 데모 3분 시나리오 작성',
       ] },
+
+      { subtitle: '다음 시간 예고' },
+      { text: 'Day 13 — 마지막 날. 5~10분 발표·라이브 데모·피어 리뷰로 4주의 여정을 마무리하고, 경진대회 출품 준비를 완성합니다.' },
     ],
   },
 
@@ -1981,8 +3019,19 @@ export default defineConfig({
     id: 'reg-13',
     title: 'Day 13 · 최종 발표 및 평가',
     icon: '🏆',
-    description: '5~10분 발표·라이브 데모·피어 리뷰·예상 질문 대응 — 경진대회 출품 직전 모든 요소를 완성하고 검증합니다.',
+    description: '5~10분 발표·라이브 데모·피어 리뷰·예상 질문 대응 — 경진대회 출품 직전 모든 요소를 완성하고 검증합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
+      { subtitle: '강의 흐름 (4시간 · 50분 × 4세션)' },
+      { table: {
+        headers: ['세션', '시간', '주제', '핵심 산출물'],
+        rows: [
+          ['S1', '50분', '팀 내 풀 리허설 (5~10분 × 1회)', '시간 측정 + 문제점 식별'],
+          ['S2', '50분', '팀별 본 발표 + 피어 리뷰', '발표 점수 + 피드백 받기'],
+          ['S3', '50분', '팀별 본 발표 후반 + 피어 리뷰', '발표 점수 + 피드백 받기'],
+          ['S4', '50분', '경진대회 출품 최종 점검 + 전체 회고', '출품 완료 확정'],
+        ],
+      } },
+
       { subtitle: '학습 목표', items: [
         '5~10분 분량의 팀 발표를 자연스럽게 진행한다',
         '3분 라이브 데모를 시나리오대로 안정적으로 수행한다',
@@ -2068,13 +3117,46 @@ export default defineConfig({
         '✅ 발표 1회 이상 풀 리허설 완료',
       ] },
 
+      { subtitle: '자주 묻는 질문 (FAQ)' },
+      { items: [
+        'Q. "발표가 너무 떨려요" — 시작 30초만 외워두고, 나머지는 슬라이드 흐름에 맞춰 자연스럽게. 실수해도 사과하지 말고 계속 진행.',
+        'Q. "데모가 망가지면?" — 백업 영상 또는 GIF로 즉시 전환. "사전 녹화된 데모 보여드리겠습니다" 자연스럽게 처리.',
+        'Q. "질문에 답을 모르면?" — "좋은 지적입니다. 그 부분은 아직 검증하지 못했습니다. 다음 단계로 검토하겠습니다." — 솔직함이 최고.',
+        'Q. "수상 못 했어요" — 4주 만에 0에서 작동하는 AI 서비스를 만들어 발표까지 한 것 자체가 큰 성취. GitHub·포트폴리오로 활용.',
+        'Q. "이후 어떻게 학습을 이어가나요?" — ① 현재 프로젝트 지속 개선 ② 새 프로젝트 1개 더 ③ 본인이 쓴 기술의 공식 문서 정독 ④ 커뮤니티 참여.',
+      ] },
+
+      { subtitle: '자가 점검 퀴즈' },
+      { items: [
+        '1. 5분 발표에서 라이브 데모에 할당하는 권장 시간은?',
+        '2. 데모 중 인터넷이 끊겼을 때 대비책은?',
+        '3. 경진대회 평가 5개 항목 중 가중치 가장 높은 것은?',
+        '4. "차별점이 무엇인가요" 질문에 답할 때 강조할 점 1가지는?',
+        '5. 발표 첫 슬라이드의 권장 구성은?',
+      ] },
+      { callout: { type: 'tip', text: '정답: 1) 약 2분  2) 모바일 핫스팟 백업 + 사전 녹화 영상  3) 문제 해결력 (30%)  4) 국내 LLM 활용·도메인 특화·UX 중 1~2개  5) 서비스명 + 한 줄 가치 제안 + 팀명' } },
+
+      { subtitle: '참고 자료' },
+      { items: [
+        '발표 잘하기: TED-Ed "How to give a great presentation"',
+        '도서: 『프레젠테이션 젠』 가르 레이놀즈',
+        '슬라이드 영감: pitch.com/templates',
+        '경진대회 정보: AI 리부트 경진대회 공식 페이지',
+        '계속 학습: 한국 AI 커뮤니티 (모두의 연구소, AI Korea)',
+      ] },
+
       { subtitle: '실습 (4시간)' },
       { items: [
         '팀 내 발표 풀 리허설 1회 (5~10분 + 데모 3분)',
         '피어 리뷰 양식으로 다른 팀 1팀 평가 + 피드백 작성',
         '본 팀 발표에 받은 피드백 반영하여 슬라이드·시나리오 보강',
         '경진대회 출품 최종 체크리스트 7개 모두 통과',
+        '4주 회고 — 가장 배운 것·아쉬운 점·다음 학습 계획 작성',
       ] },
+
+      { subtitle: '강의 마무리 — 4주 80시간 완주를 축하합니다' },
+      { text: '선수과정 20H + 정규과정 52H + 기술코칭 8H = 80시간의 여정을 완주하셨습니다. AI 코딩 도구와 국내 LLM을 활용해 0에서 동작하는 AI 서비스를 만들고, 경진대회 출품까지 도달한 것은 결코 가벼운 성취가 아닙니다. 이제 본인만의 다음 프로젝트로 학습을 이어가시기 바랍니다.' },
+      { callout: { type: 'info', text: '본 강의는 본 사이트 운영사인 드림아이티비즈(DreamIT Biz)의 이애본 대표(총괄 책임교수)가 직접 설계·운영했습니다. 강의 종료 후에도 본 사이트는 계속 운영되며, 후속 코칭과 커뮤니티를 통해 지속적으로 함께합니다.' } },
     ],
   },
 ];
