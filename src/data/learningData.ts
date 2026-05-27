@@ -6853,6 +6853,593 @@ function PostModal({ userId, onClose }: { userId: number; onClose: () => void })
       },
 
       {
+        id: 'reg-4-practice-2',
+        title: '실습 2 · Vite + React + TS 셋업 (20분)',
+        icon: '🧪',
+        summary: '본 강의 표준 환경을 처음부터 끝까지 직접 구축. 타입·별칭·ESLint·Prettier까지.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Vite + React + TS 프로젝트 생성',
+            'strict 모드 + path alias 설정',
+            'ESLint + Prettier 충돌 없이 동작',
+          ] },
+
+          { subtitle: '단계 1 · 프로젝트 생성 (5분)' },
+          { code: { lang: 'bash', content: `npm create vite@latest my-react-app -- --template react-ts
+cd my-react-app
+npm install
+npm run dev
+# → http://localhost:5173 — Vite 로고 보이면 OK` } },
+
+          { subtitle: '단계 2 · tsconfig strict + paths (5분)' },
+          { code: { lang: 'json', content: `// tsconfig.json
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noUncheckedIndexedAccess": true,
+
+    "baseUrl": ".",
+    "paths": { "@/*": ["src/*"] },
+
+    "skipLibCheck": true,
+    "noEmit": true
+  },
+  "include": ["src"]
+}` } },
+          { code: { lang: 'typescript', content: `// vite.config.ts
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+import path from 'path';
+
+export default defineConfig({
+  plugins: [react()],
+  resolve: {
+    alias: { '@': path.resolve(__dirname, './src') },
+  },
+});` } },
+
+          { subtitle: '단계 3 · Prettier 추가 (5분)' },
+          { code: { lang: 'bash', content: `npm install -D prettier eslint-config-prettier
+
+# .prettierrc
+{
+  "semi": true,
+  "singleQuote": true,
+  "tabWidth": 2,
+  "trailingComma": "all",
+  "printWidth": 100
+}` } },
+
+          { subtitle: '단계 4 · 폴더 구조 + 첫 컴포넌트 (5분)' },
+          { code: { lang: 'bash', content: `mkdir -p src/components/ui src/pages src/hooks src/contexts src/utils src/types
+
+# src/components/ui/Button.tsx
+import type { ButtonHTMLAttributes } from 'react';
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'ghost';
+}
+export default function Button({ variant = 'primary', ...rest }: ButtonProps) {
+  return <button className={\`btn btn-\${variant}\`} {...rest} />;
+}
+
+# src/App.tsx — @/ 별칭 사용
+import Button from '@/components/ui/Button';
+function App() {
+  return <Button>안녕</Button>;
+}` } },
+
+          { subtitle: '검증' },
+          { items: [
+            'npm run dev → 정상 동작',
+            'npm run build → 0 에러',
+            '의도적으로 any 사용 → strict 모드가 잡아냄',
+            '@/ 별칭 자동완성 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-practice-3',
+        title: '실습 3 · Greeting 컴포넌트 — Props 마스터 (25분)',
+        icon: '🧪',
+        summary: 'Props 정의·옵셔널·기본값·children·합성 패턴을 모두 활용한 Greeting 컴포넌트.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'TypeScript 인터페이스로 Props 정의',
+            '필수·옵셔널·기본값 모두 활용',
+            'children prop 활용',
+          ] },
+
+          { subtitle: '단계 1 · 기본 Greeting' },
+          { code: { lang: 'tsx', content: `// src/components/Greeting.tsx
+interface GreetingProps {
+  name: string;              // 필수
+  age?: number;              // 옵셔널
+  greeting?: string;         // 옵셔널 + 기본값 사용
+}
+
+export default function Greeting({
+  name,
+  age,
+  greeting = '안녕',         // 기본값
+}: GreetingProps) {
+  return (
+    <section className="greeting">
+      <h1>{greeting}, {name}!</h1>
+      {age !== undefined && <p>나이: {age}세</p>}
+    </section>
+  );
+}
+
+// 사용
+<Greeting name="홍길동" />                          // greeting="안녕"
+<Greeting name="김철수" age={25} />
+<Greeting name="이영희" age={30} greeting="hi" />` } },
+
+          { subtitle: '단계 2 · children prop 활용' },
+          { code: { lang: 'tsx', content: `interface CardProps {
+  title: string;
+  children: React.ReactNode;     // 자식 콘텐츠
+}
+
+export default function Card({ title, children }: CardProps) {
+  return (
+    <article className="card">
+      <h2>{title}</h2>
+      <div className="card-body">{children}</div>
+    </article>
+  );
+}
+
+// 사용
+<Card title="환영">
+  <Greeting name="홍길동" age={30} />
+  <button>시작하기</button>
+</Card>` } },
+
+          { subtitle: '단계 3 · 함수형 props (콜백)' },
+          { code: { lang: 'tsx', content: `interface CounterProps {
+  initial?: number;
+  onChange?: (value: number) => void;
+}
+
+export default function Counter({ initial = 0, onChange }: CounterProps) {
+  const [count, setCount] = useState(initial);
+
+  const increment = () => {
+    const next = count + 1;
+    setCount(next);
+    onChange?.(next);     // 부모에게 알림 (옵셔널 체이닝)
+  };
+
+  return (
+    <div>
+      <p>{count}</p>
+      <button onClick={increment}>+1</button>
+    </div>
+  );
+}
+
+// 사용
+<Counter
+  initial={10}
+  onChange={(v) => console.log('변경:', v)}
+/>` } },
+
+          { subtitle: '단계 4 · HTML 속성 확장' },
+          { code: { lang: 'tsx', content: `// 기존 button 속성 모두 + variant 추가
+interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary';
+}
+
+export default function Button({ variant = 'primary', className = '', ...rest }: ButtonProps) {
+  return (
+    <button
+      className={\`btn btn-\${variant} \${className}\`}
+      {...rest}             // onClick·type·disabled·aria-* 등 자동 전달
+    />
+  );
+}
+
+// 사용 — button의 모든 표준 속성 자동 지원
+<Button onClick={...} disabled type="submit" aria-label="저장">
+  저장
+</Button>` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ TypeScript 인터페이스 사용',
+            '☐ 필수·옵셔널·기본값 모두 활용',
+            '☐ children prop 활용',
+            '☐ 콜백 함수 props 전달',
+            '☐ HTML 속성 확장 (...rest)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-practice-4',
+        title: '실습 4 · useState 다양한 패턴 (30분)',
+        icon: '🧪',
+        summary: '함수형 업데이트·객체·배열·lazy 초기화·상태 끌어올리기 5가지 패턴.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'useState 5가지 핵심 패턴 모두 적용',
+            '안티패턴 회피',
+            '복잡한 상태 관리 능숙해지기',
+          ] },
+
+          { subtitle: '패턴 1 · 함수형 업데이트 — 빠른 연속 클릭 해결' },
+          { code: { lang: 'tsx', content: `function FastCounter() {
+  const [count, setCount] = useState(0);
+
+  // ❌ 직접 값 — +2 버튼 눌러도 +1만 됨
+  const wrongPlusTwo = () => {
+    setCount(count + 1);
+    setCount(count + 1);
+  };
+
+  // ✅ 함수형 — 정상 +2
+  const correctPlusTwo = () => {
+    setCount(c => c + 1);
+    setCount(c => c + 1);
+  };
+
+  return (
+    <>
+      <p>{count}</p>
+      <button onClick={correctPlusTwo}>+2</button>
+    </>
+  );
+}` } },
+
+          { subtitle: '패턴 2 · 객체 상태 + 부분 갱신' },
+          { code: { lang: 'tsx', content: `function UserForm() {
+  const [user, setUser] = useState({
+    name: '',
+    age: 0,
+    email: '',
+    address: { city: '', street: '' },
+  });
+
+  // 단일 필드
+  const handleChange = (field: keyof typeof user) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUser(prev => ({ ...prev, [field]: e.target.value }));
+  };
+
+  // 중첩 객체
+  const updateCity = (city: string) => {
+    setUser(prev => ({
+      ...prev,
+      address: { ...prev.address, city },
+    }));
+  };
+
+  return (
+    <form>
+      <input value={user.name} onChange={handleChange('name')} />
+      <input value={user.address.city} onChange={e => updateCity(e.target.value)} />
+    </form>
+  );
+}` } },
+
+          { subtitle: '패턴 3 · 배열 상태 — CRUD' },
+          { code: { lang: 'tsx', content: `interface Todo { id: number; text: string; done: boolean; }
+
+function TodoList() {
+  const [todos, setTodos] = useState<Todo[]>([]);
+  const [input, setInput] = useState('');
+
+  const add = () => {
+    if (!input.trim()) return;
+    setTodos(prev => [
+      ...prev,
+      { id: Date.now(), text: input, done: false },
+    ]);
+    setInput('');
+  };
+
+  const toggle = (id: number) => {
+    setTodos(prev => prev.map(t =>
+      t.id === id ? { ...t, done: !t.done } : t
+    ));
+  };
+
+  const remove = (id: number) => {
+    setTodos(prev => prev.filter(t => t.id !== id));
+  };
+
+  const clearDone = () => {
+    setTodos(prev => prev.filter(t => !t.done));
+  };
+
+  return (
+    <div>
+      <input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && add()} />
+      <button onClick={add}>추가</button>
+      <ul>
+        {todos.map(t => (
+          <li key={t.id}>
+            <input type="checkbox" checked={t.done} onChange={() => toggle(t.id)} />
+            <span style={{ textDecoration: t.done ? 'line-through' : 'none' }}>{t.text}</span>
+            <button onClick={() => remove(t.id)}>X</button>
+          </li>
+        ))}
+      </ul>
+      <button onClick={clearDone}>완료 항목 비우기</button>
+    </div>
+  );
+}` } },
+
+          { subtitle: '패턴 4 · Lazy 초기화' },
+          { code: { lang: 'tsx', content: `// localStorage에서 초기값 불러올 때
+const [todos, setTodos] = useState<Todo[]>(() => {
+  const saved = localStorage.getItem('todos');
+  return saved ? JSON.parse(saved) : [];
+});
+
+// 자동 저장 — useEffect
+useEffect(() => {
+  localStorage.setItem('todos', JSON.stringify(todos));
+}, [todos]);` } },
+
+          { subtitle: '패턴 5 · 상태 끌어올리기' },
+          { code: { lang: 'tsx', content: `// 두 자매 컴포넌트가 같은 상태 공유
+function Parent() {
+  const [text, setText] = useState('');
+  return (
+    <>
+      <Input value={text} onChange={setText} />
+      <Display value={text} />
+    </>
+  );
+}
+
+function Input({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  return <input value={value} onChange={e => onChange(e.target.value)} />;
+}
+
+function Display({ value }: { value: string }) {
+  return <p>입력: {value}</p>;
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 5가지 패턴 모두 직접 구현',
+            '☐ 함수형 업데이트로 +2 정상 동작',
+            '☐ TodoList 추가·삭제·토글·일괄삭제 동작',
+            '☐ localStorage 자동 저장 + 복원',
+            '☐ 부모-자식 상태 공유',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-practice-5',
+        title: '실습 5 · useEffect로 사용자 목록 fetch (30분)',
+        icon: '🧪',
+        summary: 'useEffect 4가지 의존성 패턴 + cleanup + AbortController 모두 활용.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'useEffect 4가지 패턴 모두 적용',
+            'race condition 방지 (cleanup)',
+            'AbortController로 진행 중 fetch 취소',
+          ] },
+
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `import { useState, useEffect } from 'react';
+
+interface User { id: number; name: string; email: string; }
+
+function UserList({ filter }: { filter: 'all' | 'active' }) {
+  const [users, setUsers] = useState<User[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // 패턴 1: 의존성 [filter] — filter 변경 시 재호출
+  useEffect(() => {
+    const controller = new AbortController();
+    let cancelled = false;
+
+    async function load() {
+      setLoading(true);
+      setError(null);
+      try {
+        const url = filter === 'active'
+          ? 'https://jsonplaceholder.typicode.com/users?_limit=5'
+          : 'https://jsonplaceholder.typicode.com/users';
+        const res = await fetch(url, { signal: controller.signal });
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        const data = await res.json();
+        if (!cancelled) {
+          setUsers(data);
+          setLoading(false);
+        }
+      } catch (err: any) {
+        if (err.name === 'AbortError') return;
+        if (!cancelled) {
+          setError(err.message);
+          setLoading(false);
+        }
+      }
+    }
+
+    load();
+
+    // cleanup — 진행 중 요청 취소 + cancelled 플래그
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
+  }, [filter]);
+
+  // 패턴 2: [] — 마운트 시 1회만
+  useEffect(() => {
+    console.log('UserList 마운트');
+    return () => console.log('UserList 언마운트');
+  }, []);
+
+  if (loading) return <p>로딩 중…</p>;
+  if (error) return <p>오류: {error}</p>;
+
+  return (
+    <ul>
+      {users.map(u => (
+        <li key={u.id}>{u.name} — {u.email}</li>
+      ))}
+    </ul>
+  );
+}
+
+// 사용
+function App() {
+  const [filter, setFilter] = useState<'all' | 'active'>('all');
+  const [show, setShow] = useState(true);
+
+  return (
+    <div>
+      <button onClick={() => setFilter(f => f === 'all' ? 'active' : 'all')}>
+        필터 토글
+      </button>
+      <button onClick={() => setShow(s => !s)}>표시 토글</button>
+      {show && <UserList filter={filter} />}
+    </div>
+  );
+}` } },
+
+          { subtitle: '검증' },
+          { items: [
+            'filter 빠르게 토글 → race condition 발생 안 함',
+            'UserList 언마운트 시 콘솔 로그 확인',
+            'Network 탭 → 빠른 필터 변경 시 이전 요청 취소 확인',
+            '의도적으로 cleanup 제거 후 빠른 토글 → setState on unmounted 경고',
+          ] },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '커스텀 hook useFetch로 추출',
+            '디바운스 추가 (300ms)',
+            '재시도 버튼',
+            '페이지네이션',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-4-practice-6',
+        title: '실습 6 · 안티패턴 5종 만들고 고치기 (25분)',
+        icon: '🧪',
+        summary: 'React 안티패턴 5가지를 의도적으로 작성 후 발견·수정하며 깊이 학습.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '5가지 안티패턴 직접 작성',
+            '문제 발견 + 수정',
+            '향후 회피 능력 확보',
+          ] },
+
+          { subtitle: '안티패턴 1 · 상태 직접 변경' },
+          { code: { lang: 'tsx', content: `// ❌ 잘못된 코드
+function Bad() {
+  const [count, setCount] = useState(0);
+  const handleClick = () => {
+    count++;            // 직접 변경 — React 감지 못함
+    setCount(count);    // setCount 호출했지만 같은 참조
+  };
+  return <button onClick={handleClick}>{count}</button>;
+}
+
+// ✅ 수정
+function Good() {
+  const [count, setCount] = useState(0);
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
+}` } },
+
+          { subtitle: '안티패턴 2 · key={index}' },
+          { code: { lang: 'tsx', content: `// ❌ 잘못 — 정렬·삭제 시 버그
+{items.map((item, index) => <li key={index}>{item.name}</li>)}
+
+// ✅ 수정 — 안정된 ID
+{items.map(item => <li key={item.id}>{item.name}</li>)}
+
+// 테스트:
+// 1. 항목 5개 표시
+// 2. 정렬 후 → key=index는 잘못된 요소 재사용
+// 3. key=item.id는 정상` } },
+
+          { subtitle: '안티패턴 3 · 조건문 안 Hook' },
+          { code: { lang: 'tsx', content: `// ❌ 잘못 — Rendered fewer hooks 에러
+function Bad({ showCount }: { showCount: boolean }) {
+  if (showCount) {
+    const [count, setCount] = useState(0);   // ⚠️ 조건 안 Hook
+    return <p>{count}</p>;
+  }
+  return <p>숨김</p>;
+}
+
+// ✅ 수정 — Hook은 항상 최상단
+function Good({ showCount }: { showCount: boolean }) {
+  const [count, setCount] = useState(0);
+  if (!showCount) return <p>숨김</p>;
+  return <p>{count}</p>;
+}` } },
+
+          { subtitle: '안티패턴 4 · useEffect 의존성 누락' },
+          { code: { lang: 'tsx', content: `// ❌ 잘못 — userId 변경 시 안 다시 호출
+function Bad({ userId }: { userId: number }) {
+  const [user, setUser] = useState(null);
+  useEffect(() => {
+    fetch(\`/api/users/\${userId}\`).then(r => r.json()).then(setUser);
+  }, []);   // ⚠️ userId 누락
+  return <h1>{user?.name}</h1>;
+}
+
+// ✅ 수정
+useEffect(() => {
+  fetch(\`/api/users/\${userId}\`).then(r => r.json()).then(setUser);
+}, [userId]);
+
+// ESLint react-hooks/exhaustive-deps 활성화 시 자동 경고` } },
+
+          { subtitle: '안티패턴 5 · 함수 즉시 실행' },
+          { code: { lang: 'tsx', content: `// ❌ 잘못 — 렌더 즉시 실행
+function Bad() {
+  const handleClick = () => console.log('click');
+  return <button onClick={handleClick()}>버튼</button>;   // ⚠️ () 호출!
+}
+// → 결과: 렌더 시점에 console.log 실행되고
+//   onClick에는 console.log의 반환값(undefined) 전달
+
+// ✅ 수정
+return <button onClick={handleClick}>버튼</button>;       // 함수 참조
+
+// 또는 인자 전달 시
+return <button onClick={() => handleClick(id)}>버튼</button>;` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 5가지 안티패턴 모두 의도적으로 작성',
+            '☐ 각 패턴의 증상 (에러·동작 이상) 확인',
+            '☐ 수정 후 정상 동작',
+            '☐ ESLint react-hooks 규칙 활성화',
+            '☐ "왜 잘못된가" 본인 표현으로 설명 가능',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-4-resources',
         title: '심화 자료 + React 안티패턴 모음',
         icon: '📚',
