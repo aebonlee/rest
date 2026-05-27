@@ -16888,6 +16888,398 @@ describe('useFetch', () => {
       },
 
       {
+        id: 'reg-11-practice-1',
+        title: '실습 1 · Network 탭으로 느린 API 찾기 (25분)',
+        icon: '🧪',
+        summary: '본인 프로젝트의 모든 API 호출 점검 + 1초 이상 호출 식별 + 개선.',
+        content: [
+          { subtitle: '단계' },
+          { items: [
+            '1. 본인 프로젝트 dev 서버 실행',
+            '2. DevTools → Network 탭 → Fetch/XHR 필터',
+            '3. 핵심 시나리오 1회 수행 (가입·로그인·진단 등)',
+            '4. Time 컬럼 정렬 → 1초 이상 호출 찾기',
+            '5. 해당 호출 우클릭 → "Copy as cURL"로 재현',
+            '6. 원인 파악 + 개선',
+          ] },
+
+          { subtitle: '느린 호출 원인 5가지' },
+          { items: [
+            'DB 쿼리 미인덱싱 → 인덱스 추가',
+            '관계 조인 N+1 → 한 번에 select(\'*, related(*)\')',
+            'LLM 응답 길이 → max_tokens 줄이기',
+            '이미지 큰 용량 → 압축 + transform',
+            '서드파티 스크립트 → defer/async',
+          ] },
+
+          { subtitle: '개선 결과 기록' },
+          { table: {
+            headers: ['API', 'Before', 'After', '개선'],
+            rows: [
+              ['/api/users (전체)', '2.3s', '0.4s', '인덱스 추가'],
+              ['/api/posts/:id', '1.8s', '0.6s', '관계 조인'],
+              ['LLM 호출', '5s', '5s', '스트리밍 도입'],
+            ],
+          } },
+        ],
+      },
+
+      {
+        id: 'reg-11-practice-2',
+        title: '실습 2 · React DevTools Profiler 분석 (25분)',
+        icon: '🧪',
+        summary: '리렌더 원인 추적 + React.memo·useMemo로 최적화.',
+        content: [
+          { subtitle: '단계' },
+          { items: [
+            'React DevTools 설치 (Chrome 확장)',
+            'Components 탭 → "Highlight updates" 옵션 켜기',
+            '본인 페이지에서 입력·클릭 → 어디가 리렌더?',
+            'Profiler 탭 → ⚪ 녹화 → 5초 사용자 액션 → 정지',
+            'Ranked → 가장 오래 걸린 컴포넌트',
+            '"Why did this render?" 원인 확인',
+          ] },
+
+          { subtitle: '대표 최적화 패턴' },
+          { code: { lang: 'tsx', content: `// Before — UserCard가 부모 리렌더 시 매번 리렌더
+function UserCard({ user, onClick }) { ... }
+
+// After — props 변경 시에만 리렌더
+const UserCard = React.memo(function UserCard({ user, onClick }) {
+  return <div onClick={onClick}>{user.name}</div>;
+});
+
+// 주의: onClick이 매번 새 함수면 효과 없음 → useCallback 필요
+function UserList({ users }) {
+  const handleClick = useCallback((id: number) => { /* ... */ }, []);
+  return users.map(u => <UserCard key={u.id} user={u} onClick={handleClick} />);
+}
+
+// useMemo — 비싼 계산
+const filtered = useMemo(
+  () => users.filter(u => u.name.includes(keyword)).sort(...),
+  [users, keyword]
+);` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ Highlight updates로 시각화',
+            '☐ 1개 이상 불필요한 리렌더 발견',
+            '☐ React.memo 또는 useMemo로 해결',
+            '☐ 개선 후 다시 측정 → 50%+ 개선',
+            '☐ 학습 노트에 Before/After 기록',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-practice-3',
+        title: '실습 3 · Lighthouse 4지표 90+ 도전 (30분)',
+        icon: '🧪',
+        summary: '모든 4지표를 90+로 끌어올리는 실전 개선 작업.',
+        content: [
+          { subtitle: '측정' },
+          { code: { lang: 'bash', content: `npm run build && npm run preview
+# Chrome DevTools → Lighthouse → Mobile → Analyze` } },
+
+          { subtitle: '개선 카탈로그' },
+          { table: {
+            headers: ['문제', '개선'],
+            rows: [
+              ['이미지 큼', 'srcset + WebP + lazy loading'],
+              ['LCP 느림', 'preload + 인라인 critical CSS'],
+              ['CLS 발생', '이미지 width·height 명시'],
+              ['alt 누락', '모든 <img>에 alt 추가'],
+              ['색 대비 부족', 'WebAIM 도구로 4.5:1 확보'],
+              ['HTTPS 미강제', 'GitHub Pages Enforce HTTPS'],
+              ['SEO meta 부족', 'description·OG·canonical'],
+            ],
+          } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ Performance 80+ (모바일)',
+            '☐ Accessibility 95+',
+            '☐ Best Practices 95+',
+            '☐ SEO 95+',
+            '☐ 개선 사이클 — 측정 → 개선 → 재측정',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-practice-4',
+        title: '실습 4 · 디버깅 5단계 모델 적용 (30분)',
+        icon: '🧪',
+        summary: '실제 버그를 과학적 디버깅 5단계로 해결하는 실전.',
+        content: [
+          { subtitle: '본인 프로젝트에서 진짜 버그 1개 발견 → 해결 과정 기록' },
+          { code: { lang: 'text', content: `[디버깅 기록 양식]
+
+[버그 명]
+예: "로그인 후 새로고침하면 로그아웃됨"
+
+[1단계 · 재현 (5분)]
+- 정확한 단계:
+  1. 로그인 화면 → 이메일·비밀번호 입력
+  2. "로그인" 클릭 → /dashboard 이동
+  3. F5 새로고침
+  4. → 로그인 페이지로 자동 이동
+- 재현률: 100%
+- 발견 환경: Chrome 120, Mac
+
+[2단계 · 가설]
+가설 1: Supabase 세션 저장 안 됨
+가설 2: AuthContext가 mount 시 세션 복원 안 함
+가설 3: localStorage 차단
+
+→ 가장 단순한 1번부터 검증
+
+[3단계 · 실험]
+- 새로고침 후 DevTools Console에서:
+  await supabase.auth.getSession()
+- 결과: { data: { session: { ... } } }
+- → 세션은 저장됨! 1번 가설 기각
+
+- 가설 2 검증:
+- AuthContext.tsx 코드 확인
+- → useEffect에서 getSession 호출 누락 발견
+
+[4단계 · 검증]
+useEffect 추가:
+useEffect(() => {
+  supabase.auth.getSession().then(({ data }) => setUser(data.session?.user));
+}, []);
+
+새로고침 → 로그인 유지 ✓
+
+[5단계 · 회귀 시도]
+- 다른 페이지에서도 로그인 유지 확인
+- 로그아웃 → 새로고침 → 로그인 페이지 정상 표시
+- → 부작용 없음, 종결` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 진짜 버그 1개 발견',
+            '☐ 5단계 모두 적용',
+            '☐ 가설 → 실험 → 검증 사이클',
+            '☐ 회귀 테스트 포함',
+            '☐ 학습 노트에 양식 그대로 기록',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-practice-5',
+        title: '실습 5 · Vitest로 핵심 함수 테스트 (35분)',
+        icon: '🧪',
+        summary: 'Vitest 셋업 + LLM 호출 함수·폼 검증·유틸 함수에 단위 테스트 작성.',
+        content: [
+          { subtitle: '셋업' },
+          { code: { lang: 'bash', content: `npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+
+# vite.config.ts
+/// <reference types="vitest" />
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+  },
+});
+
+# src/test/setup.ts
+import '@testing-library/jest-dom';
+
+# package.json
+"test": "vitest"` } },
+
+          { subtitle: '테스트 1 · 유틸 함수' },
+          { code: { lang: 'typescript', content: `// src/utils/formatPrice.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatPrice } from './formatPrice';
+
+describe('formatPrice', () => {
+  it('한국 원화 형식', () => {
+    expect(formatPrice(1000)).toBe('₩1,000');
+  });
+  it('0원', () => {
+    expect(formatPrice(0)).toBe('₩0');
+  });
+  it('음수', () => {
+    expect(formatPrice(-500)).toContain('-');
+  });
+  it('소수점 처리', () => {
+    expect(formatPrice(1000.5)).toBe('₩1,001');
+  });
+});` } },
+
+          { subtitle: '테스트 2 · LLM 함수 (모킹)' },
+          { code: { lang: 'typescript', content: `// src/utils/solar.test.ts
+import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { chatSolar } from './solar';
+
+describe('chatSolar', () => {
+  beforeEach(() => {
+    globalThis.fetch = vi.fn();
+  });
+
+  it('정상 응답 파싱', async () => {
+    (fetch as any).mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({
+        choices: [{ message: { content: '안녕' } }],
+        usage: { prompt_tokens: 10, completion_tokens: 5, total_tokens: 15 },
+      }),
+    });
+
+    const result = await chatSolar([{ role: 'user', content: '안녕' }]);
+    expect(result.content).toBe('안녕');
+    expect(result.usage.total_tokens).toBe(15);
+  });
+
+  it('401 응답 시 에러', async () => {
+    (fetch as any).mockResolvedValue({
+      ok: false,
+      status: 401,
+      text: () => Promise.resolve('Unauthorized'),
+    });
+
+    await expect(chatSolar([{ role: 'user', content: '' }])).rejects.toThrow('HTTP 401');
+  });
+});` } },
+
+          { subtitle: '테스트 3 · 컴포넌트' },
+          { code: { lang: 'tsx', content: `// src/components/Button.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Button from './Button';
+
+describe('Button', () => {
+  it('자식 렌더링', () => {
+    render(<Button>저장</Button>);
+    expect(screen.getByText('저장')).toBeInTheDocument();
+  });
+
+  it('클릭 시 onClick 호출', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>클릭</Button>);
+    fireEvent.click(screen.getByText('클릭'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('disabled 시 클릭 무시', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick} disabled>클릭</Button>);
+    fireEvent.click(screen.getByText('클릭'));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+});` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ Vitest 셋업 + npm test 실행',
+            '☐ 3개 이상 함수 테스트',
+            '☐ Mock 사용 (fetch 등)',
+            '☐ Component 1개 이상 테스트',
+            '☐ 모든 테스트 통과',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-practice-6',
+        title: '실습 6 · ErrorBoundary 안전망 (20분)',
+        icon: '🧪',
+        summary: '예상치 못한 에러로 화면 깨짐 방지하는 표준 안전망.',
+        content: [
+          { subtitle: 'ErrorBoundary 컴포넌트' },
+          { code: { lang: 'tsx', content: `// src/components/ErrorBoundary.tsx
+import { Component, type ReactNode } from 'react';
+
+interface Props {
+  children: ReactNode;
+  fallback?: (error: Error, reset: () => void) => ReactNode;
+}
+
+interface State {
+  hasError: boolean;
+  error: Error | null;
+}
+
+export default class ErrorBoundary extends Component<Props, State> {
+  state: State = { hasError: false, error: null };
+
+  static getDerivedStateFromError(error: Error): State {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: React.ErrorInfo) {
+    console.error('ErrorBoundary:', error, info);
+    // Sentry 등 에러 추적 서비스
+    // captureException(error, { extra: info });
+  }
+
+  reset = () => {
+    this.setState({ hasError: false, error: null });
+  };
+
+  render() {
+    if (this.state.hasError && this.state.error) {
+      if (this.props.fallback) {
+        return this.props.fallback(this.state.error, this.reset);
+      }
+
+      return (
+        <div className="error-boundary">
+          <h1>⚠️ 문제가 발생했습니다</h1>
+          <p>{this.state.error.message}</p>
+          <button onClick={this.reset}>다시 시도</button>
+          <button onClick={() => window.location.reload()}>새로고침</button>
+        </div>
+      );
+    }
+
+    return this.props.children;
+  }
+}` } },
+
+          { subtitle: '적용' },
+          { code: { lang: 'tsx', content: `// src/App.tsx
+<ErrorBoundary>
+  <BrowserRouter>
+    <Routes>...</Routes>
+  </BrowserRouter>
+</ErrorBoundary>
+
+// 또는 특정 영역만
+<ErrorBoundary fallback={(err, reset) => (
+  <div>차트 로드 실패 — <button onClick={reset}>재시도</button></div>
+)}>
+  <HeavyChart />
+</ErrorBoundary>` } },
+
+          { subtitle: '검증' },
+          { items: [
+            '의도적으로 컴포넌트에서 throw new Error("test")',
+            'ErrorBoundary가 에러 표시',
+            '"다시 시도" 클릭 → reset 동작',
+            'production에서 console.error 없이 우아하게 처리',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ ErrorBoundary 작성',
+            '☐ App 최상위에 적용',
+            '☐ fallback 커스터마이징',
+            '☐ reset 기능 동작',
+            '☐ 의도적 에러로 검증',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-11-resources',
         title: '심화 + 자가 평가',
         icon: '📚',
