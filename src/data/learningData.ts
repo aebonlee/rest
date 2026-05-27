@@ -5036,6 +5036,520 @@ init();` } },
       },
 
       {
+        id: 'reg-3-practice-2',
+        title: '실습 2 · 클로저로 카운터 모듈 (30분)',
+        icon: '🧪',
+        summary: '클로저의 본질을 직접 코딩으로 체득. 카운터·디바운스·메모이제이션 3가지 패턴 구현.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '클로저로 private 변수 캡슐화',
+            '함수형 모듈 패턴 체득',
+            '실전 도구 함수 3가지 작성',
+          ] },
+
+          { subtitle: '구현 1 · createCounter (10분)' },
+          { code: { lang: 'javascript', content: `// 요구사항:
+// - 초기값 설정 가능
+// - increment / decrement / reset / getValue 메서드
+// - 내부 value는 외부에서 직접 접근 불가
+
+function createCounter(initial = 0) {
+  let value = initial;
+  return {
+    increment: () => ++value,
+    decrement: () => --value,
+    reset: () => { value = initial; return value; },
+    getValue: () => value,
+  };
+}
+
+// 테스트
+const c = createCounter(10);
+console.log(c.increment());     // 11
+console.log(c.increment());     // 12
+console.log(c.reset());          // 10
+console.log(c.getValue());       // 10
+console.log(c.value);            // undefined — 캡슐화!` } },
+
+          { subtitle: '구현 2 · debounce (10분)' },
+          { code: { lang: 'javascript', content: `// 요구사항:
+// - 마지막 호출 이후 N ms 동안 추가 호출 없으면 실제 실행
+// - 검색 입력에 자주 사용
+
+function debounce(fn, delay = 300) {
+  let timerId;
+  return function(...args) {
+    clearTimeout(timerId);
+    timerId = setTimeout(() => fn.apply(this, args), delay);
+  };
+}
+
+// 테스트
+const log = debounce((text) => console.log('검색:', text), 500);
+log('a');     // 0초
+log('ab');    // 0.1초
+log('abc');   // 0.2초
+// → 0.7초 후 한 번만 '검색: abc' 출력` } },
+
+          { subtitle: '구현 3 · memoize (10분)' },
+          { code: { lang: 'javascript', content: `// 요구사항:
+// - 동일 인자로 호출하면 캐시된 결과 반환
+// - 비싼 계산 함수 가속
+
+function memoize(fn) {
+  const cache = new Map();
+  return function(...args) {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      console.log('cache hit:', key);
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+// 테스트
+const slowFactorial = (n) => {
+  if (n <= 1) return 1;
+  return n * slowFactorial(n - 1);
+};
+
+const fast = memoize(slowFactorial);
+console.log(fast(10));    // 계산
+console.log(fast(10));    // 캐시!
+console.log(fast(15));    // 계산` } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            'throttle (debounce와 반대 — 일정 간격으로만 실행)',
+            'once (1회만 실행되는 함수)',
+            'pipe / compose (함수 합성)',
+            '카운터에 onChange 콜백 추가',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-practice-3',
+        title: '실습 3 · 데코레이터 패턴 (30분)',
+        icon: '🧪',
+        summary: '함수에 로깅·인증·재시도 등 부가 기능을 데코레이터 패턴으로 추가하는 방법.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '고차 함수로 데코레이터 구현',
+            '로깅·인증·재시도 3가지 데코레이터 작성',
+            '여러 데코레이터 합성',
+          ] },
+
+          { subtitle: '데코레이터 1 · withLogging (10분)' },
+          { code: { lang: 'javascript', content: `function withLogging(fn) {
+  return function(...args) {
+    console.log(\`[\${fn.name}] 호출:\`, args);
+    const start = performance.now();
+
+    const result = fn(...args);
+    const elapsed = performance.now() - start;
+
+    console.log(\`[\${fn.name}] 결과 (\${elapsed.toFixed(2)}ms):\`, result);
+    return result;
+  };
+}
+
+// 사용
+function add(a, b) { return a + b; }
+const loggedAdd = withLogging(add);
+
+loggedAdd(2, 3);
+// [add] 호출: [2, 3]
+// [add] 결과 (0.05ms): 5` } },
+
+          { subtitle: '데코레이터 2 · withAuth (10분)' },
+          { code: { lang: 'javascript', content: `function withAuth(fn) {
+  return function(...args) {
+    const user = getCurrentUser();   // 가정
+    if (!user) {
+      throw new Error('인증 필요');
+    }
+    return fn.call(this, user, ...args);   // user를 첫 인자로 전달
+  };
+}
+
+// 사용
+function deletePost(user, postId) {
+  console.log(\`\${user.name}이 \${postId} 삭제\`);
+}
+const safeDelete = withAuth(deletePost);
+
+// 비로그인 시
+// getCurrentUser() => null
+safeDelete(42);   // → Error: 인증 필요
+
+// 로그인 후
+// getCurrentUser() => { name: '홍길동' }
+safeDelete(42);   // → "홍길동이 42 삭제"` } },
+
+          { subtitle: '데코레이터 3 · withRetry (10분)' },
+          { code: { lang: 'javascript', content: `function withRetry(fn, retries = 3, delay = 1000) {
+  return async function(...args) {
+    let lastError;
+    for (let i = 0; i < retries; i++) {
+      try {
+        return await fn(...args);
+      } catch (err) {
+        lastError = err;
+        console.warn(\`재시도 \${i + 1}/\${retries}\`);
+        if (i < retries - 1) {
+          await new Promise(r => setTimeout(r, delay * Math.pow(2, i)));
+        }
+      }
+    }
+    throw lastError;
+  };
+}
+
+// 사용
+async function flakyFetch(url) {
+  if (Math.random() > 0.7) return { data: 'ok' };
+  throw new Error('Network error');
+}
+
+const reliableFetch = withRetry(flakyFetch, 5, 500);
+const result = await reliableFetch('/api/data');
+// 최대 5회 시도, 지수 백오프 (500ms → 1s → 2s → 4s)` } },
+
+          { subtitle: '데코레이터 합성' },
+          { code: { lang: 'javascript', content: `// 여러 데코레이터를 한 함수에
+async function fetchUserData(user, userId) {
+  const res = await fetch(\`/api/users/\${userId}\`);
+  return res.json();
+}
+
+// 인증 + 재시도 + 로깅
+const enhanced = withLogging(
+  withRetry(
+    withAuth(fetchUserData),
+    3,
+    1000
+  )
+);
+
+await enhanced(42);
+// 자동: 인증 검사 → 재시도 → 로깅` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 3가지 데코레이터 모두 동작',
+            '☐ 원본 함수는 변경 X (불변성)',
+            '☐ 합성 가능',
+            '☐ TypeScript로 타입 추가 시도 (선택)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-practice-4',
+        title: '실습 4 · 배열 메서드 체이닝 마스터 (30분)',
+        icon: '🧪',
+        summary: 'filter·map·reduce·sort 체이닝으로 데이터 변환 5가지 실전 시나리오.',
+        content: [
+          { subtitle: '실습 데이터' },
+          { code: { lang: 'javascript', content: `const users = [
+  { id: 1, name: '홍길동', age: 30, dept: 'AI', salary: 5000, active: true },
+  { id: 2, name: '김철수', age: 25, dept: 'AI', salary: 4500, active: true },
+  { id: 3, name: '이영희', age: 28, dept: 'Backend', salary: 5500, active: false },
+  { id: 4, name: '박민준', age: 35, dept: 'AI', salary: 6500, active: true },
+  { id: 5, name: '최서연', age: 22, dept: 'Frontend', salary: 4000, active: true },
+  { id: 6, name: '정수진', age: 40, dept: 'Backend', salary: 7000, active: false },
+];` } },
+
+          { subtitle: '시나리오 1 · 활성 AI 부서 평균 연봉' },
+          { code: { lang: 'javascript', content: `const avgSalary = users
+  .filter(u => u.active && u.dept === 'AI')
+  .reduce((sum, u, _, arr) => sum + u.salary / arr.length, 0);
+
+console.log(avgSalary);   // 5333.33` } },
+
+          { subtitle: '시나리오 2 · 30대 이상 활성 사용자 이름 가나다순' },
+          { code: { lang: 'javascript', content: `const seniors = users
+  .filter(u => u.age >= 30 && u.active)
+  .map(u => u.name)
+  .sort();
+
+console.log(seniors);     // ['박민준', '홍길동']` } },
+
+          { subtitle: '시나리오 3 · 부서별 인원 + 평균 연봉' },
+          { code: { lang: 'javascript', content: `const byDept = users.reduce((acc, u) => {
+  if (!acc[u.dept]) acc[u.dept] = { count: 0, totalSalary: 0 };
+  acc[u.dept].count++;
+  acc[u.dept].totalSalary += u.salary;
+  return acc;
+}, {});
+
+const summary = Object.entries(byDept).map(([dept, { count, totalSalary }]) => ({
+  dept,
+  count,
+  avgSalary: totalSalary / count,
+}));
+
+console.log(summary);
+// [{dept:'AI', count:3, avgSalary:5333}, {dept:'Backend', count:2, ...}, ...]` } },
+
+          { subtitle: '시나리오 4 · 활성 사용자 중 연봉 상위 3명' },
+          { code: { lang: 'javascript', content: `const top3 = users
+  .filter(u => u.active)
+  .sort((a, b) => b.salary - a.salary)
+  .slice(0, 3)
+  .map(u => ({ name: u.name, salary: u.salary }));
+
+console.log(top3);` } },
+
+          { subtitle: '시나리오 5 · 부서별 최고 연봉자' },
+          { code: { lang: 'javascript', content: `const topByDept = users.reduce((acc, u) => {
+  if (!acc[u.dept] || u.salary > acc[u.dept].salary) {
+    acc[u.dept] = u;
+  }
+  return acc;
+}, {});
+
+console.log(topByDept);
+// { AI: 박민준, Backend: 정수진, Frontend: 최서연 }` } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '활성 사용자만 그룹화 + 부서별 평균 나이',
+            '연봉 5000 미만 사용자에게 보너스 1000 지급한 결과 새 배열',
+            '50대 이상 사용자는 dept "Senior"로 변경한 새 배열',
+            '같은 부서 사용자끼리 페어 매칭 (id 작은 순서)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-practice-5',
+        title: '실습 5 · 비동기 패턴 — Promise.all/race/allSettled (30분)',
+        icon: '🧪',
+        summary: 'Promise 병렬 처리 3가지 패턴 실전. JSONPlaceholder API로 직접 호출 비교.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Promise.all로 병렬 호출 (실패 시 전체 실패)',
+            'Promise.allSettled로 부분 실패 허용',
+            'Promise.race로 타임아웃·경쟁',
+          ] },
+
+          { subtitle: '준비 — JSONPlaceholder API' },
+          { code: { lang: 'javascript', content: `const API = 'https://jsonplaceholder.typicode.com';
+
+// 단일 fetch helper
+async function fetchJson(path) {
+  const res = await fetch(\`\${API}\${path}\`);
+  if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+  return res.json();
+}` } },
+
+          { subtitle: '구현 1 · Promise.all 병렬 (10분)' },
+          { code: { lang: 'javascript', content: `// 한 명 정보 + 글 + 앨범 동시 호출
+async function loadUserDashboard(userId) {
+  const start = performance.now();
+
+  const [user, posts, albums] = await Promise.all([
+    fetchJson(\`/users/\${userId}\`),
+    fetchJson(\`/users/\${userId}/posts\`),
+    fetchJson(\`/users/\${userId}/albums\`),
+  ]);
+
+  const elapsed = performance.now() - start;
+  console.log(\`병렬 호출 \${elapsed.toFixed(0)}ms\`);
+
+  return {
+    user,
+    postCount: posts.length,
+    albumCount: albums.length,
+  };
+}
+
+// 비교 — 순차 호출
+async function sequentialLoad(userId) {
+  const start = performance.now();
+  const user = await fetchJson(\`/users/\${userId}\`);
+  const posts = await fetchJson(\`/users/\${userId}/posts\`);
+  const albums = await fetchJson(\`/users/\${userId}/albums\`);
+  const elapsed = performance.now() - start;
+  console.log(\`순차 호출 \${elapsed.toFixed(0)}ms\`);
+  return { user, posts, albums };
+}
+
+// 실행
+await loadUserDashboard(1);    // 약 300ms
+await sequentialLoad(1);        // 약 900ms (3배)` } },
+
+          { subtitle: '구현 2 · Promise.allSettled (10분)' },
+          { code: { lang: 'javascript', content: `// 일부 실패해도 나머지 결과는 받기
+async function loadMultipleUsers(userIds) {
+  const results = await Promise.allSettled(
+    userIds.map(id => fetchJson(\`/users/\${id}\`))
+  );
+
+  const success = results
+    .filter(r => r.status === 'fulfilled')
+    .map(r => r.value);
+
+  const failed = results
+    .map((r, i) => ({ ...r, userId: userIds[i] }))
+    .filter(r => r.status === 'rejected');
+
+  return { success, failed };
+}
+
+// 실행 — 일부 존재하지 않는 ID 포함
+const { success, failed } = await loadMultipleUsers([1, 2, 999, 3, 1000]);
+console.log(\`\${success.length} 성공, \${failed.length} 실패\`);
+
+failed.forEach(f => {
+  console.log(\`사용자 \${f.userId} 실패:\`, f.reason.message);
+});` } },
+
+          { subtitle: '구현 3 · Promise.race + 타임아웃 (10분)' },
+          { code: { lang: 'javascript', content: `// 5초 안에 응답 안 오면 실패
+function withTimeout(promise, ms = 5000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Timeout')), ms)
+    ),
+  ]);
+}
+
+// 사용
+try {
+  const user = await withTimeout(fetchJson('/users/1'), 5000);
+  console.log(user);
+} catch (err) {
+  if (err.message === 'Timeout') {
+    alert('서버 응답이 너무 느립니다');
+  } else {
+    alert('오류: ' + err.message);
+  }
+}
+
+// 또는 두 서버 중 빠른 쪽
+const fastResult = await Promise.race([
+  fetchJson('/server-1/data'),
+  fetchJson('/server-2/data'),
+]);` } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '동시 요청 수 제한 (Semaphore 패턴) — 한 번에 3개씩',
+            'AbortController로 타임아웃 후 진행 중 fetch 취소',
+            '진행률 표시 — 10개 중 N개 완료',
+            '재시도 + Promise.allSettled 결합',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-practice-6',
+        title: '실습 6 · ES6+ 11종 통합 함수 작성 (30분)',
+        icon: '🧪',
+        summary: '구조분해·전개·템플릿·옵셔널·nullish 등 모든 ES6+ 문법을 하나의 함수에 통합.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'ES6+ 핵심 문법을 한 함수에 활용',
+            '실전 데이터 변환·포매팅 함수 작성',
+            '복잡한 옵션 객체 처리',
+          ] },
+
+          { subtitle: '시나리오 · 사용자 정보 포매터' },
+          { code: { lang: 'text', content: `[요구사항]
+formatUserCard(user, options) 함수:
+
+입력:
+- user: { profile?: { name?, age? }, settings?: { theme? }, ... }
+- options: { showAge?: boolean, dateFormat?: string }
+
+출력:
+"안녕, [이름]님 (나이: [나이]세, 테마: [테마])"
+- 기본값:
+  - name: '익명'
+  - age: 0
+  - theme: 'light'
+  - showAge: true
+- 결과: HTML 안전 (이스케이프)` } },
+
+          { subtitle: '모범 답안 — 모든 ES6+ 활용' },
+          { code: { lang: 'javascript', content: `function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+// 11종 ES6+ 모두 활용
+const formatUserCard = ({
+  profile: { name = '익명', age = 0 } = {},   // 구조분해 + 기본값
+  settings: { theme = 'light' } = {},
+} = {}, {
+  showAge = true,
+  dateFormat = 'long',
+} = {}) => {
+  // 옵셔널 체이닝 + nullish (각각의 의미 활용)
+  const safeName = escapeHtml(name?.trim() ?? '익명');
+  const safeAge = age ?? 0;
+
+  // 템플릿 리터럴
+  const ageStr = showAge ? \`나이: \${safeAge}세, \` : '';
+  return \`안녕, \${safeName}님 (\${ageStr}테마: \${theme})\`;
+};
+
+// 테스트
+console.log(formatUserCard());
+// "안녕, 익명님 (나이: 0세, 테마: light)"
+
+console.log(formatUserCard({ profile: { name: '홍길동' } }));
+// "안녕, 홍길동님 (나이: 0세, 테마: light)"
+
+console.log(formatUserCard(
+  { profile: { name: '<script>alert(1)</script>', age: 30 } },
+  { showAge: false }
+));
+// "안녕, &lt;script&gt;alert(1)&lt;/script&gt;님 (테마: light)"
+// → XSS 방어` } },
+
+          { subtitle: '활용된 ES6+ 문법 11개' },
+          { table: {
+            headers: ['#', '문법', '위치'],
+            rows: [
+              ['1', '화살표 함수', 'const formatUserCard = (...) => ...'],
+              ['2', '구조 분해 (객체)', '{ profile: { name, age } } = {}'],
+              ['3', '구조 분해 기본값', 'name = \'익명\''],
+              ['4', '중첩 기본값', 'profile = {}'],
+              ['5', '템플릿 리터럴', '`안녕, ${name}님...`'],
+              ['6', '옵셔널 체이닝', 'name?.trim()'],
+              ['7', 'Nullish coalescing', '?? \'익명\''],
+              ['8', '단축 메서드 (없음 → 화살표로 대체)', '-'],
+              ['9', '함수 매개변수 기본값', '{} = {}'],
+              ['10', 'const', '모든 변수 선언'],
+              ['11', '암시적 return', '=> \`...\`'],
+            ],
+          } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '국제화 (i18n) — 언어별 다른 인사말',
+            '날짜 포매팅 — Intl.DateTimeFormat 사용',
+            'TypeScript로 타입 정의 추가',
+            '단위 테스트 작성 (Vitest)',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-3-resources',
         title: '심화 자료 + JavaScript 함정 모음',
         icon: '📚',
