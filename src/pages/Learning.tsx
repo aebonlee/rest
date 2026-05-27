@@ -214,12 +214,29 @@ const Learning = (): ReactElement => {
   const { phase } = useParams<{ phase: string }>();
   const { t } = useLanguage();
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  // subIndex: null = 일자 개요(2차 메뉴 콘텐츠), 0~N = 3차 메뉴 상세
+  const [selectedSubIndex, setSelectedSubIndex] = useState<number | null>(null);
 
   const config = phase ? phaseMap[phase] : undefined;
   if (!config) return <Navigate to="/" replace />;
 
   const { topics, titleKey, subtitleKey } = config;
   const topic = topics[selectedIndex];
+  const hasSubSections = !!(topic.subSections && topic.subSections.length > 0);
+  const activeSub = (hasSubSections && selectedSubIndex !== null)
+    ? topic.subSections![selectedSubIndex]
+    : null;
+
+  // 일자 클릭 — 다른 일자면 드롭다운 교체, 같은 일자면 토글 (3차 메뉴가 있는 경우)
+  const handleDayClick = (i: number) => {
+    if (i !== selectedIndex) {
+      setSelectedIndex(i);
+      setSelectedSubIndex(null);   // 개요부터 보여줌
+    } else if (hasSubSections) {
+      // 같은 일자 다시 클릭 — 개요로 토글
+      setSelectedSubIndex(null);
+    }
+  };
 
   return (
     <>
@@ -235,29 +252,130 @@ const Learning = (): ReactElement => {
       <div className="sidebar-layout">
         <aside className="sidebar">
           <nav className="sidebar-menu">
-            {topics.map((tp, i) => (
-              <button
-                key={tp.id}
-                className={`sidebar-item${selectedIndex === i ? ' active' : ''}`}
-                onClick={() => setSelectedIndex(i)}
-              >
-                {tp.title}
-              </button>
-            ))}
+            {topics.map((tp, i) => {
+              const isActive = selectedIndex === i;
+              const expanded = isActive && !!tp.subSections && tp.subSections.length > 0;
+              return (
+                <div key={tp.id}>
+                  <button
+                    className={`sidebar-item${isActive ? ' active' : ''}`}
+                    onClick={() => handleDayClick(i)}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      width: '100%',
+                    }}
+                  >
+                    <span style={{ textAlign: 'left', flex: 1 }}>{tp.title}</span>
+                    {tp.subSections && tp.subSections.length > 0 && (
+                      <span style={{
+                        marginLeft: '8px',
+                        fontSize: '11px',
+                        opacity: 0.7,
+                        transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
+                        transition: 'transform 0.2s',
+                        display: 'inline-block',
+                      }}>▶</span>
+                    )}
+                  </button>
+                  {expanded && (
+                    <div style={{
+                      paddingLeft: '12px',
+                      borderLeft: '2px solid var(--primary-blue, #0046C8)',
+                      marginLeft: '12px',
+                      marginTop: '4px',
+                      marginBottom: '8px',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '2px',
+                    }}>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedSubIndex(null)}
+                        style={{
+                          textAlign: 'left',
+                          padding: '6px 10px',
+                          fontSize: '13px',
+                          fontWeight: selectedSubIndex === null ? 700 : 500,
+                          color: selectedSubIndex === null
+                            ? 'var(--primary-blue, #0046C8)'
+                            : 'var(--text-secondary, #6b7280)',
+                          background: selectedSubIndex === null
+                            ? 'var(--bg-secondary, #f0f4ff)'
+                            : 'transparent',
+                          border: 'none',
+                          borderRadius: '6px',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        📋 개요
+                      </button>
+                      {tp.subSections!.map((sub, si) => (
+                        <button
+                          key={sub.id}
+                          type="button"
+                          onClick={() => setSelectedSubIndex(si)}
+                          style={{
+                            textAlign: 'left',
+                            padding: '6px 10px',
+                            fontSize: '13px',
+                            fontWeight: selectedSubIndex === si ? 700 : 500,
+                            color: selectedSubIndex === si
+                              ? 'var(--primary-blue, #0046C8)'
+                              : 'var(--text-secondary, #6b7280)',
+                            background: selectedSubIndex === si
+                              ? 'var(--bg-secondary, #f0f4ff)'
+                              : 'transparent',
+                            border: 'none',
+                            borderRadius: '6px',
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {sub.icon ? `${sub.icon} ` : ''}{sub.title}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </nav>
         </aside>
 
         <div className="sidebar-content">
           <div className="topic-card">
             <div className="topic-card-header">
-              <div className="topic-card-icon">{topic.icon}</div>
-              <div className="topic-card-title">{topic.title}</div>
+              <div className="topic-card-icon">{activeSub ? (activeSub.icon || topic.icon) : topic.icon}</div>
+              <div className="topic-card-title">
+                {activeSub ? (
+                  <>
+                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)', display: 'block', marginBottom: '4px' }}>
+                      {topic.title}
+                    </span>
+                    {activeSub.title}
+                  </>
+                ) : topic.title}
+              </div>
             </div>
             <div className="topic-card-body">
-              <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
-                {topic.description}
-              </p>
-              {topic.content.map((section, idx) => renderSection(section, idx))}
+              {activeSub ? (
+                <>
+                  {activeSub.summary && (
+                    <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                      {activeSub.summary}
+                    </p>
+                  )}
+                  {activeSub.content.map((section, idx) => renderSection(section, idx))}
+                </>
+              ) : (
+                <>
+                  <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                    {topic.description}
+                  </p>
+                  {topic.content.map((section, idx) => renderSection(section, idx))}
+                </>
+              )}
             </div>
           </div>
         </div>

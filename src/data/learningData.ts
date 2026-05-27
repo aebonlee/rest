@@ -20,12 +20,21 @@ export interface ContentSection {
   callout?: { type: 'tip' | 'warn' | 'info'; text: string };
 }
 
+export interface SubTopic {
+  id: string;
+  title: string;
+  icon?: string;
+  summary?: string;
+  content: ContentSection[];
+}
+
 export interface Topic {
   id: string;
   title: string;
   icon: string;
   description: string;
   content: ContentSection[];
+  subSections?: SubTopic[];   // 3차 메뉴 — 정규과정 일자별 상세 학습
 }
 
 /* ═════════════════════════════════════════════════════════
@@ -924,6 +933,671 @@ export const regularTopics: Topic[] = [
 
       { subtitle: '다음 시간 예고' },
       { text: 'Day 2부터는 웹 개발의 기초 HTML/CSS를 학습합니다. AI에게 효과적으로 CSS를 요청하는 패턴도 함께 익히며, 본인 포트폴리오 페이지를 만들어 봅니다.' },
+    ],
+    subSections: [
+      {
+        id: 'reg-1-theory',
+        title: '심화 이론 — 패러다임 전환',
+        icon: '🧠',
+        summary: '바이브코딩이 왜 단순한 도구가 아닌 패러다임 전환인지, 인지과학·소프트웨어공학·경제학의 시각에서 다각적으로 분석합니다.',
+        content: [
+          { subtitle: '왜 "Vibe"인가 — 단어의 어원' },
+          { text: 'Vibe Coding이라는 용어는 2024년 OpenAI 공동창업자 Andrej Karpathy의 트윗에서 처음 대중적으로 알려졌습니다. "I just talk to the AI, vibe with it, and accept what it builds" — 즉 직관적으로 AI와 대화하며 결과를 받아들이는 코딩 방식. 단순히 "AI가 코드를 짜준다"가 아니라, 인간의 사고를 자연어로 표현하면 AI가 그것을 실행 가능한 형태로 변환하는 새로운 노동 분업의 명칭입니다.' },
+
+          { subtitle: '인지 부하 이론 — 무엇이 자동화되는가' },
+          { text: 'Cognitive Load Theory(Sweller, 1988)에 따르면 인간의 작업 기억은 한 번에 4~7개의 청크만 처리 가능합니다. 전통 코딩에서 개발자는 (1) 비즈니스 로직, (2) 문법, (3) API 시그니처, (4) 디버깅 상태를 모두 동시에 머리에 유지해야 합니다. 바이브코딩은 (2)(3)을 AI에게 위임하여 인간이 (1)(4) — 문제 정의와 검증에 집중하게 합니다.' },
+          { table: {
+            headers: ['인지 자원', '전통 코딩', '바이브코딩'],
+            rows: [
+              ['비즈니스 로직 이해', '인간 70%', '인간 90%'],
+              ['문법·API 기억', '인간 100%', 'AI 80%'],
+              ['타이핑·작성', '인간 100%', 'AI 90%'],
+              ['검증·테스트', '인간 100%', '인간 100%'],
+              ['아키텍처 결정', '인간 100%', '인간 100%'],
+            ],
+          } },
+
+          { subtitle: '소프트웨어공학 관점 — Jevons 역설' },
+          { text: 'Jevons 역설(1865)은 "기술 효율이 높아지면 그 자원의 소비가 오히려 늘어난다"는 경제 현상입니다. 컴파일러가 등장하자 어셈블리어가 사라진 게 아니라 더 많은 소프트웨어가 만들어졌고, IDE 자동완성이 등장하자 더 큰 코드베이스가 가능해졌습니다. AI 코딩도 동일한 패턴이 예상됩니다 — 개발자가 사라지지 않고, 1인당 가능한 프로젝트의 규모와 복잡도가 폭발적으로 증가할 것입니다.' },
+
+          { subtitle: '향후 5년 예측' },
+          { items: [
+            '2026: 모든 신규 SaaS의 60% 이상이 AI 코딩 도구로 시작',
+            '2027: "AI Native" 회사 — 시니어 1명 + AI 도구로 운영되는 스타트업 보편화',
+            '2028: 코드 리뷰의 80%를 AI가 1차 처리, 인간은 시니어 판단에 집중',
+            '2029: "프롬프트 엔지니어"가 정식 직무로 분리 (현재는 융합)',
+            '2030: 비전공자의 SaaS 창업이 폭증, 기술 진입장벽이 마케팅으로 이동',
+          ] },
+
+          { subtitle: '비판적 시각 — 무비판 수용의 위험' },
+          { callout: { type: 'warn', text: 'AI 코딩이 만능은 아닙니다. (1) 보안 코드는 AI가 자주 실수합니다. (2) 새로운 라이브러리·최신 API는 학습 데이터 누락으로 부정확. (3) 도메인 특화 비즈니스 로직은 인간이 가르쳐야 합니다. (4) AI 의존이 깊어질수록 본인의 학습 곡선이 둔화될 수 있습니다.' } },
+
+          { subtitle: '강의 토론 주제' },
+          { items: [
+            'Q1. "AI가 코드를 다 짜주면 개발자는 사라질까?" — 본인 의견 + 근거',
+            'Q2. "주니어 개발자는 AI 시대에 어떻게 성장해야 하는가?"',
+            'Q3. "보안 코드는 AI에 맡겨도 되는가?"',
+            'Q4. "프롬프트 작성 능력 vs 전통 코딩 능력 — 무엇이 더 중요해질까?"',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-tools',
+        title: 'AI 코딩 도구 심층 비교',
+        icon: '🛠️',
+        summary: 'Cursor·Claude Code·GitHub Copilot·Bolt·v0 등 6대 도구를 인터페이스·기능·가격·시나리오 관점에서 심층 비교합니다.',
+        content: [
+          { subtitle: '6대 도구 한눈 비교' },
+          { table: {
+            headers: ['도구', '인터페이스', '강점', '약점', '가격(2026)'],
+            rows: [
+              ['Cursor', 'IDE (VS Code 포크)', '코드베이스 컨텍스트, GUI', '구독료', '$20/월'],
+              ['Claude Code', 'CLI', '에이전트 자동화, 다파일', '학습 곡선', 'API 사용량'],
+              ['GitHub Copilot', 'VS Code 확장', '자동완성 정확, 깊은 IDE 통합', '대화 부족', '$10~19/월'],
+              ['Bolt', '웹 브라우저', '풀스택 앱 즉시 배포', '제한적 커스터마이징', '무료~$20/월'],
+              ['v0 by Vercel', '웹 브라우저', 'UI 컴포넌트 생성 특화', '범용 코딩 약함', '무료~$20/월'],
+              ['Codeium', 'VS Code 확장', '무료, Copilot 대안', '품질 약간 낮음', '무료'],
+            ],
+          } },
+
+          { subtitle: 'Cursor 마스터 가이드' },
+          { text: 'Cursor는 VS Code를 포크해 만든 AI 네이티브 에디터입니다. VS Code의 모든 확장과 단축키를 그대로 쓰면서 AI 기능이 깊이 통합되어 있어 본 과정의 주력 도구로 권장합니다.' },
+          { items: [
+            'Cmd/Ctrl+L — 채팅 패널 (질문·대화)',
+            'Cmd/Ctrl+K — 인라인 편집 (현재 위치에서 즉시 코드 변경)',
+            'Cmd/Ctrl+I — 에이전트 모드 (다파일 자동 편집)',
+            '@파일명 — 특정 파일을 컨텍스트로 첨부',
+            '@web — 실시간 웹 검색 결과 컨텍스트',
+            '@docs — 공식 문서 참조 컨텍스트',
+            'Cmd/Ctrl+L 후 → 키 — 이전 대화 불러오기',
+          ] },
+
+          { subtitle: 'Cursor 추천 설정' },
+          { code: { lang: 'json', content: `// settings.json (Cursor → Cmd+Shift+P → Open User Settings (JSON))
+{
+  "cursor.cpp.disabledLanguages": [],
+  "cursor.chat.enableLongContext": true,
+  "cursor.codebase.indexing.enabled": true,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  "editor.tabSize": 2,
+  "editor.fontSize": 14,
+  "editor.fontFamily": "'JetBrains Mono', Consolas, monospace",
+  "editor.minimap.enabled": false,
+  "files.autoSave": "afterDelay",
+  "files.autoSaveDelay": 1000
+}` } },
+
+          { subtitle: 'Claude Code 깊이 보기' },
+          { text: 'Claude Code는 터미널에서 동작하는 에이전틱 코딩 CLI입니다. Cursor가 "에디터 + AI 채팅"이라면 Claude Code는 "AI가 직접 파일을 수정하고 명령을 실행하는 자율 에이전트"에 가깝습니다.' },
+          { code: { lang: 'bash', content: `# 설치
+npm install -g @anthropic-ai/claude-code
+
+# 시작
+cd my-project
+claude
+
+# 예시 명령
+# > "src/components/Button.tsx의 props 타입을 안전하게 리팩토링하라"
+# Claude가 파일을 읽고, 분석하고, 변경 제안을 표시 → 승인 시 적용
+
+# 주요 옵션
+claude --model opus      # 가장 강력 (Opus 4.7)
+claude --model sonnet    # 빠름·저렴 (Sonnet 4.6)
+claude --resume          # 이전 세션 이어서` } },
+
+          { subtitle: 'GitHub Copilot — 자동완성 중심' },
+          { text: 'Copilot은 코드 작성 중 회색 텍스트로 다음 줄을 제안합니다. Cursor의 대화형 인터페이스와 달리, 흐름을 끊지 않고 보조하는 방식. 베테랑 개발자에게 특히 효율적입니다.' },
+          { items: [
+            'Tab — 제안 수락',
+            'Esc — 제안 거부',
+            'Alt+] — 다음 제안',
+            'Alt+[ — 이전 제안',
+            'Ctrl+Enter — 여러 제안 패널 열기',
+          ] },
+
+          { subtitle: '시나리오별 선정 가이드' },
+          { table: {
+            headers: ['상황', '추천 도구', '이유'],
+            rows: [
+              ['처음 시작하는 학생', 'Cursor', '시각적, 대화 흐름이 학습에 좋음'],
+              ['빠른 프로토타입', 'Bolt / v0', '브라우저에서 즉시 배포'],
+              ['대규모 리팩토링', 'Claude Code', '다파일 자율 작업'],
+              ['일상 개발', 'Cursor + Copilot', '자동완성 + 대화 병행'],
+              ['예산 0원', 'Codeium (무료)', '유료 도구 대안'],
+              ['UI 컴포넌트만 빨리', 'v0', 'React + Tailwind 특화'],
+            ],
+          } },
+
+          { subtitle: '도구 조합 워크플로우' },
+          { text: '실력자들은 보통 2~3개 도구를 조합합니다. 예: "v0로 UI 디자인 생성 → Cursor로 코드베이스 통합 → Claude Code로 테스트 작성"의 흐름. 각 도구의 강점만 사용하는 전략.' },
+        ],
+      },
+
+      {
+        id: 'reg-1-patterns',
+        title: '효과적 협업 패턴 마스터',
+        icon: '🎯',
+        summary: 'AI와의 협업에서 90%의 결과 차이를 만드는 7가지 핵심 패턴 — 컨텍스트 주입, 작업 분할, 검수, 반복 개선, 폴백 등을 학습합니다.',
+        content: [
+          { subtitle: '패턴 1 · 컨텍스트 주입 (Context Loading)' },
+          { text: 'AI 응답 품질의 70%는 컨텍스트의 풍부함에서 결정됩니다. 빈 상태의 AI에게 갑자기 "버튼 만들어줘"는 일반적인 결과만 얻습니다. 본인 프로젝트의 디자인 시스템·기술 스택·기존 패턴을 먼저 알려주는 게 핵심.' },
+          { code: { lang: 'text', content: `[좋은 컨텍스트 주입 예시]
+
+우리 프로젝트는:
+- Vite 7 + React 19 + TypeScript 5.8
+- Supabase 백엔드 사용
+- 디자인 시스템: var(--primary-blue) 등 CSS 변수
+- 컴포넌트 위치: src/components/
+- 기존 패턴: 모든 컴포넌트는 default export
+- 다크모드 대응 필수
+
+이 컨텍스트를 바탕으로 다음 작업을 해주세요:
+[실제 요구사항]` } },
+
+          { subtitle: '패턴 2 · 작업 분할 (Task Decomposition)' },
+          { text: '"앱 만들어줘"는 거의 항상 실패합니다. 작업을 최대 30분 단위로 쪼개서 순차적으로 요청하는 게 안전합니다.' },
+          { table: {
+            headers: ['❌ 거대 요구', '✅ 분할된 요구'],
+            rows: [
+              ['"쇼핑몰 만들어줘"', '"상품 목록 페이지의 카드 컴포넌트만 먼저"'],
+              ['"로그인 시스템 구현"', '"이메일 입력 폼 + 검증 함수"'],
+              ['"리팩토링 해줘"', '"이 함수의 중복 if를 switch로"'],
+            ],
+          } },
+
+          { subtitle: '패턴 3 · 검수 체크리스트' },
+          { code: { lang: 'text', content: `[AI 코드 검수 5단계]
+
+1. 변수명·함수명이 본인 프로젝트 컨벤션과 맞는가?
+2. import 경로가 정확한가? (AI가 자주 틀림)
+3. 사용하지 않는 변수/import 있는가?
+4. 에러 처리가 충분한가? (try-catch, 빈 상태)
+5. 의존성 배열·key prop 등 React 룰 준수?` } },
+
+          { subtitle: '패턴 4 · 반복 개선 사이클' },
+          { code: { lang: 'text', content: `반복 개선 표준 사이클 (보통 2~3회로 수렴)
+
+라운드 1: 초안 받기
+   "X 기능을 React로 구현하라"
+   → 동작하는 코드 받음
+
+라운드 2: 구체화
+   "위 코드에서 에러 처리를 추가하고,
+    로딩 상태를 별도 컴포넌트로 분리하라"
+   → 완성도 ↑
+
+라운드 3: 정제
+   "변수명을 camelCase로 통일, 매직 넘버를 상수로 추출하라"
+   → 가독성 ↑
+
+⚠️ 4라운드 이상은 보통 컨텍스트 오염 — 새 대화 권장` } },
+
+          { subtitle: '패턴 5 · 폴백 (Fallback) 전략' },
+          { text: '실제 운영에서는 LLM 호출이 실패할 수 있습니다. 1순위 모델 + 2순위 폴백 + 최종 정적 응답의 3단 안전망이 표준입니다.' },
+          { code: { lang: 'typescript', content: `async function askWithFallback(prompt: string): Promise<string> {
+  try {
+    return await askSolar(prompt);             // 1순위
+  } catch {
+    try {
+      return await askHyperCLOVA(prompt);      // 2순위
+    } catch {
+      return '죄송합니다. 일시적으로 답변할 수 없습니다.'; // 정적 폴백
+    }
+  }
+}` } },
+
+          { subtitle: '패턴 6 · 결과물 검증 자동화' },
+          { text: 'AI가 생성한 코드를 사람만 검토하지 말고, TypeScript·ESLint·테스트로 자동 검증합니다. 이 3중 자동 검증을 통과한 코드만 commit합니다.' },
+          { code: { lang: 'bash', content: `# 검증 파이프라인
+npm run typecheck   # tsc -b
+npm run lint        # eslint .
+npm test            # vitest
+
+# 통합 스크립트 (package.json)
+"verify": "npm run typecheck && npm run lint && npm test"` } },
+
+          { subtitle: '패턴 7 · 컨텍스트 위생' },
+          { items: [
+            '주제가 바뀌면 새 대화 시작 — 토큰 누적 + 응답 오염 방지',
+            '대화 100턴 이상은 거의 항상 새 대화가 낫다',
+            '민감 정보(키·비밀번호)는 절대 대화에 노출 금지',
+            '인텔리전스 캐시 — 자주 쓰는 컨텍스트는 .cursor/rules 또는 CLAUDE.md에 저장',
+          ] },
+
+          { subtitle: '7대 패턴 점검 체크리스트' },
+          { items: [
+            '☐ 첫 메시지에 프로젝트 컨텍스트 충분히 포함',
+            '☐ 30분 이내 단위로 작업 분할',
+            '☐ 5단계 검수 체크리스트 적용',
+            '☐ 2~3 라운드 반복 개선',
+            '☐ 폴백 처리 포함된 LLM 호출 함수',
+            '☐ 검증 자동화 파이프라인 동작',
+            '☐ 주기적 새 대화 시작',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-failures',
+        title: '실패 사례 심층 분석',
+        icon: '🚨',
+        summary: '실제 발생한 AI 코딩 사고 5건을 원인-결과-방지법 관점에서 분석하고, 본인 프로젝트에서 같은 실수를 피하는 가이드를 학습합니다.',
+        content: [
+          { subtitle: '사례 1 · API 키 노출 사고' },
+          { text: '한 학생이 ChatGPT에 OpenAI API 키를 포함한 환경변수를 그대로 붙여넣고 "이 환경에서 동작하는 코드를 짜줘"라고 요청. AI는 코드 응답에 API 키 그대로 출력. 학생이 그 응답을 GitHub에 푸시. 24시간 안에 자동 봇이 키를 스캔, 도용 → $300 청구서.' },
+          { callout: { type: 'warn', text: '교훈: AI에게 키·비밀번호·개인정보를 절대 보내지 말 것. 코드 안에 키가 있는 부분은 마스킹(예: process.env.OPENAI_KEY)으로 대체 후 질문.' } },
+
+          { subtitle: '사례 2 · 가짜 라이브러리 사용' },
+          { text: 'AI가 추천한 "react-easy-table" 라이브러리. 학생이 npm install 시도 → 존재하지 않는 패키지. 비슷한 이름의 패키지가 있지만 다른 기능. AI가 학습 데이터에 없는 라이브러리를 "있다고 환각"한 사례.' },
+          { items: [
+            '원인: LLM의 할루시네이션 + 학습 데이터 컷오프',
+            '대응: 항상 npm 또는 패키지의 공식 사이트에서 검증 후 사용',
+            '도구: AI에게 "최신 npm 통계 기준 사용자 10K+ 패키지로 답하라" 명시',
+          ] },
+
+          { subtitle: '사례 3 · 보안 취약 코드 무비판 수용' },
+          { code: { lang: 'typescript', content: `// AI가 제안한 "로그인 검증" 코드 — 학생이 그대로 사용
+function checkLogin(email: string, password: string) {
+  const query = \`SELECT * FROM users WHERE email = '\${email}' AND password = '\${password}'\`;
+  return db.query(query);    // ⚠️ SQL Injection 취약점!
+}
+
+// 보안 검토자가 발견: email에 "' OR 1=1 --" 입력 시 모든 사용자 데이터 노출` } },
+          { callout: { type: 'warn', text: '교훈: 보안 코드는 반드시 시니어 또는 보안 전문가 검토. AI는 "동작하는 코드"를 만들 뿐 "안전한 코드"를 만들지 않습니다. ORM·Prepared Statement 사용 + 비밀번호는 bcrypt 등으로 해싱.' } },
+
+          { subtitle: '사례 4 · 무한 루프 setState' },
+          { code: { lang: 'tsx', content: `// AI가 만든 useEffect — 무한 리렌더 사고
+useEffect(() => {
+  setItems(items.map(i => ({ ...i, active: true })));
+}, [items]);  // ⚠️ items가 의존성이라 setItems → 의존성 변경 → 또 실행 → ...
+
+// 결과: 브라우저 freeze, 메모리 폭증, 사용자 PC 마비` } },
+          { items: [
+            '원인: AI가 의존성 배열의 의미를 정확히 이해 못 함',
+            '대응: useEffect의 첫 번째 의도("언제 실행")를 명시한 후 요청',
+            '검증: ESLint react-hooks/exhaustive-deps 규칙 활성화',
+          ] },
+
+          { subtitle: '사례 5 · 비즈니스 로직 환각' },
+          { text: '학생이 "한국 부가세 10% 계산 함수"를 요청. AI가 만든 코드는 영국 VAT 20% 계산. AI는 "한국"이라는 단어보다 "VAT"라는 일반 개념을 따라 동작. 학생이 검토 없이 사용해 결제 금액 오류.' },
+          { callout: { type: 'tip', text: '도메인 특화 비즈니스 로직(세금·법률·의료·금융)은 반드시 사람이 검증. AI에게 "한국 부가가치세 10%로 계산하는 함수를 만들어라. VAT가 아닌 한국 세법 기준이다." 처럼 명시.' } },
+
+          { subtitle: '5대 사례 공통 교훈' },
+          { table: {
+            headers: ['교훈', '구체적 행동'],
+            rows: [
+              ['민감 정보 보호', '키·비밀번호는 마스킹 후 질문'],
+              ['외부 의존성 검증', '추천된 라이브러리는 npm·docs로 확인'],
+              ['보안 코드 별도 검토', 'OWASP Top 10 체크리스트 적용'],
+              ['React 룰 자동 검증', 'ESLint plugin-react-hooks 활성화'],
+              ['도메인 로직 명시', '"한국 세법 기준" 등 지역·도메인 명시'],
+            ],
+          } },
+
+          { subtitle: '본인 프로젝트 위험 자가 점검' },
+          { items: [
+            '✅ .env가 .gitignore에 포함되었는가?',
+            '✅ git log에 API 키 흔적이 없는가? (git log -p | grep -i "api_key")',
+            '✅ npm audit 결과에 high·critical 취약점이 없는가?',
+            '✅ ESLint 경고가 0개인가?',
+            '✅ TypeScript strict 모드 활성화?',
+            '✅ 인증·결제·결제 등 핵심 흐름에 단위 테스트가 있는가?',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-1',
+        title: '실습 1 · 첫 컴포넌트 단계별 가이드 (90분)',
+        icon: '🧪',
+        summary: 'Cursor에서 React 카운터 컴포넌트를 만들면서 AI 협업 워크플로우를 체험하는 본격 실습입니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Cursor의 채팅·인라인 편집·에이전트 모드 모두 경험',
+            'AI 응답을 단계별로 검토하며 수정 요청',
+            '최종적으로 동작하는 React 컴포넌트 완성',
+            '본인이 100% 이해한 코드 확보',
+          ] },
+
+          { subtitle: '준비물' },
+          { items: [
+            'Cursor 설치 완료',
+            'Day 4(선수과정)에서 생성한 Vite React-TS 프로젝트 또는 새 프로젝트',
+            'AI 응답을 받아 적을 학습 노트',
+            '타이머 (각 단계 시간 측정용)',
+          ] },
+
+          { subtitle: '0단계 · 환경 점검 (5분)' },
+          { code: { lang: 'bash', content: `# 프로젝트 폴더로 이동
+cd my-first-app
+
+# Cursor로 열기
+cursor .
+
+# 개발 서버 실행 (별도 터미널)
+npm run dev
+# → http://localhost:5173` } },
+
+          { subtitle: '1단계 · 컨텍스트 주입 (10분)' },
+          { text: 'Cursor 채팅 패널(Cmd+L)을 열고 다음 메시지로 시작:' },
+          { code: { lang: 'text', content: `우리 프로젝트는:
+- Vite 7 + React 19 + TypeScript 5.8 (strict)
+- 컴포넌트 위치: src/components/
+- 모든 컴포넌트는 default export
+- 함수형 컴포넌트만 사용
+
+이 환경에서 다음 작업을 도와줘:
+"카운터 컴포넌트를 만들고 싶다. +/− 버튼으로 값을 변경하고,
+값이 짝수일 때 'EVEN', 홀수일 때 'ODD' 라벨을 표시.
+초기값은 0이며 음수 허용."
+
+먼저 코드를 짜기 전, 구현 방향을 한 줄로 설명해줘.` } },
+          { callout: { type: 'tip', text: '바로 코드를 받지 말고 "방향 먼저"를 요청하는 이유 — AI가 잘못된 방향으로 가는 걸 코드 완성 전에 차단할 수 있습니다.' } },
+
+          { subtitle: '2단계 · 코드 생성 (15분)' },
+          { text: '방향이 본인 의도와 맞으면 후속 메시지:' },
+          { code: { lang: 'text', content: `방향 OK. 이제 코드를 작성해줘.
+파일명은 src/components/Counter.tsx로.` } },
+
+          { subtitle: '3단계 · 코드 검토 (15분)' },
+          { text: 'AI가 만든 코드를 한 줄씩 읽으며 다음을 검증:' },
+          { items: [
+            '☐ import 문이 정확한가?',
+            '☐ Props 타입이 명시되었는가?',
+            '☐ useState 초기값이 0인가?',
+            '☐ +/− 핸들러가 함수로 분리되었는가?',
+            '☐ JSX에서 짝수/홀수 분기가 명확한가?',
+            '☐ className·스타일이 본인 컨벤션과 일치하는가?',
+          ] },
+          { callout: { type: 'warn', text: '이 단계에서 이해 안 가는 부분이 있으면 즉시 질문. "왜 이 부분에 useCallback을 안 썼나?" "이 || 0의 의미는?" 등.' } },
+
+          { subtitle: '4단계 · 인라인 편집 (15분)' },
+          { text: 'Cursor의 강점인 Cmd+K (인라인 편집) 체험. 코드 내 특정 줄을 선택하고 Cmd+K → "이 핸들러에 음수 방지 로직 추가"' },
+          { code: { lang: 'typescript', content: `// Before (전체 코드)
+const decrement = () => setCount(count - 1);
+
+// 선택 후 Cmd+K → "음수가 되지 않도록 0 이상만 허용"
+// After
+const decrement = () => setCount(prev => Math.max(0, prev - 1));` } },
+
+          { subtitle: '5단계 · 에이전트 모드 (15분)' },
+          { text: 'Cmd+I로 에이전트 모드 진입. 다파일 작업 체험:' },
+          { code: { lang: 'text', content: `다음을 한 번에 처리해줘:
+1. src/components/Counter.tsx에 다크모드용 스타일 추가
+2. src/styles/Counter.module.css 새 파일 생성
+3. App.tsx에 <Counter /> import + 렌더
+
+스타일은 var(--primary-blue) 등 CSS 변수 사용.
+완료 후 변경된 파일 목록을 표 형태로 알려줘.` } },
+
+          { subtitle: '6단계 · 동작 확인 + 회고 (15분)' },
+          { items: [
+            '브라우저에서 카운터 +/− 클릭 → 짝/홀 라벨 변경 확인',
+            '−를 0에서 더 누르면 음수가 안 되는지 확인',
+            '다크모드 토글 시 스타일 자동 변경 확인',
+            '학습 노트에 "오늘 가장 인상 깊은 점" 1줄, "다음에 더 잘할 것" 1줄 작성',
+          ] },
+
+          { subtitle: '확장 과제 (시간 남으면)' },
+          { items: [
+            '리셋 버튼 추가 → 0으로 초기화',
+            'step prop 추가 → 1씩이 아닌 N씩 증감 가능',
+            '키보드 ↑·↓ 키로도 증감 가능',
+            '카운트 변화를 localStorage에 저장 → 새로고침 시 복원',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-2',
+        title: '실습 2 · 도구 비교 미니 프로젝트 (60분)',
+        icon: '⚗️',
+        summary: '동일한 작업을 Cursor·Bolt·v0 세 도구로 각각 만들어 결과·속도·코드 품질을 직접 비교 체험합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '동일 요구사항을 3개 도구로 구현하며 차이 체감',
+            '각 도구의 강점·약점을 직접 정량화',
+            '본인 프로젝트에 적합한 도구 선정 근거 확보',
+          ] },
+
+          { subtitle: '공통 요구사항' },
+          { code: { lang: 'text', content: `[프로젝트] "오늘의 할 일" 카드 컴포넌트
+
+기능:
+- 입력창에 텍스트 입력 후 Enter → 카드로 추가
+- 카드 좌측에 체크박스 → 클릭 시 완료 표시 (취소선)
+- 카드 우측에 × 버튼 → 클릭 시 삭제
+- 완료된 항목 N개 / 전체 N개 카운터 상단 표시
+
+스타일:
+- 카드는 둥근 모서리, 그림자
+- 완료 항목은 회색 + 취소선
+- 모바일 친화적 (320px 이상 정상 동작)` } },
+
+          { subtitle: '1라운드 · Cursor (20분)' },
+          { items: [
+            '1) Cursor 새 프로젝트 열기',
+            '2) 위 요구사항을 채팅에 붙여넣기 + "React + TS로 구현" 명시',
+            '3) AI 응답 받은 후 1회 인라인 편집',
+            '4) localhost에서 동작 확인',
+            '5) 학습 노트에 시간·만족도(1~5) 기록',
+          ] },
+
+          { subtitle: '2라운드 · Bolt (15분)' },
+          { items: [
+            '1) bolt.new 접속 (무료 계정)',
+            '2) 위 요구사항을 한 번에 입력',
+            '3) AI가 자동으로 풀스택 앱 생성',
+            '4) 브라우저에서 즉시 미리보기',
+            '5) "내가 직접 작성한 코드 줄 수" 기록',
+          ] },
+
+          { subtitle: '3라운드 · v0 by Vercel (15분)' },
+          { items: [
+            '1) v0.dev 접속',
+            '2) 위 요구사항을 입력',
+            '3) UI 컴포넌트 단위로 생성됨',
+            '4) "Copy code"로 코드 복사',
+            '5) 본인 Cursor 프로젝트에 통합',
+          ] },
+
+          { subtitle: '비교 평가표 작성 (10분)' },
+          { table: {
+            headers: ['평가 항목', 'Cursor', 'Bolt', 'v0'],
+            rows: [
+              ['완성까지 시간', '?', '?', '?'],
+              ['코드 가독성 (1~5)', '?', '?', '?'],
+              ['수정 용이성 (1~5)', '?', '?', '?'],
+              ['디자인 품질 (1~5)', '?', '?', '?'],
+              ['학습 효과 (1~5)', '?', '?', '?'],
+            ],
+          } },
+          { callout: { type: 'tip', text: '정답은 없습니다. 본인이 직접 비교한 결과를 본인의 노트에 남기는 것이 핵심. 일반적으로 Cursor는 학습·통제력, Bolt는 속도, v0는 디자인 품질에 강합니다.' } },
+
+          { subtitle: '회고 질문' },
+          { items: [
+            'Q1. 어느 도구가 가장 빨랐는가? 그 이유는?',
+            'Q2. 어느 도구의 코드를 가장 잘 이해할 수 있었는가?',
+            'Q3. 본인 프로젝트에 주력으로 쓸 도구 1개 + 보조 1개를 선택한다면?',
+            'Q4. 도구별 가격을 고려할 때 ROI가 가장 높은 것은?',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-troubleshooting',
+        title: '트러블슈팅 & 자주 발생하는 문제',
+        icon: '🔧',
+        summary: 'Cursor 동작 안 됨, AI 응답 부정확, 비용 폭증 등 바이브코딩 도입 초기 흔히 마주치는 12가지 문제와 해결법.',
+        content: [
+          { subtitle: '문제 카탈로그 — 12가지 흔한 케이스' },
+          { table: {
+            headers: ['#', '증상', '원인', '해결'],
+            rows: [
+              ['1', 'Cursor 채팅이 응답 안 함', 'API 한도/네트워크', 'Settings → Models → 한도 확인'],
+              ['2', '코드 자동완성 안 뜸', 'Copilot 비활성', '하단바 Copilot 아이콘 확인'],
+              ['3', '"존재하지 않는 함수" 호출', '환각', '공식 docs로 검증'],
+              ['4', '한국어 → 영어 응답', 'system 지시 부족', '"한국어로만 답하라" 명시'],
+              ['5', '코드가 너무 길어짐', '한 번에 너무 많이 요구', '작업 분할'],
+              ['6', 'AI가 본인 코드 무시', '컨텍스트 누락', '@파일명으로 명시적 첨부'],
+              ['7', 'TypeScript 에러 안 잡힘', 'tsconfig 미설정', 'strict: true 활성화'],
+              ['8', 'API 호출 비용 폭증', '대화 무한 누적', '주기적 새 대화'],
+              ['9', '같은 질문 다른 답', 'temperature 높음', '코드는 temp=0 사용'],
+              ['10', '한글이 깨짐', '파일 인코딩', 'VS Code에서 UTF-8 저장'],
+              ['11', '터미널이 안 열림', 'PowerShell 정책', 'Cursor 설정에서 셸 변경'],
+              ['12', 'AI가 갑자기 영문 코드 주석', 'system 누락', '"주석은 한국어로" 명시'],
+            ],
+          } },
+
+          { subtitle: '문제 1 상세 — API 한도 확인' },
+          { code: { lang: 'text', content: `Cursor 메뉴: Cmd/Ctrl+Shift+J → "Settings" → Models
+
+확인 사항:
+- 현재 사용 모델 (claude-3.5-sonnet, gpt-4 등)
+- 월 한도 진행률 (Pro 플랜은 500 fast requests/월)
+- API Mode 활성 여부 (Pro 한도 초과 시 사용)
+- Anthropic/OpenAI 직접 키 입력 가능 (BYOK)` } },
+
+          { subtitle: '문제 3 상세 — 환각 대응 5단계' },
+          { items: [
+            '1단계: 의심 — "정말 이 함수가 존재하는가?" 의구심 갖기',
+            '2단계: 검증 — 공식 docs에서 검색',
+            '3단계: 실행 — 실제 호출해서 동작 확인',
+            '4단계: 학습 데이터 시점 인지 — 2024년 이후 등장 라이브러리는 환각 가능성↑',
+            '5단계: AI에게 재확인 — "정말 React 19에 이 Hook 있나?" 직접 묻기',
+          ] },
+
+          { subtitle: '문제 8 상세 — 비용 폭증 방지' },
+          { code: { lang: 'text', content: `[비용 모니터링 루틴]
+
+매일 1회:
+- Cursor: Settings → Usage 확인
+- API 직접 사용 시: 각 콘솔에서 일일 사용량 체크
+
+주간:
+- 어떤 작업에서 토큰이 많이 소비되었는지 분석
+- 비효율적 패턴 발견 시 개선
+  → 예: 매번 큰 파일 첨부 → 필요한 부분만 발췌
+  → 예: 100턴 대화 → 50턴마다 새 시작
+
+월간:
+- 도구별 비용 vs 가치 평가
+- ROI 낮은 도구는 구독 해지` } },
+
+          { subtitle: '에러 메시지로 AI에게 도움 요청하는 법' },
+          { code: { lang: 'text', content: `[좋은 에러 보고 예시]
+
+발생 상황:
+  npm run dev 실행 시점
+
+전체 에러 메시지:
+  \`\`\`
+  TypeError: Cannot read properties of undefined (reading 'map')
+    at Counter (src/components/Counter.tsx:15:22)
+  \`\`\`
+
+해당 코드:
+  \`\`\`tsx
+  return <ul>{items.map(i => <li key={i.id}>{i.name}</li>)}</ul>;
+  \`\`\`
+
+추가 정보:
+  items는 props로 받음. 부모에서 fetch 결과로 setItems 호출.
+
+질문:
+  items가 undefined인 케이스를 가장 단순하게 방어하는 방법은?` } },
+
+          { subtitle: '디버깅 의사결정 트리' },
+          { code: { lang: 'text', content: `에러 발생
+   │
+   ▼
+재현 가능한가?
+   ├─ 예 → ① 에러 메시지 정확히 복사 → ② AI에게 위 양식대로 보고
+   └─ 아니오 → 더 많은 정보 수집 (DevTools, 콘솔, 네트워크)
+   │
+   ▼
+AI 답변 받음
+   │
+   ▼
+설명이 합리적인가?
+   ├─ 예 → 적용 → 재현되지 않으면 종결
+   └─ 아니오 → 후속 질문 또는 다른 AI/검색` } },
+        ],
+      },
+
+      {
+        id: 'reg-1-resources',
+        title: '심화 자료 + 평가',
+        icon: '📚',
+        summary: '바이브코딩 학습을 이어갈 수 있는 도서·강의·블로그·커뮤니티 큐레이션 + Day 1 학습 효과 자가 평가.',
+        content: [
+          { subtitle: '도서 (한국어)' },
+          { items: [
+            '『클린 코드』 로버트 마틴 — AI 시대에도 변하지 않는 코드 미학',
+            '『리팩토링 2판』 마틴 파울러 — AI 코드를 본인 코드로 정제하는 도구',
+            '『실용주의 프로그래머』 — 도구를 다루는 개발자의 자세',
+            '『AI 시대의 코딩』 (가제, 2026 출간 예정) — 한국어 바이브코딩 본격 교재',
+          ] },
+
+          { subtitle: '강의 (무료/유료)' },
+          { items: [
+            '노마드코더 "Cursor 완전 정복" (유료)',
+            '인프런 "AI 개발자처럼 코딩하기" (유료)',
+            'YouTube "Theo - t3.gg" (영문, 무료) — 비판적 시각',
+            'YouTube "Fireship" (영문, 무료) — 빠른 트렌드 캡처',
+            'Andrej Karpathy "Build LLM from Scratch" (영문, 무료) — 깊은 이해',
+          ] },
+
+          { subtitle: '블로그·뉴스레터' },
+          { items: [
+            'simonwillison.net — AI/LLM 일일 업데이트',
+            'every.to/p/superorganizers — AI 도구 실전 활용',
+            '한국어: 잡고AI 뉴스레터 (주간)',
+            '한국어: tilnote.io 개발자 블로그 모음',
+            'Hacker News: news.ycombinator.com (AI 관련 토론)',
+          ] },
+
+          { subtitle: '커뮤니티' },
+          { items: [
+            'Discord: Cursor 공식 (cursor.com/community)',
+            'Discord: Anthropic 공식',
+            'GitHub Discussions: 각 도구 저장소',
+            '한국어: 페이스북 "AI 개발자 모임"',
+            '한국어: 슬랙 "한국 LLM 개발자 모임"',
+          ] },
+
+          { subtitle: '실전 프로젝트 아이디어 (다음 학습용)' },
+          { items: [
+            '개인 일정 관리 + AI 시간표 추천',
+            'YouTube 영상 요약 봇',
+            '개인 가계부 + AI 지출 분석',
+            '독서 노트 + AI 인용 검색',
+            '한국 시사 뉴스 일일 브리핑',
+            '코딩 인터뷰 문제 + AI 코칭',
+          ] },
+
+          { subtitle: 'Day 1 학습 효과 자가 평가' },
+          { table: {
+            headers: ['역량', '1점 (못함)', '3점 (보통)', '5점 (잘함)'],
+            rows: [
+              ['바이브코딩 개념 설명', '"AI가 코드 짜줌"', '주요 도구·패턴 1~2개', '인지부하 등 이론적 배경'],
+              ['Cursor 단축키 사용', '메뉴로만', '5개 이상 단축키', '15개 이상 + custom'],
+              ['컨텍스트 주입', '바로 질문', '프로젝트 정보 일부', '7원칙 적용'],
+              ['검수 능력', '그대로 사용', '명백한 오류만 발견', '5단계 체크리스트 적용'],
+              ['실패 회피', '경험 없음', '1~2개 패턴 인지', '5대 사례 + 본인 대응책'],
+            ],
+          } },
+
+          { subtitle: '다음 단계' },
+          { text: 'Day 1을 통과했다면 Day 2~3으로 HTML/CSS/JavaScript 기본기를, Day 4~6으로 React + Supabase 풀스택을, Day 7~8로 AI 서비스 설계 + LLM API를, Day 9~13으로 실제 팀 프로젝트를 진행합니다. 본 Day 1의 7가지 협업 패턴이 모든 후속 일자에서 반복 적용됩니다.' },
+        ],
+      },
     ],
   },
 
