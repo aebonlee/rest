@@ -3074,6 +3074,560 @@ export default function Portfolio() {
       },
 
       {
+        id: 'reg-2-practice-2',
+        title: '실습 2 · Flexbox 12패턴 마스터 (45분)',
+        icon: '🧪',
+        summary: 'Flexbox 핵심 패턴 12개를 직접 코딩하며 1차원 레이아웃 완전 정복.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Flexbox 12개 패턴 모두 직접 작성',
+            '실제 화면에서 동작 확인',
+            'AI 도움 없이 본인이 작성',
+          ] },
+
+          { subtitle: '준비 HTML' },
+          { code: { lang: 'html', content: `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>Flexbox 12패턴</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <h2>1. 가로 메뉴 양 끝 정렬</h2>
+  <div class="pattern-1">
+    <span>로고</span>
+    <span>메뉴</span>
+    <span>CTA</span>
+  </div>
+
+  <h2>2. 가운데 정렬</h2>
+  <div class="pattern-2"><span>중앙</span></div>
+
+  <!-- 나머지 10개도 같은 패턴 -->
+</body>
+</html>` } },
+
+          { subtitle: '12패턴 작성 — 한 번에 1개씩' },
+          { items: [
+            '패턴 1: 가로 메뉴 양 끝 정렬 (justify-content: space-between)',
+            '패턴 2: 가운데 정렬 (수직+수평)',
+            '패턴 3: 사이드바 + 본문 (flex: 0 0 250px / flex: 1)',
+            '패턴 4: 카드 동일 높이 (align-items: stretch)',
+            '패턴 5: 푸터 하단 고정 (sticky footer)',
+            '패턴 6: 입력 + 버튼 한 줄 (flex: 1 / flex-shrink: 0)',
+            '패턴 7: 자동 줄바꿈 태그 (flex-wrap: wrap)',
+            '패턴 8: 모바일에서 세로로 (media query)',
+            '패턴 9: 첫 번째만 강조 (order: -1)',
+            '패턴 10: 카드 텍스트 영역만 늘이기',
+            '패턴 11: 동일 너비 컬럼 N개 (flex: 1)',
+            '패턴 12: 2:1 비율 분할 (flex: 2 / flex: 1)',
+          ] },
+
+          { subtitle: '체크 — Flexbox Froggy 게임' },
+          { items: [
+            'flexboxfroggy.com 접속',
+            '24레벨 완주 (1~2시간)',
+            '게임으로 학습 → 두뇌에 깊이 박힘',
+            '졸업 시 점수 캡처 → 학습 노트',
+          ] },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            'Holy Grail 레이아웃 (헤더-사이드-본문-사이드-푸터)',
+            'Pinterest 스타일 카드 (높이 다름)',
+            '메시지 버블 (좌/우 정렬 차이)',
+            '캘린더 일주일 (균등 너비)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-practice-3',
+        title: '실습 3 · CSS Grid 12 컬럼 시스템 (40분)',
+        icon: '🧪',
+        summary: 'Bootstrap 스타일 12 컬럼 그리드 + auto-fit 반응형 + grid-template-areas 풀세트.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '12 컬럼 시스템 직접 구현',
+            'auto-fit으로 반응형 자동화',
+            'grid-template-areas로 시각적 레이아웃',
+          ] },
+
+          { subtitle: '단계 1 · 12 컬럼 시스템 (15분)' },
+          { code: { lang: 'css', content: `.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 24px;
+}
+
+.col-12 { grid-column: span 12; }
+.col-9  { grid-column: span 9; }
+.col-8  { grid-column: span 8; }
+.col-6  { grid-column: span 6; }
+.col-4  { grid-column: span 4; }
+.col-3  { grid-column: span 3; }
+.col-2  { grid-column: span 2; }
+
+@media (max-width: 767px) {
+  .col-9, .col-8, .col-6, .col-4, .col-3, .col-2 {
+    grid-column: span 12;   /* 모바일에서 전체 폭 */
+  }
+}` } },
+
+          { code: { lang: 'html', content: `<div class="grid">
+  <header class="col-12">상단 헤더</header>
+  <nav class="col-3">사이드바</nav>
+  <main class="col-9">본문 영역</main>
+  <article class="col-4">카드 1</article>
+  <article class="col-4">카드 2</article>
+  <article class="col-4">카드 3</article>
+  <footer class="col-12">푸터</footer>
+</div>` } },
+
+          { subtitle: '단계 2 · auto-fit 반응형 (10분)' },
+          { code: { lang: 'css', content: `.cards-auto {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+/* 화면이 좁으면 1열, 넓으면 자동으로 여러 열 */
+/* JavaScript·media query 없이 자동 */` } },
+
+          { subtitle: '단계 3 · grid-template-areas (15분)' },
+          { code: { lang: 'css', content: `.layout {
+  display: grid;
+  grid-template-columns: 250px 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-areas:
+    "header header"
+    "nav    main"
+    "footer footer";
+  min-height: 100vh;
+  gap: 16px;
+}
+
+.layout > header { grid-area: header; }
+.layout > nav    { grid-area: nav; }
+.layout > main   { grid-area: main; }
+.layout > footer { grid-area: footer; }
+
+@media (max-width: 767px) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "header"
+      "nav"
+      "main"
+      "footer";
+  }
+}` } },
+
+          { subtitle: '체크 — CSS Grid Garden' },
+          { items: [
+            'cssgridgarden.com 접속',
+            '28레벨 완주 (1~2시간)',
+            '본 강의 외 가정 학습용',
+          ] },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '대시보드 레이아웃 (카드 7개 다양한 크기)',
+            '매거진 스타일 (제목 큰 카드 + 작은 카드들)',
+            'Pinterest 무한 컬럼',
+            '12 컬럼에 offset (col-3 + col-offset-1)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-practice-4',
+        title: '실습 4 · 다크모드 토글 + 시스템 감지 (35분)',
+        icon: '🧪',
+        summary: 'CSS 변수 + data-theme + localStorage + prefers-color-scheme까지 다크모드 풀세트.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'CSS 변수로 다크모드 토큰 분리',
+            'JavaScript로 토글 + localStorage 저장',
+            '사용자 OS 설정 자동 감지',
+          ] },
+
+          { subtitle: '단계 1 · 디자인 토큰 분리 (10분)' },
+          { code: { lang: 'css', content: `/* tokens.css */
+:root {
+  --bg-primary:    #ffffff;
+  --bg-secondary:  #f8f9fa;
+  --text-primary:  #1a1a1a;
+  --text-muted:    #6b7280;
+  --border-color:  #e5e7eb;
+  --primary:       #0046C8;
+  --primary-hover: #002E8A;
+}
+
+[data-theme="dark"] {
+  --bg-primary:    #1a1a1a;
+  --bg-secondary:  #2a2a2a;
+  --text-primary:  #f0f0f0;
+  --text-muted:    #a0a0a0;
+  --border-color:  #3a3a3a;
+  --primary:       #4A8FE7;
+  --primary-hover: #6BA3F0;
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  transition: background 0.2s, color 0.2s;
+}` } },
+
+          { subtitle: '단계 2 · 토글 버튼 + localStorage (15분)' },
+          { code: { lang: 'html', content: `<button id="theme-toggle" aria-label="테마 토글">
+  <span class="icon-sun">☀️</span>
+  <span class="icon-moon">🌙</span>
+</button>
+
+<script>
+(function() {
+  const btn = document.getElementById('theme-toggle');
+  const root = document.documentElement;
+
+  // 1) 저장된 설정 또는 OS 감지
+  const saved = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const initial = saved || (prefersDark ? 'dark' : 'light');
+
+  root.setAttribute('data-theme', initial);
+
+  // 2) 토글
+  btn.addEventListener('click', () => {
+    const current = root.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    localStorage.setItem('theme', next);
+  });
+
+  // 3) OS 설정 변경 감지
+  window.matchMedia('(prefers-color-scheme: dark)')
+    .addEventListener('change', e => {
+      if (!localStorage.getItem('theme')) {
+        root.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      }
+    });
+})();
+</script>` } },
+
+          { subtitle: '단계 3 · React Hook 버전 (10분)' },
+          { code: { lang: 'tsx', content: `// src/hooks/useTheme.ts
+import { useState, useEffect } from 'react';
+
+type Theme = 'light' | 'dark' | 'auto';
+
+export function useTheme() {
+  const [theme, setTheme] = useState<Theme>(
+    () => (localStorage.getItem('theme') as Theme) || 'auto'
+  );
+
+  useEffect(() => {
+    const root = document.documentElement;
+    let applied = theme;
+
+    if (theme === 'auto') {
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      applied = prefersDark ? 'dark' : 'light';
+    }
+
+    root.setAttribute('data-theme', applied);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
+
+  return { theme, setTheme };
+}
+
+// 사용
+function ThemeToggle() {
+  const { theme, setTheme } = useTheme();
+  return (
+    <select value={theme} onChange={e => setTheme(e.target.value as Theme)}>
+      <option value="light">☀️ 라이트</option>
+      <option value="dark">🌙 다크</option>
+      <option value="auto">⚙️ 시스템</option>
+    </select>
+  );
+}` } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '깜빡임 방지 — HTML head에 즉시 적용 스크립트',
+            '5색 컬러 테마 (파/빨/녹/보/주)',
+            '모션 감소 사용자 대응 (prefers-reduced-motion)',
+            '색맹 친화 모드',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 모든 색이 CSS 변수로 분리',
+            '☐ localStorage 저장 + 새로고침 후 유지',
+            '☐ OS 설정 자동 감지',
+            '☐ 토글 시 깜빡임 최소화',
+            '☐ 접근성 (대비·키보드 토글)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-practice-5',
+        title: '실습 5 · 반응형 햄버거 메뉴 (40분)',
+        icon: '🧪',
+        summary: '데스크탑은 가로 메뉴, 모바일은 햄버거 + 슬라이드 메뉴 — 한국 트래픽 70% 모바일 대응.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '모바일에서 햄버거 메뉴 동작',
+            '데스크탑에서 가로 메뉴 자동 전환',
+            '접근성 — 키보드 + ARIA',
+          ] },
+
+          { subtitle: 'HTML' },
+          { code: { lang: 'html', content: `<nav class="navbar">
+  <a href="/" class="logo">로고</a>
+
+  <button
+    class="hamburger"
+    aria-label="메뉴 토글"
+    aria-expanded="false"
+    aria-controls="nav-menu"
+  >
+    <span></span>
+    <span></span>
+    <span></span>
+  </button>
+
+  <ul id="nav-menu" class="nav-menu">
+    <li><a href="/about">소개</a></li>
+    <li><a href="/services">서비스</a></li>
+    <li><a href="/contact">문의</a></li>
+  </ul>
+</nav>` } },
+
+          { subtitle: 'CSS — 모바일 퍼스트' },
+          { code: { lang: 'css', content: `.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 24px;
+  position: relative;
+}
+
+/* 햄버거 — 모바일에서만 보임 */
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  min-width: 44px;
+  min-height: 44px;
+}
+.hamburger span {
+  width: 24px;
+  height: 2px;
+  background: var(--text-primary);
+  transition: 0.2s;
+}
+
+/* X 모양 변환 */
+.hamburger.active span:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+.hamburger.active span:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.active span:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+/* 메뉴 — 모바일에서 숨김 */
+.nav-menu {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  flex-direction: column;
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
+  list-style: none;
+  margin: 0;
+  padding: 16px 24px;
+}
+.nav-menu.open {
+  display: flex;
+}
+
+/* 데스크탑 */
+@media (min-width: 1024px) {
+  .hamburger {
+    display: none;
+  }
+  .nav-menu {
+    display: flex !important;
+    flex-direction: row;
+    position: static;
+    background: transparent;
+    border-top: none;
+    padding: 0;
+    gap: 24px;
+  }
+}` } },
+
+          { subtitle: 'JavaScript' },
+          { code: { lang: 'javascript', content: `const hamburger = document.querySelector('.hamburger');
+const menu = document.getElementById('nav-menu');
+
+hamburger.addEventListener('click', () => {
+  const isOpen = menu.classList.toggle('open');
+  hamburger.classList.toggle('active');
+  hamburger.setAttribute('aria-expanded', isOpen);
+});
+
+// 외부 클릭 시 닫기
+document.addEventListener('click', (e) => {
+  if (!hamburger.contains(e.target) && !menu.contains(e.target)) {
+    menu.classList.remove('open');
+    hamburger.classList.remove('active');
+    hamburger.setAttribute('aria-expanded', 'false');
+  }
+});
+
+// Escape 키로 닫기
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    menu.classList.remove('open');
+    hamburger.classList.remove('active');
+  }
+});` } },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '슬라이드 인 애니메이션 (transform: translateX)',
+            '서브 메뉴 아코디언',
+            '검색창 통합',
+            'Sticky 헤더 + 스크롤 시 색 변경',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 모바일 햄버거 정상 동작',
+            '☐ 데스크탑 가로 메뉴 자동 전환',
+            '☐ ARIA aria-expanded 토글',
+            '☐ 키보드 (Tab + Escape) 접근',
+            '☐ 외부 클릭 시 자동 닫기',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-2-practice-6',
+        title: '실습 6 · 본인 포트폴리오 1페이지 완성 (60분)',
+        icon: '🧪',
+        summary: '학습한 모든 HTML/CSS 기술을 결합한 본인의 실제 포트폴리오 페이지를 작성합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '시맨틱 HTML + Flexbox + Grid + 반응형 + 다크모드 모두 적용',
+            '졸업 후에도 실제 활용 가능한 결과물',
+            'Lighthouse 4지표 80+ 달성',
+          ] },
+
+          { subtitle: '8개 섹션 구성' },
+          { items: [
+            '1. Hero — 이름·직함·한 줄 소개',
+            '2. About — 짧은 자기 소개 3~4문장',
+            '3. Skills — 보유 기술 태그 8~12개',
+            '4. Projects — 프로젝트 카드 3개 이상',
+            '5. Experience — 경력·학력 타임라인',
+            '6. Contact — 이메일·SNS 링크',
+            '7. (선택) Blog — 글 목록',
+            '8. Footer — 저작권·연락처',
+          ] },
+
+          { subtitle: '권장 작업 순서' },
+          { code: { lang: 'text', content: `[0단계 · 환경 (10분)]
+- src/pages/Portfolio.tsx 생성
+- src/styles/portfolio.css 생성
+- 디자인 토큰 (실습 4 결과 재활용)
+
+[1단계 · 시맨틱 골격 (15분)]
+- 8개 섹션 <header>·<main>·<section>·<footer>
+- 가짜 콘텐츠로 시작 (Lorem ipsum)
+
+[2단계 · 레이아웃 (20분)]
+- Hero: Flexbox 가운데
+- Skills: Flexbox + flex-wrap
+- Projects: Grid auto-fit
+- Experience: Flexbox + 시간순
+
+[3단계 · 반응형 (10분)]
+- 모바일 1열
+- 태블릿 2열 (768px+)
+- 데스크탑 3열 (1024px+)
+
+[4단계 · 다크모드 (5분)]
+- 토글 버튼 (실습 4 재활용)
+
+[5단계 · 폴리싱 (10분)]
+- 호버 transition
+- 폰트·줄간격
+- 이미지 alt + 적정 크기` } },
+
+          { subtitle: '실제 콘텐츠 작성' },
+          { items: [
+            '본인 이름 + 진짜 직함 ("AI 개발자 지망생" 등)',
+            '실제 보유 기술 (배운 것 포함 OK)',
+            '본 강의 프로젝트를 Projects에 1개 이상',
+            '본인 이메일·GitHub URL',
+            '졸업 후 채용 담당자가 본다고 가정',
+          ] },
+
+          { subtitle: '확장 과제 — 차별화' },
+          { items: [
+            '스크롤 시 헤더 색 변경 (sticky + IntersectionObserver)',
+            '섹션 진입 시 페이드인 애니메이션',
+            '5가지 컬러 테마 토글',
+            'GitHub 자동 연동 (Octokit으로 최근 commit 표시)',
+            '본 강의 인증 배지',
+          ] },
+
+          { subtitle: '배포 + 공유' },
+          { items: [
+            'gh-pages 또는 본 강의 사이트에 배포',
+            '실제 URL을 LinkedIn 프로필에 추가',
+            '동기들과 URL 공유 + 피어 리뷰',
+          ] },
+
+          { subtitle: '평가 기준 (100점)' },
+          { table: {
+            headers: ['항목', '배점', '확인'],
+            rows: [
+              ['시맨틱 HTML', '20', 'axe 점수 90+'],
+              ['반응형', '20', '3개 브레이크포인트'],
+              ['다크모드', '15', '토글 + localStorage'],
+              ['Grid 적용', '15', 'auto-fit 카드'],
+              ['Flexbox 적용', '10', '네비·태그'],
+              ['CSS 변수', '10', '하드코딩 0개'],
+              ['접근성', '5', 'Lighthouse 90+'],
+              ['배포', '5', '공개 URL'],
+            ],
+          } },
+        ],
+      },
+
+      {
         id: 'reg-2-troubleshooting',
         title: '트러블슈팅 · CSS 디버깅',
         icon: '🔧',
