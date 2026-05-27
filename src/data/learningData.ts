@@ -10403,6 +10403,804 @@ VITE_PERSONAL_DEBUG_KEY=...` } },
       { subtitle: '다음 시간 예고' },
       { text: 'Day 11에서는 만들어놓은 모든 기능을 테스트·디버깅. Chrome DevTools·React DevTools·Lighthouse로 품질을 끌어올립니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-10-crud-ui',
+        title: 'Supabase CRUD를 React에 통합',
+        icon: '🔗',
+        summary: 'Supabase 클라이언트와 React를 연결하는 표준 패턴 — custom hook, 낙관적 업데이트, 에러 처리까지.',
+        content: [
+          { subtitle: 'useSupabaseQuery — custom hook' },
+          { code: { lang: 'typescript', content: `// src/hooks/useSupabaseQuery.ts
+import { useState, useEffect, useCallback } from 'react';
+import { supabase } from '@/utils/supabase';
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+
+export function useSupabaseQuery<T>(
+  queryFn: () => Promise<PostgrestSingleResponse<T>>,
+  deps: any[] = []
+) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error } = await queryFn();
+    if (error) setError(error.message);
+    else setData(data);
+    setLoading(false);
+  }, deps);
+
+  useEffect(() => { refetch(); }, [refetch]);
+
+  return { data, loading, error, refetch };
+}
+
+// 사용
+const { data: posts, loading, error, refetch } = useSupabaseQuery(
+  () => supabase.from('posts').select('*').order('created_at', { ascending: false }),
+  []
+);` } },
+
+          { subtitle: 'CRUD 컴포넌트 패턴' },
+          { code: { lang: 'tsx', content: `function PostsPage() {
+  const { data: posts, refetch } = useSupabaseQuery(
+    () => supabase.from('posts').select('*').order('id', { ascending: false }),
+    []
+  );
+
+  async function createPost(title: string) {
+    const { error } = await supabase
+      .from('posts')
+      .insert({ title, body: '' });
+    if (!error) refetch();
+  }
+
+  async function deletePost(id: number) {
+    if (!confirm('정말 삭제?')) return;
+    const { error } = await supabase.from('posts').delete().eq('id', id);
+    if (!error) refetch();
+  }
+
+  async function updateStatus(id: number, status: string) {
+    const { error } = await supabase
+      .from('posts')
+      .update({ status })
+      .eq('id', id);
+    if (!error) refetch();
+  }
+
+  return (
+    <DataView loading={loading} error={error} data={posts}>
+      {(posts) => (
+        <ul>
+          {posts.map(p => (
+            <PostRow
+              key={p.id}
+              post={p}
+              onDelete={() => deletePost(p.id)}
+              onPublish={() => updateStatus(p.id, 'published')}
+            />
+          ))}
+        </ul>
+      )}
+    </DataView>
+  );
+}` } },
+
+          { subtitle: '낙관적 업데이트 — 즉시 반응' },
+          { code: { lang: 'tsx', content: `// 서버 응답을 기다리지 않고 UI 즉시 업데이트
+async function toggleLike(postId: number) {
+  // 1) UI 즉시 변경
+  setPosts(prev => prev.map(p =>
+    p.id === postId ? { ...p, likes: p.likes + 1 } : p
+  ));
+
+  // 2) 서버 호출
+  const { error } = await supabase
+    .from('posts')
+    .update({ likes: post.likes + 1 })
+    .eq('id', postId);
+
+  // 3) 실패 시 되돌리기
+  if (error) {
+    setPosts(prev => prev.map(p =>
+      p.id === postId ? { ...p, likes: p.likes - 1 } : p
+    ));
+    alert('좋아요 실패');
+  }
+}` } },
+
+          { subtitle: '서버 에러 처리 패턴' },
+          { code: { lang: 'typescript', content: `function friendlyError(error: any): string {
+  if (!error) return '';
+
+  // PostgrestError code
+  switch (error.code) {
+    case '23505': return '이미 존재하는 항목입니다.';      // unique violation
+    case '23503': return '참조 무결성 오류.';              // foreign key
+    case '42501': return '권한이 없습니다.';                // permission denied
+    case 'PGRST116': return '항목을 찾을 수 없습니다.';     // single() 결과 없음
+    case 'PGRST301': return '인증이 필요합니다.';           // JWT expired
+  }
+
+  // RLS 위반
+  if (error.message?.includes('row-level security')) {
+    return '접근 권한이 없습니다.';
+  }
+
+  return error.message || '알 수 없는 오류';
+}` } },
+
+          { subtitle: 'TanStack Query 진입 — 다음 단계 추천' },
+          { text: '현재 구현은 학습 목적. 실전에서는 TanStack Query(이전 React Query) 도입을 추천합니다. 캐싱·자동 재요청·낙관적 업데이트가 내장.' },
+          { code: { lang: 'typescript', content: `// 미래 — TanStack Query
+const { data: posts } = useQuery({
+  queryKey: ['posts'],
+  queryFn: () => supabase.from('posts').select('*'),
+});
+
+const mutation = useMutation({
+  mutationFn: (newPost) => supabase.from('posts').insert(newPost),
+  onSuccess: () => queryClient.invalidateQueries({ queryKey: ['posts'] }),
+});` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'useSupabaseQuery custom hook 작성',
+            'CRUD UI — 생성·읽기·수정·삭제 모두',
+            '낙관적 업데이트로 좋아요 토글',
+            'friendlyError 매핑 + 사용자 친화적 메시지',
+            'TanStack Query 1개 쿼리만 시범 도입',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-realtime',
+        title: 'Realtime — 다중 사용자 동기화',
+        icon: '⚡',
+        summary: 'Supabase Realtime으로 채팅·알림·협업 도구의 핵심 기능 구현. INSERT/UPDATE/DELETE 실시간 반영 + presence.',
+        content: [
+          { subtitle: 'Realtime 활성화 + 구독 패턴' },
+          { code: { lang: 'tsx', content: `function ChatRoom({ roomId }: { roomId: string }) {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    // 1) 초기 로드
+    supabase
+      .from('messages')
+      .select('*')
+      .eq('room_id', roomId)
+      .order('created_at')
+      .then(({ data }) => data && setMessages(data));
+
+    // 2) 실시간 구독
+    const channel = supabase
+      .channel(\`room:\${roomId}\`)
+      .on('postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: \`room_id=eq.\${roomId}\`,
+        },
+        (payload) => {
+          setMessages(prev => [...prev, payload.new as Message]);
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [roomId]);
+
+  async function send(text: string) {
+    await supabase.from('messages').insert({
+      room_id: roomId,
+      content: text,
+      author_id: user.id,
+    });
+    // Realtime이 자동으로 setMessages 업데이트
+  }
+
+  return (
+    <div>
+      {messages.map(m => <ChatMessage key={m.id} {...m} />)}
+      <ChatInput onSend={send} />
+    </div>
+  );
+}` } },
+
+          { subtitle: 'Presence — 누가 접속 중?' },
+          { code: { lang: 'tsx', content: `function RoomUsers({ roomId }: { roomId: string }) {
+  const [users, setUsers] = useState<string[]>([]);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase.channel(\`presence:\${roomId}\`);
+
+    channel
+      .on('presence', { event: 'sync' }, () => {
+        const state = channel.presenceState();
+        const userIds = Object.values(state).flat().map((s: any) => s.user_id);
+        setUsers([...new Set(userIds)]);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await channel.track({
+            user_id: user.id,
+            email: user.email,
+            online_at: new Date().toISOString(),
+          });
+        }
+      });
+
+    return () => { supabase.removeChannel(channel); };
+  }, [roomId, user]);
+
+  return (
+    <div className="online-users">
+      <p>현재 접속: {users.length}명</p>
+      {users.map(uid => <Avatar key={uid} id={uid} />)}
+    </div>
+  );
+}` } },
+
+          { subtitle: 'Broadcast — DB 없는 실시간 통신' },
+          { code: { lang: 'tsx', content: `// 타이핑 표시 ("○○님이 입력 중...")
+function TypingIndicator({ roomId }: { roomId: string }) {
+  const [typing, setTyping] = useState<string[]>([]);
+  const channelRef = useRef<any>(null);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel(\`typing:\${roomId}\`)
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        setTyping(prev => {
+          if (prev.includes(payload.user)) return prev;
+          const next = [...prev, payload.user];
+          setTimeout(() => {
+            setTyping(now => now.filter(u => u !== payload.user));
+          }, 3000);
+          return next;
+        });
+      })
+      .subscribe();
+    channelRef.current = channel;
+    return () => { supabase.removeChannel(channel); };
+  }, [roomId]);
+
+  return typing.length > 0 ? (
+    <p className="typing">{typing.join(', ')} 입력 중...</p>
+  ) : null;
+}
+
+// 입력 시 broadcast 전송
+function ChatInput({ onSend, roomId }) {
+  function handleTyping() {
+    supabase.channel(\`typing:\${roomId}\`).send({
+      type: 'broadcast',
+      event: 'typing',
+      payload: { user: user.email },
+    });
+  }
+
+  return <input onChange={handleTyping} />;
+}` } },
+
+          { subtitle: '실시간 카운터·투표' },
+          { code: { lang: 'tsx', content: `// 라이브 투표 — 모든 사용자가 즉시 결과 본다
+function LivePoll({ pollId }: { pollId: string }) {
+  const [votes, setVotes] = useState<Record<string, number>>({});
+
+  useEffect(() => {
+    supabase
+      .from('poll_votes')
+      .select('option')
+      .eq('poll_id', pollId)
+      .then(({ data }) => {
+        const counts: Record<string, number> = {};
+        data?.forEach(v => { counts[v.option] = (counts[v.option] || 0) + 1; });
+        setVotes(counts);
+      });
+
+    const channel = supabase
+      .channel(\`poll:\${pollId}\`)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'poll_votes', filter: \`poll_id=eq.\${pollId}\` },
+        (payload) => {
+          const opt = payload.new.option;
+          setVotes(prev => ({ ...prev, [opt]: (prev[opt] || 0) + 1 }));
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, [pollId]);
+
+  async function vote(option: string) {
+    await supabase.from('poll_votes').insert({ poll_id: pollId, option, user_id: user.id });
+  }
+
+  return (
+    <div>
+      {['A', 'B', 'C'].map(opt => (
+        <button key={opt} onClick={() => vote(opt)}>
+          {opt} ({votes[opt] || 0}표)
+        </button>
+      ))}
+    </div>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '간단한 채팅방 — 두 브라우저 탭에서 실시간 동기화',
+            'Presence로 접속자 목록',
+            'Broadcast로 타이핑 표시',
+            '실시간 투표 또는 좋아요 카운터',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-storage-advanced',
+        title: 'Storage 심화 — 업로드 + 변환',
+        icon: '📦',
+        summary: '파일 업로드 진행률·자동 압축·이미지 변환·CDN 캐싱·signed URL까지 Storage 전체 활용.',
+        content: [
+          { subtitle: '이미지 압축 (업로드 전)' },
+          { code: { lang: 'typescript', content: `// 라이브러리 사용
+// npm install browser-image-compression
+import imageCompression from 'browser-image-compression';
+
+async function uploadAvatar(file: File, userId: string) {
+  // 1) 압축 (max 1MB, 1920px)
+  const compressed = await imageCompression(file, {
+    maxSizeMB: 1,
+    maxWidthOrHeight: 1920,
+    useWebWorker: true,
+  });
+
+  console.log(\`원본 \${file.size / 1024}KB → 압축 \${compressed.size / 1024}KB\`);
+
+  // 2) Supabase 업로드
+  const { error } = await supabase.storage
+    .from('avatars')
+    .upload(\`\${userId}/profile.jpg\`, compressed, {
+      upsert: true,
+      contentType: 'image/jpeg',
+    });
+
+  return error;
+}` } },
+
+          { subtitle: '업로드 진행률' },
+          { code: { lang: 'typescript', content: `// Supabase JS는 onUploadProgress 지원 (XHR 사용)
+const { error } = await supabase.storage
+  .from('avatars')
+  .upload(\`\${userId}/profile.jpg\`, file, {
+    upsert: true,
+    onUploadProgress: (event) => {
+      const percent = Math.round((event.loaded / event.total) * 100);
+      setProgress(percent);
+    },
+  });
+
+// 컴포넌트
+{progress > 0 && progress < 100 && (
+  <div className="progress">
+    <div className="progress-bar" style={{ width: \`\${progress}%\` }} />
+    <span>{progress}%</span>
+  </div>
+)}` } },
+
+          { subtitle: '이미지 변환 (자동 리사이즈)' },
+          { code: { lang: 'typescript', content: `// public URL에 transform 옵션
+const { data } = supabase.storage
+  .from('avatars')
+  .getPublicUrl(\`\${userId}/profile.jpg\`, {
+    transform: {
+      width: 200,
+      height: 200,
+      resize: 'cover',
+      quality: 80,
+    },
+  });
+
+// 다양한 크기 — srcset
+const thumb = supabase.storage.from('avatars').getPublicUrl(path, {
+  transform: { width: 64, height: 64, resize: 'cover' },
+});
+const medium = supabase.storage.from('avatars').getPublicUrl(path, {
+  transform: { width: 200, height: 200, resize: 'cover' },
+});
+const large = supabase.storage.from('avatars').getPublicUrl(path, {
+  transform: { width: 400, height: 400, resize: 'cover' },
+});
+
+<img
+  src={medium.data.publicUrl}
+  srcSet={\`\${thumb.data.publicUrl} 64w, \${medium.data.publicUrl} 200w, \${large.data.publicUrl} 400w\`}
+  sizes="(max-width: 640px) 64px, 200px"
+/>` } },
+
+          { subtitle: 'Signed URL — 비공개 파일' },
+          { code: { lang: 'typescript', content: `// private 버킷 — 임시 URL
+const { data, error } = await supabase.storage
+  .from('private-docs')
+  .createSignedUrl('contract.pdf', 3600);  // 1시간
+
+if (data) {
+  window.open(data.signedUrl, '_blank');
+}
+
+// 여러 파일 한 번에
+const { data } = await supabase.storage
+  .from('private-docs')
+  .createSignedUrls(['file1.pdf', 'file2.pdf'], 3600);
+// data: [{ signedUrl, path }, ...]` } },
+
+          { subtitle: '드래그 앤 드롭 업로드' },
+          { code: { lang: 'tsx', content: `function DropZone({ onFile }: { onFile: (file: File) => void }) {
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <div
+      className={\`drop-zone \${dragging ? 'dragging' : ''}\`}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(false);
+        const file = e.dataTransfer.files[0];
+        if (file) onFile(file);
+      }}
+    >
+      <p>{dragging ? '여기에 놓아주세요' : '파일을 드래그하거나 클릭'}</p>
+      <input
+        type="file"
+        accept="image/*"
+        onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])}
+      />
+    </div>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'browser-image-compression 도입 + 압축 비율 확인',
+            '업로드 진행률 표시',
+            '이미지 변환으로 썸네일 자동 생성',
+            '드래그 앤 드롭 + 클릭 모두 지원',
+            'signed URL로 비공개 PDF 1회 다운로드',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-forms',
+        title: '폼 + 검증 — react-hook-form',
+        icon: '📝',
+        summary: '복잡한 폼을 효율적으로 다루는 react-hook-form + Zod 검증 패턴.',
+        content: [
+          { subtitle: '왜 react-hook-form인가' },
+          { text: 'useState로 각 입력값을 따로 관리하면 5개 필드부터 코드가 폭증. react-hook-form은 입력값을 자동 관리하고 검증·에러 표시까지 통합.' },
+
+          { subtitle: '셋업' },
+          { code: { lang: 'bash', content: `npm install react-hook-form zod @hookform/resolvers` } },
+
+          { subtitle: '회원가입 폼 예제' },
+          { code: { lang: 'tsx', content: `import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+
+// 1) 스키마 정의
+const SignupSchema = z.object({
+  email: z.string().email('올바른 이메일 형식이 아닙니다'),
+  password: z.string().min(8, '8자 이상'),
+  passwordConfirm: z.string(),
+  name: z.string().min(2, '2자 이상'),
+  age: z.coerce.number().min(14, '14세 이상').max(120),
+  agree: z.boolean().refine(v => v === true, '동의 필요'),
+}).refine(data => data.password === data.passwordConfirm, {
+  message: '비밀번호 불일치',
+  path: ['passwordConfirm'],
+});
+
+type SignupForm = z.infer<typeof SignupSchema>;
+
+export default function SignupPage() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<SignupForm>({
+    resolver: zodResolver(SignupSchema),
+    defaultValues: { name: '', email: '', password: '', passwordConfirm: '', age: 0, agree: false },
+  });
+
+  async function onSubmit(data: SignupForm) {
+    const { error } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+      options: { data: { name: data.name, age: data.age } },
+    });
+
+    if (error) {
+      alert('가입 실패: ' + error.message);
+      return;
+    }
+    alert('가입 완료! 이메일을 확인하세요.');
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <Field label="이름" error={errors.name?.message}>
+        <input {...register('name')} />
+      </Field>
+
+      <Field label="이메일" error={errors.email?.message}>
+        <input type="email" {...register('email')} />
+      </Field>
+
+      <Field label="비밀번호" error={errors.password?.message}>
+        <input type="password" {...register('password')} />
+      </Field>
+
+      <Field label="비밀번호 확인" error={errors.passwordConfirm?.message}>
+        <input type="password" {...register('passwordConfirm')} />
+      </Field>
+
+      <Field label="나이" error={errors.age?.message}>
+        <input type="number" {...register('age')} />
+      </Field>
+
+      <Field error={errors.agree?.message}>
+        <label>
+          <input type="checkbox" {...register('agree')} />
+          이용약관에 동의합니다
+        </label>
+      </Field>
+
+      <button type="submit" disabled={isSubmitting}>
+        {isSubmitting ? '가입 중...' : '가입'}
+      </button>
+    </form>
+  );
+}
+
+function Field({ label, error, children }: { label?: string; error?: string; children: ReactNode }) {
+  return (
+    <div className="field">
+      {label && <label>{label}</label>}
+      {children}
+      {error && <p className="error">{error}</p>}
+    </div>
+  );
+}` } },
+
+          { subtitle: '복잡한 동적 폼' },
+          { code: { lang: 'tsx', content: `// useFieldArray — 동적 배열 필드
+import { useFieldArray } from 'react-hook-form';
+
+const PrdSchema = z.object({
+  title: z.string(),
+  features: z.array(z.object({
+    name: z.string().min(1),
+    priority: z.enum(['must', 'should', 'could']),
+  })).min(1),
+});
+
+function PrdForm() {
+  const { control, register } = useForm({ resolver: zodResolver(PrdSchema) });
+  const { fields, append, remove } = useFieldArray({ control, name: 'features' });
+
+  return (
+    <form>
+      <input {...register('title')} />
+
+      {fields.map((field, i) => (
+        <div key={field.id}>
+          <input {...register(\`features.\${i}.name\`)} />
+          <select {...register(\`features.\${i}.priority\`)}>
+            <option value="must">Must</option>
+            <option value="should">Should</option>
+            <option value="could">Could</option>
+          </select>
+          <button type="button" onClick={() => remove(i)}>삭제</button>
+        </div>
+      ))}
+
+      <button type="button" onClick={() => append({ name: '', priority: 'must' })}>
+        + 기능 추가
+      </button>
+    </form>
+  );
+}` } },
+
+          { subtitle: '서버 검증과 함께' },
+          { callout: { type: 'warn', text: '⚠️ 클라이언트 검증만 신뢰하지 마세요. DevTools로 우회 가능. Zod 스키마를 Edge Function에서도 재사용하면 더 안전합니다.' } },
+
+          { subtitle: '실습' },
+          { items: [
+            'react-hook-form + Zod 셋업',
+            '회원가입 폼 — 7개 필드 검증',
+            '동적 폼 — useFieldArray로 항목 추가/삭제',
+            '서버 응답 에러를 react-hook-form setError로 표시',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-env',
+        title: '환경 분리 + 배포 준비',
+        icon: '🔐',
+        summary: '.env 환경별 분리, 비밀 관리, GitHub Actions 자동 배포까지 — 프로덕션 운영 준비.',
+        content: [
+          { subtitle: '환경변수 3종' },
+          { code: { lang: 'bash', content: `# .env (공통 — 비공개)
+VITE_APP_NAME="AI Reboot Academy"
+
+# .env.development (npm run dev 시 자동)
+VITE_SUPABASE_URL=https://dev-xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=dev_eyJ...
+VITE_API_URL=http://localhost:3000
+
+# .env.production (npm run build 시 자동)
+VITE_SUPABASE_URL=https://prod-xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=prod_eyJ...
+VITE_API_URL=https://api.example.com
+
+# .env.local (개인 비밀 — 자동 gitignore)
+VITE_PERSONAL_DEBUG_KEY=...` } },
+
+          { subtitle: '.env.example — 커밋용 템플릿' },
+          { code: { lang: 'bash', content: `# .env.example (커밋 OK)
+VITE_SUPABASE_URL=https://YOUR_PROJECT.supabase.co
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY
+VITE_API_URL=https://your-api.com
+
+# 신규 팀원은 이걸 .env.local로 복사 후 실제 값 채움
+# cp .env.example .env.local` } },
+
+          { subtitle: '환경별 분기 코드' },
+          { code: { lang: 'typescript', content: `// src/config.ts
+export const config = {
+  isDev: import.meta.env.DEV,
+  isProd: import.meta.env.PROD,
+  mode: import.meta.env.MODE,   // 'development' / 'production'
+
+  supabase: {
+    url: import.meta.env.VITE_SUPABASE_URL,
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  },
+
+  api: {
+    baseUrl: import.meta.env.VITE_API_URL,
+  },
+
+  features: {
+    enableAnalytics: import.meta.env.PROD,
+    enableDebugPanel: import.meta.env.DEV,
+  },
+};
+
+// 사용
+import { config } from '@/config';
+if (config.isDev) console.log('개발 모드');` } },
+
+          { subtitle: '빌드 명령어' },
+          { code: { lang: 'bash', content: `# 기본 production 빌드
+npm run build
+
+# 명시적 모드
+npx vite build --mode production
+npx vite build --mode staging        # .env.staging 사용
+
+# 빌드 결과 미리보기
+npm run preview                       # → http://localhost:4173` } },
+
+          { subtitle: 'GitHub Actions 자동 배포' },
+          { code: { lang: 'yaml', content: `# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+        env:
+          VITE_SUPABASE_URL: \${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: \${{ secrets.VITE_SUPABASE_ANON_KEY }}
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: \${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
+          cname: rest.dreamitbiz.com` } },
+
+          { subtitle: 'GitHub Secrets 설정' },
+          { items: [
+            '리포지토리 → Settings → Secrets and variables → Actions',
+            'New repository secret 클릭',
+            'Name: VITE_SUPABASE_URL, Value: 실제 키',
+            'Name: VITE_SUPABASE_ANON_KEY, Value: 실제 키',
+            'Push 시 자동 배포',
+          ] },
+
+          { subtitle: '배포 전 점검 체크리스트' },
+          { items: [
+            '☐ npm run typecheck 통과',
+            '☐ npm run lint 0 경고',
+            '☐ npm run build 성공',
+            '☐ npm run preview에서 정상 동작',
+            '☐ .env.local이 .gitignore에 포함',
+            '☐ git log에 키 노출 흔적 없음 (git log -p | grep -i "anon_key")',
+            '☐ Lighthouse 모든 지표 80+',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            '.env.example 작성',
+            'config.ts로 환경변수 중앙 관리',
+            'staging 모드 추가 (npm run build:staging)',
+            'GitHub Actions 자동 배포 설정',
+            '배포 전 점검 체크리스트 모두 통과',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-resources',
+        title: '심화 + 자가 평가',
+        icon: '📚',
+        summary: 'Day 10 학습 심화 자료 + 자가 평가 + 다음 단계.',
+        content: [
+          { subtitle: '심화 자료' },
+          { items: [
+            'TanStack Query: tanstack.com/query (서버 상태 표준)',
+            'react-hook-form: react-hook-form.com',
+            'Zod: zod.dev (TypeScript-first 스키마)',
+            'browser-image-compression: github.com/Donaldcwl/browser-image-compression',
+            'GitHub Actions: docs.github.com/ko/actions',
+          ] },
+
+          { subtitle: 'Day 10 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['CRUD 통합', '직접 호출', 'custom hook', 'TanStack Query'],
+              ['Realtime', '없음', 'INSERT 구독', 'Presence + Broadcast'],
+              ['Storage', '단순 업로드', '미리보기', '압축 + 진행률 + 변환'],
+              ['폼', 'useState만', 'react-hook-form', 'Zod + useFieldArray'],
+              ['배포', '수동', 'gh-pages CLI', 'GitHub Actions'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
