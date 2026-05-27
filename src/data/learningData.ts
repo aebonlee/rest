@@ -8331,6 +8331,814 @@ export async function chatWithRetry(
       { subtitle: '다음 시간 예고' },
       { text: 'Day 9부터는 실제 팀 프로젝트의 프론트엔드 본 개발. 디자인 토큰·컴포넌트 분리·4가지 상태 UI로 완성도를 끌어올립니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-8-rest',
+        title: 'REST API 기본 + Solar 호출',
+        icon: '🌐',
+        summary: 'HTTP 메서드·상태 코드·헤더 표준부터 Solar API 첫 호출까지. 모든 LLM 통합의 토대.',
+        content: [
+          { subtitle: 'HTTP 메서드 5종' },
+          { table: {
+            headers: ['메서드', '용도', '본문', '멱등성'],
+            rows: [
+              ['GET', '리소스 조회', '없음', '예'],
+              ['POST', '새 리소스 생성', '있음', '아니오'],
+              ['PUT', '리소스 전체 교체', '있음', '예'],
+              ['PATCH', '리소스 부분 수정', '있음', '아니오'],
+              ['DELETE', '리소스 삭제', '없음', '예'],
+            ],
+          } },
+
+          { subtitle: 'HTTP 상태 코드 핵심' },
+          { table: {
+            headers: ['코드', '의미', '예'],
+            rows: [
+              ['200', 'OK', '정상 응답'],
+              ['201', 'Created', '리소스 생성됨'],
+              ['204', 'No Content', '성공 + 본문 없음'],
+              ['301', 'Moved Permanently', '영구 리다이렉트'],
+              ['400', 'Bad Request', '요청 형식 오류'],
+              ['401', 'Unauthorized', '인증 필요'],
+              ['403', 'Forbidden', '권한 없음'],
+              ['404', 'Not Found', '리소스 없음'],
+              ['429', 'Too Many Requests', 'Rate limit 초과'],
+              ['500', 'Internal Server Error', '서버 오류'],
+              ['503', 'Service Unavailable', '일시 사용 불가'],
+            ],
+          } },
+
+          { subtitle: 'Solar API 표준 호출' },
+          { code: { lang: 'typescript', content: `// src/utils/solar.ts
+const API_URL = 'https://api.upstage.ai/v1/chat/completions';
+const API_KEY = import.meta.env.VITE_SOLAR_API_KEY;
+
+interface Message {
+  role: 'system' | 'user' | 'assistant';
+  content: string;
+}
+
+interface SolarResponse {
+  choices: Array<{
+    message: Message;
+    finish_reason: string;
+  }>;
+  usage: {
+    prompt_tokens: number;
+    completion_tokens: number;
+    total_tokens: number;
+  };
+}
+
+export async function chatSolar(messages: Message[]): Promise<string> {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${API_KEY}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'solar-pro',
+      messages,
+      temperature: 0.7,
+      max_tokens: 1024,
+    }),
+  });
+
+  if (!res.ok) {
+    const error = await res.json();
+    throw new Error(\`Solar API \${res.status}: \${error.message}\`);
+  }
+
+  const data: SolarResponse = await res.json();
+  return data.choices[0].message.content;
+}` } },
+
+          { subtitle: '실습 — 첫 호출' },
+          { code: { lang: 'typescript', content: `// React 컴포넌트에서 호출
+import { useState } from 'react';
+import { chatSolar } from '@/utils/solar';
+
+export default function FirstLLMTest() {
+  const [prompt, setPrompt] = useState('');
+  const [response, setResponse] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const result = await chatSolar([
+        { role: 'system', content: '반드시 한국어로만 답하라.' },
+        { role: 'user', content: prompt },
+      ]);
+      setResponse(result);
+    } catch (err: any) {
+      setResponse('오류: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <input value={prompt} onChange={e => setPrompt(e.target.value)} />
+      <button disabled={loading}>{loading ? '답변 중…' : '전송'}</button>
+      <pre>{response}</pre>
+    </form>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'src/utils/solar.ts 작성 + chatSolar 함수',
+            '간단한 React 컴포넌트로 첫 호출 성공',
+            '응답 JSON 구조 분석 (choices·usage 등)',
+            '토큰 사용량을 화면에 표시',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-8-messages',
+        title: 'messages 배열 + 다중 턴 대화',
+        icon: '💬',
+        summary: 'system/user/assistant 역할, 대화 컨텍스트 누적, 시스템 프롬프트 설계 패턴, 대화 길이 관리.',
+        content: [
+          { subtitle: '역할 (Role) 3종' },
+          { table: {
+            headers: ['Role', '용도', '예'],
+            rows: [
+              ['system', '모델 역할·말투·제약 지정', '"너는 친절한 진로 코치다"'],
+              ['user', '사용자 메시지', '"제 적성을 알려주세요"'],
+              ['assistant', '모델의 이전 답변', '대화 히스토리'],
+            ],
+          } },
+
+          { subtitle: '다중 턴 대화 구조' },
+          { code: { lang: 'typescript', content: `// 대화가 진행됨에 따라 messages 배열에 누적
+const messages: Message[] = [
+  // 시작: system 1개
+  { role: 'system', content: '너는 친절한 진로 코치다. 한국어로만 답하라.' },
+
+  // 사용자 첫 질문
+  { role: 'user', content: '저는 28세 비전공자입니다. 어떻게 시작해야 할까요?' },
+
+  // 모델 첫 답변 (이전 호출 결과 저장)
+  { role: 'assistant', content: '먼저 본인의 강점을 알아봅시다. 평소 어떤 활동에...' },
+
+  // 사용자 후속
+  { role: 'user', content: '저는 글쓰기를 좋아합니다.' },
+];
+
+// 다음 호출 — 모델이 이전 대화 맥락을 알고 답변
+const reply = await chatSolar(messages);` } },
+
+          { subtitle: '시스템 프롬프트 설계 패턴' },
+          { code: { lang: 'text', content: `[패턴 1 · 역할 + 톤]
+너는 30년 경력의 시니어 진로 코치다.
+공감적이고 격려하는 톤으로 대화하라.
+의학·법률 등 전문 영역은 단정하지 말 것.
+
+[패턴 2 · 출력 형식 강제]
+너는 면접 시뮬레이션 봇이다.
+질문 → 사용자 답변 → 다음 질문 형태로 진행.
+한 번에 1개 질문만 하라.
+
+[패턴 3 · 제약 명시]
+다음 제약을 반드시 지켜라:
+1. 한국어로만 답한다
+2. 1번 답변은 200자 이하
+3. 약물·자해·폭력 주제는 거부
+
+[패턴 4 · Few-shot]
+[예시 대화]
+사용자: 우울해요
+응답: 그런 감정을 느끼시는군요. 어떤 일이 있으셨나요?
+
+사용자: 직장에서 힘들어요
+응답: 자세히 들려주세요. 동료와의 관계인가요, 업무 자체인가요?
+
+[실제 대화]
+사용자: {{ 사용자 입력 }}
+응답:` } },
+
+          { subtitle: '대화 길이 관리 — 토큰 예산' },
+          { code: { lang: 'typescript', content: `// 토큰 누적 계산 (대략)
+function estimateTokens(messages: Message[]): number {
+  return messages.reduce((sum, m) => sum + m.content.length / 2, 0);
+  // 영어: ~4글자/토큰, 한국어: ~2글자/토큰 (대략)
+}
+
+// 컨텍스트 한도 관리
+const MAX_TOKENS = 30000;   // Solar 32K 컨텍스트의 80%
+
+async function safeChat(messages: Message[]) {
+  let history = [...messages];
+
+  // 한도 초과 시 오래된 대화부터 요약
+  while (estimateTokens(history) > MAX_TOKENS) {
+    const oldMessages = history.splice(1, 5);  // system 다음 5개 제거
+    const summary = await summarize(oldMessages);
+    history.splice(1, 0, {
+      role: 'system',
+      content: \`[이전 대화 요약] \${summary}\`,
+    });
+  }
+
+  return chatSolar(history);
+}
+
+async function summarize(messages: Message[]): Promise<string> {
+  return chatSolar([
+    { role: 'system', content: '다음 대화를 3문장으로 요약하라.' },
+    { role: 'user', content: messages.map(m => \`\${m.role}: \${m.content}\`).join('\\n') },
+  ]);
+}` } },
+
+          { subtitle: '대화 저장 (Supabase)' },
+          { code: { lang: 'sql', content: `-- 대화 세션
+create table chat_sessions (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users(id),
+  title       text,
+  created_at  timestamptz default now()
+);
+
+-- 메시지
+create table chat_messages (
+  id          bigserial primary key,
+  session_id  uuid not null references chat_sessions(id) on delete cascade,
+  role        text not null check (role in ('system', 'user', 'assistant')),
+  content     text not null,
+  tokens      int,
+  created_at  timestamptz default now()
+);
+
+create index chat_messages_session_idx on chat_messages (session_id);
+
+-- RLS
+alter table chat_sessions enable row level security;
+alter table chat_messages enable row level security;
+
+create policy "Users own sessions" on chat_sessions
+  for all using (auth.uid() = user_id);
+
+create policy "Users own messages" on chat_messages
+  for all using (
+    auth.uid() = (select user_id from chat_sessions where id = session_id)
+  );` } },
+
+          { subtitle: '대화 로드 + 이어가기' },
+          { code: { lang: 'typescript', content: `async function loadSession(sessionId: string): Promise<Message[]> {
+  const { data } = await supabase
+    .from('chat_messages')
+    .select('role, content')
+    .eq('session_id', sessionId)
+    .order('created_at');
+
+  return data as Message[];
+}
+
+async function sendMessage(sessionId: string, userMessage: string) {
+  const history = await loadSession(sessionId);
+  history.push({ role: 'user', content: userMessage });
+
+  // 사용자 메시지 저장
+  await supabase.from('chat_messages').insert({
+    session_id: sessionId,
+    role: 'user',
+    content: userMessage,
+  });
+
+  // LLM 호출
+  const reply = await chatSolar(history);
+
+  // 모델 응답 저장
+  await supabase.from('chat_messages').insert({
+    session_id: sessionId,
+    role: 'assistant',
+    content: reply,
+  });
+
+  return reply;
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'system 프롬프트로 진로 코치 봇 만들기',
+            '5턴 이상 대화 — 컨텍스트 유지 확인',
+            'chat_sessions + chat_messages 테이블 + RLS',
+            '대화 저장 + 다음 로그인 시 이어보기',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-8-streaming',
+        title: '스트리밍 응답 — 실시간 표시',
+        icon: '🌊',
+        summary: 'Server-Sent Events 기반 스트리밍 응답 처리. fetch + ReadableStream으로 토큰 단위 표시.',
+        content: [
+          { subtitle: '왜 스트리밍인가' },
+          { text: '응답 5초 대기 vs 즉시 첫 토큰 표시 — UX 천양지차. ChatGPT가 글자를 한 글자씩 보여주는 그 효과.' },
+
+          { subtitle: '스트리밍 호출' },
+          { code: { lang: 'typescript', content: `export async function streamSolar(
+  messages: Message[],
+  onChunk: (text: string) => void,
+  signal?: AbortSignal
+): Promise<void> {
+  const res = await fetch(API_URL, {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${API_KEY}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'solar-pro',
+      messages,
+      stream: true,
+    }),
+    signal,
+  });
+
+  if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+  if (!res.body) throw new Error('No body');
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = '';
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split('\\n');
+    buffer = lines.pop() || '';   // 미완성 줄 보관
+
+    for (const line of lines) {
+      if (!line.startsWith('data: ')) continue;
+      const payload = line.slice(6);
+      if (payload === '[DONE]') return;
+      try {
+        const json = JSON.parse(payload);
+        const delta = json.choices[0]?.delta?.content;
+        if (delta) onChunk(delta);
+      } catch {
+        // 부분 JSON — 무시
+      }
+    }
+  }
+}` } },
+
+          { subtitle: 'React 챗 UI 통합' },
+          { code: { lang: 'tsx', content: `function ChatBox() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [streaming, setStreaming] = useState(false);
+
+  async function send() {
+    const userMsg: Message = { role: 'user', content: input };
+    setMessages(prev => [...prev, userMsg, { role: 'assistant', content: '' }]);
+    setInput('');
+    setStreaming(true);
+
+    try {
+      await streamSolar(
+        [...messages, userMsg],
+        (chunk) => {
+          // 마지막 assistant 메시지에 chunk 추가
+          setMessages(prev => {
+            const copy = [...prev];
+            const last = copy[copy.length - 1];
+            copy[copy.length - 1] = { ...last, content: last.content + chunk };
+            return copy;
+          });
+        }
+      );
+    } finally {
+      setStreaming(false);
+    }
+  }
+
+  return (
+    <div>
+      <div className="messages">
+        {messages.map((m, i) => (
+          <div key={i} className={m.role}>
+            {m.content}
+            {streaming && i === messages.length - 1 && '▋'}
+          </div>
+        ))}
+      </div>
+      <form onSubmit={(e) => { e.preventDefault(); send(); }}>
+        <input value={input} onChange={e => setInput(e.target.value)} disabled={streaming} />
+        <button disabled={streaming}>전송</button>
+      </form>
+    </div>
+  );
+}` } },
+
+          { subtitle: '취소 + AbortController' },
+          { code: { lang: 'tsx', content: `function ChatBox() {
+  const controllerRef = useRef<AbortController | null>(null);
+
+  async function send() {
+    controllerRef.current = new AbortController();
+    try {
+      await streamSolar(messages, onChunk, controllerRef.current.signal);
+    } catch (err: any) {
+      if (err.name === 'AbortError') return;
+      throw err;
+    }
+  }
+
+  function cancel() {
+    controllerRef.current?.abort();
+  }
+
+  return (
+    <>
+      <button onClick={send} disabled={streaming}>전송</button>
+      <button onClick={cancel} disabled={!streaming}>중단</button>
+    </>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'streamSolar 함수 작성',
+            'React 챗 UI에 통합 → 토큰 단위 표시',
+            '커서(▋) 깜빡임 + 자동 스크롤',
+            '중단 버튼 + AbortController',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-8-error',
+        title: '에러 처리·재시도·비용 관리',
+        icon: '🛡️',
+        summary: '운영 환경에서 필수인 에러 처리·지수 백오프 재시도·rate limit·비용 모니터링·폴백 전략.',
+        content: [
+          { subtitle: '핵심 파라미터 5종' },
+          { table: {
+            headers: ['파라미터', '범위', '효과', '권장'],
+            rows: [
+              ['temperature', '0.0 ~ 2.0', '창의성 vs 결정성', '대화 0.7, 분류 0.0'],
+              ['max_tokens', '1 ~ ctx 한도', '응답 최대 길이', '챗 1024, 요약 512'],
+              ['top_p', '0.0 ~ 1.0', '확률 누적 상위 p%', '0.9 (기본 유지)'],
+              ['stop', 'string[]', '특정 문자에서 중단', '"###", "Q:" 등'],
+              ['frequency_penalty', '-2 ~ 2', '반복 토큰 감점', '0~0.5 (반복 줄임)'],
+            ],
+          } },
+
+          { subtitle: '재시도 — 지수 백오프' },
+          { code: { lang: 'typescript', content: `async function chatWithRetry(
+  messages: Message[],
+  retries = 3
+): Promise<string> {
+  let lastError: any;
+
+  for (let attempt = 0; attempt < retries; attempt++) {
+    try {
+      return await chatSolar(messages);
+    } catch (err: any) {
+      lastError = err;
+
+      // 재시도해도 의미 없는 에러는 즉시 throw
+      if (err.message.includes('401') || err.message.includes('400')) {
+        throw err;
+      }
+
+      // 429 (rate limit) 또는 5xx만 재시도
+      if (err.message.includes('429') || /5\\d\\d/.test(err.message)) {
+        const delay = 1000 * Math.pow(2, attempt);  // 1s → 2s → 4s
+        await new Promise(r => setTimeout(r, delay));
+        continue;
+      }
+
+      throw err;   // 그 외는 즉시 실패
+    }
+  }
+
+  throw lastError;
+}` } },
+
+          { subtitle: 'Rate Limit 대응' },
+          { code: { lang: 'typescript', content: `// 동시 요청 수 제한 (Semaphore)
+class Semaphore {
+  private queue: (() => void)[] = [];
+  private current = 0;
+  constructor(private max: number) {}
+
+  async acquire() {
+    if (this.current >= this.max) {
+      await new Promise<void>(resolve => this.queue.push(resolve));
+    }
+    this.current++;
+  }
+
+  release() {
+    this.current--;
+    const next = this.queue.shift();
+    if (next) next();
+  }
+}
+
+const llmSemaphore = new Semaphore(3);   // 동시 3개
+
+async function rateLimitedChat(messages: Message[]) {
+  await llmSemaphore.acquire();
+  try {
+    return await chatSolar(messages);
+  } finally {
+    llmSemaphore.release();
+  }
+}` } },
+
+          { subtitle: '폴백 (Fallback) 전략' },
+          { code: { lang: 'typescript', content: `async function chatWithFallback(messages: Message[]): Promise<string> {
+  // 1순위: Solar
+  try {
+    return await chatSolar(messages);
+  } catch (err) {
+    console.warn('Solar 실패 → HyperCLOVA 폴백', err);
+  }
+
+  // 2순위: HyperCLOVA
+  try {
+    return await chatHyperCLOVA(messages);
+  } catch (err) {
+    console.warn('HyperCLOVA 실패 → 정적 응답', err);
+  }
+
+  // 최종: 정적 폴백
+  return '죄송합니다. 일시적으로 답변할 수 없습니다. 잠시 후 다시 시도해주세요.';
+}` } },
+
+          { subtitle: '비용 모니터링' },
+          { code: { lang: 'typescript', content: `// 토큰 사용량 + 비용 추정
+interface UsageLog {
+  user_id: string;
+  model: string;
+  prompt_tokens: number;
+  completion_tokens: number;
+  estimated_cost_krw: number;
+}
+
+const PRICING = {
+  'solar-pro': { input: 0.65, output: 1.95 },   // 1000 토큰당 원
+};
+
+async function chatWithLogging(messages: Message[], userId: string) {
+  const res = await fetch(API_URL, { /* ... */ });
+  const data = await res.json();
+  const usage = data.usage;
+
+  // Supabase에 로깅
+  await supabase.from('llm_usage_logs').insert({
+    user_id: userId,
+    model: 'solar-pro',
+    prompt_tokens: usage.prompt_tokens,
+    completion_tokens: usage.completion_tokens,
+    estimated_cost_krw:
+      (usage.prompt_tokens * PRICING['solar-pro'].input +
+       usage.completion_tokens * PRICING['solar-pro'].output) / 1000,
+  });
+
+  return data.choices[0].message.content;
+}
+
+// 일일 사용량 대시보드
+const { data } = await supabase
+  .from('llm_usage_logs')
+  .select('estimated_cost_krw')
+  .gte('created_at', new Date().toISOString().split('T')[0]);
+
+const todayCost = data?.reduce((sum, r) => sum + r.estimated_cost_krw, 0) ?? 0;` } },
+
+          { subtitle: '캐싱 — 비용 절감 핵심' },
+          { code: { lang: 'typescript', content: `// FAQ 같은 동일 질문은 캐싱
+const cache = new Map<string, { data: string; ts: number }>();
+const TTL = 1000 * 60 * 60 * 24;  // 24시간
+
+function cacheKey(messages: Message[]): string {
+  // user 메시지만 키로 (system 변경에 영향 받지 않게)
+  return messages.filter(m => m.role === 'user').map(m => m.content).join('|');
+}
+
+export async function cachedChat(messages: Message[]): Promise<string> {
+  const key = cacheKey(messages);
+  const hit = cache.get(key);
+
+  if (hit && Date.now() - hit.ts < TTL) {
+    console.log('cache hit');
+    return hit.data;
+  }
+
+  const result = await chatSolar(messages);
+  cache.set(key, { data: result, ts: Date.now() });
+  return result;
+}
+
+// 프로덕션: Redis 또는 Supabase 테이블 사용` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'chatWithRetry — 지수 백오프 + 재시도 가능 에러 구분',
+            'Semaphore로 동시 3개 제한',
+            '폴백: Solar → HyperCLOVA → 정적',
+            'llm_usage_logs 테이블 + 비용 일일 합산',
+            '캐싱으로 동일 질문 1회만 API 호출 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-8-edge',
+        title: 'Edge Function — 키 보호',
+        icon: '🛡️',
+        summary: '프로덕션에서는 LLM 키를 절대 클라이언트에 두지 않음. Supabase Edge Function으로 서버 측 호출.',
+        content: [
+          { subtitle: '왜 Edge Function이 필수인가' },
+          { callout: { type: 'warn', text: '클라이언트에 LLM API 키를 두면 DevTools로 봇이 24시간 안에 스캔·도용. 비용 폭증 + 키 폐기 사고의 99%가 이 패턴. 프로덕션은 반드시 서버에서 호출.' } },
+
+          { subtitle: 'Edge Function 생성' },
+          { code: { lang: 'bash', content: `# Supabase CLI 설치
+npm install -D supabase
+
+# 로그인
+npx supabase login
+
+# 프로젝트 연결
+npx supabase link --project-ref <your-project-ref>
+
+# 함수 생성
+npx supabase functions new ask-llm
+
+# 파일 위치: supabase/functions/ask-llm/index.ts` } },
+
+          { subtitle: '함수 코드' },
+          { code: { lang: 'typescript', content: `// supabase/functions/ask-llm/index.ts
+import { serve } from 'https://deno.land/std/http/server.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  // CORS preflight
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // 인증 확인 (Supabase가 자동 검증)
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { messages } = await req.json();
+    const apiKey = Deno.env.get('SOLAR_API_KEY');
+
+    if (!apiKey) {
+      throw new Error('SOLAR_API_KEY not set');
+    }
+
+    const res = await fetch('https://api.upstage.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'solar-pro',
+        messages,
+        temperature: 0.7,
+        max_tokens: 1024,
+      }),
+    });
+
+    const data = await res.json();
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (err) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});` } },
+
+          { subtitle: '배포 + 환경변수' },
+          { code: { lang: 'bash', content: `# 환경변수 설정 (Supabase 비밀)
+npx supabase secrets set SOLAR_API_KEY=up_xxx
+
+# 배포
+npx supabase functions deploy ask-llm
+
+# 함수 호출 URL:
+# https://xxxx.supabase.co/functions/v1/ask-llm` } },
+
+          { subtitle: '클라이언트에서 호출' },
+          { code: { lang: 'typescript', content: `// SDK 사용 — 인증 자동
+const { data, error } = await supabase.functions.invoke('ask-llm', {
+  body: { messages },
+});
+
+// 또는 직접 fetch
+const res = await fetch(
+  \`\${import.meta.env.VITE_SUPABASE_URL}/functions/v1/ask-llm\`,
+  {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${session?.access_token}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ messages }),
+  }
+);` } },
+
+          { subtitle: '스트리밍 Edge Function' },
+          { code: { lang: 'typescript', content: `// 스트리밍 응답 프록시
+serve(async (req) => {
+  const { messages } = await req.json();
+  const apiKey = Deno.env.get('SOLAR_API_KEY')!;
+
+  const upstream = await fetch('https://api.upstage.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: { Authorization: \`Bearer \${apiKey}\`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: 'solar-pro', messages, stream: true }),
+  });
+
+  // 응답 본문을 그대로 클라이언트로 전달
+  return new Response(upstream.body, {
+    headers: {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Access-Control-Allow-Origin': '*',
+    },
+  });
+});` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'supabase CLI 셋업 + 프로젝트 연결',
+            'ask-llm 함수 작성 + 배포',
+            'SOLAR_API_KEY를 secrets로 설정',
+            '클라이언트에서 functions.invoke로 호출',
+            '브라우저 Network 탭에서 키 노출 없는지 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-8-resources',
+        title: '심화 + 자가 평가',
+        icon: '📚',
+        summary: 'LLM API 학습 심화 자료 + Day 8 자가 평가 + 다음 단계.',
+        content: [
+          { subtitle: '심화 자료' },
+          { items: [
+            'OpenAI API 문서 (표준): platform.openai.com/docs',
+            'Anthropic API: docs.anthropic.com',
+            'Solar 문서: developers.upstage.ai',
+            'Vercel AI SDK: sdk.vercel.ai — 스트리밍 추상화',
+            'LangChain 한국어: js.langchain.com (도구 사용·체인)',
+          ] },
+
+          { subtitle: '심화 주제' },
+          { items: [
+            'RAG (Retrieval-Augmented Generation) — 외부 지식 결합',
+            'Function Calling — LLM이 함수 호출하게',
+            'Vector DB (pgvector) — 임베딩 검색',
+            'Agent — 다단계 도구 사용 자동화',
+            'Prompt Caching — 동일 prefix 캐싱으로 비용 50%↓',
+          ] },
+
+          { subtitle: 'Day 8 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['REST API', '없음', 'fetch 호출', '메서드·상태 코드 자유'],
+              ['messages 배열', '단일 질문', '대화 컨텍스트', '시스템 프롬프트 + 길이 관리'],
+              ['스트리밍', '없음', '기본 동작', '취소 + 커서 + 자동 스크롤'],
+              ['에러 처리', '없음', 'try-catch', '재시도 + 폴백 + 모니터링'],
+              ['보안', '키 노출', '환경변수', 'Edge Function + secrets'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
