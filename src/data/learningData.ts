@@ -8297,6 +8297,421 @@ function NavMenu() {
       },
 
       {
+        id: 'reg-5-practice-2',
+        title: '실습 2 · 동적 라우트 + useParams (25분)',
+        icon: '🧪',
+        summary: '/users/:id 같은 동적 라우트, 쿼리 파라미터, useNavigate 등 라우터 핵심 기능 실습.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '동적 파라미터 useParams로 읽기',
+            '쿼리 파라미터 useSearchParams',
+            'useNavigate로 프로그래매틱 이동',
+          ] },
+
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `// src/App.tsx
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/users" element={<UserList />} />
+        <Route path="/users/:id" element={<UserDetail />} />
+        <Route path="/posts/:year/:slug" element={<Post />} />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </BrowserRouter>
+  );
+}` } },
+          { code: { lang: 'tsx', content: `// src/pages/UserList.tsx — 쿼리 파라미터
+import { useSearchParams, Link } from 'react-router-dom';
+
+export default function UserList() {
+  const [params, setParams] = useSearchParams();
+  const filter = params.get('filter') || 'all';
+  const page = Number(params.get('page')) || 1;
+
+  return (
+    <div>
+      <select
+        value={filter}
+        onChange={e => setParams({ filter: e.target.value, page: '1' })}
+      >
+        <option value="all">전체</option>
+        <option value="active">활성</option>
+      </select>
+
+      {/* /users/42처럼 동적 링크 */}
+      <Link to="/users/42">홍길동 상세</Link>
+      <Link to={\`/users/42?from=list\`}>상세 (출처 전달)</Link>
+    </div>
+  );
+}
+
+// src/pages/UserDetail.tsx
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+
+export default function UserDetail() {
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = new URLSearchParams(location.search).get('from');
+
+  return (
+    <div>
+      <button onClick={() => navigate(-1)}>← 뒤로</button>
+      <h1>사용자 #{id}</h1>
+      {from && <small>출처: {from}</small>}
+      <button onClick={() => navigate('/', { replace: true })}>
+        홈으로 (history 교체)
+      </button>
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ /users/:id 동적 파라미터 정상 표시',
+            '☐ 쿼리 변경 시 URL 동기화',
+            '☐ navigate(-1) 뒤로 가기',
+            '☐ replace: true로 history 교체',
+            '☐ /posts/2026/hello 같은 다중 파라미터',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-practice-3',
+        title: '실습 3 · Context API로 인증 상태 (30분)',
+        icon: '🧪',
+        summary: 'AuthContext + useAuth Hook 패턴으로 props drilling 없이 인증 상태 전역 공유.',
+        content: [
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `// src/contexts/AuthContext.tsx
+import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from 'react';
+
+interface User { id: string; email: string; role: string; }
+interface AuthCtx {
+  user: User | null;
+  isLoading: boolean;
+  signIn: (email: string, pwd: string) => Promise<void>;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthCtx | null>(null);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // localStorage에서 복원 (실제로는 토큰 검증)
+    const saved = localStorage.getItem('user');
+    if (saved) setUser(JSON.parse(saved));
+    setIsLoading(false);
+  }, []);
+
+  const signIn = async (email: string, pwd: string) => {
+    // 실제로는 API 호출
+    await new Promise(r => setTimeout(r, 500));
+    const u = { id: '1', email, role: email === 'admin@test.com' ? 'admin' : 'user' };
+    setUser(u);
+    localStorage.setItem('user', JSON.stringify(u));
+  };
+
+  const signOut = async () => {
+    setUser(null);
+    localStorage.removeItem('user');
+  };
+
+  // value 메모이제이션 — 불필요한 리렌더 방지
+  const value = useMemo(
+    () => ({ user, isLoading, signIn, signOut }),
+    [user, isLoading]
+  );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be inside AuthProvider');
+  return ctx;
+}` } },
+
+          { subtitle: '사용 — 깊은 자식 컴포넌트' },
+          { code: { lang: 'tsx', content: `// src/components/layout/UserMenu.tsx
+import { useAuth } from '@/contexts/AuthContext';
+import { Link } from 'react-router-dom';
+
+export default function UserMenu() {
+  const { user, signOut } = useAuth();
+
+  if (!user) {
+    return <Link to="/login">로그인</Link>;
+  }
+
+  return (
+    <div>
+      <span>{user.email}</span>
+      <button onClick={signOut}>로그아웃</button>
+    </div>
+  );
+}
+
+// 100단계 깊이여도 useAuth() 한 줄로 접근` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ Context + Provider + Hook 3종 세트',
+            '☐ useMemo로 value 안정화',
+            '☐ Provider 외부 사용 시 에러',
+            '☐ localStorage 복원',
+            '☐ 로그아웃 시 깨끗하게 초기화',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-practice-4',
+        title: '실습 4 · AuthGuard + AdminGuard 보호 (25분)',
+        icon: '🧪',
+        summary: '로그인이 필요한 라우트 + 관리자 전용 라우트를 보호하는 표준 패턴.',
+        content: [
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `// src/components/AuthGuard.tsx
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+
+export default function AuthGuard({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return <p>로딩…</p>;
+  if (!user) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+  return <>{children}</>;
+}
+
+// src/components/AdminGuard.tsx
+export default function AdminGuard({ children }: { children: React.ReactNode }) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return <p>로딩…</p>;
+  if (!user) return <Navigate to="/login" replace />;
+  if (user.role !== 'admin') {
+    return (
+      <div>
+        <h1>접근 권한 없음</h1>
+        <p>관리자만 접근 가능합니다.</p>
+      </div>
+    );
+  }
+  return <>{children}</>;
+}
+
+// 사용
+<Routes>
+  <Route path="/" element={<Home />} />
+  <Route path="/login" element={<Login />} />
+
+  <Route path="/dashboard" element={
+    <AuthGuard><Dashboard /></AuthGuard>
+  } />
+
+  <Route path="/admin/*" element={
+    <AdminGuard><AdminLayout /></AdminGuard>
+  }>
+    <Route path="users" element={<AdminUsers />} />
+    <Route path="settings" element={<AdminSettings />} />
+  </Route>
+</Routes>` } },
+
+          { subtitle: 'Login에서 복귀 처리' },
+          { code: { lang: 'tsx', content: `// src/pages/Login.tsx
+function Login() {
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await signIn(email, password);
+    navigate(from, { replace: true });   // 원래 가려던 곳으로
+  }
+}
+
+// 시나리오:
+// 1. 비로그인 → /dashboard 접근 → /login으로 이동 (state.from 저장)
+// 2. 로그인 성공 → /dashboard로 자동 복귀
+// 3. 뒤로 가기 → /login 안 나옴 (replace 효과)` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 비로그인 시 /dashboard → /login 자동 이동',
+            '☐ 로그인 성공 후 /dashboard 자동 복귀',
+            '☐ admin@test.com → /admin 접근 가능',
+            '☐ 일반 사용자 → /admin 차단',
+            '☐ 로딩 중 깜빡임 없음',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-practice-5',
+        title: '실습 5 · React.lazy 코드 스플리팅 (25분)',
+        icon: '🧪',
+        summary: '5개 페이지를 모두 lazy 로딩으로 분리. 청크 분할 + Suspense fallback + ErrorBoundary.',
+        content: [
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `// src/App.tsx
+import { lazy, Suspense } from 'react';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import ErrorBoundary from '@/components/ErrorBoundary';
+
+// 정적 import 대신 lazy
+const Home      = lazy(() => import('@/pages/Home'));
+const About     = lazy(() => import('@/pages/About'));
+const UserList  = lazy(() => import('@/pages/UserList'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Admin     = lazy(() => import('@/pages/Admin'));
+const NotFound  = lazy(() => import('@/pages/NotFound'));
+
+function PageSkeleton() {
+  return (
+    <div className="skeleton">
+      <div className="skeleton-header" />
+      <div className="skeleton-line" />
+      <div className="skeleton-line" />
+      <div className="skeleton-line short" />
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <ErrorBoundary>
+        <Suspense fallback={<PageSkeleton />}>
+          <Routes>
+            <Route path="/"        element={<Home />} />
+            <Route path="/about"   element={<About />} />
+            <Route path="/users"   element={<UserList />} />
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/admin/*" element={<Admin />} />
+            <Route path="*"        element={<NotFound />} />
+          </Routes>
+        </Suspense>
+      </ErrorBoundary>
+    </BrowserRouter>
+  );
+}` } },
+
+          { subtitle: 'preload 힌트' },
+          { code: { lang: 'tsx', content: `// hover 시 미리 다운로드
+function NavMenu() {
+  function preloadAbout() {
+    import('@/pages/About');
+  }
+
+  return (
+    <Link to="/about" onMouseEnter={preloadAbout}>
+      About
+    </Link>
+  );
+}` } },
+
+          { subtitle: '검증' },
+          { items: [
+            'npm run build → dist/assets에 청크 여러 개',
+            '브라우저 Network 탭 → 페이지 이동 시 새 청크 다운로드',
+            'Slow 3G throttling → fallback 표시 확인',
+            '의도적으로 페이지 1개의 dist 파일을 삭제 → ErrorBoundary 동작',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 5개 페이지 모두 별도 청크',
+            '☐ PageSkeleton fallback 동작',
+            '☐ ErrorBoundary로 청크 로드 실패 처리',
+            '☐ hover preload',
+            '☐ 초기 번들 크기 비교 (Before/After)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-practice-6',
+        title: '실습 6 · NavLink + 중첩 라우트 + Outlet (20분)',
+        icon: '🧪',
+        summary: '활성 메뉴 자동 강조 + 중첩 라우트 + Outlet으로 레이아웃 재사용.',
+        content: [
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `// src/App.tsx — 중첩 라우트
+<Routes>
+  <Route path="/admin" element={<AdminLayout />}>
+    <Route index element={<AdminHome />} />
+    <Route path="users" element={<AdminUsers />} />
+    <Route path="users/:id" element={<AdminUserDetail />} />
+    <Route path="settings" element={<AdminSettings />} />
+  </Route>
+</Routes>
+
+// src/layouts/AdminLayout.tsx
+import { NavLink, Outlet } from 'react-router-dom';
+
+export default function AdminLayout() {
+  return (
+    <div className="admin-layout">
+      <aside className="admin-sidebar">
+        <nav>
+          <NavLink
+            to="/admin"
+            end
+            className={({ isActive }) => isActive ? 'menu active' : 'menu'}
+          >
+            홈
+          </NavLink>
+          <NavLink to="/admin/users" className={({ isActive }) => isActive ? 'menu active' : 'menu'}>
+            사용자
+          </NavLink>
+          <NavLink to="/admin/settings" className={({ isActive }) => isActive ? 'menu active' : 'menu'}>
+            설정
+          </NavLink>
+        </nav>
+      </aside>
+
+      <main className="admin-content">
+        <Outlet />   {/* 자식 라우트가 여기 렌더링 */}
+      </main>
+    </div>
+  );
+}` } },
+
+          { subtitle: 'NavLink end prop' },
+          { code: { lang: 'tsx', content: `// end가 없으면 — /admin/users에서도 /admin의 NavLink active
+<NavLink to="/admin">홈</NavLink>   // ⚠️ /admin/users에서도 active
+
+// end 추가 — 정확히 일치할 때만 active
+<NavLink to="/admin" end>홈</NavLink>   // ✅ /admin에서만 active` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ /admin·/admin/users·/admin/settings 모두 동일 레이아웃',
+            '☐ 현재 페이지의 메뉴만 강조',
+            '☐ end prop 정확한 매칭',
+            '☐ /admin/users/42처럼 동적 자식 라우트도 동작',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-5-resources',
         title: '심화 자료',
         icon: '📚',
