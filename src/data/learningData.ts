@@ -2955,6 +2955,1099 @@ const value = data?.user?.email ?? '기본값';
       { subtitle: '다음 시간 예고' },
       { text: 'Day 4부터 React 본격 시작. 오늘 배운 JS 문법(화살표 함수, 구조 분해, async/await)이 React 코드에 그대로 등장합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-3-vars',
+        title: '변수·스코프·호이스팅 깊게',
+        icon: '🔤',
+        summary: 'var·let·const의 본질적 차이, 스코프 체인, 호이스팅, TDZ까지 — JavaScript 변수의 모든 것.',
+        content: [
+          { subtitle: '변수 선언 3종 완전 비교' },
+          { table: {
+            headers: ['항목', 'var', 'let', 'const'],
+            rows: [
+              ['스코프', '함수', '블록 ({...})', '블록'],
+              ['호이스팅', '예 (undefined로)', '예 (TDZ)', '예 (TDZ)'],
+              ['재할당', '가능', '가능', '불가'],
+              ['재선언', '가능', '불가', '불가'],
+              ['전역에서 window 부착', '예', '아니오', '아니오'],
+              ['for 루프 클로저', '문제 발생', '정상', '불가 (재할당 필요)'],
+            ],
+          } },
+
+          { subtitle: '실전 가이드 — 어느 것을 쓸까' },
+          { code: { lang: 'javascript', content: `// 규칙 1: const를 기본값으로
+const PI = 3.14;
+const users = [];           // 배열 자체는 const, 내용은 수정 가능
+const config = { ... };
+
+// 규칙 2: 재할당이 필요하면 let
+let count = 0;
+count = count + 1;
+
+let activeTab = 'home';
+activeTab = 'profile';
+
+// 규칙 3: var는 절대 쓰지 말 것
+// 레거시 코드 유지보수 외에는 사용 안 함` } },
+
+          { subtitle: '호이스팅 (Hoisting)' },
+          { text: 'JavaScript는 변수·함수 선언을 코드 실행 전에 메모리에 먼저 등록합니다. var는 undefined로 초기화되지만, let·const는 TDZ(Temporal Dead Zone)에 들어가 사용 시 에러를 던집니다.' },
+          { code: { lang: 'javascript', content: `// var의 호이스팅
+console.log(a);   // undefined (에러 아님)
+var a = 10;
+
+// let의 TDZ
+console.log(b);   // ReferenceError!
+let b = 10;
+
+// 함수 선언문은 완전 호이스팅
+foo();            // OK — "foo 실행됨"
+function foo() { console.log('foo 실행됨'); }
+
+// 함수 표현식은 변수 호이스팅 규칙 따름
+bar();            // TypeError (undefined is not a function)
+var bar = function() { };` } },
+
+          { subtitle: '스코프 체인' },
+          { code: { lang: 'javascript', content: `const global = '전역';
+
+function outer() {
+  const outerVar = '외부';
+
+  function inner() {
+    const innerVar = '내부';
+    console.log(innerVar, outerVar, global);   // 모두 접근 가능
+  }
+
+  inner();
+  console.log(innerVar);   // ReferenceError — inner 스코프 밖
+}
+
+outer();` } },
+
+          { subtitle: '클로저 (Closure) — 빈출 면접 문제' },
+          { text: '함수가 자신의 외부 변수를 "기억"하는 것. 함수를 반환할 때 외부 스코프가 함께 살아남습니다.' },
+          { code: { lang: 'javascript', content: `function makeCounter() {
+  let count = 0;
+  return function() {
+    count++;
+    return count;
+  };
+}
+
+const counter = makeCounter();
+counter();  // 1
+counter();  // 2
+counter();  // 3
+// count는 makeCounter 안에서만 접근 가능하지만,
+// 반환된 함수가 count를 "기억"해서 누적됨` } },
+
+          { subtitle: 'for 루프 + var 함정 (역사적 버그)' },
+          { code: { lang: 'javascript', content: `// 문제 — var 사용
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 100);
+}
+// 출력: 3 3 3 (모두 같은 i 참조!)
+
+// 해결 — let 사용
+for (let i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 100);
+}
+// 출력: 0 1 2 (각 반복마다 새 i)` } },
+
+          { subtitle: '실습 — 클로저로 카운터 모듈 만들기' },
+          { code: { lang: 'javascript', content: `// 다음 요구사항을 클로저로 구현하시오
+// - 초기값을 받는 카운터 생성기
+// - increment(), decrement(), reset(), getValue() 4개 메서드
+
+function createCounter(initial = 0) {
+  let value = initial;
+  return {
+    increment: () => ++value,
+    decrement: () => --value,
+    reset: () => { value = initial; return value; },
+    getValue: () => value,
+  };
+}
+
+const c = createCounter(10);
+c.increment();         // 11
+c.increment();         // 12
+c.reset();             // 10
+c.getValue();          // 10` } },
+        ],
+      },
+
+      {
+        id: 'reg-3-functions',
+        title: '함수 모든 것 + 화살표 함수',
+        icon: 'ƒ',
+        summary: '함수 선언/표현식/화살표/메서드 4종, this 바인딩, 일급 객체, 고차 함수, 즉시 실행 함수까지 함수의 모든 측면.',
+        content: [
+          { subtitle: '함수 4가지 표현 방식' },
+          { code: { lang: 'javascript', content: `// 1) 함수 선언문 (Function Declaration)
+function add(a, b) {
+  return a + b;
+}
+// - 완전 호이스팅
+// - 일반적인 유틸 함수에 권장
+
+// 2) 함수 표현식 (Function Expression)
+const sub = function(a, b) {
+  return a - b;
+};
+// - 변수 호이스팅 규칙
+// - 이름 표현식: function nm(a,b){...} — 재귀 시 유용
+
+// 3) 화살표 함수 (Arrow Function) — 가장 많이 사용
+const mul = (a, b) => a * b;
+const div = (a, b) => {
+  if (b === 0) throw new Error('0으로 나눔');
+  return a / b;
+};
+
+// 한 줄이면 return 생략, 한 인자면 괄호 생략
+const square = x => x * x;
+
+// 4) 메서드 (Method Shorthand)
+const calculator = {
+  add(a, b) { return a + b; },           // ES6 단축
+  sub: function(a, b) { return a - b; }, // 같은 의미
+};` } },
+
+          { subtitle: 'this 바인딩 — 함수 종류별 차이' },
+          { table: {
+            headers: ['함수 종류', 'this의 값'],
+            rows: [
+              ['일반 함수 호출', 'undefined (strict) / window (non-strict)'],
+              ['메서드 호출 (obj.fn())', 'obj (점 앞의 객체)'],
+              ['생성자 호출 (new Fn())', '새 인스턴스'],
+              ['call/apply/bind', '명시적 지정한 값'],
+              ['화살표 함수', '상위 스코프의 this (lexical)'],
+              ['이벤트 핸들러 (addEventListener)', '이벤트 대상 (e.currentTarget)'],
+            ],
+          } },
+          { code: { lang: 'javascript', content: `// 일반 함수 vs 화살표 함수의 this
+const user = {
+  name: '홍길동',
+
+  greetRegular: function() {
+    setTimeout(function() {
+      console.log('안녕', this.name);   // ⚠️ this = undefined (this.name = 에러)
+    }, 100);
+  },
+
+  greetArrow: function() {
+    setTimeout(() => {
+      console.log('안녕', this.name);   // ✅ this = user → "홍길동"
+    }, 100);
+  },
+};` } },
+          { callout: { type: 'tip', text: '실전 규칙: 메서드 정의는 일반 함수, 콜백·내부 함수는 화살표 함수. 이렇게 하면 this 문제가 90% 사라집니다.' } },
+
+          { subtitle: '함수는 일급 객체 (First-class Citizen)' },
+          { text: '함수가 변수에 할당되고, 인자로 전달되고, 반환값으로 받을 수 있다는 의미. 이게 가능해서 고차 함수·콜백·클로저가 성립합니다.' },
+          { code: { lang: 'javascript', content: `// 변수 할당
+const fn = function() { return 1; };
+
+// 인자로 전달
+[1, 2, 3].map(x => x * 2);     // 화살표 함수가 인자
+
+// 반환값
+function makeMultiplier(n) {
+  return function(x) { return x * n; };
+}
+const double = makeMultiplier(2);
+double(5);   // 10` } },
+
+          { subtitle: '고차 함수 (Higher-Order Function)' },
+          { text: '함수를 인자로 받거나 반환하는 함수. JavaScript 함수형 프로그래밍의 핵심.' },
+          { code: { lang: 'javascript', content: `// 데코레이터 패턴 — 함수에 부가 기능 추가
+function withLogging(fn) {
+  return function(...args) {
+    console.log('호출:', fn.name, args);
+    const result = fn(...args);
+    console.log('결과:', result);
+    return result;
+  };
+}
+
+function add(a, b) { return a + b; }
+const loggedAdd = withLogging(add);
+
+loggedAdd(2, 3);
+// 호출: add [2, 3]
+// 결과: 5
+// → 5` } },
+
+          { subtitle: '기본값 매개변수 (ES6+)' },
+          { code: { lang: 'javascript', content: `function greet(name = '익명', lang = 'ko') {
+  if (lang === 'ko') return \`안녕, \${name}!\`;
+  return \`Hello, \${name}!\`;
+}
+
+greet();              // "안녕, 익명!"
+greet('홍길동');       // "안녕, 홍길동!"
+greet('Kim', 'en');   // "Hello, Kim!"` } },
+
+          { subtitle: '나머지 매개변수 (Rest)' },
+          { code: { lang: 'javascript', content: `// 인자 개수가 가변일 때
+function sum(...numbers) {
+  return numbers.reduce((acc, n) => acc + n, 0);
+}
+
+sum(1, 2, 3);          // 6
+sum(1, 2, 3, 4, 5);    // 15
+
+// 일부는 명시 + 나머지
+function logFirst(first, ...rest) {
+  console.log('첫:', first);
+  console.log('나머지:', rest);
+}
+logFirst('a', 'b', 'c', 'd');
+// 첫: a
+// 나머지: [b, c, d]` } },
+
+          { subtitle: 'IIFE — 즉시 실행 함수' },
+          { code: { lang: 'javascript', content: `// 정의와 동시에 실행
+(function() {
+  console.log('즉시 실행됨');
+})();
+
+// 화살표 함수 버전
+(() => {
+  console.log('즉시 실행 (arrow)');
+})();
+
+// 용도: 전역 오염 방지 (ES6 모듈 이전의 패턴)
+// 모던 코드에서는 거의 안 씀. ES6 모듈이 같은 역할.` } },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            '5가지 종류의 함수를 모두 작성한 calculator.ts 파일 만들기',
+            'withLogging 데코레이터로 add/sub/mul을 감싸 호출 로그 출력',
+            'this 차이를 보여주는 예제 — 일반 함수 vs 화살표 함수',
+            '클로저로 메모이제이션 함수(memoize) 구현',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-arrays',
+        title: '배열 메서드 12종 마스터',
+        icon: '📊',
+        summary: 'map/filter/reduce 트리오 + find/some/every/sort 등 12개 배열 메서드를 실전 예제로 완전 정복.',
+        content: [
+          { subtitle: '12개 배열 메서드 분류' },
+          { table: {
+            headers: ['분류', '메서드', '용도', '반환'],
+            rows: [
+              ['변환', 'map', '각 요소 변환', '새 배열'],
+              ['변환', 'filter', '조건 통과만', '새 배열'],
+              ['축약', 'reduce', '하나의 값으로', '단일 값'],
+              ['검색', 'find', '첫 일치 요소', '요소 (또는 undefined)'],
+              ['검색', 'findIndex', '첫 일치 인덱스', '숫자 (또는 -1)'],
+              ['검색', 'indexOf', '단순 일치 인덱스', '숫자'],
+              ['검사', 'some', '하나라도 일치?', 'boolean'],
+              ['검사', 'every', '모두 일치?', 'boolean'],
+              ['검사', 'includes', '포함 여부', 'boolean'],
+              ['순회', 'forEach', '실행만 (변환 X)', 'undefined'],
+              ['정렬', 'sort', '원본 정렬', '원본 변경'],
+              ['병합', 'concat', '여러 배열 합침', '새 배열'],
+            ],
+          } },
+
+          { subtitle: 'map — 변환' },
+          { code: { lang: 'javascript', content: `const users = [
+  { id: 1, name: '홍길동', age: 30 },
+  { id: 2, name: '김철수', age: 25 },
+];
+
+// 이름만 추출
+const names = users.map(u => u.name);
+// ['홍길동', '김철수']
+
+// 객체 변환
+const cards = users.map(u => ({
+  ...u,
+  label: \`\${u.name} (\${u.age}세)\`,
+}));
+// [{id, name, age, label}, ...]` } },
+
+          { subtitle: 'filter — 거르기' },
+          { code: { lang: 'javascript', content: `// 성인만
+const adults = users.filter(u => u.age >= 18);
+
+// 여러 조건
+const targets = users.filter(u =>
+  u.age >= 20 && u.age < 30 && u.name.includes('홍')
+);
+
+// 거짓값 제거 (TypeScript 타입 가드 패턴)
+const validIds = [1, null, 2, undefined, 3].filter(Boolean);
+// [1, 2, 3]` } },
+
+          { subtitle: 'reduce — 축약 (가장 강력)' },
+          { code: { lang: 'javascript', content: `// 합계
+const total = users.reduce((sum, u) => sum + u.age, 0);
+// 55
+
+// 객체로 변환 (id를 키로)
+const byId = users.reduce((acc, u) => {
+  acc[u.id] = u;
+  return acc;
+}, {});
+// { 1: {...}, 2: {...} }
+
+// 그룹화
+const orders = [
+  { product: 'apple', qty: 3 },
+  { product: 'banana', qty: 2 },
+  { product: 'apple', qty: 5 },
+];
+const grouped = orders.reduce((acc, o) => {
+  acc[o.product] = (acc[o.product] || 0) + o.qty;
+  return acc;
+}, {});
+// { apple: 8, banana: 2 }
+
+// 최댓값 찾기
+const oldest = users.reduce((max, u) =>
+  u.age > max.age ? u : max
+);
+// { id: 1, name: '홍길동', age: 30 }` } },
+
+          { subtitle: '체이닝 — 진정한 위력' },
+          { code: { lang: 'javascript', content: `// "20대 사용자의 이름을 가나다순으로"
+const result = users
+  .filter(u => u.age >= 20 && u.age < 30)
+  .map(u => u.name)
+  .sort();
+
+// "구매 금액 1만원 이상 사용자의 평균 나이"
+const avgAge = users
+  .filter(u => u.totalSpent >= 10000)
+  .map(u => u.age)
+  .reduce((sum, age, _, arr) => sum + age / arr.length, 0);
+
+// 가독성 팁: 체인 3단계 이상은 줄바꿈, 각 단계 의미 주석` } },
+
+          { subtitle: 'find / findIndex / indexOf' },
+          { code: { lang: 'javascript', content: `// find — 조건 함수, 첫 일치 요소
+const target = users.find(u => u.id === 2);
+// { id: 2, name: '김철수', age: 25 }
+
+// findIndex — 첫 일치 인덱스
+const idx = users.findIndex(u => u.id === 2);
+// 1
+
+// indexOf — 단순 값 비교
+const arr = ['a', 'b', 'c'];
+arr.indexOf('b');   // 1
+arr.indexOf('z');   // -1` } },
+
+          { subtitle: 'some / every / includes' },
+          { code: { lang: 'javascript', content: `users.some(u => u.age > 60);     // false — 60세 이상 한 명이라도?
+users.every(u => u.age >= 18);   // true  — 모두 성인?
+
+// includes — 단순 값
+[1, 2, 3].includes(2);           // true
+
+// 자주 쓰는 패턴: 폼 검증
+function isFormValid(form) {
+  return ['name', 'email', 'phone'].every(k => form[k]);
+}` } },
+
+          { subtitle: 'sort — 정렬 (주의)' },
+          { code: { lang: 'javascript', content: `// ⚠️ 원본을 변경합니다!
+const arr = [3, 1, 2];
+arr.sort();         // arr 자체가 [1, 2, 3]으로 바뀜
+
+// 원본 유지: 복사 후 정렬
+const sorted = [...arr].sort();
+
+// 숫자 정렬은 비교 함수 필수
+[10, 1, 5].sort();              // [1, 10, 5] — 문자열 비교라 잘못됨!
+[10, 1, 5].sort((a, b) => a - b);  // [1, 5, 10] — 정상
+
+// 객체 정렬
+users.sort((a, b) => a.age - b.age);          // 나이 오름차순
+users.sort((a, b) => b.age - a.age);          // 내림차순
+users.sort((a, b) => a.name.localeCompare(b.name));  // 한글·영문 가나다` } },
+
+          { subtitle: 'forEach vs for...of' },
+          { code: { lang: 'javascript', content: `// forEach — return으로 빠져나갈 수 없음
+users.forEach(u => {
+  if (u.id === 2) return;   // ⚠️ 다음 반복으로 갈 뿐, 전체 중단 아님
+  console.log(u);
+});
+
+// for...of — break 가능, async/await 가능
+for (const u of users) {
+  if (u.id === 2) break;     // 전체 중단
+  console.log(u);
+}
+
+// 비동기 순회는 for...of 필수
+for (const u of users) {
+  await sendEmail(u.email);
+}
+// forEach는 await가 의도대로 동작 안 함` } },
+
+          { subtitle: '실습 — 사용자 데이터 처리' },
+          { code: { lang: 'javascript', content: `// 다음 데이터로 5개 작업 수행
+const users = [
+  { id: 1, name: '홍길동', age: 30, dept: 'AI', salary: 5000 },
+  { id: 2, name: '김철수', age: 25, dept: 'AI', salary: 4500 },
+  { id: 3, name: '이영희', age: 28, dept: 'Backend', salary: 5500 },
+  { id: 4, name: '박민준', age: 35, dept: 'AI', salary: 6500 },
+  { id: 5, name: '최서연', age: 22, dept: 'Frontend', salary: 4000 },
+];
+
+// 1. AI 부서 사용자만 추출
+// 2. 30세 이상 사용자의 평균 연봉
+// 3. 부서별 인원 수 계산
+// 4. 연봉 상위 3명 이름 가나다순
+// 5. 모든 사용자의 연봉 합` } },
+        ],
+      },
+
+      {
+        id: 'reg-3-es6',
+        title: 'ES6+ 핵심 문법 마스터',
+        icon: '✨',
+        summary: '구조 분해 할당·전개 연산자·템플릿 리터럴·옵셔널 체이닝·nullish 등 React 코드에 등장하는 ES6+ 문법 11종.',
+        content: [
+          { subtitle: '구조 분해 할당 (Destructuring)' },
+          { code: { lang: 'javascript', content: `// 객체 구조 분해
+const user = { name: '홍길동', age: 30, email: 'a@b.c' };
+
+const { name, email } = user;
+// name = '홍길동', email = 'a@b.c'
+
+// 변수 이름 변경
+const { name: userName } = user;
+
+// 기본값
+const { country = 'KR' } = user;
+
+// 중첩
+const post = { author: { name: '홍길동', city: '서울' } };
+const { author: { name: authorName, city } } = post;
+
+// 배열 구조 분해
+const [first, second, ...rest] = [10, 20, 30, 40, 50];
+// first=10, second=20, rest=[30, 40, 50]
+
+// 변수 교환 (스왑)
+let a = 1, b = 2;
+[a, b] = [b, a];   // a=2, b=1
+
+// 함수 인자에서 구조 분해 (React에서 매우 흔함)
+function UserCard({ name, age, onEdit }) {
+  return <div>{name} ({age}) <button onClick={onEdit}>편집</button></div>;
+}` } },
+
+          { subtitle: '전개 연산자 (Spread)' },
+          { code: { lang: 'javascript', content: `// 배열 복사
+const arr = [1, 2, 3];
+const copy = [...arr];
+
+// 배열 합치기
+const merged = [...arr1, ...arr2, ...arr3];
+
+// 배열에 요소 추가 (불변성)
+const added = [...arr, 4];      // [1, 2, 3, 4]
+const prepended = [0, ...arr];  // [0, 1, 2, 3]
+const inserted = [...arr.slice(0, 1), 1.5, ...arr.slice(1)];  // [1, 1.5, 2, 3]
+
+// 객체 복사 (얕은 복사)
+const user = { name: '홍', age: 30 };
+const updated = { ...user, age: 31 };   // 새 객체, age만 다름
+
+// 객체 병합
+const merged = { ...defaults, ...overrides };
+// overrides가 같은 키를 가지면 그 값이 이김
+
+// 함수 인자 펼치기
+const nums = [3, 1, 5, 2];
+Math.max(...nums);   // 5
+
+// React에서 props 전달
+<Component {...props} />` } },
+
+          { subtitle: '템플릿 리터럴 (Template Literals)' },
+          { code: { lang: 'javascript', content: `const name = '홍길동';
+const age = 30;
+
+// 기본 사용
+const greeting = \`안녕, \${name}님 (\${age}세)\`;
+
+// 여러 줄
+const html = \`
+  <div>
+    <h1>\${name}</h1>
+    <p>나이: \${age}</p>
+  </div>
+\`;
+
+// 식 평가
+const total = \`합계: \${100 + 200}원\`;
+
+// 함수 호출
+const time = \`현재 시간: \${new Date().toLocaleTimeString()}\`;
+
+// 태그 함수 (Tagged Template) — 고급
+function highlight(strings, ...values) {
+  return strings.reduce((acc, str, i) => {
+    const value = values[i] ? \`<mark>\${values[i]}</mark>\` : '';
+    return acc + str + value;
+  }, '');
+}
+const html = highlight\`이름: \${name}, 나이: \${age}\`;
+// 이름: <mark>홍길동</mark>, 나이: <mark>30</mark>` } },
+
+          { subtitle: '옵셔널 체이닝 (Optional Chaining)' },
+          { code: { lang: 'javascript', content: `// 안전한 깊은 접근
+const user = { profile: { address: { city: '서울' } } };
+
+// ❌ 옛날 방식 — 길고 실수 잘 함
+const city = user && user.profile && user.profile.address && user.profile.address.city;
+
+// ✅ ES2020 — 깔끔
+const city = user?.profile?.address?.city;
+// 중간에 undefined·null이면 전체가 undefined
+
+// 함수 호출도 가능
+user.greet?.();                     // greet가 없으면 호출 안 함
+
+// 배열도 가능
+const first = users?.[0]?.name;     // users가 없거나 빈 배열이면 undefined` } },
+
+          { subtitle: 'Nullish Coalescing (??)' },
+          { code: { lang: 'javascript', content: `// || 와의 차이 — 0, '', false도 fallback 적용
+const count = 0;
+console.log(count || 10);   // 10 ⚠️ (0이 falsy라서)
+console.log(count ?? 10);   // 0  ✅ (undefined·null만 fallback)
+
+// 실전 사용
+const name = userName ?? '익명';      // userName이 undefined·null이면 '익명'
+const limit = config.limit ?? 100;    // 0도 유효값인 경우
+
+// 옵셔널 체이닝과 함께
+const city = user?.address?.city ?? '미정';` } },
+
+          { subtitle: '단축 속성·메서드 (Shorthand)' },
+          { code: { lang: 'javascript', content: `const name = '홍길동';
+const age = 30;
+
+// 단축 속성 — 변수명과 키 이름이 같으면
+const user = { name, age };
+// === { name: name, age: age }
+
+// 단축 메서드
+const obj = {
+  greet() { return 'hi'; },        // 새 방식
+  greet: function() { return 'hi'; },  // 옛 방식 (같은 의미)
+};
+
+// 계산된 속성명
+const key = 'dynamic';
+const obj = { [key]: 'value' };    // { dynamic: 'value' }` } },
+
+          { subtitle: 'for...of vs for...in' },
+          { code: { lang: 'javascript', content: `const arr = [10, 20, 30];
+
+// for...of — 값 순회 (권장)
+for (const value of arr) {
+  console.log(value);   // 10, 20, 30
+}
+
+// for...in — 키 순회 (객체용, 배열에 쓰지 말 것)
+for (const key in arr) {
+  console.log(key);     // 0, 1, 2 (문자열!)
+}
+
+// 객체 순회는 Object.entries 추천
+const user = { name: '홍', age: 30 };
+for (const [key, value] of Object.entries(user)) {
+  console.log(key, value);
+}` } },
+
+          { subtitle: '실습 — 위 11개 문법을 모두 사용해 다음 함수 작성' },
+          { code: { lang: 'javascript', content: `// 요구사항
+// formatUser(user) 함수:
+// 1. 입력: { profile: { name?, age? }, settings?: { theme? } }
+// 2. 출력: 다음 형태의 문자열
+//    "안녕, 익명님 (나이: 0세, 테마: light)"
+//    - name이 없으면 "익명"
+//    - age가 없으면 0
+//    - theme이 없으면 "light"
+//    - 모든 ES6+ 문법 활용
+
+// 모범 답안 골격
+const formatUser = ({
+  profile: { name = '익명', age = 0 } = {},
+  settings: { theme = 'light' } = {},
+} = {}) => \`안녕, \${name}님 (나이: \${age}세, 테마: \${theme})\`;
+
+// 테스트
+formatUser();                                      // 모든 기본값
+formatUser({ profile: { name: '홍길동' } });        // 일부만
+formatUser({ profile: { name: '김', age: 30 }, settings: { theme: 'dark' } });` } },
+        ],
+      },
+
+      {
+        id: 'reg-3-async',
+        title: '비동기 처리 마스터 — Promise·async/await',
+        icon: '⏱️',
+        summary: 'Promise의 본질부터 async/await 패턴, 병렬·순차, 에러 처리, 취소까지 — 모든 LLM API 호출의 기반.',
+        content: [
+          { subtitle: '왜 비동기인가' },
+          { text: 'JavaScript는 단일 스레드. 1초 걸리는 작업을 동기로 하면 그 1초 동안 UI가 멈춥니다. fetch·setTimeout·DB 호출은 비동기로 처리해 UI를 멈추지 않게 합니다.' },
+
+          { subtitle: '진화 — Callback → Promise → async/await' },
+          { code: { lang: 'javascript', content: `// 1세대: 콜백 (Callback Hell)
+fetchUser(1, (err, user) => {
+  if (err) return console.error(err);
+  fetchPosts(user.id, (err, posts) => {
+    if (err) return console.error(err);
+    fetchComments(posts[0].id, (err, comments) => {
+      if (err) return console.error(err);
+      // 들여쓰기 4단계… 가독성 지옥
+    });
+  });
+});
+
+// 2세대: Promise (.then 체이닝)
+fetchUser(1)
+  .then(user => fetchPosts(user.id))
+  .then(posts => fetchComments(posts[0].id))
+  .then(comments => console.log(comments))
+  .catch(err => console.error(err));
+
+// 3세대: async/await — 가장 권장
+async function loadFeed() {
+  try {
+    const user = await fetchUser(1);
+    const posts = await fetchPosts(user.id);
+    const comments = await fetchComments(posts[0].id);
+    return comments;
+  } catch (err) {
+    console.error(err);
+  }
+}` } },
+
+          { subtitle: 'Promise 생성 — 직접 만들기' },
+          { code: { lang: 'javascript', content: `// Promise는 (resolve, reject) 두 함수를 받는 생성자
+function wait(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(() => resolve(\`\${ms}ms 대기 완료\`), ms);
+  });
+}
+
+// 사용
+wait(1000).then(msg => console.log(msg));
+
+// async와 함께
+async function demo() {
+  console.log('시작');
+  const msg = await wait(1000);
+  console.log(msg);
+  console.log('끝');
+}
+// 시작 → (1초) → "1000ms 대기 완료" → 끝` } },
+
+          { subtitle: 'Promise 상태 3가지' },
+          { table: {
+            headers: ['상태', '의미', '전환'],
+            rows: [
+              ['pending', '대기 중', '초기 상태'],
+              ['fulfilled', '성공', 'resolve(값) 호출 시'],
+              ['rejected', '실패', 'reject(에러) 호출 시 또는 예외'],
+            ],
+          } },
+
+          { subtitle: '병렬 vs 순차 — 큰 성능 차이' },
+          { code: { lang: 'javascript', content: `// ⚠️ 순차 — 느림 (서로 의존 안 하는데도)
+async function loadDataSlow() {
+  const users = await fetchUsers();      // 1초
+  const posts = await fetchPosts();      // 1초
+  const comments = await fetchComments(); // 1초
+  return { users, posts, comments };
+}
+// 총 3초
+
+// ✅ 병렬 — 빠름 (독립적인 호출은 동시에)
+async function loadDataFast() {
+  const [users, posts, comments] = await Promise.all([
+    fetchUsers(),
+    fetchPosts(),
+    fetchComments(),
+  ]);
+  return { users, posts, comments };
+}
+// 총 1초 (가장 느린 것 기준)` } },
+
+          { subtitle: 'Promise.all / allSettled / race' },
+          { code: { lang: 'javascript', content: `// Promise.all — 하나라도 실패하면 전체 실패
+try {
+  const [a, b, c] = await Promise.all([p1, p2, p3]);
+} catch (err) {
+  // p1·p2·p3 중 하나라도 reject되면 여기로
+}
+
+// Promise.allSettled — 실패해도 전체 결과
+const results = await Promise.allSettled([p1, p2, p3]);
+results.forEach(r => {
+  if (r.status === 'fulfilled') console.log('성공:', r.value);
+  else console.log('실패:', r.reason);
+});
+
+// Promise.race — 가장 먼저 끝나는 것
+const winner = await Promise.race([
+  fetch('/api/fast-server'),
+  fetch('/api/slow-server'),
+]);
+// 빠른 쪽이 이김
+
+// 타임아웃 패턴
+function withTimeout(promise, ms) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms)),
+  ]);
+}` } },
+
+          { subtitle: 'fetch — 표준 HTTP 클라이언트' },
+          { code: { lang: 'javascript', content: `// GET 요청
+const res = await fetch('https://api.example.com/users');
+const users = await res.json();
+
+// POST 요청 (JSON 본문)
+const res = await fetch('/api/login', {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password }),
+});
+
+// 상태 코드 확인 (fetch는 4xx/5xx에서 reject 안 함!)
+if (!res.ok) {                    // status가 200~299가 아니면
+  throw new Error(\`HTTP \${res.status}\`);
+}
+
+// 헤더에서 정보 추출
+const totalCount = res.headers.get('X-Total-Count');
+
+// 응답 유형별
+const json = await res.json();         // JSON
+const text = await res.text();         // 텍스트
+const blob = await res.blob();         // 바이너리 (이미지 등)` } },
+
+          { subtitle: '에러 처리 패턴' },
+          { code: { lang: 'javascript', content: `// 1. try-catch — 권장
+async function loadUser(id) {
+  try {
+    const res = await fetch(\`/api/users/\${id}\`);
+    if (!res.ok) throw new Error(\`HTTP \${res.status}\`);
+    return await res.json();
+  } catch (err) {
+    console.error('사용자 로드 실패:', err);
+    return null;  // 폴백 값
+  }
+}
+
+// 2. 재시도 (지수 백오프)
+async function fetchWithRetry(url, retries = 3) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      const res = await fetch(url);
+      if (res.ok) return await res.json();
+      throw new Error(\`HTTP \${res.status}\`);
+    } catch (err) {
+      if (i === retries - 1) throw err;
+      await new Promise(r => setTimeout(r, 1000 * Math.pow(2, i)));
+    }
+  }
+}` } },
+
+          { subtitle: '취소 — AbortController' },
+          { code: { lang: 'javascript', content: `// 진행 중 fetch 취소
+const controller = new AbortController();
+
+fetch('/api/data', { signal: controller.signal })
+  .then(res => res.json())
+  .then(data => console.log(data))
+  .catch(err => {
+    if (err.name === 'AbortError') console.log('취소됨');
+  });
+
+// 5초 후 자동 취소
+setTimeout(() => controller.abort(), 5000);
+
+// React에서: 컴포넌트 언마운트 시 취소
+useEffect(() => {
+  const c = new AbortController();
+  fetch('/api/data', { signal: c.signal });
+  return () => c.abort();   // cleanup
+}, []);` } },
+
+          { subtitle: '실습 과제' },
+          { items: [
+            'JSONPlaceholder API로 users + posts를 병렬 호출',
+            '각 사용자의 첫 글 제목을 매핑 (사용자명 → 글 제목)',
+            '재시도 함수(fetchWithRetry) 구현 + 강제 실패 시뮬레이션',
+            'AbortController로 5초 타임아웃 적용',
+            'Promise.allSettled로 일부 실패해도 나머지 결과 표시',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-practice',
+        title: '실습 · 사용자 목록 SPA (2시간)',
+        icon: '🧪',
+        summary: '학습한 JS 문법을 모두 결합해 fetch·정렬·필터링이 가능한 사용자 목록 앱을 작성합니다.',
+        content: [
+          { subtitle: '프로젝트 목표' },
+          { text: 'React 없이 순수 JavaScript + DOM 조작으로 사용자 목록 앱을 만듭니다. ES6+ 문법·배열 메서드·비동기·DOM API를 모두 사용. 다음 Day에 동일 앱을 React로 재작성하면서 차이를 체감합니다.' },
+
+          { subtitle: '요구 사양' },
+          { items: [
+            'JSONPlaceholder 사용자 10명 fetch',
+            '카드 형태로 렌더링 (이름, 이메일, 도시)',
+            '검색창 — 이름 또는 이메일로 실시간 필터',
+            '정렬 — 이름 / 이메일 / 도시 토글',
+            '로딩 / 에러 / 빈 상태 표시',
+            '카드 클릭 → 해당 사용자의 첫 글 표시 (별도 API 호출)',
+          ] },
+
+          { subtitle: 'HTML 골격' },
+          { code: { lang: 'html', content: `<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>사용자 목록</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header>
+    <h1>사용자 목록</h1>
+    <input id="search" type="search" placeholder="이름·이메일 검색" />
+    <select id="sortBy">
+      <option value="name">이름순</option>
+      <option value="email">이메일순</option>
+      <option value="city">도시순</option>
+    </select>
+  </header>
+
+  <main>
+    <div id="status">로딩 중…</div>
+    <ul id="userList"></ul>
+  </main>
+
+  <dialog id="postDialog">
+    <h2 id="postTitle"></h2>
+    <p id="postBody"></p>
+    <button id="closeDialog">닫기</button>
+  </dialog>
+
+  <script src="app.js" type="module"></script>
+</body>
+</html>` } },
+
+          { subtitle: 'JavaScript — 단계별 작성' },
+          { code: { lang: 'javascript', content: `// app.js
+const API = 'https://jsonplaceholder.typicode.com';
+
+// 상태
+let allUsers = [];
+let filtered = [];
+let sortKey = 'name';
+let keyword = '';
+
+// DOM 참조
+const searchInput = document.getElementById('search');
+const sortSelect = document.getElementById('sortBy');
+const status = document.getElementById('status');
+const userList = document.getElementById('userList');
+const postDialog = document.getElementById('postDialog');
+
+// 1) 초기 로드
+async function init() {
+  try {
+    const res = await fetch(\`\${API}/users\`);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    allUsers = await res.json();
+    status.textContent = '';
+    render();
+  } catch (err) {
+    status.textContent = '오류: ' + err.message;
+  }
+}
+
+// 2) 필터링 + 정렬 + 렌더
+function render() {
+  filtered = allUsers
+    .filter(u => {
+      const k = keyword.toLowerCase();
+      return u.name.toLowerCase().includes(k)
+          || u.email.toLowerCase().includes(k);
+    })
+    .sort((a, b) => {
+      const aVal = sortKey === 'city' ? a.address.city : a[sortKey];
+      const bVal = sortKey === 'city' ? b.address.city : b[sortKey];
+      return aVal.localeCompare(bVal);
+    });
+
+  if (filtered.length === 0) {
+    userList.innerHTML = '<li>검색 결과 없음</li>';
+    return;
+  }
+
+  userList.innerHTML = filtered.map(u => \`
+    <li data-id="\${u.id}" class="user-card">
+      <h3>\${u.name}</h3>
+      <p>\${u.email}</p>
+      <small>\${u.address.city}</small>
+    </li>
+  \`).join('');
+
+  // 이벤트 위임
+  userList.querySelectorAll('.user-card').forEach(card => {
+    card.addEventListener('click', () => loadFirstPost(card.dataset.id));
+  });
+}
+
+// 3) 첫 글 로드
+async function loadFirstPost(userId) {
+  try {
+    const res = await fetch(\`\${API}/users/\${userId}/posts\`);
+    const posts = await res.json();
+    const first = posts[0];
+    document.getElementById('postTitle').textContent = first.title;
+    document.getElementById('postBody').textContent = first.body;
+    postDialog.showModal();
+  } catch (err) {
+    alert('글 로드 실패: ' + err.message);
+  }
+}
+
+// 4) 이벤트 바인딩
+searchInput.addEventListener('input', e => {
+  keyword = e.target.value;
+  render();
+});
+
+sortSelect.addEventListener('change', e => {
+  sortKey = e.target.value;
+  render();
+});
+
+document.getElementById('closeDialog').addEventListener('click', () => {
+  postDialog.close();
+});
+
+// 시작
+init();` } },
+
+          { subtitle: '확장 과제 (시간 남으면)' },
+          { items: [
+            'debounce — 검색 입력 시 매번 render하지 말고 300ms 후',
+            '도시별 그룹화 표시 (reduce 활용)',
+            'localStorage에 마지막 검색어 저장',
+            '5초 후 자동 새로고침 옵션 토글',
+            '글 모달에 댓글 목록 (중첩 fetch)',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ ES6+ 문법 5개 이상 사용 (구조 분해·전개·템플릿·옵셔널·async/await)',
+            '☐ 배열 메서드 4개 이상 (filter·sort·map·reduce 또는 등)',
+            '☐ 로딩·에러·빈 상태 모두 처리',
+            '☐ 이벤트 위임으로 카드 클릭',
+            '☐ try-catch로 에러 처리',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-3-resources',
+        title: '심화 자료 + JavaScript 함정 모음',
+        icon: '📚',
+        summary: 'JavaScript 학습 심화 자료 + 자주 틀리는 함정 12가지 카탈로그.',
+        content: [
+          { subtitle: 'JavaScript 함정 12가지' },
+          { table: {
+            headers: ['#', '함정', '예'],
+            rows: [
+              ['1', '== vs ===', '0 == "" → true / 0 === "" → false'],
+              ['2', 'typeof null', '"object" (역사적 버그)'],
+              ['3', 'NaN === NaN', 'false. Number.isNaN() 사용'],
+              ['4', '[1,2] + [3,4]', '"1,23,4" (문자열 결합)'],
+              ['5', 'parseInt("08")', '구식 브라우저 0 (8진수). 항상 두 번째 인자 10'],
+              ['6', 'Array(3).fill()', '[empty × 3] 아니라 [undefined × 3]'],
+              ['7', '얕은 복사', '{...obj} 중첩 객체는 같은 참조'],
+              ['8', 'this 바인딩', '일반 함수의 this는 호출 방식 의존'],
+              ['9', 'forEach + async', '병렬 동작, await 무시'],
+              ['10', '0.1 + 0.2', '0.30000000000000004 (부동소수점)'],
+              ['11', 'typeof []', '"object" — Array.isArray() 사용'],
+              ['12', 'sort 숫자', '[10,1,2].sort() → [1,10,2] — 비교 함수 필수'],
+            ],
+          } },
+
+          { subtitle: '심화 자료' },
+          { items: [
+            'MDN JavaScript: developer.mozilla.org/ko/docs/Web/JavaScript',
+            '도서 『모던 자바스크립트 Deep Dive』 이웅모 — 한국어 최고 입문서',
+            '도서 『You Don\'t Know JS』 (영문, 무료, GitHub) — 깊이 학습',
+            'javascript.info — 한국어 번역, 무료, 체계적',
+            'YouTube "Web Dev Simplified" — 빠른 개념 학습',
+            'YouTube "노마드코더" 바닐라JS 챌린지',
+          ] },
+
+          { subtitle: 'TypeScript 진입 가이드' },
+          { text: 'JavaScript에 익숙해지면 TypeScript는 1주일이면 충분. 본 과정은 TS를 처음부터 사용하지만, JS 개념이 탄탄해야 TS가 도움이 됩니다.' },
+          { code: { lang: 'typescript', content: `// JS
+function add(a, b) { return a + b; }
+// 문제: add('1', '2') → "12" (의도와 다름)
+
+// TS
+function add(a: number, b: number): number {
+  return a + b;
+}
+// add('1', '2') → 컴파일 에러! 실행 전에 잡힘
+
+// 인터페이스
+interface User {
+  id: number;
+  name: string;
+  email?: string;   // 선택적
+}
+
+function greet(user: User) {
+  return \`안녕, \${user.name}\`;
+}` } },
+
+          { subtitle: 'Day 3 학습 효과 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['변수·스코프', 'var만 사용', 'let/const 구분', '클로저·TDZ 설명 가능'],
+              ['함수', '함수 선언만', '화살표 함수 사용', 'this 바인딩·고차함수'],
+              ['배열 메서드', 'for문만', 'map·filter 사용', '체이닝 + reduce 활용'],
+              ['ES6+', '없음', '구조 분해·전개', '옵셔널·nullish·태그 템플릿'],
+              ['비동기', '콜백만', 'Promise.then', 'async/await + Promise.all/race + AbortController'],
+            ],
+          } },
+
+          { subtitle: '다음 단계' },
+          { text: 'Day 4부터 React 본격. 오늘 배운 모든 JS 문법(특히 화살표 함수·구조 분해·배열 메서드·async/await)이 React 코드 거의 매 줄에 등장합니다. JS가 단단하면 React는 매우 쉬워집니다.' },
+        ],
+      },
+    ],
   },
 
   {
