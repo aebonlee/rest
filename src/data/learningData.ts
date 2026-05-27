@@ -1431,6 +1431,514 @@ const decrement = () => setCount(prev => Math.max(0, prev - 1));` } },
       },
 
       {
+        id: 'reg-1-practice-3',
+        title: '실습 3 · 거대 요구 분할 실험 (40분)',
+        icon: '🧪',
+        summary: '의도적으로 거대 요구를 한 번, 분할 요구를 한 번 — 두 결과의 품질 차이를 직접 측정합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '거대 요구 시 AI가 placeholder를 어디에 만드는지 식별',
+            '분할 요구가 왜 더 정확한지 체감',
+            '본인의 "한 번에 한 작업" 기준치 설정',
+          ] },
+
+          { subtitle: 'A 시나리오 · 거대 요구 (15분)' },
+          { code: { lang: 'text', content: `[Cursor 채팅에 그대로 입력]
+
+쇼핑몰 사이트를 만들어줘.
+- 메인 페이지: 상품 목록 + 카테고리 필터 + 검색
+- 상품 상세: 이미지·가격·재고·리뷰·장바구니 추가
+- 장바구니: 수량 변경·삭제·결제 진행
+- 결제: 카드·계좌이체·간편결제
+- 회원: 가입·로그인·내정보·주문내역
+- 관리자: 상품 추가·주문 관리·매출 통계
+
+기술: React 19 + Vite + TypeScript + Supabase` } },
+
+          { items: [
+            '결과를 그대로 따라 npm run dev 실행해보기',
+            '실제 동작하는 부분 vs placeholder 비율 측정',
+            '특히 결제·재고·통계 등 복잡한 부분에서 // TODO: ... 발견',
+            '학습 노트에 "거대 요구 결과 — 동작 30%, placeholder 70%" 기록',
+          ] },
+
+          { subtitle: 'B 시나리오 · 분할 요구 (20분)' },
+          { code: { lang: 'text', content: `[같은 목표 — 작업을 5개로 쪼개기]
+
+1턴: "상품 카드 컴포넌트 (이미지·이름·가격·장바구니 버튼) — React + TS"
+2턴: "위 카드를 사용하는 상품 목록 페이지 — Grid 반응형"
+3턴: "Supabase products 테이블 + RLS — id/name/price/image_url/stock"
+4턴: "상품 목록을 Supabase에서 fetch + useState"
+5턴: "장바구니 컴포넌트 (Context API로 전역 상태) + 수량 조작"` } },
+
+          { items: [
+            '각 턴 결과를 검수 후 다음 턴 진행',
+            '5개 모두 완성 후 동작 확인',
+            '품질 비교 — placeholder 비율?',
+          ] },
+
+          { subtitle: '결과 비교표 작성' },
+          { table: {
+            headers: ['항목', 'A (거대)', 'B (분할)'],
+            rows: [
+              ['실제 동작 비율', '?%', '?%'],
+              ['placeholder 개수', '?', '?'],
+              ['총 소요 시간', '? 분', '? 분'],
+              ['본인 이해도 (1~5)', '?', '?'],
+              ['디버깅 부담 (1~5)', '?', '?'],
+            ],
+          } },
+
+          { subtitle: '학습 노트 회고 (5분)' },
+          { items: [
+            'Q1. A에서 어떤 영역이 가장 부실했나?',
+            'Q2. B에서 가장 매끄럽게 진행된 턴은?',
+            'Q3. 본인의 "한 번에" 한계는 몇 가지 작업인가?',
+            'Q4. 다음 프로젝트에서 어떻게 적용할 것인가?',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-4',
+        title: '실습 4 · AI 검수 5단계 체크리스트 (45분)',
+        icon: '🧪',
+        summary: 'AI가 만든 코드를 무비판 수용하지 않고 체계적으로 검수하는 5단계 체크리스트를 실전 적용합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '5단계 검수 체크리스트 직접 적용',
+            'AI 코드의 잠재적 버그 1개 이상 발견',
+            '본인 검수 능력 측정 + 향상',
+          ] },
+
+          { subtitle: '검수 5단계 체크리스트' },
+          { code: { lang: 'text', content: `[1] import 경로 확인
+- 모든 import가 실제 존재하는 모듈인가?
+- 상대 경로 vs 절대 경로 일관성?
+- 사용 안 하는 import 남아있는가?
+
+[2] 타입 안전성
+- 모든 함수에 명시적 타입?
+- any 사용처 0개?
+- 옵셔널 (?) 처리 적절한가?
+
+[3] React 룰 준수
+- Hook을 조건문 안에서 호출하지 않는가?
+- useEffect 의존성 배열 정확?
+- key prop 안정된 ID 사용?
+- 상태를 직접 변경하지 않는가?
+
+[4] 에러 처리
+- try-catch 있는가?
+- 4xx/5xx 분기 처리?
+- 사용자 친화적 에러 메시지?
+- 빈 상태·로딩 상태?
+
+[5] 보안·성능
+- API 키가 코드에 노출 안 됨?
+- 사용자 입력 검증?
+- 큰 계산에 useMemo?
+- 불필요한 리렌더?` } },
+
+          { subtitle: '실전 검수 — AI 코드 받아 검토' },
+          { code: { lang: 'text', content: `[Cursor에게 요청]
+
+다음 요구사항으로 코드를 작성해줘:
+- 사용자가 이메일 입력 + 비밀번호 입력
+- "로그인" 버튼 클릭 시 Supabase로 인증
+- 성공 시 /dashboard로 이동
+- 실패 시 에러 메시지 표시
+- 의도적으로 검수 포인트가 발견되도록 작성
+
+React + TypeScript + react-router-dom + supabase` } },
+
+          { items: [
+            '받은 코드를 5단계 체크리스트로 검토',
+            '각 단계에서 발견한 문제를 노트에 기록',
+            'AI에게 "이 코드에 [발견한 문제]가 있는데 맞나?" 후속 질문',
+            'AI의 답변을 다시 검수 (역시 100% 신뢰 X)',
+          ] },
+
+          { subtitle: '검수 결과 양식' },
+          { code: { lang: 'text', content: `[검수 보고서]
+
+코드: LoginForm.tsx
+검수일: 2026-XX-XX
+검수자: 본인
+
+[1] import 경로 ──────────────────
+✅ 모두 정상
+
+[2] 타입 안전성 ─────────────────
+⚠️ 발견:
+  - line 12: error 타입이 any로 처리됨
+  - 개선: catch(err: unknown) + 좁힘
+
+[3] React 룰 ────────────────────
+✅ 정상
+
+[4] 에러 처리 ────────────────────
+⚠️ 발견:
+  - 네트워크 에러와 인증 실패 구분 없음
+  - 개선: error code별 다른 메시지
+
+[5] 보안·성능 ────────────────────
+✅ 정상
+
+총평: 동작은 정상이나 에러 UX 개선 여지` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 5단계 모두 적용했는가?',
+            '☐ 진짜 문제 1개 이상 발견했는가?',
+            '☐ 개선안을 직접 작성했는가?',
+            '☐ AI가 부인해도 본인 판단을 유지했는가?',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-5',
+        title: '실습 5 · 7가지 협업 패턴 통합 적용 (60분)',
+        icon: '🧪',
+        summary: '컨텍스트 주입·작업 분할·검수·반복 개선·폴백·검증 자동화·컨텍스트 위생 — 7가지 패턴을 한 프로젝트에 모두 적용합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '7가지 협업 패턴을 모두 적용',
+            '본인만의 워크플로우 템플릿 확립',
+            '향후 모든 프로젝트의 표준 절차로 만들기',
+          ] },
+
+          { subtitle: '실습 프로젝트 — 메모장 앱 만들기' },
+          { code: { lang: 'text', content: `[요구사항]
+- 메모 작성·수정·삭제
+- 카테고리별 필터 (업무·개인·학습)
+- 즐겨찾기 기능
+- localStorage에 자동 저장
+- 다크모드` } },
+
+          { subtitle: '단계 1 · 컨텍스트 주입 (5분)' },
+          { code: { lang: 'text', content: `[Cursor 채팅 첫 메시지]
+
+[프로젝트 컨텍스트]
+- Vite 7 + React 19 + TypeScript 5.8 (strict)
+- 디자인 시스템: CSS 변수 (var(--primary-blue) 등)
+- 컴포넌트 위치: src/components/, 페이지: src/pages/
+- 함수형 컴포넌트만, default export
+- 모든 비동기는 try-catch
+- localStorage 키 prefix: 'memo-'
+
+[작업]
+다음 단계로 메모장 앱을 만들 거야:
+1) 메모 타입 정의 + 빈 상태 UI
+2) 메모 추가 폼
+3) 메모 목록 표시
+4) 카테고리 필터
+5) localStorage 동기화
+6) 다크모드
+
+먼저 1단계부터 시작.` } },
+
+          { subtitle: '단계 2 · 작업 분할 (30분)' },
+          { text: '위 6단계를 순차로 진행. 각 단계마다 별도 메시지로 요청. 한 단계 완료 후 다음 단계로.' },
+
+          { subtitle: '단계 3 · 검수 체크리스트 (10분)' },
+          { items: [
+            '5단계 검수 (실습 4에서 학습)',
+            '각 메시지 결과를 받자마자 검수',
+            '문제 발견 시 같은 대화에서 후속 요청',
+          ] },
+
+          { subtitle: '단계 4 · 반복 개선 사이클 (10분)' },
+          { code: { lang: 'text', content: `[1라운드] 초안 받기
+[2라운드] "에러 처리 추가, 로딩 상태 분리"
+[3라운드] "변수명 명확화, 매직 넘버 추출"
+
+→ 보통 2~3회로 수렴` } },
+
+          { subtitle: '단계 5 · 폴백 적용 (5분)' },
+          { text: 'localStorage 접근 실패·JSON 파싱 실패 등 폴백 처리. 메모 데이터가 없으면 빈 배열 반환.' },
+
+          { subtitle: '단계 6 · 검증 자동화 (5분)' },
+          { code: { lang: 'bash', content: `npm run typecheck    # 타입 OK
+npm run lint         # 0 경고
+npm run dev          # 동작 확인
+
+# 통합
+"verify": "npm run typecheck && npm run lint"` } },
+
+          { subtitle: '단계 7 · 컨텍스트 위생 (5분)' },
+          { items: [
+            '주제 끝나면 새 대화 시작',
+            '대화 100턴 안 가도록 중간에 리셋',
+            '민감 정보 입력 X',
+          ] },
+
+          { subtitle: '회고 — 본인의 협업 워크플로우 문서화' },
+          { code: { lang: 'markdown', content: `# 나의 AI 협업 워크플로우
+
+## 1. 첫 메시지 템플릿
+- 프로젝트 스택
+- 디자인 시스템
+- 폴더 구조
+- 코딩 컨벤션
+- 다음 작업 순서
+
+## 2. 작업 분할 기준
+- 최대 30분 단위
+- 한 번에 1개 컴포넌트
+- 변경 파일 5개 이내
+
+## 3. 검수 체크리스트 (5단계)
+- import / 타입 / React / 에러 / 보안
+
+## 4. 반복 개선 라운드
+- 1~3라운드 표준
+- 4라운드 이상 = 새 대화
+
+## 5. 새 대화 시작 기준
+- 주제 변경 시
+- 100턴 도달 시
+- 응답이 산만해질 때` } },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-6',
+        title: '실습 6 · 실패 시뮬레이션 — 5대 사고 재현 (30분)',
+        icon: '🧪',
+        summary: '실제 발생한 AI 코딩 사고 5건을 안전한 환경에서 재현하고 방지법을 체득합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '5대 사고를 안전한 데모 환경에서 재현',
+            '각 사고의 원인·결과를 직접 체험',
+            '방지법을 자신만의 체크리스트로 정리',
+          ] },
+
+          { subtitle: '사고 1 시뮬레이션 · API 키 노출 (5분)' },
+          { code: { lang: 'text', content: `[안전한 환경 — 별도 폴더 + dummy 키]
+mkdir leak-test && cd leak-test
+git init
+
+# 더미 키 포함 파일 생성
+echo "const KEY = 'sk-dummy-fake-12345';" > config.js
+git add config.js
+git commit -m "test"
+
+# 검색해보기 — 실제 노출 시 봇이 이걸 함
+grep -r "sk-" .
+# → config.js: const KEY = 'sk-dummy-fake-12345';
+
+[방지법]
+- .env.local + .gitignore
+- npm install -D dotenv
+- git-secrets·husky pre-commit hook` } },
+
+          { subtitle: '사고 2 시뮬레이션 · 가짜 라이브러리 (5분)' },
+          { code: { lang: 'text', content: `[Cursor에게 의도적으로 요청]
+
+"react-easy-modal" 라이브러리로 모달을 만들어줘.
+
+[AI 응답에서 발견할 패턴]
+- AI가 그럴듯한 코드 작성
+- 실제로는 존재하지 않는 패키지
+
+[검증]
+npm view react-easy-modal
+# → npm ERR! 404 Not Found
+
+[방지법]
+- npm·GitHub 공식 페이지로 검증
+- 실제 install 시도
+- AI에게 "npm에서 검색되는가?" 재확인` } },
+
+          { subtitle: '사고 3 시뮬레이션 · SQL Injection (10분)' },
+          { code: { lang: 'typescript', content: `// AI가 만든 취약 코드 — 의도적 시연
+function checkLogin(email: string, password: string) {
+  const query = \`SELECT * FROM users
+                  WHERE email = '\${email}' AND password = '\${password}'\`;
+  return db.query(query);
+}
+
+// [공격 시뮬레이션 — 안전한 SQLite로]
+checkLogin("' OR 1=1 --", "anything");
+
+// 실제 실행 SQL:
+// SELECT * FROM users WHERE email = '' OR 1=1 --' AND password = 'anything'
+// → 모든 사용자 반환!
+
+// [방지]
+// Parameterized query 또는 ORM (Prisma·Supabase)
+await supabase.from('users').select().eq('email', email).eq('password', hashed);` } },
+
+          { subtitle: '사고 4 시뮬레이션 · 무한 루프 setState (5분)' },
+          { code: { lang: 'tsx', content: `// 의도적 버그 컴포넌트
+function BadList() {
+  const [items, setItems] = useState([1, 2, 3]);
+
+  useEffect(() => {
+    setItems(items.map(i => i * 2));   // ⚠️ items 의존성 + items 변경
+  }, [items]);
+
+  return <ul>{items.map(i => <li key={i}>{i}</li>)}</ul>;
+}
+
+// [관찰]
+// - 브라우저 freeze
+// - React Error: Maximum update depth exceeded
+
+// [수정]
+useEffect(() => {
+  setItems(prev => prev.map(i => i * 2));
+}, []);   // 마운트 시 1회만` } },
+
+          { subtitle: '사고 5 시뮬레이션 · 도메인 로직 환각 (5분)' },
+          { code: { lang: 'text', content: `[Cursor에게 요청]
+"부가세 계산 함수를 만들어줘"
+
+[AI 응답 — 의심하기]
+const VAT_RATE = 0.20;   // ⚠️ 영국 VAT 20%
+// 한국 부가세는 10%인데?
+
+[검증]
+- AI에게 "한국 기준이야?" 재확인
+- 공식 출처 (국세청) 확인
+
+[방지]
+- 도메인 특화 작업은 "한국 기준" 명시
+- 또는 본인이 직접 검증 필수
+- 금융·세무·법률·의료는 전문가 검토` } },
+
+          { subtitle: '본인 방지 체크리스트 작성' },
+          { items: [
+            '☐ .env.local 사용 + .gitignore 확인',
+            '☐ AI 추천 라이브러리는 npm 공식 페이지 확인',
+            '☐ SQL은 ORM·Parameterized query만',
+            '☐ ESLint react-hooks/exhaustive-deps 활성화',
+            '☐ 도메인 로직은 출처 검증 + 단위 테스트',
+            '☐ pre-commit hook으로 자동 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-1-practice-7',
+        title: '실습 7 · 첫 GitHub 커밋 + 배포 (30분)',
+        icon: '🧪',
+        summary: '본 실습들의 결과물을 GitHub에 첫 커밋하고 GitHub Pages로 배포합니다.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Day 1의 모든 실습 결과물을 1개 저장소에 통합',
+            'GitHub에 첫 커밋',
+            'GitHub Pages 배포 → 실제 URL 확인',
+          ] },
+
+          { subtitle: '단계 1 · 저장소 준비 (5분)' },
+          { code: { lang: 'bash', content: `# Vite 프로젝트가 없다면 생성
+npm create vite@latest day1-labs -- --template react-ts
+cd day1-labs
+npm install
+npm run dev    # 확인
+
+# Day 1 실습 결과들을 src/pages/ 아래에 정리
+# Practice1.tsx (Cursor 첫 작업)
+# Practice2.tsx (도구 비교 결과)
+# Practice3.tsx (거대 vs 분할)
+# Practice4.tsx (검수 체크리스트)
+# Practice5.tsx (협업 워크플로우)
+# Practice6.tsx (실패 시뮬레이션)
+# Index.tsx (모든 실습 링크)` } },
+
+          { subtitle: '단계 2 · Git 초기화 + 첫 커밋 (5분)' },
+          { code: { lang: 'bash', content: `# Git 초기화
+git init
+git branch -M main
+
+# .gitignore 확인 (Vite가 자동 생성)
+cat .gitignore
+# node_modules
+# dist
+# .env.local
+
+# 첫 커밋
+git add .
+git commit -m "init: Day 1 실습 결과물 통합"
+
+# GitHub 저장소 생성 (브라우저)
+# github.com/new → "day1-vibe-labs" → Create
+
+# 원격 연결 + 푸시
+git remote add origin https://github.com/<your-username>/day1-vibe-labs.git
+git push -u origin main` } },
+
+          { subtitle: '단계 3 · gh-pages 셋업 (10분)' },
+          { code: { lang: 'bash', content: `# 패키지 설치
+npm install -D gh-pages
+
+# package.json 스크립트 추가
+"scripts": {
+  "dev":     "vite",
+  "build":   "tsc -b && vite build",
+  "predeploy": "npm run build",
+  "deploy":  "gh-pages -d dist"
+}
+
+# vite.config.ts — base 설정
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [react()],
+  base: '/day1-vibe-labs/',   // 저장소 이름
+});
+
+# 빌드 + 배포
+npm run deploy` } },
+
+          { subtitle: '단계 4 · GitHub Pages 활성화 (5분)' },
+          { items: [
+            'GitHub 저장소 → Settings → Pages',
+            'Source: Deploy from a branch',
+            'Branch: gh-pages, Folder: / (root)',
+            'Save 클릭',
+            '약 1~3분 대기',
+            '결과 URL: https://<your-username>.github.io/day1-vibe-labs/',
+          ] },
+
+          { subtitle: '단계 5 · 동작 확인 (5분)' },
+          { items: [
+            '브라우저에서 URL 접속',
+            '모든 실습 페이지 정상 표시 확인',
+            'Lighthouse 점수 측정 (Mobile 80+)',
+            'README에 Live Demo URL 추가',
+            'GitHub 저장소 Star (자기 응원)',
+          ] },
+
+          { subtitle: '확장 과제 (시간 남으면)' },
+          { items: [
+            '404 페이지 추가',
+            '메타 태그 + favicon',
+            '본인 LinkedIn에 "Day 1 실습 완료" 게시',
+            '동기들과 URL 공유 + 피드백',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ GitHub에 첫 커밋 성공',
+            '☐ GitHub Pages URL 접근 가능',
+            '☐ 6개 실습 결과 모두 페이지로 정리',
+            '☐ README 작성',
+            '☐ 빈 화면·404 없음',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-1-troubleshooting',
         title: '트러블슈팅 & 자주 발생하는 문제',
         icon: '🔧',
