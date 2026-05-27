@@ -18279,6 +18279,299 @@ ffmpeg -i input.mkv -c:v libx264 -c:a aac demo.mp4
       },
 
       {
+        id: 'reg-12-practice-1',
+        title: '실습 1 · 첫 production 빌드 + 분석 (25분)',
+        icon: '🧪',
+        summary: 'npm run build → 청크 분석 → manualChunks 최적화.',
+        content: [
+          { subtitle: '단계' },
+          { code: { lang: 'bash', content: `# 1) 빌드
+npm run build
+
+# 2) dist 폴더 분석
+ls -lh dist/assets/
+# index-XXX.js 크기 확인
+# 각 lazy 청크 분리되었나?
+
+# 3) Bundle Analyzer (선택)
+npm install -D rollup-plugin-visualizer
+
+# vite.config.ts에 추가
+import { visualizer } from 'rollup-plugin-visualizer';
+plugins: [react(), visualizer({ open: true, filename: 'dist/stats.html' })]
+
+# 빌드 → stats.html 자동 열림 → 큰 모듈 식별
+
+# 4) manualChunks 적용
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+        'supabase': ['@supabase/supabase-js'],
+        'forms': ['react-hook-form', 'zod'],
+      },
+    },
+  },
+}
+
+# 5) 다시 빌드 → 비교` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 빌드 성공',
+            '☐ 청크 분리 확인',
+            '☐ Bundle Analyzer 사용',
+            '☐ manualChunks 적용',
+            '☐ vendor 청크 분리 효과 측정',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-practice-2',
+        title: '실습 2 · gh-pages 첫 배포 (20분)',
+        icon: '🧪',
+        summary: 'gh-pages 패키지로 첫 배포 + URL 확인.',
+        content: [
+          { subtitle: '단계' },
+          { code: { lang: 'bash', content: `# 1) 설치
+npm install -D gh-pages
+
+# 2) package.json
+"scripts": {
+  "predeploy": "npm run build",
+  "deploy": "gh-pages -d dist"
+}
+
+# 3) vite.config.ts (커스텀 도메인 없으면)
+base: '/<repo-name>/',
+
+# 4) 배포
+npm run deploy
+
+# 5) GitHub 저장소 → Settings → Pages
+# Source: gh-pages branch
+# Save → 1~3분 후 URL 활성화
+
+# 6) 확인
+# https://<user>.github.io/<repo-name>/` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ npm run deploy 성공',
+            '☐ GitHub Pages 설정 완료',
+            '☐ URL에서 정상 표시',
+            '☐ 모든 라우트 동작',
+            '☐ 정적 자산 로드',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-practice-3',
+        title: '실습 3 · 커스텀 도메인 연결 (30분)',
+        icon: '🧪',
+        summary: 'CNAME 파일 + DNS 설정으로 커스텀 도메인 + HTTPS 인증서.',
+        content: [
+          { subtitle: '단계' },
+          { items: [
+            '1. 도메인 등록 (가비아·Cloudflare·Namecheap 등)',
+            '2. public/CNAME 파일 작성',
+            '3. vite.config.ts → base: \'/\'',
+            '4. 도메인 등록업체 DNS → CNAME 레코드 추가',
+            '5. GitHub Settings → Pages → Custom domain 입력',
+            '6. Enforce HTTPS 체크',
+            '7. 5~30분 대기',
+          ] },
+
+          { subtitle: 'public/CNAME' },
+          { code: { lang: 'text', content: `my-app.example.com` } },
+
+          { subtitle: 'DNS 설정 — 서브도메인' },
+          { code: { lang: 'text', content: `Type:   CNAME
+Name:   my-app
+Value:  <user>.github.io
+TTL:    3600` } },
+
+          { subtitle: 'DNS 설정 — 루트 도메인 (apex)' },
+          { code: { lang: 'text', content: `Type:   A
+Name:   @
+Value:  185.199.108.153
+        185.199.109.153
+        185.199.110.153
+        185.199.111.153
+TTL:    3600` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 커스텀 도메인에서 접근',
+            '☐ HTTPS 자동 인증서',
+            '☐ www → non-www 또는 그 반대 리다이렉트',
+            '☐ 모든 라우트 동작',
+            '☐ SPA 404 트릭 적용',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-practice-4',
+        title: '실습 4 · SPA 404 트릭 + 배포 후 점검 (20분)',
+        icon: '🧪',
+        summary: 'GitHub Pages의 SPA 라우팅 새로고침 문제 해결 + 10개 체크리스트.',
+        content: [
+          { subtitle: 'public/404.html 추가' },
+          { code: { lang: 'html', content: `<!doctype html>
+<html>
+<head>
+<script>
+  var l = window.location;
+  var path = l.pathname.slice(1);
+  l.replace(l.protocol + '//' + l.host + '/?/' + path + l.search + l.hash);
+</script>
+</head>
+<body></body>
+</html>` } },
+
+          { subtitle: 'index.html에 복원 스크립트' },
+          { code: { lang: 'html', content: `<script>
+  (function(l) {
+    if (l.search[1] === '/') {
+      var decoded = l.search.slice(1).split('&').map(s => s.replace(/~and~/g, '&')).join('?');
+      window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+    }
+  }(window.location));
+</script>` } },
+
+          { subtitle: '배포 후 10개 체크리스트' },
+          { items: [
+            '☐ 메인 페이지 정상 로드',
+            '☐ /about·/dashboard 등 직접 URL 접근',
+            '☐ 새로고침 시에도 동작 (404 트릭)',
+            '☐ HTTPS 강제 + 자물쇠 아이콘',
+            '☐ 모든 이미지 로드',
+            '☐ 폰트 로드',
+            '☐ API 호출 정상 (production 키)',
+            '☐ 모바일에서 정상',
+            '☐ DevTools Console 에러 0',
+            '☐ Lighthouse production 측정 80+',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-practice-5',
+        title: '실습 5 · 8슬라이드 발표 자료 작성 (45분)',
+        icon: '🧪',
+        summary: '8슬라이드 표준 구조 + Pitch/Canva로 디자인 + PDF 백업.',
+        content: [
+          { subtitle: '도구 선택' },
+          { items: [
+            'Pitch.com (무료 — 협업 + 웹 기반)',
+            'Canva (무료 — 풍부한 템플릿)',
+            'Google Slides (무료 + 공유 강력)',
+            'Keynote (Mac — 미려한 애니메이션)',
+          ] },
+
+          { subtitle: '8슬라이드 구조 (각 슬라이드 1줄 가이드)' },
+          { table: {
+            headers: ['#', '슬라이드', '핵심'],
+            rows: [
+              ['1', '타이틀', '서비스명 + 가치제안 + 팀명'],
+              ['2', '문제', '페르소나 + 통계 1~2개'],
+              ['3', '솔루션', 'AI가 어떻게 해결'],
+              ['4', '핵심 기능', '아이콘 + 3~5개 기능'],
+              ['5', '기술 스택', '국내 LLM 강조'],
+              ['6', '라이브 데모', '3분 시연'],
+              ['7', '성과·검증', '베타 결과 숫자'],
+              ['8', '향후·연락처', 'Roadmap + Thank You'],
+            ],
+          } },
+
+          { subtitle: '디자인 원칙' },
+          { items: [
+            '한 슬라이드 한 메시지',
+            '글자는 24pt 이상 (뒷자리 가독성)',
+            '큰 숫자 + 짧은 텍스트',
+            '이미지·아이콘으로 시각화',
+            '본 강의 운영사 색(#0D2B5E) 활용',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 8슬라이드 모두 완성',
+            '☐ 첫 슬라이드 매력적',
+            '☐ 데모 슬라이드는 텍스트 최소',
+            '☐ 마지막 슬라이드 연락처',
+            '☐ PDF 백업 (.pdf)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-practice-6',
+        title: '실습 6 · 데모 시나리오 + 백업 영상 (30분)',
+        icon: '🧪',
+        summary: '3분 데모 시나리오 작성 + Loom/OBS로 백업 영상 녹화.',
+        content: [
+          { subtitle: '시나리오 양식' },
+          { code: { lang: 'text', content: `[데모 시나리오 — 3분]
+
+00:00~00:15  랜딩 페이지 진입
+             멘트: "처음 사이트에 오신 분..."
+
+00:15~00:30  회원가입 (사전 계정 즉시 로그인)
+             멘트: "30초 만에 가입..."
+
+00:30~01:00  진단 시작 → 첫 질문
+             멘트: "AI가 자연어로..."
+             [사용자 답변 1턴]
+
+01:00~02:00  진단 진행 (5턴 빠르게)
+             미리 준비한 답변 빠르게 클릭
+
+02:00~02:30  결과 화면 → 직무 3개 추천
+             멘트: "30분 대화 결과..."
+
+02:30~02:50  학습 로드맵 1개 클릭
+             멘트: "맞춤형 8주 가이드..."
+
+02:50~03:00  마무리 멘트
+             "이렇게 한 사용자의 진로가 바뀝니다"
+
+[안전장치]
+- Plan A: Live (제일 좋음)
+- Plan B: 녹화 영상 (인터넷 끊김 시)
+- Plan C: GIF 5개 (느릴 때)
+- Plan D: 스크린샷 (최후)` } },
+
+          { subtitle: '백업 영상 녹화' },
+          { code: { lang: 'bash', content: `# 옵션 1: Loom (가장 쉬움)
+# loom.com → Chrome 확장 → 녹화 → 자동 클라우드 저장
+
+# 옵션 2: OBS Studio (무료, 강력)
+# obsproject.com 다운로드
+# Sources → Display Capture
+# 녹화 시작 → 데모 시연 → 정지
+
+# 옵션 3: macOS Cmd+Shift+5
+# 화면 일부 녹화 → 자동 mp4 저장
+
+# 옵션 4: Windows + G (Game Bar)
+# Win+G → 캡처 → 녹화` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 3분 시나리오 초 단위 작성',
+            '☐ 백업 영상 녹화 (mp4)',
+            '☐ 핵심 GIF 5개',
+            '☐ 사전 데모 계정 + 데이터 준비',
+            '☐ 실제 환경에서 1회 리허설',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-12-resources',
         title: '심화 + 자가 평가',
         icon: '📚',
