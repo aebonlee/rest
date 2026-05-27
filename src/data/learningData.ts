@@ -5521,6 +5521,655 @@ export default function App() {
       { subtitle: '다음 시간 예고' },
       { text: 'Day 6부터는 백엔드. Supabase로 회원가입·로그인·데이터베이스 CRUD·파일 업로드를 단 4시간에 풀세트로 구현합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-5-router',
+        title: 'React Router v6 완전 정복',
+        icon: '🗺️',
+        summary: 'BrowserRouter·Routes·Route·useNavigate·useParams·Outlet·중첩 라우트까지 React Router의 모든 핵심.',
+        content: [
+          { subtitle: '왜 라우터인가 — SPA의 본질' },
+          { text: '전통 웹: 페이지 이동 시 서버에서 새 HTML 로드. SPA: 한 번 로드 후 클라이언트에서 화면만 교체. 사용자 경험은 훨씬 빠르지만, URL과 화면을 동기화하는 라우터 라이브러리가 필요합니다.' },
+
+          { subtitle: '셋업' },
+          { code: { lang: 'bash', content: `npm install react-router-dom
+
+# main.tsx
+import { BrowserRouter } from 'react-router-dom';
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <BrowserRouter>
+    <App />
+  </BrowserRouter>
+);` } },
+
+          { subtitle: '기본 라우트' },
+          { code: { lang: 'tsx', content: `import { Routes, Route } from 'react-router-dom';
+
+function App() {
+  return (
+    <Routes>
+      <Route path="/"          element={<Home />} />
+      <Route path="/about"     element={<About />} />
+      <Route path="/users/:id" element={<UserDetail />} />
+      <Route path="*"          element={<NotFound />} />
+    </Routes>
+  );
+}` } },
+
+          { subtitle: '동적 파라미터 — useParams' },
+          { code: { lang: 'tsx', content: `import { useParams } from 'react-router-dom';
+
+function UserDetail() {
+  const { id } = useParams<{ id: string }>();
+  // URL: /users/42 → id = "42"
+  return <h1>사용자 #{id}</h1>;
+}
+
+// 다중 파라미터
+<Route path="/posts/:year/:slug" element={<Post />} />
+const { year, slug } = useParams();
+
+// 쿼리 파라미터 (?q=...)
+import { useSearchParams } from 'react-router-dom';
+const [params, setParams] = useSearchParams();
+const q = params.get('q');                  // 읽기
+setParams({ q: '새 값', page: '2' });        // 쓰기` } },
+
+          { subtitle: 'useNavigate — 함수형 이동' },
+          { code: { lang: 'tsx', content: `import { useNavigate } from 'react-router-dom';
+
+function LoginForm() {
+  const navigate = useNavigate();
+
+  async function handleSubmit() {
+    await login();
+    navigate('/dashboard');         // 이동
+    navigate('/dashboard', { replace: true });  // history 교체
+    navigate(-1);                   // 뒤로 가기
+    navigate(1);                    // 앞으로 가기
+    navigate('/posts/42', { state: { from: 'list' } }); // state 전달
+  }
+}
+
+// 받는 쪽
+import { useLocation } from 'react-router-dom';
+const location = useLocation();
+const from = location.state?.from;` } },
+
+          { subtitle: 'Link vs useNavigate' },
+          { table: {
+            headers: ['도구', '용도', '접근성'],
+            rows: [
+              ['Link', '클릭으로 이동', '<a> 태그 — 접근성·SEO ↑'],
+              ['useNavigate', '함수형 (로그인 성공 후 등)', '이벤트 핸들러 안'],
+              ['Navigate', '선언적 리다이렉트', '컴포넌트로 렌더링'],
+            ],
+          } },
+
+          { subtitle: '중첩 라우트 + Outlet' },
+          { code: { lang: 'tsx', content: `<Routes>
+  <Route path="/admin" element={<AdminLayout />}>
+    <Route index element={<Dashboard />} />              {/* /admin */}
+    <Route path="users" element={<Users />} />           {/* /admin/users */}
+    <Route path="posts" element={<Posts />} />           {/* /admin/posts */}
+    <Route path="posts/:id" element={<PostDetail />} />  {/* /admin/posts/:id */}
+  </Route>
+</Routes>
+
+// AdminLayout
+import { Outlet } from 'react-router-dom';
+function AdminLayout() {
+  return (
+    <div>
+      <AdminSidebar />
+      <main><Outlet /></main>   {/* 자식 라우트가 여기 렌더 */}
+    </div>
+  );
+}` } },
+
+          { subtitle: 'NavLink — active 상태 자동' },
+          { code: { lang: 'tsx', content: `import { NavLink } from 'react-router-dom';
+
+<NavLink
+  to="/about"
+  className={({ isActive }) => isActive ? 'menu active' : 'menu'}
+>
+  About
+</NavLink>
+
+// 또는 style
+<NavLink
+  to="/about"
+  style={({ isActive }) => ({
+    fontWeight: isActive ? 700 : 400,
+    color: isActive ? 'blue' : 'gray',
+  })}
+>
+  About
+</NavLink>` } },
+
+          { subtitle: '404 처리' },
+          { code: { lang: 'tsx', content: `<Routes>
+  {/* 다른 모든 라우트 */}
+  <Route path="*" element={<NotFound />} />
+</Routes>
+
+function NotFound() {
+  return (
+    <div>
+      <h1>404 — 페이지를 찾을 수 없습니다</h1>
+      <Link to="/">홈으로</Link>
+    </div>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '5페이지 SPA (Home/About/Users/UserDetail/NotFound)',
+            '/users/:id 동적 라우트 + useParams',
+            'NavLink로 활성 메뉴 강조',
+            '중첩 /admin 라우트 + Outlet',
+            '쿼리 파라미터로 검색 상태 URL 동기화',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-context',
+        title: 'Context API — 전역 상태',
+        icon: '🌐',
+        summary: 'React Context로 인증·테마·언어 등 전역 상태를 props drilling 없이 관리하는 표준 패턴.',
+        content: [
+          { subtitle: 'Context가 해결하는 문제 — props drilling' },
+          { code: { lang: 'tsx', content: `// 문제: user 정보를 깊은 자식에게 전달
+<App user={user}>
+  <Layout user={user}>
+    <Header user={user}>
+      <UserMenu user={user} />   {/* 5단계 깊은 곳에서만 사용 */}
+    </Header>
+  </Layout>
+</App>
+// 중간 컴포넌트들이 user를 알 필요 없는데 전달만 하는 "drilling"
+
+// 해결: Context
+const UserContext = createContext<User | null>(null);
+<UserContext.Provider value={user}>
+  <App />   {/* 중간 props 없이 어디서든 useContext로 접근 */}
+</UserContext.Provider>` } },
+
+          { subtitle: 'Context 표준 패턴' },
+          { code: { lang: 'tsx', content: `// src/contexts/AuthContext.tsx
+import { createContext, useContext, useState, useEffect, type ReactNode } from 'react';
+
+interface User {
+  id: string;
+  email: string;
+}
+
+interface AuthCtx {
+  user: User | null;
+  isLoading: boolean;
+  signIn: (email: string, pwd: string) => Promise<void>;
+  signOut: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthCtx | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // 마운트 시 기존 세션 확인
+    fetch('/api/me')
+      .then(r => r.ok ? r.json() : null)
+      .then(setUser)
+      .finally(() => setIsLoading(false));
+  }, []);
+
+  async function signIn(email: string, pwd: string) {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, pwd }),
+    });
+    const data = await res.json();
+    setUser(data.user);
+  }
+
+  async function signOut() {
+    await fetch('/api/logout', { method: 'POST' });
+    setUser(null);
+  }
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, signIn, signOut }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+// 컴포넌트에서 사용하는 hook
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be inside AuthProvider');
+  return ctx;
+}
+
+// App.tsx
+<AuthProvider>
+  <Router>
+    {/* 어디서든 useAuth() 호출 가능 */}
+  </Router>
+</AuthProvider>` } },
+
+          { subtitle: 'Context 사용 — useAuth 호출' },
+          { code: { lang: 'tsx', content: `function UserMenu() {
+  const { user, signOut } = useAuth();
+  if (!user) return <Link to="/login">로그인</Link>;
+  return (
+    <div>
+      <span>{user.email}</span>
+      <button onClick={signOut}>로그아웃</button>
+    </div>
+  );
+}` } },
+
+          { subtitle: 'Context의 성능 함정' },
+          { callout: { type: 'warn', text: 'Context 값이 변하면 그 Context를 구독하는 모든 컴포넌트가 리렌더됩니다. 자주 변하는 값과 거의 안 변하는 값을 한 Context에 묶으면 성능 문제. 분리하세요.' } },
+          { code: { lang: 'tsx', content: `// ❌ 한 Context에 다 모음
+<AppContext.Provider value={{ user, theme, count, items }}>
+
+// ✅ 관심사별 분리
+<AuthContext.Provider value={{ user }}>
+  <ThemeContext.Provider value={{ theme }}>
+    <CartContext.Provider value={{ items }}>
+      <App />
+    </CartContext.Provider>
+  </ThemeContext.Provider>
+</AuthContext.Provider>` } },
+
+          { subtitle: 'value 메모이제이션' },
+          { code: { lang: 'tsx', content: `// ❌ 매 렌더마다 새 객체 → 모든 소비자 리렌더
+<Ctx.Provider value={{ user, signOut }}>
+
+// ✅ useMemo로 안정화
+const value = useMemo(() => ({ user, signOut }), [user, signOut]);
+<Ctx.Provider value={value}>` } },
+
+          { subtitle: 'Context vs Zustand·Jotai' },
+          { table: {
+            headers: ['도구', '복잡도', '강점', '약점'],
+            rows: [
+              ['useState', '★', '단순', '깊은 전달 불가'],
+              ['Context', '★★', 'React 기본', '성능 주의'],
+              ['Zustand', '★★', '간결, 외부 store', '학습 필요'],
+              ['Jotai', '★★', '원자 단위 상태', 'mental model 전환'],
+              ['Redux Toolkit', '★★★★', '대형 앱 검증', '보일러플레이트'],
+            ],
+          } },
+
+          { subtitle: '실습' },
+          { items: [
+            'AuthContext + ThemeContext 두 개 분리해서 작성',
+            'useMemo로 value 메모이제이션',
+            '로그인 → 헤더에 사용자 이름 표시 → 로그아웃 흐름',
+            '테마 토글 + localStorage 저장 + 시스템 설정 감지',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-authguard',
+        title: 'AuthGuard — 인증 보호 패턴',
+        icon: '🛡️',
+        summary: '로그인이 필요한 페이지를 보호하는 표준 패턴. Navigate 리다이렉트, location 보존, 권한 기반 분기까지.',
+        content: [
+          { subtitle: 'AuthGuard 기본' },
+          { code: { lang: 'tsx', content: `// src/components/AuthGuard.tsx
+import { Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface Props { children: React.ReactNode; }
+
+export default function AuthGuard({ children }: Props) {
+  const { user, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) return <p>로딩…</p>;
+
+  if (!user) {
+    // 로그인 후 원래 가려던 곳으로 돌아가도록 state에 저장
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return <>{children}</>;
+}` } },
+
+          { subtitle: '사용 — 보호된 라우트' },
+          { code: { lang: 'tsx', content: `<Routes>
+  <Route path="/"       element={<Home />} />
+  <Route path="/login"  element={<Login />} />
+
+  <Route path="/dashboard" element={
+    <AuthGuard><Dashboard /></AuthGuard>
+  } />
+
+  <Route path="/profile" element={
+    <AuthGuard><Profile /></AuthGuard>
+  } />
+</Routes>` } },
+
+          { subtitle: '로그인 후 원래 페이지로 복귀' },
+          { code: { lang: 'tsx', content: `// Login.tsx
+function Login() {
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    await signIn(email, password);
+    navigate(from, { replace: true });   // 원래 가려던 곳으로
+  }
+
+  // ...
+}` } },
+
+          { subtitle: '권한 기반 분기 — AdminGuard' },
+          { code: { lang: 'tsx', content: `interface AdminGuardProps {
+  children: React.ReactNode;
+  requiredRole?: 'admin' | 'superadmin';
+}
+
+export default function AdminGuard({ children, requiredRole = 'admin' }: AdminGuardProps) {
+  const { user, isLoading } = useAuth();
+
+  if (isLoading) return <p>로딩…</p>;
+  if (!user) return <Navigate to="/login" replace />;
+
+  // 권한 검사
+  const hasPermission =
+    user.role === 'superadmin' ||
+    (requiredRole === 'admin' && user.role === 'admin');
+
+  if (!hasPermission) {
+    return (
+      <div>
+        <h1>접근 권한 없음</h1>
+        <p>이 페이지는 관리자만 접근할 수 있습니다.</p>
+        <Link to="/">홈으로</Link>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
+// 사용
+<Route path="/admin" element={
+  <AdminGuard requiredRole="admin"><AdminDashboard /></AdminGuard>
+} />` } },
+
+          { subtitle: '레이아웃 단위 보호 — Outlet과 결합' },
+          { code: { lang: 'tsx', content: `<Routes>
+  <Route element={<AuthGuard><PrivateLayout /></AuthGuard>}>
+    <Route path="/dashboard" element={<Dashboard />} />
+    <Route path="/profile"   element={<Profile />} />
+    <Route path="/settings"  element={<Settings />} />
+  </Route>
+</Routes>
+
+// AuthGuard 한 번 + 모든 자식 라우트 보호
+function PrivateLayout() {
+  return (
+    <>
+      <Header />
+      <main><Outlet /></main>
+    </>
+  );
+}` } },
+
+          { subtitle: '서버 검증과 함께' },
+          { callout: { type: 'warn', text: '⚠️ 클라이언트 가드만 신뢰하지 마세요. DevTools로 우회 가능. 진짜 보안은 서버(또는 RLS)에서. AuthGuard는 UX 개선용.' } },
+
+          { subtitle: '실습' },
+          { items: [
+            'AuthGuard 컴포넌트 작성',
+            '/dashboard 보호 + 로그인 후 복귀 동작 확인',
+            'AdminGuard로 /admin 보호',
+            '레이아웃 단위 보호 — 5개 페이지 한 번에',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-lazy',
+        title: 'React.lazy + Suspense — 코드 스플리팅',
+        icon: '⚡',
+        summary: '초기 번들 크기 절감의 절대 강자. 라우트별 lazy 로딩으로 첫 화면 표시 속도를 2~3배 개선.',
+        content: [
+          { subtitle: '왜 코드 스플리팅인가' },
+          { text: '기본 React 앱은 모든 페이지 코드를 첫 로드 시 다운로드. 사용자는 첫 페이지만 보면서 나머지 코드도 받는 셈. 코드 스플리팅 = 사용자가 그 라우트에 진입할 때만 해당 코드 다운로드.' },
+
+          { subtitle: 'React.lazy 기본' },
+          { code: { lang: 'tsx', content: `import { lazy, Suspense } from 'react';
+
+// 정적 import 대신 lazy
+const About    = lazy(() => import('./pages/About'));
+const Settings = lazy(() => import('./pages/Settings'));
+
+function App() {
+  return (
+    <Suspense fallback={<div>로딩 중…</div>}>
+      <Routes>
+        <Route path="/about"    element={<About />} />
+        <Route path="/settings" element={<Settings />} />
+      </Routes>
+    </Suspense>
+  );
+}` } },
+
+          { subtitle: 'Suspense fallback 디자인' },
+          { code: { lang: 'tsx', content: `// 단순 텍스트보다 스켈레톤이 UX 좋음
+function PageSkeleton() {
+  return (
+    <div className="skeleton">
+      <div className="skeleton-header" />
+      <div className="skeleton-line" />
+      <div className="skeleton-line short" />
+    </div>
+  );
+}
+
+<Suspense fallback={<PageSkeleton />}>
+  <Routes>...</Routes>
+</Suspense>
+
+// 여러 Suspense 중첩 가능 — 부분 로딩
+<Suspense fallback={<HeaderSkeleton />}>
+  <Header />
+  <Suspense fallback={<MainSkeleton />}>
+    <Main />
+  </Suspense>
+</Suspense>` } },
+
+          { subtitle: '청크 분할 결과 확인' },
+          { items: [
+            'npm run build 후 dist/assets 폴더 확인',
+            '각 lazy 컴포넌트가 별도 .js 파일',
+            '예: About-c9wxF22v.js, Settings-DXV0Jpps.js',
+            'Chrome DevTools Network 탭 → 라우트 이동 시 새 청크 다운로드 확인',
+          ] },
+
+          { subtitle: '에러 처리 — ErrorBoundary' },
+          { code: { lang: 'tsx', content: `// 청크 다운로드 실패 시 (네트워크 문제)
+import { Component, type ReactNode } from 'react';
+
+interface State { hasError: boolean; }
+interface Props { children: ReactNode; fallback?: ReactNode; }
+
+class ErrorBoundary extends Component<Props, State> {
+  state = { hasError: false };
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error: Error) {
+    console.error('Page load error:', error);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.fallback || <div>오류 발생. 새로고침 해주세요.</div>;
+    }
+    return this.props.children;
+  }
+}
+
+// 사용 — Suspense와 함께
+<ErrorBoundary>
+  <Suspense fallback={<PageSkeleton />}>
+    <Routes>...</Routes>
+  </Suspense>
+</ErrorBoundary>` } },
+
+          { subtitle: '컴포넌트 단위 lazy — 무거운 모달' },
+          { code: { lang: 'tsx', content: `// 큰 차트 라이브러리를 사용하는 모달
+const HeavyChart = lazy(() => import('./HeavyChart'));
+
+function Dashboard() {
+  const [showChart, setShowChart] = useState(false);
+
+  return (
+    <>
+      <button onClick={() => setShowChart(true)}>차트 보기</button>
+      {showChart && (
+        <Suspense fallback={<div>차트 로딩…</div>}>
+          <HeavyChart />
+        </Suspense>
+      )}
+    </>
+  );
+}` } },
+
+          { subtitle: 'preload 힌트 — 미리 로드' },
+          { code: { lang: 'tsx', content: `// hover 시 미리 다운로드
+const About = lazy(() => import('./pages/About'));
+
+function NavMenu() {
+  function preload() {
+    import('./pages/About');   // 캐시에 미리 받음
+  }
+
+  return (
+    <Link to="/about" onMouseEnter={preload}>
+      About
+    </Link>
+  );
+}
+// 사용자가 클릭할 때쯤 다운로드 완료 → 즉시 표시` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '5개 페이지 모두 lazy 적용',
+            'PageSkeleton fallback 작성',
+            'ErrorBoundary로 감싸기',
+            'npm run build 후 청크 파일 확인',
+            'Network throttling으로 slow 3G에서 동작 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-practice',
+        title: '실습 · 본격 SPA 구축 (3시간)',
+        icon: '🧪',
+        summary: 'React Router + Context + AuthGuard + lazy를 모두 결합한 미니 LMS 구조를 완성합니다.',
+        content: [
+          { subtitle: '프로젝트 목표' },
+          { text: '본 강의 사이트(rest.dreamitbiz.com)의 축소판을 직접 만들면서 본 강의가 어떻게 동작하는지 이해합니다.' },
+
+          { subtitle: '구조' },
+          { code: { lang: 'text', content: `/                    Home (공개)
+/about               About (공개)
+/login               Login (공개)
+/dashboard           Dashboard (로그인 필요)
+  /profile           내 프로필
+  /courses           내 수강 과정
+/admin               관리자 (admin 권한)
+  /students          학생 관리
+  /courses           과정 관리` } },
+
+          { subtitle: '단계별 구현' },
+          { items: [
+            '1단계 (30분): Vite 프로젝트 셋업 + 폴더 구조',
+            '2단계 (30분): AuthContext + ThemeContext 작성',
+            '3단계 (30분): AuthGuard·AdminGuard 작성',
+            '4단계 (60분): 5개 페이지 + 중첩 라우트 + Outlet',
+            '5단계 (30분): 모든 페이지 lazy + Suspense + ErrorBoundary',
+          ] },
+
+          { subtitle: '체크리스트' },
+          { items: [
+            '☐ 비로그인 시 /dashboard → /login 자동 리다이렉트',
+            '☐ 로그인 성공 후 원래 가려던 페이지로 복귀',
+            '☐ admin이 아닌 사용자가 /admin 접근 시 권한 없음 표시',
+            '☐ 모든 페이지가 별도 청크로 분리됨',
+            '☐ 네트워크 끊김 시 ErrorBoundary 동작',
+            '☐ 테마 토글 + localStorage 보존',
+          ] },
+
+          { subtitle: '확장 과제' },
+          { items: [
+            '쿼리 파라미터로 정렬·필터 상태 URL 동기화',
+            'NavLink로 활성 메뉴 강조',
+            '404 페이지에 추천 링크 제공',
+            'hover preload로 페이지 전환 즉시',
+            '경로 변경 시 스크롤 맨 위로',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-5-resources',
+        title: '심화 자료',
+        icon: '📚',
+        summary: 'React Router·Context·코드 스플리팅 심화 학습 자료 + 자가 평가.',
+        content: [
+          { subtitle: '심화 자료' },
+          { items: [
+            'React Router 공식: reactrouter.com',
+            'TanStack Router: tanstack.com/router (타입 안전 라우터)',
+            'Zustand: github.com/pmndrs/zustand',
+            'Jotai: jotai.org',
+            'TanStack Query: tanstack.com/query (서버 상태)',
+          ] },
+
+          { subtitle: '심화 주제 — 본 강의 이후' },
+          { items: [
+            'Data Router API — loader/action으로 데이터 fetch 통합',
+            'TanStack Query — 서버 상태 캐싱 + 자동 재요청',
+            'Suspense for Data Fetching (React 19+)',
+            'React Compiler — 자동 메모이제이션',
+            'Next.js App Router — 풀스택 React',
+          ] },
+
+          { subtitle: 'Day 5 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['React Router', '기본 라우트만', '동적 라우트 + useParams', '중첩 + Outlet + NavLink'],
+              ['Context', '없음', '1개 Context', '관심사 분리 + useMemo'],
+              ['AuthGuard', '없음', '단순 리다이렉트', '권한 분기 + location 보존'],
+              ['Code Splitting', '없음', '일부 lazy', '모든 페이지 + ErrorBoundary'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
