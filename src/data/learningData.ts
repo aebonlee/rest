@@ -11366,6 +11366,685 @@ lighthouse https://rest.dreamitbiz.com --view
       { subtitle: '다음 시간 예고' },
       { text: 'Day 12에서는 배포. GitHub Pages·CNAME·발표 자료 8슬라이드 구성까지 — 외부에 공개할 준비를 완성합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-11-devtools',
+        title: 'Chrome DevTools 완전 정복',
+        icon: '🔍',
+        summary: 'Elements·Console·Sources·Network·Performance·Application 6대 탭 + 50개 핵심 기능 마스터.',
+        content: [
+          { subtitle: 'DevTools 6대 탭' },
+          { table: {
+            headers: ['탭', '핵심 용도', '단축키'],
+            rows: [
+              ['Elements', 'DOM·CSS 검사·수정', 'Cmd/Ctrl+Shift+C'],
+              ['Console', '로그·즉시 실행·에러', 'Cmd/Ctrl+Opt+J'],
+              ['Sources', '디버깅·브레이크포인트', 'Cmd/Ctrl+Opt+I → S'],
+              ['Network', 'HTTP 요청·응답', 'Cmd/Ctrl+Opt+I → N'],
+              ['Performance', '성능 프로파일링', 'Cmd/Ctrl+Opt+I → P'],
+              ['Application', '저장소·쿠키·서비스 워커', 'Cmd/Ctrl+Opt+I → A'],
+            ],
+          } },
+
+          { subtitle: 'Elements 탭 — 핵심 기능 10개' },
+          { items: [
+            'Cmd+Shift+C → 화면 요소 클릭 → DOM 위치 점프',
+            '요소 우클릭 → "Edit as HTML" 즉석 수정',
+            'Styles 탭 → CSS 즉시 변경 (저장 안 됨, 실험용)',
+            ':hov 버튼 → :hover·:focus 상태 강제',
+            'Computed 탭 → 최종 적용된 CSS 값',
+            'Box Model 시각화 (오른쪽 패널 하단)',
+            'flex/grid 배지 클릭 → 시각화',
+            '$0 → 현재 선택 요소 (Console에서)',
+            '클래스명 위에 V 박스 → 활성/비활성 토글',
+            '"Break on..." → DOM 변경 시 자동 중단',
+          ] },
+
+          { subtitle: 'Console 탭 — 강력한 디버깅' },
+          { code: { lang: 'javascript', content: `// 기본
+console.log('값:', value);
+console.error('에러:', err);
+console.warn('경고:', issue);
+console.table(users);              // 표 형태 (배열·객체에 최강)
+
+// 그룹화
+console.group('API 호출');
+console.log('URL:', url);
+console.log('응답:', data);
+console.groupEnd();
+
+// 시간 측정
+console.time('fetch-users');
+await fetch('/api/users');
+console.timeEnd('fetch-users');    // → "fetch-users: 234ms"
+
+// 트레이스
+console.trace('호출 경로');
+
+// 조건부 로그
+console.assert(user.age > 0, '나이는 양수여야 함');
+
+// 스타일링 (재미)
+console.log('%c큰 글자', 'font-size: 32px; color: red;');
+
+// DevTools에서만 — copy()
+copy(JSON.stringify(data));        // 클립보드로
+
+// 즉석 실행
+$0.style.background = 'red';        // 선택 요소 색 변경
+$$('button')                        // querySelectorAll
+$('h1')                             // querySelector` } },
+
+          { subtitle: 'Sources 탭 — 브레이크포인트 디버깅' },
+          { items: [
+            'Cmd+P → 파일 빠른 열기',
+            '줄 번호 클릭 → 브레이크포인트',
+            'F8 (또는 ▶) → 다음 브레이크까지 실행',
+            'F10 → Step Over (다음 줄)',
+            'F11 → Step Into (함수 안으로)',
+            'Shift+F11 → Step Out (함수 밖으로)',
+            '우측 Scope → 현재 변수 값 확인',
+            '우측 Watch → 특정 식 모니터링',
+            '우측 Call Stack → 호출 경로',
+            '조건부 브레이크포인트 — 줄 번호 우클릭',
+          ] },
+
+          { subtitle: 'Network 탭 — API 디버깅 마스터' },
+          { code: { lang: 'text', content: `[필터]
+- Fetch/XHR     → API만
+- Img·CSS·JS    → 리소스 타입별
+- 검색창에 url   → 특정 URL만
+- has-response-header:cache-control → 헤더 조건
+
+[컬럼 활용]
+- Name      → URL
+- Status    → 200/404/500 등
+- Type      → fetch/xhr/document
+- Initiator → 누가 호출했나 (스택트레이스)
+- Size      → 전송 크기
+- Time      → 응답 시간
+- Waterfall → 시간 흐름 시각화
+
+[디버깅]
+- 응답 → Preview 탭 → JSON 시각화
+- 응답 → Response 탭 → raw 본문
+- 요청 → Headers 탭 → Request/Response headers
+- 우클릭 → "Copy as cURL" → 터미널에 붙여넣어 재현
+- 우클릭 → "Save all as HAR" → 분석 공유
+
+[Throttling]
+- 우상단 dropdown → Slow 3G / Fast 3G
+- 느린 네트워크 시뮬레이션 → 로딩 UI 검증` } },
+
+          { subtitle: 'Performance 탭 — 프로파일링' },
+          { items: [
+            '⚪ 녹화 시작 → 사용자 액션 → 정지',
+            'Main thread → 어떤 함수가 오래 걸렸나',
+            'Network → 동시에 어떤 요청이 일어났나',
+            'Frames → 60fps 기준 (16.67ms/frame)',
+            '빨간 막대 = Long Task (50ms 이상)',
+            '"Bottom-Up" → 가장 느린 함수 톱',
+            '"Call Tree" → 호출 트리',
+          ] },
+
+          { subtitle: 'Application 탭 — 저장소 검사' },
+          { items: [
+            'Cookies → 도메인별 쿠키 보기/삭제',
+            'Local Storage → key-value 검사',
+            'Session Storage → 세션 단위',
+            'IndexedDB → 큰 데이터 저장소',
+            'Service Workers → PWA 캐시',
+            'Manifest → PWA 설정',
+            'Clear storage → 모든 데이터 초기화 (테스트용)',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            '본인 프로젝트에서 1초 이상 걸리는 API 호출 찾기',
+            'Performance 녹화 → 가장 느린 함수 1개 식별',
+            'Sources에서 브레이크포인트로 변수 값 추적',
+            'Throttling으로 Slow 3G 시뮬레이션 → 로딩 UI 검증',
+            'console.table로 사용자 목록 시각화',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-react-devtools',
+        title: 'React DevTools — 컴포넌트 디버깅',
+        icon: '⚛️',
+        summary: 'React 전용 DevTools로 컴포넌트 트리·Props·State·리렌더 원인을 정밀 추적.',
+        content: [
+          { subtitle: '설치' },
+          { items: [
+            'Chrome 웹 스토어에서 "React Developer Tools" 검색·설치',
+            '설치 후 DevTools 열면 Components·Profiler 탭 추가됨',
+            '개발 모드에서만 표시 (production은 자동 숨김)',
+          ] },
+
+          { subtitle: 'Components 탭' },
+          { items: [
+            '컴포넌트 트리 — 전체 React 트리 탐색',
+            '검색 — 컴포넌트 이름으로 빠르게 찾기',
+            '선택 컴포넌트의 props·state·hooks 즉시 표시',
+            '우측 패널 → props 값 더블클릭 → 즉석 수정 (UI 변화 즉시)',
+            '"⚙️" → 옵션 → "Highlight updates when components render" 켜기',
+            '→ 리렌더 발생 시 화면 영역 표시 (성능 디버깅 강력)',
+          ] },
+
+          { subtitle: 'Profiler 탭 — 성능 분석' },
+          { items: [
+            '⚪ 녹화 시작',
+            '사용자 액션 수행 (클릭·입력)',
+            '⏹ 정지',
+            'Ranked → 가장 오래 걸린 컴포넌트',
+            'Flame Graph → 시각적 트리',
+            '특정 commit 선택 → 어떤 컴포넌트가 리렌더 됐는지',
+            '"Why did this render?" — 원인 표시 (props 변경 등)',
+          ] },
+
+          { subtitle: '리렌더 원인 분석 5가지' },
+          { table: {
+            headers: ['원인', '해결'],
+            rows: [
+              ['Hooks changed', 'state·context 변경 — 의도된 경우 OK'],
+              ['Props changed', '특정 prop 변경 — useMemo 검토'],
+              ['Parent re-rendered', '부모가 리렌더 → 자식도 — React.memo'],
+              ['Context changed', 'Context value 변경 — useMemo로 안정화'],
+              ['Hooks order changed', '⚠️ 버그 — Hook을 조건 안에서 호출'],
+            ],
+          } },
+
+          { subtitle: 'React.memo로 최적화' },
+          { code: { lang: 'tsx', content: `// 부모 리렌더에도 props 변경 없으면 리렌더 안 함
+const UserCard = React.memo(function UserCard({ user, onClick }) {
+  return (
+    <div onClick={onClick}>
+      <h3>{user.name}</h3>
+      <p>{user.email}</p>
+    </div>
+  );
+});
+
+// 주의: onClick이 매번 새 함수면 효과 없음 → useCallback 필요
+function UserList({ users }) {
+  // ❌ 매번 새 함수
+  const handleClick = (id: number) => { /* ... */ };
+
+  // ✅ useCallback
+  const handleClick = useCallback((id: number) => { /* ... */ }, []);
+
+  return users.map(u => <UserCard user={u} onClick={handleClick} />);
+}` } },
+
+          { subtitle: 'useMemo로 비용 큰 계산 최적화' },
+          { code: { lang: 'tsx', content: `function ExpensiveList({ items, keyword }) {
+  // ❌ 매 렌더마다 필터+정렬
+  const filtered = items.filter(i => i.name.includes(keyword)).sort(...);
+
+  // ✅ items·keyword 변경 시에만 재계산
+  const filtered = useMemo(() => {
+    return items.filter(i => i.name.includes(keyword)).sort(...);
+  }, [items, keyword]);
+
+  return filtered.map(...);
+}` } },
+          { callout: { type: 'tip', text: '⚠️ 조기 최적화는 함정. Profiler로 진짜 느린 곳 측정 후 적용. memo·useMemo·useCallback은 자체 비용도 있음.' } },
+
+          { subtitle: '실습' },
+          { items: [
+            '본인 프로젝트에서 Highlight updates 켜고 클릭 → 어디가 리렌더',
+            'Profiler로 5초 녹화 → 최장 commit 분석',
+            '불필요한 리렌더 1개 발견 → React.memo·useMemo로 해결',
+            '"Why did this render?" 활용해 원인 명시',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-lighthouse',
+        title: 'Lighthouse — 4지표 최적화',
+        icon: '🏆',
+        summary: 'Performance·Accessibility·Best Practices·SEO 4지표를 모두 90+로 끌어올리는 실전 가이드.',
+        content: [
+          { subtitle: 'Lighthouse 4지표' },
+          { table: {
+            headers: ['지표', '의미', '목표', '주요 영향'],
+            rows: [
+              ['Performance', '로딩·인터랙션 속도', '90+', 'LCP·FID·CLS'],
+              ['Accessibility', '접근성·시맨틱', '95+', 'alt·대비·키보드'],
+              ['Best Practices', '보안·표준 준수', '95+', 'HTTPS·취약점'],
+              ['SEO', '검색엔진 최적화', '95+', 'meta·title'],
+            ],
+          } },
+
+          { subtitle: 'Core Web Vitals' },
+          { table: {
+            headers: ['지표', '의미', '좋음 기준'],
+            rows: [
+              ['LCP', 'Largest Contentful Paint — 가장 큰 콘텐츠 표시', '< 2.5s'],
+              ['INP', 'Interaction to Next Paint — 클릭 반응', '< 200ms'],
+              ['CLS', 'Cumulative Layout Shift — 레이아웃 흔들림', '< 0.1'],
+              ['FCP', 'First Contentful Paint — 첫 콘텐츠', '< 1.8s'],
+              ['TTFB', 'Time to First Byte — 서버 응답', '< 800ms'],
+            ],
+          } },
+
+          { subtitle: 'Performance 개선 10가지' },
+          { items: [
+            '이미지 최적화 — WebP/AVIF, 적정 크기, lazy loading',
+            '코드 스플리팅 — React.lazy + Suspense',
+            'CSS 최적화 — Critical CSS 인라인',
+            '폰트 — font-display: swap, preload',
+            'JavaScript 압축·tree shaking (Vite 자동)',
+            'CDN — 정적 자산 분산',
+            'gzip·brotli 압축',
+            '서비스 워커 캐싱',
+            '서드파티 스크립트 줄이기 (Google Analytics 등)',
+            '서버 응답 시간 — DB 쿼리 최적화',
+          ] },
+
+          { subtitle: '이미지 최적화 코드' },
+          { code: { lang: 'html', content: `<!-- lazy loading -->
+<img src="hero.jpg" loading="lazy" alt="..." />
+
+<!-- 적정 크기 (srcset) -->
+<img
+  src="hero-1024.webp"
+  srcset="hero-640.webp 640w, hero-1024.webp 1024w, hero-1920.webp 1920w"
+  sizes="(max-width: 768px) 100vw, 1024px"
+  alt="..."
+/>
+
+<!-- WebP + JPG 폴백 -->
+<picture>
+  <source srcset="hero.avif" type="image/avif">
+  <source srcset="hero.webp" type="image/webp">
+  <img src="hero.jpg" alt="...">
+</picture>` } },
+
+          { subtitle: '폰트 최적화' },
+          { code: { lang: 'html', content: `<head>
+  <!-- preconnect — DNS·TCP·TLS 미리 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <!-- preload — 가장 중요한 폰트만 -->
+  <link rel="preload" href="/fonts/Pretendard.woff2" as="font" type="font/woff2" crossorigin>
+
+  <!-- swap — 폰트 로딩 중에도 텍스트 즉시 표시 -->
+  <style>
+    @font-face {
+      font-family: 'Pretendard';
+      src: url('/fonts/Pretendard.woff2') format('woff2');
+      font-display: swap;
+    }
+  </style>
+</head>` } },
+
+          { subtitle: 'Accessibility 95+' },
+          { items: [
+            '모든 <img>에 alt 속성',
+            '<button>·<a>의 의미 있는 텍스트 (또는 aria-label)',
+            '폼 <input>에 <label> 연결',
+            '제목 계층 (h1 → h2 → h3) 순서대로',
+            '키보드 Tab으로 모든 요소 접근',
+            '포커스 표시 명확 (outline 없애지 말 것)',
+            '색 대비 4.5:1 이상 (WebAIM Contrast Checker)',
+            '동영상에 자막',
+            'aria-* 적재적소',
+          ] },
+
+          { subtitle: 'SEO 95+' },
+          { code: { lang: 'html', content: `<head>
+  <title>페이지 제목 (50자 이내)</title>
+  <meta name="description" content="페이지 요약 160자 이내">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="제목">
+  <meta property="og:description" content="요약">
+  <meta property="og:image" content="https://example.com/og.png">
+  <meta property="og:url" content="https://example.com/page">
+  <meta property="og:type" content="website">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://example.com/page">
+
+  <!-- robots.txt + sitemap.xml -->
+</head>` } },
+
+          { subtitle: 'Best Practices' },
+          { items: [
+            'HTTPS 강제',
+            '취약 라이브러리 제거 (npm audit)',
+            'console.error 없음 (production에서)',
+            'document.write 사용 금지',
+            'image aspect ratio 명시 (CLS 방지)',
+            '대비·줄간격 검사',
+          ] },
+
+          { subtitle: '실행 방법' },
+          { code: { lang: 'bash', content: `# 방법 1: Chrome DevTools
+# DevTools → Lighthouse 탭 → "Analyze page load"
+
+# 방법 2: CLI
+npm install -g lighthouse
+lighthouse https://rest.dreamitbiz.com --view --preset=desktop
+
+# 방법 3: PageSpeed Insights (Google)
+# pagespeed.web.dev — 실제 사용자 데이터(CrUX) 포함` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'Lighthouse 실행 → 4지표 현재 점수 기록',
+            '가장 낮은 지표 1개 → 상위 3개 개선점 적용',
+            '재측정 → 5점 이상 개선 확인',
+            'Mobile 모드 + Desktop 모드 둘 다 측정',
+            '최종 목표 — 4지표 모두 90+ (Performance는 80+도 OK)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-debug',
+        title: '디버깅 멘탈 모델 + 흔한 에러',
+        icon: '🐛',
+        summary: '과학적 디버깅 5단계 + 자주 발생하는 React·JS·Supabase 에러 20종 카탈로그.',
+        content: [
+          { subtitle: '과학적 디버깅 5단계' },
+          { code: { lang: 'text', content: `1. 재현 (Reproduce)
+   - 정확히 어떤 조작 → 어떤 결과?
+   - 100% vs 가끔?
+   - 재현 안 되면 → 더 많은 정보 수집
+
+2. 가설 (Hypothesis)
+   - "X가 원인일 것이다" — 1개 가설부터
+   - 가설은 단순할수록 좋음
+
+3. 실험 (Experiment)
+   - 가설을 검증하는 최소 변경
+   - console.log·breakpoint·테스트
+
+4. 검증 (Verify)
+   - 결과가 가설과 일치?
+   - 일치 → 진짜 원인 / 불일치 → 2단계로
+
+5. 수정 + 회귀 (Fix + Regression)
+   - 수정 적용
+   - 동일 시나리오 재현 안 됨 확인
+   - 다른 부분 영향 없는지 확인` } },
+
+          { subtitle: '에러 메시지 읽는 법' },
+          { code: { lang: 'text', content: `TypeError: Cannot read properties of undefined (reading 'map')
+   at UserList (src/pages/UserList.tsx:23:18)
+   at renderWithHooks (...)
+
+[파싱]
+- 에러 종류:  TypeError (타입 오류)
+- 메시지:     undefined의 .map을 읽을 수 없음
+- 위치:       UserList 컴포넌트의 23번째 줄, 18번째 글자
+- 스택:       어떤 흐름으로 도달했나
+
+[디버깅 순서]
+1. 23번째 줄 코드 확인 (users.map(...))
+2. users가 undefined인 이유? (fetch 실패? 초기값 누락?)
+3. 원인 수정 (?. 또는 || [] 또는 useState 초기값)` } },
+
+          { subtitle: '자주 발생하는 React 에러 12종' },
+          { table: {
+            headers: ['#', '에러', '원인', '해결'],
+            rows: [
+              ['1', 'Each child should have a unique "key"', 'map 시 key 누락', 'key={item.id}'],
+              ['2', 'Rendered fewer hooks than expected', 'Hook을 조건 안', '최상단으로 이동'],
+              ['3', 'Cannot read properties of undefined', '데이터 도착 전 접근', '?. 옵셔널 체이닝'],
+              ['4', 'Maximum update depth exceeded', '무한 setState', '의존성·조건 점검'],
+              ['5', 'Can\'t perform state update on unmounted', 'unmount 후 setState', 'cleanup·AbortController'],
+              ['6', 'Function is not a function', '함수 호출 오류', '값 vs 함수 확인'],
+              ['7', 'Hydration mismatch', 'SSR/CSR 불일치', '동일 HTML 보장'],
+              ['8', 'Cannot read properties of null', 'ref·DOM 접근 시점', 'useEffect 안에서'],
+              ['9', 'Objects are not valid as React child', 'JSX에 객체 직접 렌더', 'JSON.stringify 또는 분해'],
+              ['10', 'A component is changing controlled to uncontrolled', 'value undefined ↔ string', '항상 string'],
+              ['11', 'Warning: setState called during render', '렌더 중 setState', 'useEffect로 이동'],
+              ['12', 'Hooks can only be called inside function', 'class·일반 함수에서 호출', '함수형 컴포넌트만'],
+            ],
+          } },
+
+          { subtitle: 'Supabase 에러 5종' },
+          { table: {
+            headers: ['에러', '원인', '해결'],
+            rows: [
+              ['new row violates row-level security', 'RLS 정책 없음·미충족', 'INSERT 정책 + WITH CHECK'],
+              ['JWT expired', '토큰 만료', 'refresh 또는 재로그인'],
+              ['relation does not exist', '테이블명 오타', '정확히 확인'],
+              ['permission denied for table', 'anon에 권한 없음', 'RLS 정책 + grant'],
+              ['Failed to fetch', '환경변수 누락', '.env.local 확인 + dev 재시작'],
+            ],
+          } },
+
+          { subtitle: 'AI에게 에러 도움 요청 양식' },
+          { code: { lang: 'text', content: `[에러 발생 상황]
+[버튼 클릭 시점 / 페이지 로드 시점 등]
+
+[정확한 에러 메시지]
+\`\`\`
+TypeError: Cannot read properties of undefined (reading 'name')
+    at UserCard (UserCard.tsx:15:22)
+\`\`\`
+
+[관련 코드]
+\`\`\`tsx
+function UserCard({ user }) {
+  return <h3>{user.name}</h3>;  // ← 여기
+}
+
+// 사용
+<UserCard user={users[0]} />
+\`\`\`
+
+[이미 시도한 것]
+- users가 빈 배열일 때 발생 확인
+- useState 초기값을 빈 배열로 → 동일 에러
+
+[질문]
+가장 단순하고 안전한 해결 방법은?
+
+[기대 답변 예시]
+- 옵셔널 체이닝 user?.name
+- 조건부 렌더 if (!user) return null
+- 어느 쪽이 더 React스러운가?` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '의도적으로 5개 에러 만들기 (key 누락·useState 초기값 누락 등)',
+            '각 에러 메시지를 정확히 읽고 위치 식별',
+            '5단계 디버깅 모델 적용해 해결',
+            '해결 과정을 학습 노트에 기록',
+            'AI에게 위 양식대로 도움 요청 → 답변 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-testing',
+        title: '단위 테스트 입문 — Vitest',
+        icon: '🧪',
+        summary: '본 과정에서는 필수 아니지만 핵심 함수 1~2개 테스트는 적극 권장. Vitest + Testing Library로 빠르게 시작.',
+        content: [
+          { subtitle: '왜 테스트인가' },
+          { items: [
+            '리팩토링 두려움 제거 — 변경 후 안전 확인',
+            '회귀 버그 방지 — 이전에 고친 버그가 다시 발생 X',
+            '문서화 효과 — 테스트가 곧 사용 예제',
+            'AI 코드 검증 — AI가 짠 함수가 정말 동작하는가',
+          ] },
+
+          { subtitle: '셋업' },
+          { code: { lang: 'bash', content: `# Vite 프로젝트
+npm install -D vitest @testing-library/react @testing-library/jest-dom jsdom
+
+# vite.config.ts에 추가
+/// <reference types="vitest" />
+export default defineConfig({
+  plugins: [react()],
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/test/setup.ts',
+  },
+});
+
+# src/test/setup.ts
+import '@testing-library/jest-dom';
+
+# package.json
+"test": "vitest",
+"test:ui": "vitest --ui"` } },
+
+          { subtitle: '함수 단위 테스트' },
+          { code: { lang: 'typescript', content: `// src/utils/formatPrice.ts
+export function formatPrice(amount: number, currency = 'KRW'): string {
+  return new Intl.NumberFormat('ko-KR', {
+    style: 'currency',
+    currency,
+  }).format(amount);
+}
+
+// src/utils/formatPrice.test.ts
+import { describe, it, expect } from 'vitest';
+import { formatPrice } from './formatPrice';
+
+describe('formatPrice', () => {
+  it('기본 한국 원화 형식', () => {
+    expect(formatPrice(1000)).toBe('₩1,000');
+  });
+
+  it('USD 형식', () => {
+    expect(formatPrice(1000, 'USD')).toContain('$1,000');
+  });
+
+  it('0원 처리', () => {
+    expect(formatPrice(0)).toBe('₩0');
+  });
+
+  it('음수 처리', () => {
+    expect(formatPrice(-500)).toContain('-');
+  });
+});
+
+# 실행
+npm test` } },
+
+          { subtitle: '컴포넌트 테스트' },
+          { code: { lang: 'tsx', content: `// src/components/Button.test.tsx
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
+import Button from './Button';
+
+describe('Button', () => {
+  it('자식 텍스트를 렌더링한다', () => {
+    render(<Button>저장</Button>);
+    expect(screen.getByText('저장')).toBeInTheDocument();
+  });
+
+  it('클릭 시 onClick 호출', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick}>클릭</Button>);
+    fireEvent.click(screen.getByText('클릭'));
+    expect(onClick).toHaveBeenCalledTimes(1);
+  });
+
+  it('disabled 시 클릭 안 됨', () => {
+    const onClick = vi.fn();
+    render(<Button onClick={onClick} disabled>클릭</Button>);
+    fireEvent.click(screen.getByText('클릭'));
+    expect(onClick).not.toHaveBeenCalled();
+  });
+});` } },
+
+          { subtitle: 'Hook 테스트' },
+          { code: { lang: 'typescript', content: `// useFetch.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { useFetch } from './useFetch';
+
+describe('useFetch', () => {
+  beforeEach(() => {
+    globalThis.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ id: 1, name: 'Test' }),
+    });
+  });
+
+  it('데이터 fetch 성공', async () => {
+    const { result } = renderHook(() => useFetch('/api/user'));
+
+    expect(result.current.loading).toBe(true);
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+      expect(result.current.data).toEqual({ id: 1, name: 'Test' });
+    });
+  });
+});` } },
+
+          { subtitle: '본 강의 권장 — 최소 테스트' },
+          { items: [
+            'LLM 호출 함수 — 모킹 + 응답 파싱 검증',
+            '비용 계산 함수 — 다양한 입력으로',
+            '폼 검증 함수 (Zod) — 유효/무효 케이스',
+            '복잡한 비즈니스 로직 (있다면)',
+          ] },
+          { callout: { type: 'tip', text: '본 4주 과정은 테스트가 필수 아닙니다. 다만 핵심 함수 2~3개라도 테스트하면 발표 시 "테스트 커버리지가 있습니다"라는 강력한 어필이 됩니다.' } },
+
+          { subtitle: '실습 (선택)' },
+          { items: [
+            'Vitest 셋업',
+            'formatPrice·formatDate 등 단순 함수 테스트',
+            'Button 컴포넌트 클릭 이벤트 테스트',
+            '본인 핵심 함수 1개 테스트 추가',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-11-resources',
+        title: '심화 + 자가 평가',
+        icon: '📚',
+        summary: '디버깅·테스트 심화 자료 + Day 11 자가 평가 + 다음 단계.',
+        content: [
+          { subtitle: '심화 자료' },
+          { items: [
+            'Chrome DevTools: developer.chrome.com/docs/devtools',
+            'React DevTools: react.dev/learn/react-developer-tools',
+            'Lighthouse: developer.chrome.com/docs/lighthouse',
+            'Web.dev Learn: web.dev/learn (Google 공식)',
+            'Vitest: vitest.dev',
+            'Testing Library: testing-library.com',
+          ] },
+
+          { subtitle: '심화 주제' },
+          { items: [
+            'Sentry — 프로덕션 에러 모니터링',
+            'PostHog — 사용자 행동 분석',
+            'Playwright — E2E 테스트',
+            'MSW (Mock Service Worker) — API 모킹',
+            'Web Vitals 측정 — 실 사용자 데이터',
+          ] },
+
+          { subtitle: 'Day 11 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['DevTools', 'console.log만', 'Network·Elements', '6탭 + Performance'],
+              ['React DevTools', '없음', '컴포넌트 트리', 'Profiler + 최적화'],
+              ['Lighthouse', '없음', '측정만', '4지표 90+ 달성'],
+              ['디버깅', '에러 무시', '메시지 읽기', '5단계 모델 적용'],
+              ['테스트', '없음', '1~2개 함수', '컴포넌트 + Hook 테스트'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
