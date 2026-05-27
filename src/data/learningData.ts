@@ -15758,6 +15758,302 @@ jobs:
       },
 
       {
+        id: 'reg-10-practice-1',
+        title: '실습 1 · useSupabaseQuery Hook 작성 (25분)',
+        icon: '🧪',
+        summary: '재사용 가능한 데이터 fetching custom hook + loading/error/refetch 자동 관리.',
+        content: [
+          { subtitle: 'Hook 구현' },
+          { code: { lang: 'typescript', content: `// src/hooks/useSupabaseQuery.ts
+import { useState, useEffect, useCallback, type DependencyList } from 'react';
+import type { PostgrestSingleResponse } from '@supabase/supabase-js';
+
+export function useSupabaseQuery<T>(
+  queryFn: () => Promise<PostgrestSingleResponse<T>>,
+  deps: DependencyList = []
+) {
+  const [data, setData] = useState<T | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    const { data, error } = await queryFn();
+    if (error) setError(error.message);
+    else setData(data);
+    setLoading(false);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, deps);
+
+  useEffect(() => { refetch(); }, [refetch]);
+
+  return { data, loading, error, refetch };
+}
+
+// 사용
+const { data: posts, loading, error, refetch } = useSupabaseQuery(
+  () => supabase.from('posts').select('*').order('id', { ascending: false }),
+  []
+);` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 3개 이상 컴포넌트에서 재사용',
+            '☐ refetch 함수 동작',
+            '☐ 의존성 변경 시 자동 재호출',
+            '☐ DataView와 함께 사용',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-practice-2',
+        title: '실습 2 · 게시판 CRUD UI 풀세트 (40분)',
+        icon: '🧪',
+        summary: 'Day 6 게시판에 React UI 추가 — 생성·읽기·수정·삭제 + 낙관적 업데이트.',
+        content: [
+          { subtitle: '구현' },
+          { code: { lang: 'tsx', content: `function PostsPage() {
+  const { data: posts, loading, error, refetch } = useSupabaseQuery<Post[]>(
+    () => supabase.from('posts').select('*').order('id', { ascending: false }),
+    []
+  );
+  const { user } = useAuth();
+
+  async function createPost(title: string, body: string) {
+    if (!user) return;
+
+    // 낙관적 업데이트
+    const tempId = Date.now();
+    setPosts(prev => [{ id: tempId, title, body, author_id: user.id, status: 'draft' } as Post, ...(prev || [])]);
+
+    const { data, error } = await supabase
+      .from('posts')
+      .insert({ title, body, author_id: user.id })
+      .select()
+      .single();
+
+    if (error) {
+      setPosts(prev => prev?.filter(p => p.id !== tempId) ?? null);
+      alert('실패');
+    } else {
+      refetch();   // 정확한 ID로 갱신
+    }
+  }
+
+  async function updatePost(id: number, updates: Partial<Post>) {
+    setPosts(prev => prev?.map(p => p.id === id ? { ...p, ...updates } : p) ?? null);
+    const { error } = await supabase.from('posts').update(updates).eq('id', id);
+    if (error) { refetch(); alert('실패'); }
+  }
+
+  async function deletePost(id: number) {
+    if (!confirm('삭제할까요?')) return;
+    setPosts(prev => prev?.filter(p => p.id !== id) ?? null);
+    const { error } = await supabase.from('posts').delete().eq('id', id);
+    if (error) { refetch(); alert('실패'); }
+  }
+
+  return (
+    <DataView loading={loading} error={error} data={posts} onRetry={refetch}>
+      {(posts) => (
+        <ul>
+          {posts.map(p => <PostRow key={p.id} post={p} onUpdate={updatePost} onDelete={deletePost} />)}
+        </ul>
+      )}
+    </DataView>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ CRUD 4개 모두 동작',
+            '☐ 낙관적 업데이트 (UI 즉시 반응)',
+            '☐ 실패 시 자동 롤백',
+            '☐ 본인 글만 수정·삭제 버튼 표시',
+            '☐ confirm으로 삭제 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-practice-3',
+        title: '실습 3 · Realtime 채팅방 + Presence (40분)',
+        icon: '🧪',
+        summary: '두 사용자가 동시 접속해 실시간 채팅 + 접속자 수 + 타이핑 표시.',
+        content: [
+          { subtitle: '구현' },
+          { text: 'Day 6 실습 4의 채팅방을 본인 프로젝트에 통합. 다중 채팅방 (room_id) + 메시지 영구 저장 + Presence 접속자 표시 + Broadcast 타이핑 표시.' },
+
+          { subtitle: '확장' },
+          { items: [
+            '여러 채팅방 지원 (/chat/:roomId)',
+            '메시지 시간 표시',
+            '같은 사용자 연속 메시지는 아바타 1번만',
+            '이미지 첨부 (Storage 결합)',
+            '메시지 검색',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 두 브라우저 탭에서 동기화',
+            '☐ Presence 접속자 수 정확',
+            '☐ 타이핑 표시 동작',
+            '☐ 새로고침 후 메시지 유지',
+            '☐ cleanup으로 메모리 누수 없음',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-practice-4',
+        title: '실습 4 · 이미지 업로드 + 압축 + 미리보기 (30분)',
+        icon: '🧪',
+        summary: 'browser-image-compression + Storage + DataView 통합한 프로필 사진 컴포넌트.',
+        content: [
+          { subtitle: '단계' },
+          { items: [
+            'npm install browser-image-compression',
+            'AvatarUploader 컴포넌트 작성 (Day 6 실습 3 참조)',
+            '진행률 표시',
+            '드래그 앤 드롭 추가',
+            'DB profiles.avatar_url 업데이트',
+            '헤더 아바타에 자동 반영',
+          ] },
+
+          { subtitle: '드래그 앤 드롭 추가' },
+          { code: { lang: 'tsx', content: `function DropZone({ onFile }: { onFile: (file: File) => void }) {
+  const [dragging, setDragging] = useState(false);
+
+  return (
+    <div
+      className={\`drop-zone \${dragging ? 'dragging' : ''}\`}
+      onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
+      onDragLeave={() => setDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setDragging(false);
+        if (e.dataTransfer.files[0]) onFile(e.dataTransfer.files[0]);
+      }}
+    >
+      <p>{dragging ? '여기에 놓아주세요' : '드래그 또는 클릭'}</p>
+      <input type="file" accept="image/*" onChange={(e) => e.target.files?.[0] && onFile(e.target.files[0])} />
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 클릭 + 드래그 둘 다 동작',
+            '☐ 즉시 미리보기',
+            '☐ 압축 비율 50%+',
+            '☐ 진행률 표시',
+            '☐ 다른 사용자 폴더 침범 시도 → 차단',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-practice-5',
+        title: '실습 5 · react-hook-form + Zod 회원가입 (30분)',
+        icon: '🧪',
+        summary: '복잡한 폼을 효율적으로 — 7개 필드 + Zod 스키마 검증 + 에러 표시.',
+        content: [
+          { subtitle: '셋업' },
+          { code: { lang: 'bash', content: `npm install react-hook-form zod @hookform/resolvers` } },
+
+          { subtitle: '구현 — Day 10 본문의 폼 예제를 그대로 적용' },
+          { items: [
+            'SignupSchema 정의 (Zod)',
+            'useForm + zodResolver',
+            '각 필드 register',
+            'errors 자동 표시',
+            'handleSubmit + Supabase auth.signUp 연동',
+          ] },
+
+          { subtitle: '확장 — useFieldArray로 동적 필드' },
+          { code: { lang: 'tsx', content: `// PRD 폼처럼 동적 항목
+const { fields, append, remove } = useFieldArray({ control, name: 'features' });
+
+{fields.map((field, i) => (
+  <div key={field.id}>
+    <input {...register(\`features.\${i}.name\`)} />
+    <button type="button" onClick={() => remove(i)}>삭제</button>
+  </div>
+))}
+
+<button type="button" onClick={() => append({ name: '' })}>+ 추가</button>` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 7개 필드 모두 Zod 검증',
+            '☐ 비밀번호 일치 검증 (refine)',
+            '☐ 동적 필드 추가/삭제',
+            '☐ Supabase 가입 성공',
+            '☐ 에러 메시지 한국어 친화적',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-10-practice-6',
+        title: '실습 6 · GitHub Actions 자동 배포 (25분)',
+        icon: '🧪',
+        summary: 'main 푸시 시 자동 빌드·배포 + Secrets 관리.',
+        content: [
+          { subtitle: '단계' },
+          { items: [
+            '1. .github/workflows/deploy.yml 작성',
+            '2. GitHub Settings → Secrets에 VITE_SUPABASE_URL·VITE_SUPABASE_ANON_KEY 등록',
+            '3. main 브랜치 푸시',
+            '4. Actions 탭에서 빌드 진행 확인',
+            '5. 자동 배포된 URL 접속',
+          ] },
+
+          { subtitle: 'deploy.yml — 본문 예제 참조' },
+          { code: { lang: 'yaml', content: `name: Deploy
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 22, cache: npm }
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: \${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: \${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: ./dist }
+      - id: deployment
+        uses: actions/deploy-pages@v4` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ main 푸시 → Actions 자동 실행',
+            '☐ Secrets로 키 보호',
+            '☐ 빌드 실패 시 알림',
+            '☐ 배포 URL 자동 갱신',
+            '☐ 빌드 로그에 키 노출 없음',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-10-resources',
         title: '심화 + 자가 평가',
         icon: '📚',
