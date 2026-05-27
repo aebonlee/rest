@@ -9321,6 +9321,897 @@ serve(async (req) => {
       { subtitle: '다음 시간 예고' },
       { text: 'Day 10에서는 오늘 만든 프론트엔드를 Day 6의 Supabase 백엔드와 연결합니다. Realtime·파일 업로드까지 풀세트 통합.' },
     ],
+    subSections: [
+      {
+        id: 'reg-9-tokens',
+        title: '디자인 토큰 — 변수로 시스템화',
+        icon: '🎨',
+        summary: 'CSS 변수 기반 디자인 시스템 — 색·타이포·간격·반경·그림자를 토큰화해서 일관성·다크모드·테마 전환을 동시 해결.',
+        content: [
+          { subtitle: '디자인 토큰이란?' },
+          { text: '디자인 결정(색·간격 등)을 이름 있는 변수로 추상화한 것. "파란색"이 아닌 "primary"로 부르면 다크모드·브랜드 변경 시 한 곳만 수정하면 됩니다.' },
+
+          { subtitle: '토큰 카테고리 6종' },
+          { table: {
+            headers: ['카테고리', '용도', '예시'],
+            rows: [
+              ['Color', '브랜드·텍스트·배경', '--primary, --text-primary'],
+              ['Typography', '폰트·크기·줄간격', '--font-base, --font-lg'],
+              ['Spacing', '패딩·마진·간격', '--space-2 (8px), --space-4 (16px)'],
+              ['Radius', '둥근 모서리', '--radius-sm, --radius-md'],
+              ['Shadow', '그림자', '--shadow-sm, --shadow-lg'],
+              ['Z-index', '레이어 순서', '--z-modal (1000), --z-toast (2000)'],
+            ],
+          } },
+
+          { subtitle: '실전 디자인 토큰 시스템' },
+          { code: { lang: 'css', content: `/* src/styles/tokens.css */
+
+:root {
+  /* ─── Color ─── */
+  --primary-blue:       #0046C8;
+  --primary-blue-dark:  #002E8A;
+  --primary-blue-light: #4A8FE7;
+
+  --bg-primary:   #ffffff;
+  --bg-secondary: #f8f9fa;
+  --bg-card:      #ffffff;
+
+  --text-primary:   #1a1a1a;
+  --text-secondary: #6b7280;
+  --text-muted:     #9ca3af;
+  --text-inverse:   #ffffff;
+
+  --border-color:  #e5e7eb;
+  --line:          #f0f0f0;
+
+  --success: #10b981;
+  --warning: #f59e0b;
+  --danger:  #ef4444;
+  --info:    #3b82f6;
+
+  /* ─── Typography ─── */
+  --font-family: 'Pretendard', -apple-system, sans-serif;
+
+  --font-xs:   11px;
+  --font-sm:   13px;
+  --font-base: 15px;
+  --font-md:   17px;
+  --font-lg:   20px;
+  --font-xl:   24px;
+  --font-2xl:  32px;
+
+  --line-tight:   1.3;
+  --line-normal:  1.6;
+  --line-relaxed: 1.9;
+
+  --font-regular: 400;
+  --font-medium:  500;
+  --font-semibold: 600;
+  --font-bold:    700;
+
+  /* ─── Spacing (4px 그리드) ─── */
+  --space-0:  0;
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ─── Radius ─── */
+  --radius-sm:   4px;
+  --radius-md:   8px;
+  --radius-lg:   12px;
+  --radius-xl:   16px;
+  --radius-full: 9999px;
+
+  /* ─── Shadow ─── */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.15);
+
+  /* ─── Z-index ─── */
+  --z-base:    0;
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-modal:    1000;
+  --z-toast:    2000;
+
+  /* ─── 레이아웃 ─── */
+  --container-max: 1280px;
+  --nav-height:    72px;
+
+  /* ─── Animation ─── */
+  --transition-fast:   150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow:   400ms ease;
+}
+
+/* ─── 다크모드 오버라이드 ─── */
+[data-theme="dark"] {
+  --bg-primary:   #1a1a1a;
+  --bg-secondary: #2a2a2a;
+  --bg-card:      #2a2a2a;
+
+  --text-primary:   #f0f0f0;
+  --text-secondary: #b0b0b0;
+  --text-muted:     #6b7280;
+
+  --border-color: #3a3a3a;
+  --line:         #353535;
+
+  --primary-blue-light: #6BA3F0;   /* 다크에서 약간 밝게 */
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.5);
+}` } },
+
+          { subtitle: '컴포넌트에서 토큰 사용' },
+          { code: { lang: 'css', content: `.btn {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-base);
+  font-weight: var(--font-semibold);
+  background: var(--primary-blue);
+  color: var(--text-inverse);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: background var(--transition-fast);
+}
+
+.btn:hover {
+  background: var(--primary-blue-dark);
+  box-shadow: var(--shadow-md);
+}
+
+.card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+}
+
+.input {
+  padding: var(--space-3);
+  font-size: var(--font-base);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  background: var(--bg-primary);
+  color: var(--text-primary);
+}` } },
+
+          { subtitle: '토큰의 가치 — 변경 시 비교' },
+          { table: {
+            headers: ['시나리오', '하드코딩', '토큰'],
+            rows: [
+              ['브랜드 색 변경', '50+ 파일 수정', '1줄 수정'],
+              ['다크모드 추가', '전 컴포넌트 재작성', 'data-theme 추가'],
+              ['간격 통일', '눈으로 px 추적', 'space-N 사용'],
+              ['디자인 시스템 문서화', '불가능', '토큰 목록 = 문서'],
+            ],
+          } },
+
+          { subtitle: '실습' },
+          { items: [
+            '6개 카테고리 토큰 시스템 작성',
+            '본인 프로젝트의 모든 색·간격을 토큰으로 교체',
+            '다크모드 토큰 오버라이드 + 토글 동작',
+            'Tailwind 같은 유틸리티 클래스 흉내 (.text-lg, .p-4)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-atomic',
+        title: 'Atomic Design — 컴포넌트 분할',
+        icon: '🧩',
+        summary: '5단계 컴포넌트 분할로 재사용·테스트·유지보수를 동시에. 실전에서의 단순화 가이드.',
+        content: [
+          { subtitle: 'Atomic Design 5단계' },
+          { table: {
+            headers: ['단계', '비유', '예', '재사용성'],
+            rows: [
+              ['Atom (원자)', '레고 1블록', 'Button, Input, Badge', '★★★★★'],
+              ['Molecule (분자)', '블록 조합', 'SearchBar (Input+Button)', '★★★★'],
+              ['Organism (유기체)', '독립 영역', 'NavBar, Footer, Card', '★★★'],
+              ['Template (템플릿)', '페이지 골격', 'PublicLayout', '★★'],
+              ['Page (페이지)', '완성 페이지', 'Home, About', '★'],
+            ],
+          } },
+
+          { subtitle: '실전 단순화 — 본 강의 권장' },
+          { text: 'Atomic Design은 가이드일 뿐. 본 4주 프로젝트는 atoms·molecules·pages 3단계로 충분합니다.' },
+          { code: { lang: 'text', content: `src/
+├── components/
+│   ├── ui/              # atoms + molecules
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Badge.tsx
+│   │   ├── Card.tsx
+│   │   └── SearchBar.tsx
+│   ├── layout/          # organisms
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── PublicLayout.tsx
+│   └── feature/         # 기능별 그룹
+│       ├── chat/
+│       │   ├── ChatMessage.tsx
+│       │   ├── ChatInput.tsx
+│       │   └── ChatWindow.tsx
+│       └── auth/
+│           ├── LoginForm.tsx
+│           └── SignupForm.tsx
+└── pages/               # pages
+    ├── Home.tsx
+    ├── Chat.tsx
+    └── Login.tsx` } },
+
+          { subtitle: 'Atom 예시 — Button' },
+          { code: { lang: 'tsx', content: `// src/components/ui/Button.tsx
+import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  leftIcon?: ReactNode;
+  rightIcon?: ReactNode;
+}
+
+export default function Button({
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  leftIcon,
+  rightIcon,
+  children,
+  className = '',
+  disabled,
+  ...rest
+}: ButtonProps) {
+  const classes = [
+    'btn',
+    \`btn-\${variant}\`,
+    \`btn-\${size}\`,
+    isLoading && 'btn-loading',
+    className,
+  ].filter(Boolean).join(' ');
+
+  return (
+    <button {...rest} disabled={disabled || isLoading} className={classes}>
+      {isLoading ? (
+        <span className="spinner" />
+      ) : (
+        <>
+          {leftIcon && <span className="btn-icon-left">{leftIcon}</span>}
+          {children}
+          {rightIcon && <span className="btn-icon-right">{rightIcon}</span>}
+        </>
+      )}
+    </button>
+  );
+}
+
+// 사용
+<Button>기본</Button>
+<Button variant="secondary" size="lg">크게</Button>
+<Button isLoading>저장 중</Button>
+<Button leftIcon="📧" variant="primary">이메일 보내기</Button>` } },
+
+          { subtitle: 'Molecule 예시 — SearchBar' },
+          { code: { lang: 'tsx', content: `// src/components/ui/SearchBar.tsx
+import Input from './Input';
+import Button from './Button';
+
+interface SearchBarProps {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+  placeholder?: string;
+}
+
+export default function SearchBar({ value, onChange, onSubmit, placeholder }: SearchBarProps) {
+  return (
+    <form onSubmit={(e) => { e.preventDefault(); onSubmit(); }} className="search-bar">
+      <Input
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder ?? '검색...'}
+      />
+      <Button type="submit">검색</Button>
+    </form>
+  );
+}` } },
+
+          { subtitle: 'Organism 예시 — NavBar' },
+          { code: { lang: 'tsx', content: `// src/components/layout/Navbar.tsx
+import { Link, NavLink } from 'react-router-dom';
+import Button from '../ui/Button';
+import { useAuth } from '@/contexts/AuthContext';
+
+export default function Navbar() {
+  const { user, signOut } = useAuth();
+
+  return (
+    <nav className="navbar">
+      <Link to="/" className="logo">DreamIT</Link>
+
+      <ul className="nav-menu">
+        <li><NavLink to="/about">소개</NavLink></li>
+        <li><NavLink to="/chat">진단</NavLink></li>
+      </ul>
+
+      <div className="nav-actions">
+        {user ? (
+          <>
+            <span>{user.email}</span>
+            <Button variant="ghost" size="sm" onClick={signOut}>로그아웃</Button>
+          </>
+        ) : (
+          <Link to="/login"><Button size="sm">로그인</Button></Link>
+        )}
+      </div>
+    </nav>
+  );
+}` } },
+
+          { subtitle: '컴포넌트 props 설계 원칙' },
+          { items: [
+            '필수 vs 선택적 명확히 (TypeScript optional ?)',
+            '기본값을 합리적으로 (variant = "primary")',
+            'children을 잘 활용 (Composition over Configuration)',
+            'render prop·polymorphic 등은 필요할 때만',
+            '5개 이상 prop이면 그룹화 검토 (variant + size 같이)',
+            'aria-* 속성은 ...rest로 통과',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            'ui/ 폴더에 Button·Input·Badge·Card 4개 작성',
+            'feature/chat/ 폴더에 ChatMessage·ChatInput·ChatWindow',
+            'layout/Navbar 작성 + Outlet과 결합',
+            'pages/Chat.tsx는 위 컴포넌트 조립만',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-states',
+        title: '4가지 상태 UI — 완성도의 핵심',
+        icon: '🔄',
+        summary: '로딩·에러·빈·성공 4가지 상태를 모두 디자인. 사용자가 신뢰할 수 있는 UX의 기본.',
+        content: [
+          { subtitle: '왜 4가지 상태가 필수인가' },
+          { text: '"성공만 가정한 UI"는 가장 흔한 실수. 네트워크 끊김·데이터 0건·로딩 중에 사용자가 빈 화면이나 깨진 화면을 보면 신뢰 상실.' },
+
+          { subtitle: '4가지 상태 시각화' },
+          { code: { lang: 'tsx', content: `function UserList() {
+  const { data: users, loading, error } = useFetch<User[]>('/api/users');
+
+  // 1) 로딩
+  if (loading) return <LoadingSkeleton />;
+
+  // 2) 에러
+  if (error) return <ErrorView message={error} onRetry={refetch} />;
+
+  // 3) 빈
+  if (!users || users.length === 0) return <EmptyView />;
+
+  // 4) 성공
+  return <UserListView users={users} />;
+}` } },
+
+          { subtitle: '로딩 상태 — Spinner vs Skeleton' },
+          { code: { lang: 'tsx', content: `// Spinner — 짧은 작업 (500ms 미만)
+function Spinner() {
+  return <div className="spinner" />;
+}
+
+// Skeleton — 카드형 데이터 (1~3초)
+function UserCardSkeleton() {
+  return (
+    <div className="card skeleton">
+      <div className="skeleton-avatar" />
+      <div className="skeleton-line w-3/4" />
+      <div className="skeleton-line w-1/2" />
+    </div>
+  );
+}
+
+// 여러 개 — 실제 카드 수와 비슷하게
+function ListSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 5 }).map((_, i) => <UserCardSkeleton key={i} />)}
+    </>
+  );
+}` } },
+          { code: { lang: 'css', content: `/* 스켈레톤 애니메이션 */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--border-color) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s infinite;
+}
+
+@keyframes skeleton-loading {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeleton-line {
+  height: 14px;
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--space-2);
+}
+
+.skeleton-line.w-3\\/4 { width: 75%; }
+.skeleton-line.w-1\\/2 { width: 50%; }` } },
+
+          { subtitle: '에러 상태' },
+          { code: { lang: 'tsx', content: `function ErrorView({ message, onRetry }: { message: string; onRetry?: () => void }) {
+  return (
+    <div className="error-view">
+      <div className="error-icon">⚠️</div>
+      <h3>문제가 발생했습니다</h3>
+      <p className="error-detail">{message}</p>
+      {onRetry && (
+        <Button onClick={onRetry}>다시 시도</Button>
+      )}
+    </div>
+  );
+}
+
+// 사용자 친화적 메시지 매핑
+function friendlyMessage(err: any): string {
+  if (err.message.includes('NetworkError')) return '인터넷 연결을 확인해주세요.';
+  if (err.message.includes('401')) return '로그인이 필요합니다.';
+  if (err.message.includes('500')) return '서버에 일시적인 문제가 있습니다.';
+  return '알 수 없는 오류가 발생했습니다.';
+}` } },
+
+          { subtitle: '빈 상태 — Empty State' },
+          { code: { lang: 'tsx', content: `function EmptyView({ onCreate }: { onCreate?: () => void }) {
+  return (
+    <div className="empty-view">
+      <div className="empty-illust">📭</div>
+      <h3>아직 등록된 항목이 없습니다</h3>
+      <p>첫 번째 항목을 추가해보세요.</p>
+      {onCreate && (
+        <Button onClick={onCreate}>새로 만들기</Button>
+      )}
+    </div>
+  );
+}
+
+// 검색 결과 0건 (다른 디자인)
+function NoResults({ keyword }: { keyword: string }) {
+  return (
+    <div className="empty-view">
+      <h3>"{keyword}"에 대한 결과가 없습니다</h3>
+      <p>다른 검색어로 시도해보세요.</p>
+    </div>
+  );
+}` } },
+
+          { subtitle: '상태 UI 공통 컴포넌트 — DataView' },
+          { code: { lang: 'tsx', content: `// 4가지 상태를 한 컴포넌트로 관리
+interface DataViewProps<T> {
+  loading: boolean;
+  error: string | null;
+  data: T[] | null;
+  loadingComponent?: ReactNode;
+  errorComponent?: ReactNode;
+  emptyComponent?: ReactNode;
+  onRetry?: () => void;
+  children: (data: T[]) => ReactNode;
+}
+
+export default function DataView<T>({
+  loading, error, data,
+  loadingComponent, errorComponent, emptyComponent,
+  onRetry, children,
+}: DataViewProps<T>) {
+  if (loading) return <>{loadingComponent || <Spinner />}</>;
+  if (error) return <>{errorComponent || <ErrorView message={error} onRetry={onRetry} />}</>;
+  if (!data || data.length === 0) return <>{emptyComponent || <EmptyView />}</>;
+  return <>{children(data)}</>;
+}
+
+// 사용
+<DataView
+  loading={loading}
+  error={error}
+  data={users}
+  onRetry={refetch}
+>
+  {(users) => (
+    <ul>{users.map(u => <UserCard key={u.id} user={u} />)}</ul>
+  )}
+</DataView>` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '로딩 Spinner + Skeleton 2종',
+            '에러 메시지 매핑 함수 + Retry 버튼',
+            '빈 상태 컴포넌트',
+            'DataView 제네릭 컴포넌트로 추출',
+            '의도적으로 네트워크 끊고 에러 상태 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-responsive',
+        title: '모바일 퍼스트 + 터치 UI',
+        icon: '📱',
+        summary: '한국 트래픽 70%가 모바일. 모바일 퍼스트 워크플로우, 터치 타깃, 햄버거 메뉴 등 모바일 특화 UX.',
+        content: [
+          { subtitle: '모바일 퍼스트 5원칙' },
+          { items: [
+            '모바일 디자인 먼저 → 큰 화면으로 확장',
+            '터치 타깃 44px 이상',
+            '폰트 16px 이상 (모바일 자동 줌 방지)',
+            '한 화면에 1개 주 액션',
+            '단순한 네비게이션 (햄버거 또는 하단 탭)',
+          ] },
+
+          { subtitle: '브레이크포인트 표준' },
+          { code: { lang: 'css', content: `/* 모바일 퍼스트 — 기본은 모바일 */
+.container {
+  padding: var(--space-4);
+}
+
+/* 태블릿 (640px+) */
+@media (min-width: 640px) {
+  .container { padding: var(--space-6); }
+}
+
+/* 노트북 (1024px+) */
+@media (min-width: 1024px) {
+  .container {
+    padding: var(--space-8);
+    max-width: var(--container-max);
+    margin: 0 auto;
+  }
+}
+
+/* 데스크탑 (1280px+) */
+@media (min-width: 1280px) {
+  /* 큰 화면 특화 스타일 */
+}` } },
+
+          { subtitle: '반응형 네비게이션' },
+          { code: { lang: 'tsx', content: `function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <nav className="navbar">
+      <Link to="/">로고</Link>
+
+      {/* 모바일 햄버거 */}
+      <button
+        className="hamburger"
+        aria-label="메뉴 토글"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        {isOpen ? '✕' : '☰'}
+      </button>
+
+      {/* 메뉴 */}
+      <ul className={\`nav-menu \${isOpen ? 'open' : ''}\`}>
+        <li><NavLink to="/about">소개</NavLink></li>
+        <li><NavLink to="/chat">진단</NavLink></li>
+      </ul>
+    </nav>
+  );
+}` } },
+          { code: { lang: 'css', content: `/* 모바일 — 햄버거 보이고 메뉴 숨김 */
+.hamburger { display: block; }
+.nav-menu {
+  display: none;
+  position: absolute;
+  top: var(--nav-height);
+  left: 0;
+  right: 0;
+  background: var(--bg-card);
+  padding: var(--space-4);
+  flex-direction: column;
+}
+.nav-menu.open { display: flex; }
+
+/* 데스크탑 — 햄버거 숨김, 메뉴 가로 */
+@media (min-width: 1024px) {
+  .hamburger { display: none; }
+  .nav-menu {
+    display: flex !important;
+    position: static;
+    flex-direction: row;
+    background: transparent;
+    padding: 0;
+  }
+}` } },
+
+          { subtitle: '터치 타깃 표준' },
+          { items: [
+            'Apple HIG: 44×44 pt',
+            'Material: 48×48 dp',
+            '실전 권장: 최소 44px, 인접 요소 간격 8px',
+            '폼 입력은 56px 이상 추천 (한 손 엄지)',
+            '에러: 화면 하단 토스트, 헤더 위 알림 X',
+          ] },
+          { code: { lang: 'css', content: `.btn, .input, a.menu-item {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 인접 버튼 간격 */
+.btn + .btn { margin-left: var(--space-2); }
+
+/* 모바일 입력은 더 크게 */
+@media (max-width: 767px) {
+  .input { min-height: 56px; font-size: 16px; }
+}` } },
+
+          { subtitle: '모바일 특화 패턴' },
+          { items: [
+            '바텀 시트 (Bottom Sheet) — 모달 대신',
+            '풀-투-리프레시 — 당겨서 새로고침',
+            '스와이프 액션 — 좌우 스와이프로 삭제·아카이브',
+            '하단 탭 네비게이션 — 햄버거 대신',
+            'Safe Area Inset — 노치 대응',
+          ] },
+          { code: { lang: 'css', content: `/* iPhone 노치 대응 */
+.app-bottom {
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}
+
+/* 입력창 키보드 대응 */
+.fixed-input {
+  position: sticky;
+  bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '햄버거 메뉴 — 모바일에서만, 데스크탑은 가로',
+            '모든 인터랙티브 요소 44px 이상',
+            'Safe Area Inset 적용 (노치 대응)',
+            'Chrome DevTools 5개 기기에서 검증',
+            '실제 모바일에서 손가락으로 테스트',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-practice',
+        title: '실습 · 챗봇 UI 완성 (3시간)',
+        icon: '🧪',
+        summary: '디자인 토큰·Atomic·4가지 상태·모바일 퍼스트를 모두 결합한 챗봇 UI 본격 구현.',
+        content: [
+          { subtitle: '프로젝트 목표' },
+          { text: 'Day 7~8에서 설계·구현한 LLM 챗봇의 UI 완성도를 끌어올립니다. 모바일에서도 매끄럽게 동작하고, 4가지 상태가 모두 처리되며, 디자인 토큰으로 일관성 유지.' },
+
+          { subtitle: '컴포넌트 분할' },
+          { code: { lang: 'text', content: `pages/Chat.tsx
+└── ChatWindow (organism)
+    ├── ChatHeader (molecule)
+    │   ├── BackButton (atom)
+    │   ├── Title (atom)
+    │   └── EndButton (atom)
+    ├── MessageList (organism)
+    │   └── ChatMessage (molecule)
+    │       ├── Avatar (atom)
+    │       └── Bubble (atom)
+    └── ChatInput (molecule)
+        ├── Textarea (atom)
+        └── SendButton (atom)` } },
+
+          { subtitle: '핵심 코드 — ChatWindow' },
+          { code: { lang: 'tsx', content: `// pages/Chat.tsx
+import { useState, useRef, useEffect } from 'react';
+import ChatHeader from '@/components/feature/chat/ChatHeader';
+import MessageList from '@/components/feature/chat/MessageList';
+import ChatInput from '@/components/feature/chat/ChatInput';
+import { streamSolar } from '@/utils/solar';
+
+export default function Chat() {
+  const [messages, setMessages] = useState<Message[]>([
+    { role: 'system', content: '너는 친절한 진로 코치다. 한국어로만 답하라.' },
+  ]);
+  const [streaming, setStreaming] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  // 새 메시지 시 자동 스크롤
+  useEffect(() => {
+    listRef.current?.scrollTo({ top: listRef.current.scrollHeight, behavior: 'smooth' });
+  }, [messages]);
+
+  async function send(text: string) {
+    setError(null);
+    const userMsg: Message = { role: 'user', content: text };
+    setMessages(prev => [...prev, userMsg, { role: 'assistant', content: '' }]);
+    setStreaming(true);
+
+    try {
+      await streamSolar(
+        [...messages, userMsg],
+        (chunk) => {
+          setMessages(prev => {
+            const copy = [...prev];
+            const last = copy[copy.length - 1];
+            copy[copy.length - 1] = { ...last, content: last.content + chunk };
+            return copy;
+          });
+        }
+      );
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setStreaming(false);
+    }
+  }
+
+  // 사용자에게 보여줄 메시지만 필터 (system 제외)
+  const visibleMessages = messages.filter(m => m.role !== 'system');
+
+  return (
+    <div className="chat-window">
+      <ChatHeader title="진로 진단" />
+
+      <div ref={listRef} className="message-list-container">
+        {visibleMessages.length === 0 ? (
+          <EmptyView message="대화를 시작하려면 입력하세요" />
+        ) : (
+          <MessageList messages={visibleMessages} streaming={streaming} />
+        )}
+      </div>
+
+      {error && (
+        <ErrorBanner message={error} onClose={() => setError(null)} />
+      )}
+
+      <ChatInput onSend={send} disabled={streaming} />
+    </div>
+  );
+}` } },
+
+          { subtitle: 'ChatMessage — 사용자/AI 차별' },
+          { code: { lang: 'tsx', content: `interface ChatMessageProps {
+  role: 'user' | 'assistant';
+  content: string;
+  isStreaming?: boolean;
+}
+
+export default function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
+  const isUser = role === 'user';
+  return (
+    <div className={\`message message-\${role}\`}>
+      <div className="message-avatar">
+        {isUser ? '👤' : '🤖'}
+      </div>
+      <div className="message-bubble">
+        <p>{content}{isStreaming && '▋'}</p>
+      </div>
+    </div>
+  );
+}` } },
+
+          { subtitle: '챗봇 CSS' },
+          { code: { lang: 'css', content: `.chat-window {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;   /* 모바일 주소창 대응 */
+}
+
+.message-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+}
+
+.message {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.message-user {
+  flex-direction: row-reverse;
+}
+
+.message-bubble {
+  max-width: 75%;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-lg);
+}
+
+.message-user .message-bubble {
+  background: var(--primary-blue);
+  color: var(--text-inverse);
+  border-bottom-right-radius: var(--radius-sm);
+}
+
+.message-assistant .message-bubble {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-bottom-left-radius: var(--radius-sm);
+}
+
+.chat-input-form {
+  display: flex;
+  gap: var(--space-2);
+  padding: var(--space-4);
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-card);
+  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 디자인 토큰 100% 사용 (하드코딩 0개)',
+            '☐ Atom·Molecule·Organism 명확히 분리',
+            '☐ 4가지 상태 모두 처리 (특히 빈 상태)',
+            '☐ 모바일에서 매끄러운 스크롤·입력',
+            '☐ 다크모드 토글 동작',
+            '☐ Lighthouse 모바일 90+',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-resources',
+        title: '심화 + 자가 평가',
+        icon: '📚',
+        summary: '디자인 시스템·접근성 심화 자료 + Day 9 자가 평가.',
+        content: [
+          { subtitle: '심화 자료' },
+          { items: [
+            'Design Tokens W3C: design-tokens.github.io',
+            'Tailwind CSS: tailwindcss.com (토큰 시스템 표준)',
+            'shadcn/ui: ui.shadcn.com (복붙형 컴포넌트)',
+            'Radix UI: radix-ui.com (접근성 ready)',
+            '도서 『Refactoring UI』 — UI 마이크로 개선',
+          ] },
+
+          { subtitle: '심화 주제' },
+          { items: [
+            'Container Queries — 부모 크기 기반 반응형',
+            'CSS-in-JS (styled-components, vanilla-extract)',
+            'Tailwind v4 + Catalyst',
+            'Framer Motion — 애니메이션',
+            '디자인 시스템 문서화 (Storybook)',
+          ] },
+
+          { subtitle: 'Day 9 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['디자인 토큰', '하드코딩', '색만 변수', '6개 카테고리 시스템'],
+              ['컴포넌트 분할', '거대 단일 파일', 'props 분리', 'Atomic + render prop'],
+              ['4가지 상태', '성공만', '로딩+에러', '4종 + DataView 추출'],
+              ['모바일', '데스크탑만', '기본 반응형', '햄버거 + safe-area'],
+              ['접근성', 'div만', '시맨틱 사용', 'ARIA + Lighthouse 95+'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
