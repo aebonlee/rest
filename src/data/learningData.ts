@@ -6371,6 +6371,927 @@ const { data: { publicUrl } } = supabase.storage
       { subtitle: '다음 시간 예고' },
       { text: 'Day 7부터는 팀 프로젝트 본격 시작. PRD 작성·사용자 스토리·MoSCoW 우선순위로 4주 안에 완성할 범위를 결정합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-6-setup',
+        title: 'Supabase 셋업 + 클라이언트 초기화',
+        icon: '🔧',
+        summary: 'supabase.com 가입부터 프로젝트 생성, API 키 발급, .env 설정, SDK 설치, 클라이언트 초기화까지 1시간 셋업 가이드.',
+        content: [
+          { subtitle: 'Supabase가 왜 사랑받는가' },
+          { text: '오픈소스 Firebase 대안. PostgreSQL을 핵심에 둬서 SQL을 그대로 쓸 수 있고, RLS로 보안을 DB 레벨에서 처리. 무료 티어가 넉넉해 학습·MVP에 충분.' },
+
+          { subtitle: '계정 + 프로젝트 생성' },
+          { items: [
+            '1. supabase.com 가입 (GitHub 계정 권장)',
+            '2. New Project 클릭',
+            '3. 프로젝트명 입력 (예: rest-academy)',
+            '4. 데이터베이스 비밀번호 설정 (꼭 저장!)',
+            '5. Region: Northeast Asia (Seoul) — 한국 사용자 권장',
+            '6. Pricing Plan: Free',
+            '7. 약 2분 후 프로젝트 준비 완료',
+          ] },
+
+          { subtitle: 'API 키 확인' },
+          { code: { lang: 'text', content: `Supabase Dashboard → Settings → API
+
+[Project URL]
+https://xxxxxxxxxxxxxxxx.supabase.co
+
+[Project API keys]
+- anon (public): eyJhbGciOi...    ← 클라이언트에서 사용 (안전)
+- service_role:  eyJhbGciOi...    ← 절대 클라이언트에 두지 말 것
+
+⚠️ service_role 키는 RLS를 우회하므로 노출 시 모든 데이터 위험` } },
+
+          { subtitle: '.env 설정' },
+          { code: { lang: 'bash', content: `# .env.local
+VITE_SUPABASE_URL=https://xxxx.supabase.co
+VITE_SUPABASE_ANON_KEY=eyJ...
+
+# .env.example (커밋용 — 실제 값 대신 placeholder)
+VITE_SUPABASE_URL=YOUR_PROJECT_URL
+VITE_SUPABASE_ANON_KEY=YOUR_ANON_KEY` } },
+
+          { subtitle: 'SDK 설치' },
+          { code: { lang: 'bash', content: `npm install @supabase/supabase-js` } },
+
+          { subtitle: '클라이언트 초기화 (싱글톤)' },
+          { code: { lang: 'typescript', content: `// src/utils/supabase.ts
+import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+
+const url = import.meta.env.VITE_SUPABASE_URL;
+const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+if (!url || !anonKey) {
+  throw new Error('Supabase 환경변수가 설정되지 않았습니다.');
+}
+
+// 싱글톤 — 앱 전체에서 한 인스턴스만 사용
+let _client: SupabaseClient | null = null;
+
+export function getSupabase(): SupabaseClient {
+  if (!_client) {
+    _client = createClient(url, anonKey, {
+      auth: {
+        persistSession: true,       // 새로고침 후 세션 유지
+        autoRefreshToken: true,     // 만료 전 자동 갱신
+        detectSessionInUrl: true,   // OAuth 콜백 자동 처리
+      },
+    });
+  }
+  return _client;
+}
+
+// 사용
+import { getSupabase } from '@/utils/supabase';
+const supabase = getSupabase();` } },
+
+          { subtitle: '동작 확인' },
+          { code: { lang: 'typescript', content: `// 가장 단순한 테스트
+async function ping() {
+  const supabase = getSupabase();
+  const { data, error } = await supabase.from('test').select('*').limit(1);
+  // 테이블이 없어도 에러 메시지로 연결 확인 가능
+  console.log({ data, error });
+}
+ping();` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'Supabase 가입 + 프로젝트 생성',
+            '.env.local에 키 저장',
+            'getSupabase() 싱글톤 함수 작성',
+            '브라우저 콘솔에서 ping() 실행 + 응답 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-auth',
+        title: 'Auth — 회원가입·로그인·소셜',
+        icon: '🔐',
+        summary: 'Supabase Auth로 이메일·Google·Kakao 로그인을 모두 구현. 세션 관리·자동 갱신·로그아웃까지.',
+        content: [
+          { subtitle: '이메일 회원가입' },
+          { code: { lang: 'typescript', content: `const { data, error } = await supabase.auth.signUp({
+  email: 'user@example.com',
+  password: 'min6chars',
+  options: {
+    data: {                 // user_metadata에 저장
+      display_name: '홍길동',
+    },
+    emailRedirectTo: 'https://my-app.com/auth/callback',
+  },
+});
+
+// data.user 가 생성됨
+// 기본적으로 이메일 인증 링크가 발송됨 (Supabase Dashboard에서 비활성 가능)` } },
+
+          { subtitle: '이메일 로그인' },
+          { code: { lang: 'typescript', content: `const { data, error } = await supabase.auth.signInWithPassword({
+  email: 'user@example.com',
+  password: '...',
+});
+
+if (error) {
+  // error.message 예: "Invalid login credentials"
+  return;
+}
+
+// data.session.access_token, data.user 접근 가능` } },
+
+          { subtitle: 'OAuth — Google/Kakao' },
+          { code: { lang: 'typescript', content: `// Google
+await supabase.auth.signInWithOAuth({
+  provider: 'google',
+  options: {
+    redirectTo: window.location.origin + '/auth/callback',
+  },
+});
+// 브라우저가 Google 로그인 페이지로 이동
+// 인증 후 redirectTo로 돌아옴 + 세션 자동 설정
+
+// Kakao
+await supabase.auth.signInWithOAuth({ provider: 'kakao' });
+
+// 사용 가능한 provider:
+// google, kakao, facebook, github, apple, azure, gitlab, ...` } },
+
+          { subtitle: 'Provider 활성화 (Dashboard 설정)' },
+          { items: [
+            'Supabase Dashboard → Authentication → Providers',
+            'Google: Client ID + Secret (Google Cloud Console에서 발급)',
+            'Kakao: REST API Key (Kakao Developers에서 발급)',
+            'Redirect URL을 각 Provider에 등록 (https://xxxx.supabase.co/auth/v1/callback)',
+            'Site URL도 Authentication → URL Configuration에 등록',
+          ] },
+
+          { subtitle: '현재 사용자 + 세션' },
+          { code: { lang: 'typescript', content: `// 현재 사용자
+const { data: { user } } = await supabase.auth.getUser();
+
+// 현재 세션 (access_token 등 포함)
+const { data: { session } } = await supabase.auth.getSession();
+
+// 메타데이터
+user.email
+user.user_metadata.display_name
+user.app_metadata.provider   // 'email' / 'google' / 'kakao'` } },
+
+          { subtitle: '인증 상태 변화 구독 — onAuthStateChange' },
+          { code: { lang: 'typescript', content: `// AuthContext에서 활용
+useEffect(() => {
+  // 1) 초기 세션 확인
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setUser(session?.user ?? null);
+  });
+
+  // 2) 변화 구독
+  const { data: { subscription } } = supabase.auth.onAuthStateChange(
+    (event, session) => {
+      console.log(event);   // SIGNED_IN, SIGNED_OUT, TOKEN_REFRESHED, ...
+      setUser(session?.user ?? null);
+    }
+  );
+
+  return () => subscription.unsubscribe();
+}, []);` } },
+
+          { subtitle: '비밀번호 재설정' },
+          { code: { lang: 'typescript', content: `// 1) 사용자가 "비밀번호 잊음" → 이메일 입력
+await supabase.auth.resetPasswordForEmail('user@example.com', {
+  redirectTo: 'https://my-app.com/reset-password',
+});
+// 사용자에게 재설정 링크 이메일 발송
+
+// 2) 사용자가 링크 클릭 → /reset-password 페이지에서 새 비밀번호 입력
+await supabase.auth.updateUser({ password: 'new-password' });` } },
+
+          { subtitle: '로그아웃' },
+          { code: { lang: 'typescript', content: `await supabase.auth.signOut();
+// 모든 토큰 제거 + onAuthStateChange가 SIGNED_OUT 발생` } },
+
+          { subtitle: 'AuthContext 통합 예제' },
+          { code: { lang: 'tsx', content: `// src/contexts/AuthContext.tsx
+import { createContext, useContext, useEffect, useState } from 'react';
+import { getSupabase } from '@/utils/supabase';
+import type { User } from '@supabase/supabase-js';
+
+interface AuthCtx {
+  user: User | null;
+  isLoading: boolean;
+  signIn: (email: string, pwd: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  signInWithGoogle: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthCtx | null>(null);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const sb = getSupabase();
+
+  useEffect(() => {
+    sb.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      setIsLoading(false);
+    });
+    const { data: { subscription } } = sb.auth.onAuthStateChange(
+      (_, session) => setUser(session?.user ?? null)
+    );
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const signIn = async (email: string, pwd: string) => {
+    const { error } = await sb.auth.signInWithPassword({ email, password: pwd });
+    if (error) throw error;
+  };
+
+  const signOut = async () => { await sb.auth.signOut(); };
+  const signInWithGoogle = async () => {
+    await sb.auth.signInWithOAuth({ provider: 'google' });
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, isLoading, signIn, signOut, signInWithGoogle }}>
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const ctx = useContext(AuthContext);
+  if (!ctx) throw new Error('useAuth must be inside AuthProvider');
+  return ctx;
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            '이메일 회원가입 + 로그인 + 로그아웃 폼',
+            'Google OAuth 활성화 + 로그인 동작',
+            'AuthContext 작성 + useAuth Hook',
+            '로그인 후 user.email 화면 표시',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-crud',
+        title: 'Database CRUD — PostgreSQL + SDK',
+        icon: '🗄️',
+        summary: 'Supabase 테이블 생성·관계·인덱스·SDK로 SELECT/INSERT/UPDATE/DELETE까지 풀세트.',
+        content: [
+          { subtitle: '테이블 생성 — Dashboard SQL Editor' },
+          { code: { lang: 'sql', content: `-- 게시판 예제
+create table posts (
+  id          bigserial primary key,
+  title       text not null,
+  body        text,
+  author_id   uuid not null references auth.users(id) on delete cascade,
+  status      text not null default 'draft' check (status in ('draft', 'published')),
+  created_at  timestamptz not null default now(),
+  updated_at  timestamptz not null default now()
+);
+
+-- 인덱스 (자주 조회되는 컬럼)
+create index posts_author_idx on posts (author_id);
+create index posts_status_idx on posts (status);
+
+-- 자동 updated_at 갱신 트리거
+create or replace function set_updated_at()
+returns trigger as $$
+begin
+  new.updated_at = now();
+  return new;
+end;
+$$ language plpgsql;
+
+create trigger posts_updated_at_trigger
+  before update on posts
+  for each row execute function set_updated_at();` } },
+
+          { subtitle: 'SELECT — 다양한 패턴' },
+          { code: { lang: 'typescript', content: `// 전체 조회
+const { data, error } = await supabase
+  .from('posts')
+  .select('*');
+
+// 특정 컬럼만
+const { data } = await supabase
+  .from('posts')
+  .select('id, title, created_at');
+
+// WHERE 조건
+const { data } = await supabase
+  .from('posts')
+  .select('*')
+  .eq('status', 'published')          // =
+  .gt('created_at', '2026-01-01')      // >
+  .ilike('title', '%AI%');             // ILIKE
+
+// 정렬 + 페이지네이션
+const { data } = await supabase
+  .from('posts')
+  .select('*')
+  .order('created_at', { ascending: false })
+  .range(0, 9);                        // 첫 10개
+
+// 관계 조인
+const { data } = await supabase
+  .from('posts')
+  .select('id, title, author:users(name, email)');
+
+// 단일 행
+const { data } = await supabase
+  .from('posts')
+  .select('*')
+  .eq('id', 1)
+  .single();                           // 정확히 1개 반환` } },
+
+          { subtitle: 'INSERT' },
+          { code: { lang: 'typescript', content: `// 단일 행
+const { data, error } = await supabase
+  .from('posts')
+  .insert({ title: '제목', body: '본문' })
+  .select()                            // 삽입된 행 반환
+  .single();
+
+// 다중 행
+await supabase
+  .from('posts')
+  .insert([
+    { title: '글1', body: '본문1' },
+    { title: '글2', body: '본문2' },
+  ]);
+
+// upsert (있으면 update, 없으면 insert)
+await supabase
+  .from('posts')
+  .upsert({ id: 1, title: '수정 또는 생성' });` } },
+
+          { subtitle: 'UPDATE' },
+          { code: { lang: 'typescript', content: `// 특정 행
+const { error } = await supabase
+  .from('posts')
+  .update({ title: '수정된 제목' })
+  .eq('id', 42);
+
+// 여러 조건
+await supabase
+  .from('posts')
+  .update({ status: 'archived' })
+  .eq('author_id', userId)
+  .lt('created_at', '2025-01-01');` } },
+
+          { subtitle: 'DELETE' },
+          { code: { lang: 'typescript', content: `// 단일
+await supabase
+  .from('posts')
+  .delete()
+  .eq('id', 42);
+
+// 여러 행
+await supabase
+  .from('posts')
+  .delete()
+  .eq('status', 'archived');
+
+// 안전장치: 항상 조건 명시 (조건 없으면 전체 삭제!)
+// .delete().match({ id: 42 })도 가능` } },
+
+          { subtitle: '에러 처리 표준' },
+          { code: { lang: 'typescript', content: `async function safeFetch() {
+  try {
+    const { data, error } = await supabase
+      .from('posts')
+      .select('*')
+      .eq('id', 1)
+      .single();
+
+    if (error) {
+      // PostgrestError — code, message, details, hint 포함
+      if (error.code === 'PGRST116') {
+        // 결과 없음 (single 사용 시)
+        return null;
+      }
+      throw error;
+    }
+
+    return data;
+  } catch (err) {
+    console.error('DB 오류:', err);
+    return null;
+  }
+}` } },
+
+          { subtitle: 'TypeScript 타입 자동 생성' },
+          { code: { lang: 'bash', content: `# Supabase CLI 설치
+npm install -D supabase
+
+# 로그인
+npx supabase login
+
+# 타입 생성 (스키마 → TypeScript)
+npx supabase gen types typescript \\
+  --project-id <your-project-id> \\
+  > src/types/database.ts
+
+# 사용
+import { Database } from '@/types/database';
+type Post = Database['public']['Tables']['posts']['Row'];` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'posts 테이블 + 인덱스 + updated_at 트리거 생성',
+            'SDK로 CRUD 4종 모두 동작',
+            'IL IKE 검색 + 페이지네이션',
+            'author 관계 조인',
+            'TypeScript 타입 자동 생성',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-rls',
+        title: 'RLS — 행 단위 보안 (필수)',
+        icon: '🛡️',
+        summary: 'Row Level Security — Supabase 보안의 핵심. SELECT·INSERT·UPDATE·DELETE 정책 4종을 SQL로 직접 작성.',
+        content: [
+          { subtitle: 'RLS가 왜 절대 필수인가' },
+          { callout: { type: 'warn', text: 'RLS를 끄면 anon key를 가진 누구나(브라우저 DevTools 사용자 포함) 모든 데이터를 조회·수정·삭제할 수 있습니다. Supabase 보안의 핵심.' } },
+
+          { subtitle: 'RLS 활성화' },
+          { code: { lang: 'sql', content: `-- 테이블에 RLS 켜기 (반드시 첫 단계)
+alter table posts enable row level security;
+
+-- 이 시점에 모든 접근 차단됨
+-- 명시적으로 허용하는 정책을 추가해야 함` } },
+
+          { subtitle: 'SELECT 정책 — 누구나 published 글 조회' },
+          { code: { lang: 'sql', content: `create policy "Anyone can read published posts"
+  on posts for select
+  using (status = 'published');
+
+-- 또는 본인 글은 모든 상태 조회
+create policy "Authors can read own posts"
+  on posts for select
+  using (auth.uid() = author_id);
+
+-- 두 정책 모두 추가하면 OR 결합
+-- = published이거나 본인 글이면 조회 가능` } },
+
+          { subtitle: 'INSERT 정책 — 본인 author_id로만 작성' },
+          { code: { lang: 'sql', content: `create policy "Authors create own posts"
+  on posts for insert
+  with check (auth.uid() = author_id);
+
+-- USING은 기존 행 검사, INSERT는 새 행이라 WITH CHECK 사용
+-- author_id를 본인 ID로 설정하지 않으면 거부` } },
+
+          { subtitle: 'UPDATE 정책 — 본인 글만 수정' },
+          { code: { lang: 'sql', content: `create policy "Authors update own posts"
+  on posts for update
+  using (auth.uid() = author_id)
+  with check (auth.uid() = author_id);
+
+-- USING: 기존 행이 본인 것인가
+-- WITH CHECK: 변경 후 행도 본인 것인가
+-- 두 개를 다 두면 author_id 변경(다른 사람으로) 차단` } },
+
+          { subtitle: 'DELETE 정책' },
+          { code: { lang: 'sql', content: `create policy "Authors delete own posts"
+  on posts for delete
+  using (auth.uid() = author_id);` } },
+
+          { subtitle: '관리자 권한 정책 — role 기반' },
+          { code: { lang: 'sql', content: `-- 사용자 메타데이터에 role 저장
+-- user_metadata.role = 'admin' 으로 설정
+
+create policy "Admins can do anything"
+  on posts for all
+  using (
+    (auth.jwt() ->> 'role')::text = 'admin'
+    or
+    (auth.jwt() -> 'app_metadata' ->> 'role')::text = 'admin'
+  );
+
+-- 또는 별도 admins 테이블 참조
+create policy "Admins can manage"
+  on posts for all
+  using (
+    exists (
+      select 1 from admins where admins.user_id = auth.uid()
+    )
+  );` } },
+
+          { subtitle: '정책 검증 방법' },
+          { code: { lang: 'sql', content: `-- 1) Dashboard → SQL Editor → 정책 확인
+select * from pg_policies where tablename = 'posts';
+
+-- 2) 다른 사용자로 로그인 후 직접 시도
+-- 본인이 작성하지 않은 글을 update 시도 → 0행 수정됨 (RLS가 조용히 차단)
+
+-- 3) RLS bypass (테스트용 — service_role)
+-- service_role 키는 모든 RLS 우회
+-- 단, 절대 클라이언트에 사용 금지` } },
+
+          { subtitle: '흔한 RLS 함정' },
+          { items: [
+            'INSERT 정책 누락 → 글쓰기 안 됨 ("new row violates row-level security policy")',
+            'auth.uid() vs auth.uid()::text — UUID 비교 시 타입 일치 필요',
+            '정책 추가 후에도 anon key는 anonymous role → 로그인 안 한 사용자는 별도 정책 필요',
+            'Storage 버킷은 별도 RLS — 객체 접근 권한 따로 설정',
+            'service_role을 실수로 클라이언트 .env에 넣으면 RLS 무력화',
+          ] },
+
+          { subtitle: 'RLS 베스트 프랙티스' },
+          { items: [
+            '항상 enable row level security 먼저',
+            '정책 이름을 자기 설명적으로 ("Authors update own posts")',
+            'SELECT/INSERT/UPDATE/DELETE 각각 명시적 정책',
+            '관리자는 별도 정책으로 분리',
+            'auth.uid() 캐싱: select auth.uid() into ... 패턴 (대량 조회 시 성능)',
+            '정책 변경 후 항상 다른 사용자로 검증',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            'posts 테이블 RLS 활성화',
+            '4종 정책 (SELECT·INSERT·UPDATE·DELETE) 모두 작성',
+            '두 계정으로 로그인 후 다른 사람 글 수정 시도 → 차단 확인',
+            'admin 권한 정책 추가 후 관리자 계정으로 모든 글 수정 가능 확인',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-storage',
+        title: 'Storage — 파일 업로드',
+        icon: '📁',
+        summary: '이미지·문서 업로드, 공개 URL, 정책으로 권한 제어, 자동 변환 + CDN까지 Storage 전체 기능.',
+        content: [
+          { subtitle: '버킷 생성' },
+          { code: { lang: 'sql', content: `-- SQL로 생성
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true);
+
+-- 또는 Dashboard → Storage → New Bucket
+-- public: true → 누구나 URL로 접근 가능
+-- public: false → 정책으로 접근 제어` } },
+
+          { subtitle: '업로드' },
+          { code: { lang: 'typescript', content: `// 단순 업로드
+const file = event.target.files[0];
+const { data, error } = await supabase.storage
+  .from('avatars')
+  .upload(\`\${userId}/profile.jpg\`, file, {
+    contentType: file.type,
+    upsert: true,            // 같은 경로면 덮어쓰기
+  });
+
+// 진행률 추적 (XHR 사용)
+const { error } = await supabase.storage
+  .from('avatars')
+  .upload(\`\${userId}/profile.jpg\`, file, {
+    onUploadProgress: (e) => {
+      const percent = Math.round((e.loaded / e.total) * 100);
+      setProgress(percent);
+    },
+  });` } },
+
+          { subtitle: '공개 URL' },
+          { code: { lang: 'typescript', content: `// public 버킷
+const { data } = supabase.storage
+  .from('avatars')
+  .getPublicUrl(\`\${userId}/profile.jpg\`);
+
+console.log(data.publicUrl);
+// → https://xxxx.supabase.co/storage/v1/object/public/avatars/userid/profile.jpg
+
+// private 버킷 → 임시 URL (만료 시간 지정)
+const { data, error } = await supabase.storage
+  .from('private-files')
+  .createSignedUrl('document.pdf', 3600);   // 1시간 유효` } },
+
+          { subtitle: 'Storage 정책 (RLS)' },
+          { code: { lang: 'sql', content: `-- 본인 폴더에만 업로드 허용
+create policy "Users upload own folder"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'avatars'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- 본인 파일만 삭제
+create policy "Users delete own files"
+  on storage.objects for delete
+  using (
+    bucket_id = 'avatars'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- 누구나 조회 가능 (public 버킷이면 자동, private이면 명시)
+create policy "Anyone can view avatars"
+  on storage.objects for select
+  using (bucket_id = 'avatars');` } },
+
+          { subtitle: '이미지 변환 (자동 리사이즈)' },
+          { code: { lang: 'typescript', content: `// public URL에 transform 옵션 추가
+const { data } = supabase.storage
+  .from('avatars')
+  .getPublicUrl(\`\${userId}/profile.jpg\`, {
+    transform: {
+      width: 200,
+      height: 200,
+      resize: 'cover',         // cover / contain / fill
+      quality: 80,
+    },
+  });
+
+// 결과 URL:
+// .../avatars/userid/profile.jpg?width=200&height=200&resize=cover&quality=80
+// Supabase가 즉석에서 변환 + CDN 캐싱` } },
+
+          { subtitle: '업로드 + 미리보기 + DB 저장 통합' },
+          { code: { lang: 'tsx', content: `function AvatarUploader() {
+  const { user } = useAuth();
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // 1) 즉시 미리보기 (업로드 전)
+    setPreview(URL.createObjectURL(file));
+
+    // 2) 업로드
+    setUploading(true);
+    const path = \`\${user.id}/avatar.jpg\`;
+    const { error: upErr } = await supabase.storage
+      .from('avatars')
+      .upload(path, file, { upsert: true });
+    setUploading(false);
+
+    if (upErr) { alert('업로드 실패'); return; }
+
+    // 3) URL 얻기 + 프로필 테이블에 저장
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars').getPublicUrl(path);
+
+    await supabase
+      .from('profiles')
+      .update({ avatar_url: publicUrl })
+      .eq('id', user.id);
+
+    alert('완료!');
+  }
+
+  return (
+    <div>
+      <input type="file" accept="image/*" onChange={handleFile} />
+      {uploading && <p>업로드 중…</p>}
+      {preview && <img src={preview} width={120} />}
+    </div>
+  );
+}` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'avatars 버킷 생성 + 폴더 정책 작성',
+            '프로필 사진 업로드 + 미리보기 + DB 저장',
+            '이미지 변환으로 썸네일 자동 생성',
+            'private 버킷 + signed URL로 비공개 문서 접근',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-realtime',
+        title: 'Realtime — 실시간 구독',
+        icon: '⚡',
+        summary: 'PostgreSQL 변경을 WebSocket으로 즉시 받기. 채팅·알림·협업 도구의 핵심 기능.',
+        content: [
+          { subtitle: 'Realtime 활성화 (테이블별)' },
+          { code: { lang: 'sql', content: `-- Replication 활성화
+alter publication supabase_realtime add table posts;
+
+-- 또는 Dashboard → Database → Replication에서 토글` } },
+
+          { subtitle: '기본 구독' },
+          { code: { lang: 'typescript', content: `useEffect(() => {
+  const channel = supabase
+    .channel('posts-changes')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',              // INSERT / UPDATE / DELETE / *
+        schema: 'public',
+        table: 'posts',
+      },
+      (payload) => {
+        console.log(payload);
+        // payload.eventType: 'INSERT' | 'UPDATE' | 'DELETE'
+        // payload.new: 새 행 (INSERT, UPDATE)
+        // payload.old: 이전 행 (UPDATE, DELETE)
+      }
+    )
+    .subscribe();
+
+  return () => { supabase.removeChannel(channel); };
+}, []);` } },
+
+          { subtitle: '필터링' },
+          { code: { lang: 'typescript', content: `// 특정 author의 글만
+.on('postgres_changes', {
+  event: 'INSERT',
+  schema: 'public',
+  table: 'posts',
+  filter: \`author_id=eq.\${userId}\`,
+}, handler)
+
+// 여러 필터는 별도 구독으로` } },
+
+          { subtitle: '상태 동기화 패턴' },
+          { code: { lang: 'tsx', content: `function PostsRealtime() {
+  const [posts, setPosts] = useState<Post[]>([]);
+
+  useEffect(() => {
+    // 1) 초기 로드
+    supabase.from('posts').select('*').then(({ data }) => {
+      if (data) setPosts(data);
+    });
+
+    // 2) 실시간 구독
+    const channel = supabase
+      .channel('posts')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'posts' },
+        (payload) => {
+          if (payload.eventType === 'INSERT') {
+            setPosts(prev => [payload.new as Post, ...prev]);
+          } else if (payload.eventType === 'UPDATE') {
+            setPosts(prev => prev.map(p =>
+              p.id === payload.new.id ? payload.new as Post : p
+            ));
+          } else if (payload.eventType === 'DELETE') {
+            setPosts(prev => prev.filter(p => p.id !== payload.old.id));
+          }
+        }
+      )
+      .subscribe();
+
+    return () => { supabase.removeChannel(channel); };
+  }, []);
+
+  return <ul>{posts.map(p => <li key={p.id}>{p.title}</li>)}</ul>;
+}` } },
+
+          { subtitle: 'Presence — 누가 접속해 있는가' },
+          { code: { lang: 'typescript', content: `// 협업 도구에서 "지금 이 문서를 보고 있는 사람"
+const channel = supabase.channel('room-1');
+
+channel
+  .on('presence', { event: 'sync' }, () => {
+    const state = channel.presenceState();
+    setOnlineUsers(Object.keys(state));
+  })
+  .subscribe(async (status) => {
+    if (status === 'SUBSCRIBED') {
+      await channel.track({ user_id: userId, online_at: new Date().toISOString() });
+    }
+  });` } },
+
+          { subtitle: 'Broadcast — 클라이언트 간 직접 통신' },
+          { code: { lang: 'typescript', content: `// 채팅 메시지 — DB 거치지 않고 즉시 전송
+const channel = supabase.channel('chat-room-1');
+
+channel
+  .on('broadcast', { event: 'message' }, ({ payload }) => {
+    setMessages(prev => [...prev, payload]);
+  })
+  .subscribe();
+
+// 전송
+channel.send({
+  type: 'broadcast',
+  event: 'message',
+  payload: { user: '홍길동', text: '안녕' },
+});` } },
+
+          { subtitle: 'Realtime 함정' },
+          { items: [
+            'cleanup 누락 → 메모리 누수 + 중복 이벤트',
+            'RLS 미적용 → 다른 사용자 데이터 변경 알림 받음 (개인정보 노출)',
+            '구독 채널명 충돌 → 같은 이름 채널을 여러 컴포넌트에서 만들지 말 것',
+            '무료 티어 동시 연결 200개 제한 → 대규모는 유료',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            'posts에 Realtime 활성화',
+            'INSERT/UPDATE/DELETE 모두 실시간 반영',
+            '두 브라우저 탭에서 동시 확인',
+            'Broadcast로 간단한 채팅 구현',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-resources',
+        title: 'Edge Functions + 심화 자료',
+        icon: '⚡',
+        summary: 'Edge Functions로 서버 측 비즈니스 로직 + Supabase 학습 심화 자료.',
+        content: [
+          { subtitle: 'Edge Functions — 서버 함수' },
+          { text: 'LLM API 키 보호, 결제 검증, 이메일 발송 등 서버 측에서만 실행되어야 할 코드를 Deno로 작성. 글로벌 엣지에서 실행되어 빠름.' },
+
+          { subtitle: '함수 생성 + 배포' },
+          { code: { lang: 'bash', content: `# Supabase CLI
+npx supabase functions new send-email
+
+# supabase/functions/send-email/index.ts 작성
+
+# 배포
+npx supabase functions deploy send-email
+
+# 호출
+const { data, error } = await supabase.functions.invoke('send-email', {
+  body: { to: 'user@example.com', subject: '...', html: '...' },
+});` } },
+
+          { subtitle: 'LLM API 프록시 예제' },
+          { code: { lang: 'typescript', content: `// supabase/functions/ask-llm/index.ts
+import { serve } from 'https://deno.land/std/http/server.ts';
+
+serve(async (req) => {
+  // CORS 헤더
+  if (req.method === 'OPTIONS') {
+    return new Response(null, {
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'authorization, content-type',
+      },
+    });
+  }
+
+  const { prompt } = await req.json();
+  const apiKey = Deno.env.get('SOLAR_API_KEY');   // 서버 환경변수
+
+  const res = await fetch('https://api.upstage.ai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': \`Bearer \${apiKey}\`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'solar-pro',
+      messages: [{ role: 'user', content: prompt }],
+    }),
+  });
+
+  const data = await res.json();
+  return new Response(JSON.stringify(data), {
+    headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
+  });
+});
+
+// 환경변수 설정
+// npx supabase secrets set SOLAR_API_KEY=up_xxx` } },
+
+          { subtitle: '심화 자료' },
+          { items: [
+            'Supabase 공식: supabase.com/docs (한국어 일부)',
+            'Supabase YouTube — 공식 채널, 실전 튜토리얼',
+            'PostgreSQL 학습: postgresqltutorial.com',
+            'SQL 게임: sqlbolt.com',
+            '한국어 강의: 인프런 "Supabase로 풀스택 만들기"',
+          ] },
+
+          { subtitle: '심화 주제' },
+          { items: [
+            'pg_cron — 정기 작업 (cron job)',
+            'pg_vector — 벡터 검색 (RAG)',
+            'Postgres Functions — 비즈니스 로직 DB에 캡슐화',
+            'Materialized Views — 집계 최적화',
+            'Read Replicas — 읽기 부하 분산 (유료)',
+          ] },
+
+          { subtitle: 'Day 6 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['셋업', '없음', '프로젝트 생성', 'SDK + Context 통합'],
+              ['Auth', '없음', '이메일 로그인', 'OAuth + onAuthStateChange'],
+              ['CRUD', '없음', 'select·insert', '관계 조인 + 필터 + 페이지네이션'],
+              ['RLS', '비활성', '기본 정책 1개', '4종 정책 + 관리자 분기'],
+              ['Storage', '없음', '단순 업로드', '미리보기 + 정책 + 변환'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
