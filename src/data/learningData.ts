@@ -9777,6 +9777,583 @@ channel.send({
       },
 
       {
+        id: 'reg-6-practice-1',
+        title: '실습 1 · 인증 폼 풀세트 (40분)',
+        icon: '🧪',
+        summary: '이메일 + Google OAuth 회원가입·로그인·로그아웃 풀세트 + AuthContext 통합.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Supabase Auth 4가지 시나리오 모두 구현',
+            'AuthContext + useAuth 통합',
+            'OAuth 콜백 처리',
+          ] },
+
+          { subtitle: '단계별 구현' },
+          { code: { lang: 'tsx', content: `// src/pages/Login.tsx
+import { useState } from 'react';
+import { useAuth } from '@/contexts/AuthContext';
+import { useNavigate, useLocation } from 'react-router-dom';
+
+export default function Login() {
+  const { signIn, signInWithGoogle } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
+  const location = useLocation();
+  const from = (location.state as any)?.from?.pathname || '/dashboard';
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      await signIn(email, password);
+      navigate(from, { replace: true });
+    } catch (err: any) {
+      setError(err.message === 'Invalid login credentials'
+        ? '이메일 또는 비밀번호가 일치하지 않습니다.'
+        : '로그인 실패: ' + err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <div className="login-page">
+      <h1>로그인</h1>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="이메일"
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="비밀번호"
+          required
+          minLength={6}
+        />
+        {error && <p className="error">{error}</p>}
+        <button type="submit" disabled={loading}>
+          {loading ? '로그인 중...' : '로그인'}
+        </button>
+      </form>
+
+      <div className="divider">또는</div>
+
+      <button onClick={signInWithGoogle} className="btn-google">
+        <img src="/google-icon.svg" alt="" /> Google로 로그인
+      </button>
+
+      <p>계정이 없으신가요? <Link to="/signup">가입</Link></p>
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 이메일 회원가입·로그인·로그아웃 동작',
+            '☐ Google OAuth 콜백 정상',
+            '☐ 에러 메시지 사용자 친화적',
+            '☐ 로그인 후 원래 페이지로 복귀',
+            '☐ 새로고침 후에도 로그인 유지',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-practice-2',
+        title: '실습 2 · 게시판 CRUD + RLS (50분)',
+        icon: '🧪',
+        summary: 'posts 테이블 + 4종 RLS 정책 + 글 작성·조회·수정·삭제 풀세트.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            '테이블 + RLS + CRUD UI 풀세트',
+            '본인 글만 수정·삭제 보장',
+            '관리자는 모든 글 관리',
+          ] },
+
+          { subtitle: '단계 1 · 테이블 + RLS (15분)' },
+          { code: { lang: 'sql', content: `-- SQL Editor에서 실행
+create table posts (
+  id          bigserial primary key,
+  title       text not null check (char_length(title) > 0),
+  body        text,
+  author_id   uuid not null references auth.users(id) on delete cascade,
+  status      text not null default 'draft' check (status in ('draft', 'published')),
+  created_at  timestamptz default now(),
+  updated_at  timestamptz default now()
+);
+
+create index posts_author_idx on posts (author_id);
+
+-- RLS 활성화
+alter table posts enable row level security;
+
+-- 4종 정책
+create policy "Anyone reads published"
+  on posts for select using (status = 'published');
+
+create policy "Authors read own posts"
+  on posts for select using (auth.uid() = author_id);
+
+create policy "Authors create own posts"
+  on posts for insert
+  with check (auth.uid() = author_id);
+
+create policy "Authors update own posts"
+  on posts for update using (auth.uid() = author_id);
+
+create policy "Authors delete own posts"
+  on posts for delete using (auth.uid() = author_id);` } },
+
+          { subtitle: '단계 2 · CRUD UI (25분)' },
+          { code: { lang: 'tsx', content: `function PostsPage() {
+  const { user } = useAuth();
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [title, setTitle] = useState('');
+  const [body, setBody] = useState('');
+
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+    const { data } = await supabase
+      .from('posts')
+      .select('*')
+      .order('id', { ascending: false });
+    if (data) setPosts(data);
+  }
+
+  async function create() {
+    if (!user || !title.trim()) return;
+    const { error } = await supabase.from('posts').insert({
+      title, body, author_id: user.id,
+    });
+    if (error) { alert(error.message); return; }
+    setTitle(''); setBody('');
+    load();
+  }
+
+  async function togglePublish(p: Post) {
+    const newStatus = p.status === 'draft' ? 'published' : 'draft';
+    await supabase.from('posts').update({ status: newStatus }).eq('id', p.id);
+    load();
+  }
+
+  async function remove(id: number) {
+    if (!confirm('삭제할까요?')) return;
+    await supabase.from('posts').delete().eq('id', id);
+    load();
+  }
+
+  return (
+    <div>
+      {user && (
+        <form onSubmit={e => { e.preventDefault(); create(); }}>
+          <input value={title} onChange={e => setTitle(e.target.value)} placeholder="제목" />
+          <textarea value={body} onChange={e => setBody(e.target.value)} placeholder="본문" />
+          <button>작성</button>
+        </form>
+      )}
+
+      <ul>
+        {posts.map(p => (
+          <li key={p.id}>
+            <h3>{p.title} <small>({p.status})</small></h3>
+            <p>{p.body}</p>
+            {user?.id === p.author_id && (
+              <>
+                <button onClick={() => togglePublish(p)}>
+                  {p.status === 'draft' ? '발행' : '비공개'}
+                </button>
+                <button onClick={() => remove(p.id)}>삭제</button>
+              </>
+            )}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}` } },
+
+          { subtitle: '단계 3 · 보안 검증 (10분)' },
+          { items: [
+            '두 계정 A, B 가입',
+            'A로 글 작성 → B로 로그인',
+            'B가 A의 글 수정 시도 → RLS가 차단 (0행 수정)',
+            'B가 A의 글 삭제 시도 → 동일하게 차단',
+            'draft 글은 B에게 보이지 않음 (published만 SELECT 가능)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-practice-3',
+        title: '실습 3 · 프로필 사진 업로드 (40분)',
+        icon: '🧪',
+        summary: 'Storage 버킷 + 정책 + 즉시 미리보기 + 압축 + DB 저장 풀세트.',
+        content: [
+          { subtitle: '준비' },
+          { code: { lang: 'sql', content: `-- avatars 버킷 (public)
+insert into storage.buckets (id, name, public)
+values ('avatars', 'avatars', true);
+
+-- 본인 폴더에만 업로드/수정/삭제
+create policy "Users upload own folder"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'avatars'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+create policy "Anyone views avatars"
+  on storage.objects for select
+  using (bucket_id = 'avatars');
+
+create policy "Users update own files"
+  on storage.objects for update
+  using (
+    bucket_id = 'avatars'
+    and auth.uid()::text = (storage.foldername(name))[1]
+  );
+
+-- profiles 테이블에 avatar_url
+alter table profiles add column avatar_url text;` } },
+
+          { subtitle: '업로드 컴포넌트' },
+          { code: { lang: 'tsx', content: `import imageCompression from 'browser-image-compression';   // npm install
+
+function AvatarUploader() {
+  const { user } = useAuth();
+  const [preview, setPreview] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    // 1) 즉시 미리보기
+    setPreview(URL.createObjectURL(file));
+
+    // 2) 압축
+    setUploading(true);
+    const compressed = await imageCompression(file, {
+      maxSizeMB: 0.5,
+      maxWidthOrHeight: 800,
+    });
+    console.log(\`\${(file.size/1024).toFixed(0)}KB → \${(compressed.size/1024).toFixed(0)}KB\`);
+
+    // 3) 업로드
+    const path = \`\${user.id}/avatar.jpg\`;
+    const { error } = await supabase.storage
+      .from('avatars')
+      .upload(path, compressed, { upsert: true, contentType: 'image/jpeg' });
+
+    if (error) { alert('업로드 실패'); setUploading(false); return; }
+
+    // 4) URL + DB 저장
+    const { data: { publicUrl } } = supabase.storage
+      .from('avatars').getPublicUrl(path);
+
+    await supabase.from('profiles').update({ avatar_url: publicUrl }).eq('id', user.id);
+
+    setUploading(false);
+    alert('완료!');
+  }
+
+  return (
+    <div>
+      <input type="file" accept="image/*" onChange={handleFile} />
+      {uploading && <progress value={progress} max={100} />}
+      {preview && <img src={preview} width={120} alt="미리보기" />}
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 즉시 미리보기 (업로드 전)',
+            '☐ 압축 비율 확인 (보통 50~80%)',
+            '☐ 다른 사용자 폴더에 업로드 시도 → 차단',
+            '☐ DB profiles.avatar_url 업데이트',
+            '☐ 헤더 아바타에 자동 반영',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-practice-4',
+        title: '실습 4 · 실시간 채팅방 (45분)',
+        icon: '🧪',
+        summary: 'Realtime + Presence + Broadcast 활용한 다중 사용자 채팅방.',
+        content: [
+          { subtitle: '준비' },
+          { code: { lang: 'sql', content: `create table chat_messages (
+  id          bigserial primary key,
+  room_id     text not null,
+  author_id   uuid not null references auth.users(id),
+  author_name text not null,
+  content     text not null,
+  created_at  timestamptz default now()
+);
+
+create index chat_messages_room_idx on chat_messages (room_id, created_at);
+
+alter table chat_messages enable row level security;
+
+create policy "Anyone reads messages"
+  on chat_messages for select using (true);
+
+create policy "Auth users send messages"
+  on chat_messages for insert
+  with check (auth.uid() = author_id);
+
+-- Realtime 활성화
+alter publication supabase_realtime add table chat_messages;` } },
+
+          { subtitle: '채팅 컴포넌트' },
+          { code: { lang: 'tsx', content: `function ChatRoom({ roomId }: { roomId: string }) {
+  const { user } = useAuth();
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('');
+  const [onlineCount, setOnlineCount] = useState(0);
+  const [typing, setTyping] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user) return;
+
+    // 초기 로드
+    supabase.from('chat_messages').select('*')
+      .eq('room_id', roomId).order('created_at')
+      .then(({ data }) => data && setMessages(data));
+
+    // Realtime — 새 메시지
+    const msgCh = supabase
+      .channel(\`room:\${roomId}\`)
+      .on('postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: \`room_id=eq.\${roomId}\` },
+        (payload) => setMessages(prev => [...prev, payload.new as Message])
+      )
+      .subscribe();
+
+    // Presence — 접속자 수
+    const presCh = supabase.channel(\`presence:\${roomId}\`);
+    presCh
+      .on('presence', { event: 'sync' }, () => {
+        const state = presCh.presenceState();
+        setOnlineCount(Object.keys(state).length);
+      })
+      .subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presCh.track({ user_id: user.id, online_at: new Date().toISOString() });
+        }
+      });
+
+    // Broadcast — 타이핑 표시
+    const typingCh = supabase
+      .channel(\`typing:\${roomId}\`)
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        setTyping(prev => {
+          if (prev.includes(payload.user)) return prev;
+          const next = [...prev, payload.user];
+          setTimeout(() => setTyping(now => now.filter(u => u !== payload.user)), 3000);
+          return next;
+        });
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(msgCh);
+      supabase.removeChannel(presCh);
+      supabase.removeChannel(typingCh);
+    };
+  }, [roomId, user]);
+
+  async function send() {
+    if (!user || !input.trim()) return;
+    await supabase.from('chat_messages').insert({
+      room_id: roomId,
+      author_id: user.id,
+      author_name: user.email,
+      content: input,
+    });
+    setInput('');
+  }
+
+  function handleTyping() {
+    supabase.channel(\`typing:\${roomId}\`).send({
+      type: 'broadcast', event: 'typing', payload: { user: user!.email },
+    });
+  }
+
+  return (
+    <div>
+      <header>채팅방: {roomId} · 접속: {onlineCount}명</header>
+      <ul>
+        {messages.map(m => (
+          <li key={m.id}>
+            <strong>{m.author_name}</strong>: {m.content}
+          </li>
+        ))}
+      </ul>
+      {typing.length > 0 && <p>{typing.join(', ')} 입력 중...</p>}
+      <form onSubmit={e => { e.preventDefault(); send(); }}>
+        <input
+          value={input}
+          onChange={e => { setInput(e.target.value); handleTyping(); }}
+          placeholder="메시지..."
+        />
+        <button>전송</button>
+      </form>
+    </div>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 두 브라우저 탭에서 실시간 동기화',
+            '☐ 접속자 수 실시간 표시',
+            '☐ 타이핑 중 표시',
+            '☐ 새로고침 후 메시지 유지',
+            '☐ cleanup으로 메모리 누수 없음',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-6-practice-5',
+        title: '실습 5 · Edge Function — LLM 프록시 (40분)',
+        icon: '🧪',
+        summary: 'Supabase Edge Function으로 LLM API 키를 서버에서 안전하게 보호.',
+        content: [
+          { subtitle: '실습 목표' },
+          { items: [
+            'Supabase CLI 셋업',
+            'Edge Function 작성·배포',
+            '환경변수(secrets)로 API 키 보호',
+            '클라이언트는 키 노출 없이 호출',
+          ] },
+
+          { subtitle: '단계 1 · CLI 셋업 (10분)' },
+          { code: { lang: 'bash', content: `npm install -D supabase
+
+# 로그인
+npx supabase login   # 브라우저로 인증
+
+# 프로젝트 연결
+npx supabase link --project-ref <YOUR_PROJECT_REF>
+# project-ref는 Settings → General에서 확인
+
+# 함수 생성
+npx supabase functions new ask-llm
+# → supabase/functions/ask-llm/index.ts 생성됨` } },
+
+          { subtitle: '단계 2 · 함수 작성 (15분)' },
+          { code: { lang: 'typescript', content: `// supabase/functions/ask-llm/index.ts
+import { serve } from 'https://deno.land/std@0.224.0/http/server.ts';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+};
+
+serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { headers: corsHeaders });
+  }
+
+  try {
+    // 인증 확인 — Supabase가 자동 검증
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'Unauthorized' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
+    }
+
+    const { messages } = await req.json();
+    const apiKey = Deno.env.get('SOLAR_API_KEY');
+
+    if (!apiKey) throw new Error('SOLAR_API_KEY not configured');
+
+    const upstream = await fetch('https://api.upstage.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': \`Bearer \${apiKey}\`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'solar-pro',
+        messages,
+        temperature: 0.7,
+        max_tokens: 1024,
+      }),
+    });
+
+    const data = await upstream.json();
+    return new Response(JSON.stringify(data), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
+  }
+});` } },
+
+          { subtitle: '단계 3 · 배포 + Secrets (5분)' },
+          { code: { lang: 'bash', content: `# 환경변수 설정 (서버 측)
+npx supabase secrets set SOLAR_API_KEY=up_xxxxxxxxxxxx
+
+# 함수 배포
+npx supabase functions deploy ask-llm
+
+# 함수 URL:
+# https://<project-ref>.supabase.co/functions/v1/ask-llm` } },
+
+          { subtitle: '단계 4 · 클라이언트 호출 (10분)' },
+          { code: { lang: 'typescript', content: `// src/utils/llm.ts
+import { supabase } from './supabase';
+
+export async function askLLM(messages: Message[]): Promise<string> {
+  const { data, error } = await supabase.functions.invoke('ask-llm', {
+    body: { messages },
+  });
+
+  if (error) throw error;
+  return data.choices[0].message.content;
+}
+
+// 사용 — 브라우저에서 호출해도 API 키 노출 X
+const reply = await askLLM([
+  { role: 'system', content: '한국어로 답하라' },
+  { role: 'user', content: '안녕!' },
+]);` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ Supabase CLI 셋업 완료',
+            '☐ 함수 정상 배포',
+            '☐ 클라이언트에서 호출 성공',
+            '☐ 브라우저 Network 탭에 API 키 안 보임',
+            '☐ 비로그인 사용자는 401 응답',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-6-resources',
         title: 'Edge Functions + 심화 자료',
         icon: '⚡',
