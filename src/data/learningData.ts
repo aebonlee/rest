@@ -12223,6 +12223,826 @@ export default defineConfig({
       { subtitle: '다음 시간 예고' },
       { text: 'Day 13 — 마지막 날. 5~10분 발표·라이브 데모·피어 리뷰로 4주의 여정을 마무리하고, 경진대회 출품 준비를 완성합니다.' },
     ],
+    subSections: [
+      {
+        id: 'reg-12-build',
+        title: 'Vite 빌드 흐름 깊이 이해',
+        icon: '🔨',
+        summary: 'npm run build가 내부에서 무엇을 하는지, tree shaking·minify·청크 분리·해시까지 모든 단계 이해.',
+        content: [
+          { subtitle: '빌드 = 무엇을 하는가' },
+          { code: { lang: 'text', content: `npm run build → "tsc -b && vite build"
+
+1. TypeScript 검사 (tsc -b)
+   - 모든 .ts/.tsx 타입 체크
+   - 에러 1개라도 있으면 빌드 중단
+   - 산출물 없음 (noEmit: true)
+
+2. Vite 빌드 시작
+   - Rollup으로 번들링
+   - esbuild로 트랜스파일 (TS → JS)
+
+3. Tree Shaking
+   - 사용 안 하는 코드 제거
+   - import 했지만 안 쓴 함수 제거
+   - 결과: 최종 번들 크기 ↓
+
+4. 코드 스플리팅
+   - lazy import → 별도 청크
+   - vendor 분리 (node_modules)
+   - dynamic import → 추가 청크
+
+5. Minify (Terser)
+   - 변수명 축약 (a, b, c, ...)
+   - 공백·줄바꿈 제거
+   - 죽은 코드 (dead code) 제거
+
+6. CSS 처리
+   - PostCSS 통과
+   - 압축
+   - CSS 코드 스플리팅 (라우트별)
+
+7. 자산 처리
+   - 이미지·폰트 등 hash 부여
+   - 절대 경로 변환
+   - import.meta.env 치환
+
+8. 출력
+   - dist/index.html
+   - dist/assets/*.js (해시 포함)
+   - dist/assets/*.css
+
+총 소요: 3~10초 (프로젝트 크기에 따라)` } },
+
+          { subtitle: '빌드 산출물 분석' },
+          { code: { lang: 'text', content: `dist/
+├── index.html                          # 진입점
+├── 404.html                            # SPA 라우팅용
+├── CNAME                               # 커스텀 도메인
+├── favicon.svg
+└── assets/
+    ├── index-Cu5XoR90.css              # 메인 CSS (해시 포함)
+    ├── index-PEdig-IT.js               # 메인 JS
+    ├── Home-lHovLBtk.js                # lazy 청크
+    ├── About-c9wxF22v.js               # lazy 청크
+    ├── Learning-2H337hSx.js            # lazy 청크
+    ├── ProjectGuide-uZVoRsVQ.js        # lazy 청크
+    └── react-vendor-xxxxx.js           # vendor 분리
+
+[해시의 의미]
+파일명에 해시 → 내용이 바뀌면 해시도 바뀜
+→ 브라우저가 자동으로 새 파일 다운로드
+→ 캐싱과 새 버전 배포 동시 만족` } },
+
+          { subtitle: 'Bundle Analyzer — 크기 시각화' },
+          { code: { lang: 'bash', content: `npm install -D rollup-plugin-visualizer
+
+# vite.config.ts
+import { visualizer } from 'rollup-plugin-visualizer';
+
+export default defineConfig({
+  plugins: [
+    react(),
+    visualizer({ open: true, filename: 'dist/stats.html' }),
+  ],
+});
+
+# 빌드 후 자동으로 stats.html 열림
+# 각 모듈별 크기·비율 시각화` } },
+
+          { subtitle: '빌드 최적화 — 청크 분리' },
+          { code: { lang: 'typescript', content: `// vite.config.ts
+export default defineConfig({
+  plugins: [react()],
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'react-vendor': ['react', 'react-dom', 'react-router-dom'],
+          'supabase': ['@supabase/supabase-js'],
+          'forms': ['react-hook-form', 'zod', '@hookform/resolvers'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 500,  // 청크 크기 경고 임계값 (kB)
+  },
+});
+
+// 효과
+// - 라이브러리 변경 안 되면 청크 해시 유지 → 브라우저 캐시 활용
+// - 페이지 코드만 변경되면 작은 청크만 재다운로드` } },
+
+          { subtitle: '환경별 빌드' },
+          { code: { lang: 'bash', content: `# 모드별 빌드
+npx vite build --mode production    # .env.production
+npx vite build --mode staging       # .env.staging
+npx vite build --mode development   # 개발 빌드 (보통 안 함)
+
+# package.json
+"scripts": {
+  "build":         "tsc -b && vite build",
+  "build:staging": "tsc -b && vite build --mode staging",
+}
+
+# 빌드 시 환경변수 확인
+console.log(import.meta.env.MODE)        // 'production'
+console.log(import.meta.env.PROD)        // true
+console.log(import.meta.env.DEV)         // false` } },
+
+          { subtitle: 'preview — 빌드 결과 미리보기' },
+          { code: { lang: 'bash', content: `npm run preview      # 기본 4173 포트
+
+# 또는 옵션
+npx vite preview --port 8080
+npx vite preview --host 0.0.0.0     # 외부 접근 허용
+
+# 용도
+# - 빌드 결과가 실제 production과 동일한지 확인
+# - dev에서는 안 보이던 버그 발견 가능 (의존성 누락 등)` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'npm run build 후 dist 폴더 구조 분석',
+            'Bundle Analyzer 도입 + 큰 모듈 식별',
+            'manualChunks로 vendor 분리',
+            '청크 크기 비교 (Before/After)',
+            'npm run preview로 빌드 결과 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-ghpages',
+        title: 'GitHub Pages 배포 마스터',
+        icon: '🚀',
+        summary: 'gh-pages·CNAME·404 트릭·HTTPS·DNS까지 GitHub Pages 운영의 모든 것.',
+        content: [
+          { subtitle: 'GitHub Pages는 무엇인가' },
+          { items: [
+            'GitHub 저장소를 정적 사이트로 호스팅',
+            '무료 (퍼블릭 저장소)',
+            '커스텀 도메인 + 무료 HTTPS',
+            'SPA·정적 사이트 지원',
+            '서버사이드 코드 X (Node.js·Python 백엔드 불가)',
+            'Edge Function 등은 Supabase·Vercel·Cloudflare로',
+          ] },
+
+          { subtitle: 'gh-pages 패키지 셋업' },
+          { code: { lang: 'bash', content: `npm install -D gh-pages
+
+# package.json
+"scripts": {
+  "build":     "tsc -b && vite build",
+  "predeploy": "npm run build",          # deploy 직전 자동 실행
+  "deploy":    "gh-pages -d dist"        # dist 폴더를 gh-pages 브랜치에 푸시
+}
+
+# 배포 명령
+npm run deploy
+
+# 동작
+# 1. predeploy → npm run build → dist 생성
+# 2. deploy → dist 내용을 gh-pages 브랜치에 force push
+# 3. GitHub Pages가 gh-pages 브랜치 자동 서빙` } },
+
+          { subtitle: 'GitHub 설정' },
+          { items: [
+            '저장소 → Settings → Pages',
+            'Source: Deploy from a branch',
+            'Branch: gh-pages, Folder: / (root)',
+            'Save 클릭',
+            '약 1~3분 후 https://<user>.github.io/<repo>/ 에서 접근',
+            'Enforce HTTPS 체크 (인증서 발급 후 5~30분)',
+          ] },
+
+          { subtitle: 'Vite base 설정 — 중요' },
+          { code: { lang: 'typescript', content: `// vite.config.ts
+
+// 케이스 1: 커스텀 도메인 (rest.dreamitbiz.com)
+export default defineConfig({
+  base: '/',
+});
+
+// 케이스 2: GitHub 기본 URL (user.github.io/repo-name/)
+export default defineConfig({
+  base: '/repo-name/',
+});
+
+// 케이스 3: 환경별 다르게
+export default defineConfig({
+  base: process.env.NODE_ENV === 'production' ? '/repo-name/' : '/',
+});
+
+// ⚠️ base 잘못 설정 → 모든 자산 404
+// 빈 화면 + Network 탭에 404 보이면 base 의심` } },
+
+          { subtitle: '커스텀 도메인 — CNAME 파일' },
+          { code: { lang: 'text', content: `// public/CNAME (확장자 없음)
+rest.dreamitbiz.com
+
+// 빌드 시 dist/CNAME으로 복사됨
+// gh-pages가 이걸 함께 푸시
+// GitHub이 자동으로 도메인 등록` } },
+
+          { subtitle: 'DNS 설정 — 도메인 등록업체' },
+          { code: { lang: 'text', content: `[CNAME 레코드 — 서브도메인]
+Type:   CNAME
+Name:   rest
+Value:  <username>.github.io
+TTL:    3600
+
+[A 레코드 — 루트 도메인 (apex)]
+Type:   A
+Name:   @
+Value:  185.199.108.153
+        185.199.109.153
+        185.199.110.153
+        185.199.111.153
+TTL:    3600
+
+[전파 시간]
+- CNAME: 5~30분
+- A: 10분~2시간
+- 완전 글로벌: 최대 48시간` } },
+
+          { subtitle: 'SPA 404 트릭 — 새로고침 문제 해결' },
+          { text: 'GitHub Pages는 정적 서버라 /about에서 새로고침하면 about.html을 찾다 404. 트릭으로 모든 404를 index.html로 보내 React Router가 처리.' },
+          { code: { lang: 'html', content: `<!-- public/404.html — GitHub Pages가 404 시 서빙 -->
+<!doctype html>
+<html>
+<head>
+  <script>
+    var l = window.location;
+    var path = l.pathname.slice(1);
+    l.replace(
+      l.protocol + '//' + l.host +
+      '/?/' + path + l.search + l.hash
+    );
+  </script>
+</head>
+<body></body>
+</html>
+
+<!-- index.html에 추가 — 쿼리를 다시 경로로 복원 -->
+<script>
+  (function(l) {
+    if (l.search[1] === '/') {
+      var decoded = l.search.slice(1).split('&').map(s => s.replace(/~and~/g, '&')).join('?');
+      window.history.replaceState(null, null,
+        l.pathname.slice(0, -1) + decoded + l.hash
+      );
+    }
+  }(window.location));
+</script>` } },
+
+          { subtitle: '배포 후 점검 체크리스트' },
+          { items: [
+            '☐ 메인 페이지 정상 로드',
+            '☐ 모든 라우트 동작 (새로고침 시에도)',
+            '☐ 모든 정적 자산 로드 (이미지·폰트·CSS)',
+            '☐ API 호출 정상 (production .env 키)',
+            '☐ HTTPS 강제 + 인증서 발급',
+            '☐ www → non-www 또는 그 반대 리다이렉트 설정',
+            '☐ SEO 메타 태그 확인',
+            '☐ OG 이미지 SNS 공유 미리보기 검증',
+            '☐ 모바일에서 정상 (실제 기기)',
+            '☐ Lighthouse production 측정 80+',
+          ] },
+
+          { subtitle: 'GitHub Actions 자동 배포 (선택)' },
+          { code: { lang: 'yaml', content: `# .github/workflows/deploy.yml
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+      - run: npm ci
+      - run: npm run build
+        env:
+          VITE_SUPABASE_URL: \${{ secrets.VITE_SUPABASE_URL }}
+          VITE_SUPABASE_ANON_KEY: \${{ secrets.VITE_SUPABASE_ANON_KEY }}
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: \${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4` } },
+
+          { subtitle: '실습' },
+          { items: [
+            'gh-pages 패키지 셋업 + npm run deploy 성공',
+            'CNAME 파일 + DNS 설정으로 커스텀 도메인',
+            '404.html 트릭 적용 + 새로고침 테스트',
+            '배포 후 체크리스트 10개 통과',
+            'GitHub Actions 자동 배포 셋업 (선택)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-slides',
+        title: '발표 자료 작성 — 8슬라이드 마스터',
+        icon: '📊',
+        summary: '5~10분 발표를 위한 8슬라이드 표준 구성 + 디자인 원칙 + 도구 비교.',
+        content: [
+          { subtitle: '8슬라이드 표준 구성' },
+          { table: {
+            headers: ['#', '슬라이드', '시간', '핵심'],
+            rows: [
+              ['1', '타이틀', '30초', '서비스명 + 가치 제안 + 팀명'],
+              ['2', '문제', '1분', '누구의 어떤 문제 (페르소나·통계)'],
+              ['3', '솔루션', '1분', 'AI가 어떻게 해결하는가'],
+              ['4', '핵심 기능', '1분', '3~5개 기능, 각 1줄'],
+              ['5', '기술 스택', '1분', 'React + Supabase + 국내 LLM'],
+              ['6', '라이브 데모', '3분', '실제 사용 시연'],
+              ['7', '성과·검증', '1분', '사용자 수·만족도·KPI'],
+              ['8', '향후·연락처', '30초', 'Roadmap + Thank You'],
+            ],
+          } },
+
+          { subtitle: '슬라이드 1 — 타이틀' },
+          { code: { lang: 'text', content: `[디자인]
+- 큰 글씨 (60pt+) — 서비스명
+- 부제 (24pt) — 가치 제안 1문장
+- 하단 (16pt) — 팀명 + 발표일
+
+[예시]
+┌─────────────────────────────────┐
+│                                 │
+│      Career Reboot              │
+│                                 │
+│   AI가 30분에 찾는 당신의 진로    │
+│                                 │
+│                                 │
+│         Team DreamIT             │
+│        2026.06.22                │
+└─────────────────────────────────┘
+
+[금기]
+- 작은 글씨로 가득 채우기
+- 로고만 띄우고 텍스트 없음
+- 자기소개·이력서 같은 정보` } },
+
+          { subtitle: '슬라이드 2 — 문제' },
+          { code: { lang: 'text', content: `[구성 요소]
+- 페르소나 사진 또는 일러스트
+- 한 문장 핵심 문제
+- 통계·근거 1~2개
+
+[예시]
+┌─────────────────────────────────┐
+│  김민지, 28세, 인문 전공          │
+│                                 │
+│  "1년간 진로를 찾지 못했어요"     │
+│                                 │
+│  ━━━━━━━━━━━━━━━━━━━━           │
+│  📊 쉬었음청년 67만명             │
+│     매년 5만명씩 증가             │
+│     (통계청, 2025)               │
+└─────────────────────────────────┘
+
+[금기]
+- "교육 시장은 ____조 원" — 너무 거시적
+- 데이터 출처 없음` } },
+
+          { subtitle: '슬라이드 3 — 솔루션' },
+          { code: { lang: 'text', content: `[구성]
+- "AI가 ___을 통해 ___을 해결" 문장
+- 핵심 차별점 1~2개
+
+[예시]
+┌─────────────────────────────────┐
+│  Solar AI와 30분 대화로           │
+│  당신만의 진로 진단               │
+│                                 │
+│  • 국내 LLM 한국어 자연어 진단     │
+│  • 직무 매칭 + 8주 학습 로드맵    │
+│  • 0~코딩 비전공자 위한 챗봇 UX   │
+└─────────────────────────────────┘` } },
+
+          { subtitle: '슬라이드 4 — 핵심 기능' },
+          { code: { lang: 'text', content: `[구성: 3×3 또는 4×1 그리드]
+- 각 기능 = 아이콘 + 이름 + 한 줄 설명
+
+[예시]
+┌─────────────────────────────────┐
+│  핵심 기능                       │
+│                                 │
+│  💬                  🎯          │
+│  대화형 진단         직무 추천    │
+│  Solar로 15턴 대화   3개 직무 적합│
+│                                 │
+│  📚                  📊          │
+│  학습 로드맵         진도 추적    │
+│  주차별 단계        실시간 트래킹 │
+└─────────────────────────────────┘` } },
+
+          { subtitle: '슬라이드 5 — 기술 스택' },
+          { code: { lang: 'text', content: `[구성]
+- 아키텍처 다이어그램 또는 로고 그리드
+
+[예시]
+┌─────────────────────────────────┐
+│  Frontend  React 19 + Vite 7    │
+│  Backend   Supabase Edge Fn     │
+│  Database  PostgreSQL + RLS     │
+│  LLM       Solar Pro (Upstage)  │
+│  Hosting   GitHub Pages         │
+│  Auth      Email + Google OAuth │
+└─────────────────────────────────┘
+
+[강조 포인트]
+- 국내 LLM 사용 (경진대회 평가 핵심)
+- 전체 무료 인프라로 운영 가능` } },
+
+          { subtitle: '슬라이드 6 — 라이브 데모 (3분)' },
+          { text: '슬라이드보다 실제 동작이 100배 강력. 발표의 클라이맥스.' },
+          { code: { lang: 'text', content: `[데모 시나리오]
+00:00 랜딩 페이지 진입
+      "처음 사이트에 오신 분"
+
+00:20 회원가입 (사전 등록 계정으로 로그인)
+
+00:40 진단 챗봇 시작
+      AI 응답 1턴 시연
+
+01:30 결과 화면 + 직무 3개
+
+02:10 학습 로드맵 1개 클릭
+
+02:50 마무리 멘트
+
+[안전장치]
+- 사전 등록 계정·더미 데이터 준비
+- 5초짜리 GIF 백업
+- 인터넷 끊김 대비 영상 백업
+- 화면 공유 사전 테스트 (Zoom·OBS)` } },
+
+          { subtitle: '슬라이드 7 — 성과·검증' },
+          { code: { lang: 'text', content: `[구성: 큰 숫자 + 짧은 설명]
+- 베타 테스트 결과
+- 만족도·완료율
+- 사용자 인용
+
+[예시]
+┌─────────────────────────────────┐
+│  베타 테스트 결과                 │
+│                                 │
+│  52명         4.2/5             │
+│  사용자       만족도              │
+│                                 │
+│  78%          평균 23분          │
+│  완료율       체류 시간           │
+│                                 │
+│  "정말 도움이 됐어요!"            │
+│   — 28세 베타 사용자              │
+└─────────────────────────────────┘` } },
+
+          { subtitle: '슬라이드 8 — 향후·연락처' },
+          { code: { lang: 'text', content: `[구성]
+- Roadmap (다음 단계)
+- 연락처 + QR
+- Thank You
+
+[예시]
+┌─────────────────────────────────┐
+│  다음 단계                       │
+│  ① 모바일 앱                     │
+│  ② 멘토 매칭                     │
+│  ③ 기업 협업                     │
+│                                 │
+│  ━━━━━━━━━━━━━━━━━━━━           │
+│                                 │
+│  https://rest.dreamitbiz.com    │
+│  [QR 코드]                       │
+│                                 │
+│  Thank You                       │
+└─────────────────────────────────┘` } },
+
+          { subtitle: '슬라이드 도구 비교' },
+          { table: {
+            headers: ['도구', '강점', '약점'],
+            rows: [
+              ['Pitch.com', '템플릿·협업·웹 기반', '오프라인 X'],
+              ['Canva', '디자인 풍부', '대용량 슬라이드 느림'],
+              ['Google Slides', '협업 강력·무료', '디자인 단순'],
+              ['Keynote', '미려한 애니메이션', 'Mac 전용'],
+              ['PowerPoint', '범용·정확', '구식 이미지'],
+              ['Slides.com', '개발자 친화 (마크다운)', '커스텀 한계'],
+            ],
+          } },
+
+          { subtitle: '실습' },
+          { items: [
+            '8슬라이드 1차 초안 작성',
+            '팀 내 리뷰 + 피드백',
+            '데모 시나리오 작성',
+            'PDF 백업 + 5초 GIF 5개 준비',
+            '발표 리허설 1회 (5~10분)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-readme',
+        title: 'README + 프로젝트 마무리',
+        icon: '📝',
+        summary: '경진대회 평가 시 가장 먼저 보는 README. 매력적이고 명확한 README 작성 가이드 + 추가 마무리 작업.',
+        content: [
+          { subtitle: 'README 표준 구조' },
+          { code: { lang: 'markdown', content: `# Career Reboot — AI 진로 코칭
+
+> AI가 30분에 찾는 당신의 진로
+
+[![Demo](https://img.shields.io/badge/Demo-Live-success)](https://rest.dreamitbiz.com)
+[![Stars](https://img.shields.io/github/stars/your-team/repo)](#)
+
+[데모 GIF — 핵심 기능 5초]
+
+## 🌟 소개
+쉬었음청년이 30분 대화로 본인 적성을 진단받고 맞춤형 학습 로드맵을 얻는
+AI 진로 코칭 서비스입니다. 국내 LLM Solar Pro를 활용해 한국어에 최적화.
+
+## ✨ 핵심 기능
+- 🤖 **대화형 진단** — Solar AI와 15턴 자연어 대화
+- 🎯 **직무 추천** — 본인 적성 기반 직무 3개 추천
+- 📚 **학습 로드맵** — 8주 단계별 가이드
+- 📊 **진도 추적** — 학습 진행 시각화
+
+## 🛠 기술 스택
+- **Frontend**: React 19 + Vite 7 + TypeScript 5.8
+- **Backend**: Supabase (PostgreSQL + Auth + Edge Functions)
+- **LLM**: Solar Pro (Upstage) + HyperCLOVA X 폴백
+- **Hosting**: GitHub Pages
+- **Tools**: Cursor + Claude Code
+
+## 🚀 빠른 시작
+\`\`\`bash
+# 1) 클론
+git clone https://github.com/your-team/career-reboot
+cd career-reboot
+
+# 2) 의존성 설치
+npm install
+
+# 3) 환경변수 설정
+cp .env.example .env.local
+# .env.local에 Supabase·Solar 키 입력
+
+# 4) 실행
+npm run dev
+# → http://localhost:5173
+\`\`\`
+
+## 📂 폴더 구조
+\`\`\`
+src/
+├── components/    # UI 컴포넌트
+├── pages/         # 라우트 페이지
+├── hooks/         # custom hooks
+├── contexts/      # 전역 상태
+├── utils/         # 유틸 함수
+└── types/         # TS 타입
+\`\`\`
+
+## 👥 팀
+- 홍길동 — PM·기획
+- 김철수 — Frontend
+- 이영희 — Backend·LLM
+
+## 📄 라이선스
+MIT
+
+## 🏆 AI Reboot 경진대회 2026 출품작
+` } },
+
+          { subtitle: 'README 디자인 팁' },
+          { items: [
+            '첫 5초에 매력 결정 — 데모 GIF 또는 스크린샷',
+            'Shields.io 배지 — 시각적 정보 (build·license·stars)',
+            '이모지 절제해서 사용 (섹션 헤더에)',
+            '한 줄 가치 제안을 제목 바로 아래',
+            'Live Demo 링크 최상단',
+            '설치·실행 명령은 복사 가능한 코드 블록',
+            '스크린샷·다이어그램은 docs/ 폴더에',
+          ] },
+
+          { subtitle: '데모 GIF 만들기' },
+          { items: [
+            'macOS — CleanShot X (유료) 또는 Cmd+Shift+5',
+            'Windows — ScreenToGif (무료, 강력)',
+            '브라우저 확장 — Loom (무료)',
+            'CLI — ffmpeg (mp4 → gif 변환)',
+            '권장: 10초 이내, 1280×720, 5MB 이하',
+          ] },
+
+          { subtitle: '발표용 백업 영상' },
+          { code: { lang: 'bash', content: `# OBS Studio로 화면 녹화 (무료)
+# 1. obsproject.com 다운로드
+# 2. Sources → "+" → Display Capture
+# 3. 녹화 시작 → 데모 시연 → 정지
+# 4. 파일: ~/Videos/2026-06-22 21-30-00.mkv
+
+# mp4 변환 (선택)
+ffmpeg -i input.mkv -c:v libx264 -c:a aac demo.mp4
+
+# 발표 시 사용:
+# - 인터넷 끊김 대비
+# - "이미 녹화된 영상으로 보여드립니다" 매끄럽게 전환` } },
+
+          { subtitle: '경진대회 출품 자료' },
+          { items: [
+            '☐ Live Demo URL — https://rest.dreamitbiz.com',
+            '☐ GitHub 저장소 (Public)',
+            '☐ README + 데모 GIF',
+            '☐ 발표 자료 PDF (8슬라이드)',
+            '☐ 발표 영상 (3분 데모 녹화)',
+            '☐ 팀원 정보 (이름·연락처·역할)',
+            '☐ 사용한 국내 LLM 명시 (Solar Pro)',
+            '☐ 베타 테스트 결과 (있다면)',
+          ] },
+
+          { subtitle: '프로젝트 마무리 작업' },
+          { items: [
+            '☐ 모든 console.log 제거 (또는 debug 플래그)',
+            '☐ TODO 주석 처리 (이슈로 옮기기)',
+            '☐ 사용 안 하는 import·변수 제거 (ESLint)',
+            '☐ 환경변수 확인 (production 키 정상)',
+            '☐ .env.example 최신화',
+            '☐ npm audit fix',
+            '☐ 라이선스 파일 (LICENSE)',
+            '☐ .gitignore 점검',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            '매력적인 README 작성 (데모 GIF 포함)',
+            '발표 자료 PDF 백업',
+            '3분 데모 영상 녹화',
+            '경진대회 출품 자료 8개 모두 준비',
+            '프로젝트 마무리 체크리스트 통과',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-rehearsal',
+        title: '발표 리허설 + 안정성 검증',
+        icon: '🎤',
+        summary: '실전 발표 전 필수 — 시간 측정·예상 질문·기술 백업·심리 안정까지.',
+        content: [
+          { subtitle: '리허설 사이클' },
+          { items: [
+            '1차: 혼자 — 시간 측정 + 슬라이드 매끄러움',
+            '2차: 팀 내 — 피어 리뷰 + 피드백 반영',
+            '3차: 외부 — 친구·가족 앞에서 (코드 모르는 사람 기준)',
+            '4차: 실제 환경 — 발표장 와이파이·프로젝터로 한 번',
+          ] },
+
+          { subtitle: '시간 배분 — 5분 발표' },
+          { table: {
+            headers: ['구간', '시간', '슬라이드'],
+            rows: [
+              ['도입 (문제 + 솔루션)', '1분', '1~3'],
+              ['기술 스택 + 핵심 기능', '1분', '4~5'],
+              ['라이브 데모', '2분', '6'],
+              ['성과 + 향후', '1분', '7~8'],
+              ['Q&A 여유', '0~1분', '-'],
+            ],
+          } },
+
+          { subtitle: '시간 배분 — 10분 발표' },
+          { table: {
+            headers: ['구간', '시간', '슬라이드'],
+            rows: [
+              ['도입', '2분', '1~3'],
+              ['기술 + 기능', '2분', '4~5'],
+              ['라이브 데모', '3~4분', '6'],
+              ['성과 + 향후', '1~2분', '7~8'],
+              ['Q&A', '1분', '-'],
+            ],
+          } },
+
+          { subtitle: '데모 안정성 — 사전 점검' },
+          { items: [
+            '☐ 인터넷 — 발표장 와이파이 + 모바일 핫스팟 백업',
+            '☐ API 키 — Solar·Supabase 한도 충분',
+            '☐ 데모 계정 — 사전 로그인 + 더미 데이터 입력',
+            '☐ 브라우저 — 캐시 정리 + 자동완성 비활성',
+            '☐ 핫키 — 데모 계정 ID·PWD 메모에 (긴급용)',
+            '☐ 시간 — 발표 30분 전 모든 페이지 한 번 새로고침',
+            '☐ 모니터 — 해상도·확대율 미리 설정',
+            '☐ 알림 — 모든 알림 꺼두기 (Do Not Disturb)',
+          ] },
+
+          { subtitle: '예상 질문 10종' },
+          { table: {
+            headers: ['질문', '답변 방향'],
+            rows: [
+              ['왜 이 LLM을 골랐나요?', '비용·한국어 성능·대회 요건 비교 후 결정'],
+              ['보안은 어떻게?', 'Edge Function 키 보호 + RLS 행 단위'],
+              ['실패 케이스?', '솔직 인정 + 보완 계획 1문장'],
+              ['확장성?', '현재 N명 처리 가능 + 병목 지점'],
+              ['차별점?', '국내 LLM·도메인·UX 중 1~2개'],
+              ['비용 모델?', '무료 시작 → Pro 5천원/월 (예시)'],
+              ['타겟 사용자?', '페르소나 + 시장 규모'],
+              ['MVP 후 다음?', 'Roadmap 슬라이드 참조'],
+              ['팀원 역할?', '각자 1줄'],
+              ['배운 점?', '솔직한 회고'],
+            ],
+          } },
+          { callout: { type: 'tip', text: '모르는 질문 — "좋은 지적입니다. 그 부분은 아직 검증하지 못했습니다. 좋은 후속 과제입니다." 거짓말 절대 금지. 솔직함이 신뢰.' } },
+
+          { subtitle: '발표 심리 — 떨림 관리' },
+          { items: [
+            '시작 첫 30초만 외워두기 — 자기소개 + 한 문장',
+            '심호흡 — 들숨 4초, 내쉼 6초 (긴장 완화)',
+            '청중 한 명 골라 자주 눈맞춤',
+            '실수해도 사과하지 않고 계속 진행',
+            '말 빠르게 하지 말기 — 의도적 일시 정지',
+            '물 한 잔 사전 준비',
+          ] },
+
+          { subtitle: '발표 후 — 피드백 수집' },
+          { items: [
+            '동료에게 "가장 인상 깊은 점 1개" 질문',
+            '"개선 제안 1개" 요청',
+            '피드백 즉시 메모',
+            'GitHub Issues에 "Post-presentation feedback" 추가',
+            '다음 발표 시 반영',
+          ] },
+
+          { subtitle: '실습' },
+          { items: [
+            '팀 내 풀 리허설 1회 (시간 측정)',
+            '시간 초과 시 어디를 줄일지 결정',
+            '예상 질문 10개에 답변 미리 작성',
+            '데모 안정성 8개 체크리스트 통과',
+            '심리 안정 루틴 결정 + 연습',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-12-resources',
+        title: '심화 + 자가 평가',
+        icon: '📚',
+        summary: '발표·디자인 심화 자료 + Day 12 자가 평가.',
+        content: [
+          { subtitle: '발표 자료' },
+          { items: [
+            '도서 『프레젠테이션 젠』 가르 레이놀즈 — 미니멀 디자인',
+            '도서 『TED 프레젠테이션』 카민 갤로',
+            'YouTube TED-Ed "How to give a great presentation"',
+            'YouTube "지미 정 (Jimmy Jung)" — 한국어 발표 코칭',
+            'Pitch.com Templates — 무료 시작점',
+          ] },
+
+          { subtitle: '디자인 자료' },
+          { items: [
+            'Canva (무료 — 한국어 템플릿)',
+            'Figma Community → "Pitch Deck" 검색',
+            'Loom — 화면 녹화·공유',
+            'Shields.io — README 배지',
+            'Carbon (carbon.now.sh) — 코드 이미지화',
+          ] },
+
+          { subtitle: 'Day 12 자가 평가' },
+          { table: {
+            headers: ['역량', '1점', '3점', '5점'],
+            rows: [
+              ['빌드 이해', 'npm run build만', '청크·해시 의미', 'manualChunks·analyzer'],
+              ['배포', '수동', 'gh-pages CLI', 'GitHub Actions·CNAME·HTTPS'],
+              ['SPA 처리', '없음', '404.html 트릭', '커스텀 도메인 + base 설정'],
+              ['발표 자료', '없음', '8슬라이드 채움', '리허설 + 백업 + Q&A 준비'],
+              ['README', '기본 정보', '설치·실행', '데모 GIF·배지·이미지'],
+            ],
+          } },
+        ],
+      },
+    ],
   },
 
   {
