@@ -14416,6 +14416,350 @@ export default function ChatMessage({ role, content, isStreaming }: ChatMessageP
       },
 
       {
+        id: 'reg-9-practice-2',
+        title: '실습 2 · 디자인 토큰 시스템 구축 (30분)',
+        icon: '🧪',
+        summary: '6개 카테고리(색·타이포·간격·반경·그림자·z-index) 토큰을 CSS 변수로 정의 + 다크모드 오버라이드.',
+        content: [
+          { subtitle: '본인 프로젝트의 src/styles/tokens.css 작성' },
+          { code: { lang: 'css', content: `/* 본 강의 실습 12 (Day 9-1) 참고하여 본인 프로젝트에 적용 */
+:root {
+  /* Color (10개 이상) */
+  --primary, --primary-hover, --primary-light, ...
+
+  /* Typography (5개 이상) */
+  --font-family, --font-sm, --font-base, --font-lg, ...
+
+  /* Spacing (8개) — 4px 그리드 */
+  --space-1: 4px; --space-2: 8px; ... --space-12: 48px;
+
+  /* Radius (5개) */
+  --radius-sm, --radius-md, --radius-lg, --radius-full
+
+  /* Shadow (4개) */
+  --shadow-sm, --shadow-md, --shadow-lg
+
+  /* Z-index (5개) */
+  --z-dropdown, --z-modal, --z-toast
+}
+
+[data-theme="dark"] {
+  /* Color 오버라이드 */
+}` } },
+
+          { subtitle: '검증' },
+          { items: [
+            '본인 프로젝트의 모든 CSS 파일 검사',
+            'hex 색상 코드 검색 → 0개여야 함',
+            'px 매직 넘버 → space 변수로 치환',
+            '다크모드 토글 시 모든 색 자동 변경',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 6개 카테고리 모두 토큰 정의',
+            '☐ 하드코딩 0개 (var 100%)',
+            '☐ 다크모드 오버라이드 동작',
+            '☐ Tailwind 같은 유틸리티 만들기 (선택)',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-practice-3',
+        title: '실습 3 · 컴포넌트 분할 — Atomic Design (35분)',
+        icon: '🧪',
+        summary: 'ui/molecules/feature 3계층으로 컴포넌트 재구성. Button·Card·SearchBar 등 핵심 atom 7개.',
+        content: [
+          { subtitle: '폴더 구조 재정의' },
+          { code: { lang: 'text', content: `src/
+├── components/
+│   ├── ui/                # Atom + Molecule
+│   │   ├── Button.tsx
+│   │   ├── Input.tsx
+│   │   ├── Badge.tsx
+│   │   ├── Card.tsx
+│   │   ├── Spinner.tsx
+│   │   ├── Avatar.tsx
+│   │   ├── SearchBar.tsx
+│   │   └── index.ts       # barrel export
+│   ├── layout/            # Organism
+│   │   ├── Navbar.tsx
+│   │   ├── Footer.tsx
+│   │   └── PublicLayout.tsx
+│   └── feature/           # 기능별
+│       ├── chat/
+│       └── auth/
+└── pages/                 # Page` } },
+
+          { subtitle: 'Button.tsx — Atom 표준' },
+          { code: { lang: 'tsx', content: `import type { ButtonHTMLAttributes, ReactNode } from 'react';
+
+interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  isLoading?: boolean;
+  leftIcon?: ReactNode;
+}
+
+export default function Button({
+  variant = 'primary',
+  size = 'md',
+  isLoading = false,
+  leftIcon,
+  children,
+  className = '',
+  disabled,
+  ...rest
+}: ButtonProps) {
+  return (
+    <button
+      {...rest}
+      disabled={disabled || isLoading}
+      className={\`btn btn-\${variant} btn-\${size} \${className}\`}
+    >
+      {isLoading ? '...' : <>{leftIcon}{children}</>}
+    </button>
+  );
+}` } },
+
+          { subtitle: 'SearchBar.tsx — Molecule' },
+          { code: { lang: 'tsx', content: `import Input from './Input';
+import Button from './Button';
+
+interface Props {
+  value: string;
+  onChange: (v: string) => void;
+  onSubmit: () => void;
+}
+
+export default function SearchBar({ value, onChange, onSubmit }: Props) {
+  return (
+    <form onSubmit={e => { e.preventDefault(); onSubmit(); }}>
+      <Input value={value} onChange={onChange} placeholder="검색..." />
+      <Button type="submit">검색</Button>
+    </form>
+  );
+}` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 7개 이상 Atom 작성',
+            '☐ 2개 이상 Molecule (SearchBar 등)',
+            '☐ Pages는 컴포넌트 조립만',
+            '☐ Props 인터페이스 명확',
+            '☐ index.ts barrel export',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-practice-4',
+        title: '실습 4 · 4가지 상태 UI + DataView 추상화 (30분)',
+        icon: '🧪',
+        summary: '로딩·에러·빈·성공 4상태를 모든 비동기 컴포넌트에 일관 적용 + 제네릭 DataView 추상화.',
+        content: [
+          { subtitle: 'DataView 제네릭 컴포넌트' },
+          { code: { lang: 'tsx', content: `// src/components/ui/DataView.tsx
+interface Props<T> {
+  loading: boolean;
+  error: string | null;
+  data: T[] | null;
+  onRetry?: () => void;
+  loadingComponent?: ReactNode;
+  errorComponent?: ReactNode;
+  emptyComponent?: ReactNode;
+  children: (data: T[]) => ReactNode;
+}
+
+export default function DataView<T>({
+  loading, error, data, onRetry,
+  loadingComponent, errorComponent, emptyComponent,
+  children,
+}: Props<T>) {
+  if (loading) return <>{loadingComponent ?? <Spinner />}</>;
+  if (error) return <>{errorComponent ?? <ErrorView msg={error} onRetry={onRetry} />}</>;
+  if (!data || data.length === 0) return <>{emptyComponent ?? <EmptyView />}</>;
+  return <>{children(data)}</>;
+}` } },
+
+          { subtitle: '4가지 상태 컴포넌트' },
+          { code: { lang: 'tsx', content: `function Spinner() {
+  return <div className="spinner" aria-label="로딩 중" />;
+}
+
+function CardSkeleton() {
+  return (
+    <div className="skeleton">
+      <div className="skel-line w-3/4" />
+      <div className="skel-line w-1/2" />
+    </div>
+  );
+}
+
+function ErrorView({ msg, onRetry }: { msg: string; onRetry?: () => void }) {
+  return (
+    <div className="error-view">
+      <p>⚠️ {msg}</p>
+      {onRetry && <button onClick={onRetry}>다시 시도</button>}
+    </div>
+  );
+}
+
+function EmptyView() {
+  return (
+    <div className="empty-view">
+      <p>📭 아직 항목이 없습니다</p>
+    </div>
+  );
+}` } },
+
+          { subtitle: '사용' },
+          { code: { lang: 'tsx', content: `<DataView
+  loading={loading}
+  error={error}
+  data={users}
+  onRetry={refetch}
+>
+  {(users) => (
+    <ul>{users.map(u => <UserCard key={u.id} user={u} />)}</ul>
+  )}
+</DataView>` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ DataView 제네릭 작성',
+            '☐ 4가지 상태 모두 컴포넌트화',
+            '☐ 본인 프로젝트의 3개 페이지에 적용',
+            '☐ 의도적으로 네트워크 끊고 ErrorView 동작',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-practice-5',
+        title: '실습 5 · 모바일 햄버거 + Safe Area (25분)',
+        icon: '🧪',
+        summary: '모바일 햄버거 메뉴 + iPhone 노치 safe-area-inset 대응.',
+        content: [
+          { subtitle: '햄버거 메뉴' },
+          { code: { lang: 'tsx', content: `// 실습 5 (Day 2)의 햄버거 메뉴를 본인 프로젝트에 적용
+
+// src/components/layout/Navbar.tsx
+function Navbar() {
+  const [isOpen, setIsOpen] = useState(false);
+  const location = useLocation();
+
+  // 라우트 변경 시 자동 닫기
+  useEffect(() => { setIsOpen(false); }, [location]);
+
+  return (
+    <nav className="navbar">
+      <Link to="/" className="logo">로고</Link>
+      <button
+        className="hamburger"
+        aria-label="메뉴"
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen(o => !o)}
+      >
+        ☰
+      </button>
+      <ul className={\`nav-menu \${isOpen ? 'open' : ''}\`}>
+        <li><NavLink to="/about">소개</NavLink></li>
+        <li><NavLink to="/chat">진단</NavLink></li>
+      </ul>
+    </nav>
+  );
+}` } },
+
+          { subtitle: 'Safe Area Inset' },
+          { code: { lang: 'css', content: `/* iPhone 노치 대응 */
+.app-bottom-bar {
+  position: fixed;
+  bottom: 0;
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
+}
+
+/* 좌우 (iPhone 가로 모드) */
+.fullscreen {
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* iOS dynamic viewport */
+.chat-window {
+  height: 100dvh;   /* 주소창 변화 자동 반영 */
+}` } },
+
+          { subtitle: 'index.html 메타' },
+          { code: { lang: 'html', content: `<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1, viewport-fit=cover"
+/>
+<!-- viewport-fit=cover로 safe-area 영역까지 사용 -->` } },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 모바일에서 햄버거 메뉴 동작',
+            '☐ 라우트 변경 시 자동 닫기',
+            '☐ iPhone에서 노치 영역 침범 없음',
+            '☐ Safari 주소창 변화 대응 (dvh)',
+            '☐ 실제 모바일 기기에서 검증',
+          ] },
+        ],
+      },
+
+      {
+        id: 'reg-9-practice-6',
+        title: '실습 6 · 챗봇 UI 완성 + Lighthouse 90+ (45분)',
+        icon: '🧪',
+        summary: 'Day 7~8의 챗봇에 디자인 토큰·4상태·반응형·다크모드 모두 적용 후 Lighthouse 90점 달성.',
+        content: [
+          { subtitle: '통합 작업 — Day 8 결과물에 적용' },
+          { items: [
+            '디자인 토큰 적용 (실습 2 결과)',
+            '컴포넌트 분할 — ChatHeader·MessageList·ChatInput',
+            '4가지 상태 — 로딩·에러·빈·성공',
+            '햄버거 메뉴 통합',
+            'Safe Area Inset',
+            '다크모드 토글 동작',
+          ] },
+
+          { subtitle: 'Lighthouse 측정 + 개선' },
+          { code: { lang: 'bash', content: `# 빌드 후 측정
+npm run build && npm run preview
+# → http://localhost:4173
+
+# Chrome DevTools → Lighthouse → "Analyze page load" (Mobile)
+
+[흔한 개선 포인트]
+- 이미지 lazy loading: <img loading="lazy" />
+- 폰트 preload: <link rel="preload" href="..." as="font">
+- 코드 스플리팅 (React.lazy)
+- 색 대비 4.5:1
+- alt 텍스트 모든 이미지` } },
+
+          { subtitle: '목표' },
+          { items: [
+            'Performance 80+ (모바일)',
+            'Accessibility 95+',
+            'Best Practices 95+',
+            'SEO 95+',
+          ] },
+
+          { subtitle: '평가 기준' },
+          { items: [
+            '☐ 모든 디자인 토큰 적용',
+            '☐ 컴포넌트 분할 완료',
+            '☐ 4상태 UI',
+            '☐ 모바일 햄버거 + Safe Area',
+            '☐ 다크모드 토글',
+            '☐ Lighthouse 4지표 80+ (Performance 제외 95+ 권장)',
+          ] },
+        ],
+      },
+
+      {
         id: 'reg-9-resources',
         title: '심화 + 자가 평가',
         icon: '📚',
