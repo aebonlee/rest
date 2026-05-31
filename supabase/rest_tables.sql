@@ -190,3 +190,39 @@ CREATE INDEX IF NOT EXISTS idx_rest_submissions_student ON rest_submissions(stud
 CREATE INDEX IF NOT EXISTS idx_rest_materials_day ON rest_materials(day_number);
 CREATE INDEX IF NOT EXISTS idx_rest_qna_author ON rest_qna(author_id);
 CREATE INDEX IF NOT EXISTS idx_rest_projects_team ON rest_projects(team_id);
+
+-- ============================================
+-- 학습평가 성적 (선수평가 / 사후평가)
+--  · 채점형 평가만 저장 (진단평가는 자습용이라 저장하지 않음)
+--  · 학생 1명 + 평가종류당 1행 (재응시 시 업서트로 갱신)
+-- ============================================
+CREATE TABLE IF NOT EXISTS rest_assessments (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    student_id UUID REFERENCES auth.users(id),
+    student_name TEXT DEFAULT '',
+    student_email TEXT DEFAULT '',
+    type TEXT NOT NULL CHECK (type IN ('prerequisite', 'summative')),
+    score INTEGER NOT NULL DEFAULT 0,      -- 100점 만점 환산 점수
+    correct INTEGER NOT NULL DEFAULT 0,    -- 정답 문항 수
+    total INTEGER NOT NULL DEFAULT 0,      -- 전체 문항 수
+    passed BOOLEAN DEFAULT false,
+    answers JSONB DEFAULT '{}',            -- { 문항번호: 선택지index }
+    submitted_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(student_id, type)
+);
+
+ALTER TABLE rest_assessments ENABLE ROW LEVEL SECURITY;
+-- 본인 성적은 본인이, 전체 성적은 관리자(ADMIN_EMAILS)만 조회
+CREATE POLICY "rest_assessments_select" ON rest_assessments FOR SELECT
+    USING (
+        auth.uid() = student_id
+        OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr')
+    );
+CREATE POLICY "rest_assessments_insert" ON rest_assessments FOR INSERT
+    WITH CHECK (auth.uid() = student_id);
+CREATE POLICY "rest_assessments_update" ON rest_assessments FOR UPDATE
+    USING (auth.uid() = student_id)
+    WITH CHECK (auth.uid() = student_id);
+
+CREATE INDEX IF NOT EXISTS idx_rest_assessments_student ON rest_assessments(student_id);
+CREATE INDEX IF NOT EXISTS idx_rest_assessments_type ON rest_assessments(type);

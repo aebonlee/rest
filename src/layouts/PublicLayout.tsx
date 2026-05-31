@@ -40,6 +40,7 @@ const AdminStudents = lazy(() => import('../pages/admin/AdminStudents'));
 const AdminMaterials = lazy(() => import('../pages/admin/AdminMaterials'));
 const AdminAssignments = lazy(() => import('../pages/admin/AdminAssignments'));
 const AdminAttendance = lazy(() => import('../pages/admin/AdminAttendance'));
+const AdminGrades = lazy(() => import('../pages/admin/AdminGrades'));
 const AdminAnnouncements = lazy(() => import('../pages/admin/AdminAnnouncements'));
 const AdminTeams = lazy(() => import('../pages/admin/AdminTeams'));
 const AdminProjects = lazy(() => import('../pages/admin/AdminProjects'));
@@ -97,6 +98,7 @@ const PublicLayout = (): ReactElement => {
             <Route path="/admin/materials" element={<AdminGuard><AdminMaterials /></AdminGuard>} />
             <Route path="/admin/assignments" element={<AdminGuard><AdminAssignments /></AdminGuard>} />
             <Route path="/admin/attendance" element={<AdminGuard><AdminAttendance /></AdminGuard>} />
+            <Route path="/admin/grades" element={<AdminGuard><AdminGrades /></AdminGuard>} />
             <Route path="/admin/announcements" element={<AdminGuard><AdminAnnouncements /></AdminGuard>} />
             <Route path="/admin/teams" element={<AdminGuard><AdminTeams /></AdminGuard>} />
             <Route path="/admin/projects" element={<AdminGuard><AdminProjects /></AdminGuard>} />

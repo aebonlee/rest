@@ -1,12 +1,18 @@
 /**
  * 학습평가 데이터 — 정규과정(13일, 52H) 기준
- * 선수학습평가 / 진단평가 / 총괄평가 — 각 50문항
  *
+ *  - 선수평가(prerequisite) : 채점형 20문항 · 문항당 5점(100점) · 합격 40점
+ *  - 진단평가(diagnostic)   : 자습용 50문항 · 채점 없음 · 정답·해설 상시 공개
+ *  - 사후평가(summative)    : 채점형 20문항 · 문항당 5점(100점) · 합격 60점
+ *
+ * 채점형 평가는 50문항 풀(pool)에서 대표 20문항을 선별해 1~20번으로 재번호합니다.
  * 모든 문항은 객관식 4지선다 + 해설 포함.
- * 학습 진척도에 따라 1~20번(기존), 21~50번(확장)을 순차적으로 풀 수 있습니다.
  */
 
 export type AssessmentType = 'prerequisite' | 'diagnostic' | 'summative';
+
+/** graded: 제출·채점·성적 저장 / practice: 정답·해설 상시 공개 자습 모드 */
+export type AssessmentMode = 'graded' | 'practice';
 
 export interface MCQuestion {
   no: number;
@@ -22,22 +28,30 @@ export interface AssessmentSet {
   subtitle: string;
   description: string;
   duration: string;
+  /** 100점 만점 환산 기준 합격 점수 (practice 모드는 0) */
   passingScore: number;
+  mode: AssessmentMode;
   mcq: MCQuestion[];
 }
+
+/** 50문항 풀에서 지정한 원본 no 순서대로 골라 1~N으로 재번호 */
+const pick = (pool: MCQuestion[], nos: number[]): MCQuestion[] =>
+  nos.map((n, i) => {
+    const q = pool.find((x) => x.no === n);
+    if (!q) throw new Error(`assessment pick: 원본 ${n}번 문항을 찾을 수 없습니다`);
+    return { ...q, no: i + 1 };
+  });
+
+/** 사전평가 선별 20문항 — Day 1~4 대표(바이브코딩·HTML·CSS·JS·React·Git·LLM 기초) */
+const PREREQUISITE_SELECTION = [1, 2, 3, 4, 5, 6, 7, 10, 11, 16, 17, 18, 24, 25, 29, 31, 34, 39, 45, 49];
+
+/** 사후평가 선별 20문항 — Day 1~13 종합(에이전트·Supabase·LLM·DevTools·배포·경진대회) */
+const SUMMATIVE_SELECTION = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 16, 19, 24, 26, 30, 41, 44, 50];
 
 /* ════════════════════════════════════════════════════════════
  *  선수학습평가 (50문항) — 정규과정 Day 1~4 대비
  * ════════════════════════════════════════════════════════════ */
-const prerequisite: AssessmentSet = {
-  type: 'prerequisite',
-  title: '선수학습평가',
-  subtitle: '정규과정 시작 전 사전 진단 (50문항)',
-  description:
-    '정규과정 Day 1~4(바이브코딩 개론·HTML/CSS·JavaScript·React 기초)에 대비한 사전 학습 평가. 1~20번은 기본, 21~50번은 추가 학습 후 풀어보세요.',
-  duration: '50분',
-  passingScore: 60,
-  mcq: [
+const prerequisitePool: MCQuestion[] = [
     {
       no: 1,
       question: '바이브코딩(Vibe Coding)의 핵심 개념으로 가장 적절한 것은?',
@@ -533,21 +547,24 @@ const prerequisite: AssessmentSet = {
       answer: 1,
       explanation: '검수 5단계: ①import 경로 ②TypeScript 타입 ③React 룰(Hook·key·의존성) ④에러 처리 ⑤보안·성능. 이 순서로 체크하면 진짜 문제를 빠르게 발견할 수 있습니다.',
     },
-  ],
+];
+
+const prerequisite: AssessmentSet = {
+  type: 'prerequisite',
+  title: '선수평가',
+  subtitle: '정규과정 시작 전 사전 평가 (20문항 · 100점 만점)',
+  description:
+    '정규과정 Day 1~4(바이브코딩 개론·HTML/CSS·JavaScript·React 기초)를 대비한 사전 평가입니다. 객관식 20문항, 문항당 5점(100점 만점), 합격 기준 40점. 제출하면 자동 채점되어 성적에 반영됩니다.',
+  duration: '40분',
+  passingScore: 40,
+  mode: 'graded',
+  mcq: pick(prerequisitePool, PREREQUISITE_SELECTION),
 };
 
 /* ════════════════════════════════════════════════════════════
  *  진단평가 (50문항) — 정규과정 Day 5~9
  * ════════════════════════════════════════════════════════════ */
-const diagnostic: AssessmentSet = {
-  type: 'diagnostic',
-  title: '진단평가',
-  subtitle: '정규과정 중간 학습 진단 (50문항)',
-  description:
-    '정규과정 Day 5~9(React 심화·Supabase·AI 서비스 설계·LLM API·프로젝트 프론트엔드) 학습 진척도. 1~20번은 기본, 21~50번은 추가 학습 후.',
-  duration: '60분',
-  passingScore: 70,
-  mcq: [
+const diagnosticPool: MCQuestion[] = [
     {
       no: 1,
       question: 'React Router v6의 라우트 정의로 올바른 것은?',
@@ -1098,21 +1115,24 @@ const diagnostic: AssessmentSet = {
       answer: 1,
       explanation: 'Single Responsibility Principle. 한 컴포넌트가 너무 많은 일을 하면 재사용·테스트·이해가 어려움. 200줄 넘어가면 분할 검토.',
     },
-  ],
+];
+
+const diagnostic: AssessmentSet = {
+  type: 'diagnostic',
+  title: '진단평가',
+  subtitle: '사후평가 대비 자습용 오픈 문제 (50문항 · 정답·해설 공개)',
+  description:
+    '사후평가(총괄평가)를 보기 전에 스스로 풀어보는 자습용 평가입니다. React 심화·Supabase·AI 서비스 설계·LLM API 등 핵심 50문항을 채점 없이 정답과 해설을 바로 확인하며 학습할 수 있습니다.',
+  duration: '제한 없음',
+  passingScore: 0,
+  mode: 'practice',
+  mcq: diagnosticPool,
 };
 
 /* ════════════════════════════════════════════════════════════
  *  총괄평가 (50문항) — 정규과정 Day 1~13 종합
  * ════════════════════════════════════════════════════════════ */
-const summative: AssessmentSet = {
-  type: 'summative',
-  title: '총괄평가',
-  subtitle: '정규과정 전체 총괄 평가 (50문항)',
-  description:
-    '정규과정 Day 1~13 전체(바이브코딩~배포·발표) 학습 성취도 종합 평가. 경진대회 출품 자격 판정에 활용. 1~20번 기본, 21~50번 추가.',
-  duration: '70분',
-  passingScore: 80,
-  mcq: [
+const summativePool: MCQuestion[] = [
     {
       no: 1,
       question: '바이브코딩 프로젝트에서 AI 코딩 에이전트가 가장 잘 수행하는 작업이 아닌 것은?',
@@ -1663,7 +1683,18 @@ const summative: AssessmentSet = {
       answer: 1,
       explanation: '평가위원은 README와 Live Demo URL을 먼저 봄. 동작 안 하면 0점. 30개 체크리스트 통과 + 8종 출품 자료 모두 준비가 표준.',
     },
-  ],
+];
+
+const summative: AssessmentSet = {
+  type: 'summative',
+  title: '사후평가',
+  subtitle: '정규과정 최종 평가 (20문항 · 100점 만점)',
+  description:
+    '정규과정 Day 1~13 전체(바이브코딩~배포·발표)를 종합한 최종 평가입니다. 객관식 20문항, 문항당 5점(100점 만점), 합격 기준 60점. 제출하면 자동 채점되어 성적에 반영되며 경진대회 출품 자격 판정에 활용됩니다.',
+  duration: '40분',
+  passingScore: 60,
+  mode: 'graded',
+  mcq: pick(summativePool, SUMMATIVE_SELECTION),
 };
 
 export const assessmentSets: Record<AssessmentType, AssessmentSet> = {

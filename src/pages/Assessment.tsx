@@ -2,10 +2,13 @@ import { useState, useMemo, useEffect, useRef, type ReactElement } from 'react';
 import { useParams, Navigate, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { assessmentSets, type AssessmentType } from '../data/assessmentData';
+import { useAuth } from '../contexts/AuthContext';
+import { saveAssessmentResult, type GradedType } from '../utils/assessments';
 
 const TYPE_ORDER: AssessmentType[] = ['prerequisite', 'diagnostic', 'summative'];
 
 type Answers = Record<number, number>;
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'guest';
 
 interface Result {
   total: number;
@@ -25,8 +28,12 @@ const Assessment = (): ReactElement => {
   if (!isValid) return <Navigate to="/assessment/prerequisite" replace />;
 
   const set = assessmentSets[type as AssessmentType];
+  const isPractice = set.mode === 'practice';
   const storageKey = `rest-assessment-${set.type}`;
   const submitKey = `${storageKey}-submitted`;
+
+  const { user, profile } = useAuth();
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
 
   const [answers, setAnswers] = useState<Answers>(() => {
     try {
@@ -48,6 +55,7 @@ const Assessment = (): ReactElement => {
       setAnswers({});
       setSubmitted(false);
     }
+    setSaveStatus('idle');
   }, [set.type, storageKey, submitKey]);
 
   useEffect(() => {
@@ -74,8 +82,28 @@ const Assessment = (): ReactElement => {
   }, [submitted, answers, set.mcq]);
 
   const handleSelect = (questionNo: number, optionIndex: number) => {
-    if (submitted) return;
+    if (submitted) return;  // 채점 완료 후 잠금 (진단평가는 submitted=false라 항상 선택 가능)
     setAnswers((prev) => ({ ...prev, [questionNo]: optionIndex }));
+  };
+
+  /** 채점형 평가 결과를 Supabase에 저장 */
+  const persistResult = async (correct: number, total: number) => {
+    if (isPractice) return;
+    if (!user) { setSaveStatus('guest'); return; }
+    setSaveStatus('saving');
+    const score = Math.round((correct / total) * 100);
+    const res = await saveAssessmentResult({
+      student_id: user.id,
+      student_name: profile?.name || profile?.display_name || user.email || '',
+      student_email: profile?.email || user.email || '',
+      type: set.type as GradedType,
+      score,
+      correct,
+      total,
+      passed: score >= set.passingScore,
+      answers,
+    });
+    setSaveStatus(res.saved ? 'saved' : 'error');
   };
 
   const handleSubmit = () => {
@@ -86,13 +114,17 @@ const Assessment = (): ReactElement => {
     }
     setSubmitted(true);
     localStorage.setItem(submitKey, 'true');
+    const correct = set.mcq.reduce((acc, q) => acc + (answers[q.no] === q.answer ? 1 : 0), 0);
+    void persistResult(correct, set.mcq.length);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleReset = () => {
-    if (!confirm('답안과 결과를 모두 초기화하고 다시 풀까요?')) return;
+    const msg = isPractice ? '선택한 답안을 모두 지울까요?' : '답안과 결과를 모두 초기화하고 다시 풀까요?';
+    if (!confirm(msg)) return;
     setAnswers({});
     setSubmitted(false);
+    setSaveStatus('idle');
     localStorage.removeItem(storageKey);
     localStorage.removeItem(submitKey);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -100,6 +132,8 @@ const Assessment = (): ReactElement => {
 
   const answeredCount = Object.keys(answers).length;
   const passed = result ? result.scorePercent >= set.passingScore : false;
+  // 정답·해설을 노출할지: 채점 완료(graded) 또는 자습 모드(practice)
+  const reveal = submitted || isPractice;
 
   const questionRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const scrollToQuestion = (no: number) => {
@@ -233,7 +267,14 @@ const Assessment = (): ReactElement => {
                 <p style={{ margin: '0 0 10px', fontSize: '14px' }}>{set.description}</p>
                 <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', fontSize: '13px' }}>
                   <span><strong>제한 시간:</strong> {set.duration}</span>
-                  <span><strong>합격 기준:</strong> {set.passingScore}점</span>
+                  {isPractice ? (
+                    <span><strong>방식:</strong> 자습용 · 채점 없음 · 정답·해설 공개</span>
+                  ) : (
+                    <>
+                      <span><strong>배점:</strong> 문항당 {Math.round(100 / set.mcq.length)}점 (100점 만점)</span>
+                      <span><strong>합격 기준:</strong> {set.passingScore}점</span>
+                    </>
+                  )}
                   <span><strong>문항 수:</strong> {set.mcq.length}문항</span>
                 </div>
               </div>
@@ -292,14 +333,14 @@ const Assessment = (): ReactElement => {
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginLeft: '8px' }}>
                         {q.options.map((opt, i) => {
                           const isUserChoice = userAnswer === i;
-                          const isCorrectOption = submitted && i === q.answer;
-                          const isWrongChoice = submitted && isUserChoice && i !== q.answer;
+                          const isCorrectOption = reveal && i === q.answer;
+                          const isWrongChoice = reveal && isUserChoice && i !== q.answer;
 
                           let bg = 'transparent';
                           let color = 'var(--text-primary, #1a1a1a)';
                           let optBorderColor = 'var(--border-color, #e5e7eb)';
 
-                          if (submitted) {
+                          if (reveal) {
                             if (isCorrectOption) {
                               bg = '#ecfdf5';
                               color = '#065f46';
@@ -344,10 +385,10 @@ const Assessment = (): ReactElement => {
                               <span style={{ color, lineHeight: 1.5, flex: 1, fontWeight: isCorrectOption ? 700 : 400 }}>
                                 <span style={{ marginRight: '6px', fontWeight: 600 }}>{String.fromCharCode(0x2460 + i)}</span>
                                 {opt}
-                                {submitted && isCorrectOption && (
+                                {isCorrectOption && (
                                   <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 700 }}>← 정답</span>
                                 )}
-                                {submitted && isWrongChoice && (
+                                {isWrongChoice && (
                                   <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 700 }}>← 내 답</span>
                                 )}
                               </span>
@@ -356,7 +397,7 @@ const Assessment = (): ReactElement => {
                         })}
                       </div>
 
-                      {submitted && q.explanation && (
+                      {reveal && q.explanation && (
                         <div style={{
                           marginTop: '14px',
                           padding: '14px 16px',
@@ -397,7 +438,7 @@ const Assessment = (): ReactElement => {
                     color: 'var(--primary-blue, #0046C8)',
                     letterSpacing: '0.05em',
                   }}>
-                    {submitted ? '채점 결과' : '진행 상태'}
+                    {submitted ? '채점 결과' : isPractice ? '자습 진행' : '진행 상태'}
                   </p>
                   {submitted && result ? (
                     <p style={{ margin: 0, fontSize: '20px', fontWeight: 800, color: passed ? '#10b981' : '#ef4444' }}>
@@ -506,7 +547,29 @@ const Assessment = (): ReactElement => {
 
                 {/* 액션 버튼 */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {!submitted ? (
+                  {isPractice ? (
+                    <>
+                      <p style={{
+                        margin: 0, fontSize: '12px', lineHeight: 1.6,
+                        color: 'var(--text-secondary, #6b7280)',
+                        padding: '10px', background: 'var(--bg-secondary, #f8f9fa)', borderRadius: '6px',
+                      }}>
+                        자습용 평가입니다. 정답과 해설이 공개되어 있으니 사후평가 전 스스로 풀어보세요.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={handleReset}
+                        style={{
+                          padding: '10px 16px', fontSize: '13px', fontWeight: 600,
+                          background: 'transparent', color: 'var(--text-secondary, #6b7280)',
+                          border: '1px solid var(--border-color, #e5e7eb)', borderRadius: '8px',
+                          cursor: 'pointer', width: '100%',
+                        }}
+                      >
+                        선택 초기화
+                      </button>
+                    </>
+                  ) : !submitted ? (
                     <>
                       <button
                         type="button"
@@ -544,23 +607,45 @@ const Assessment = (): ReactElement => {
                       </button>
                     </>
                   ) : (
-                    <button
-                      type="button"
-                      onClick={handleReset}
-                      style={{
-                        padding: '12px 16px',
-                        fontSize: '14px',
-                        fontWeight: 700,
-                        background: 'var(--primary-blue, #0046C8)',
-                        color: '#fff',
-                        border: 'none',
-                        borderRadius: '8px',
-                        cursor: 'pointer',
-                        width: '100%',
-                      }}
-                    >
-                      다시 풀기
-                    </button>
+                    <>
+                      {/* 성적 저장 상태 */}
+                      {saveStatus !== 'idle' && (
+                        <div style={{
+                          fontSize: '12px', fontWeight: 600, textAlign: 'center',
+                          padding: '8px 10px', borderRadius: '6px',
+                          background:
+                            saveStatus === 'saved' ? '#ecfdf5'
+                            : saveStatus === 'error' ? '#fef2f2'
+                            : 'var(--bg-secondary, #f8f9fa)',
+                          color:
+                            saveStatus === 'saved' ? '#065f46'
+                            : saveStatus === 'error' ? '#991b1b'
+                            : 'var(--text-secondary, #6b7280)',
+                        }}>
+                          {saveStatus === 'saving' && '성적 저장 중…'}
+                          {saveStatus === 'saved' && '✓ 성적이 저장되었습니다'}
+                          {saveStatus === 'error' && '⚠ 성적 저장 실패 (네트워크 확인)'}
+                          {saveStatus === 'guest' && '로그인하면 성적이 저장됩니다'}
+                        </div>
+                      )}
+                      <button
+                        type="button"
+                        onClick={handleReset}
+                        style={{
+                          padding: '12px 16px',
+                          fontSize: '14px',
+                          fontWeight: 700,
+                          background: 'var(--primary-blue, #0046C8)',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: '8px',
+                          cursor: 'pointer',
+                          width: '100%',
+                        }}
+                      >
+                        다시 풀기
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
