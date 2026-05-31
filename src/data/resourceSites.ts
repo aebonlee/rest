@@ -1,5 +1,5 @@
 /** 학습자료 페이지 데이터 — 내가 만든 사이트(분야별) + 외부 사이트 */
-export interface SiteLink { name: string; desc: string; url: string; }
+export interface SiteLink { name: string; desc: string; url: string; featured?: boolean; }
 export interface SiteGroup { id: string; label: string; icon: string; owner: 'mine' | 'external'; sites: SiteLink[]; }
 
 export const SITE_GROUPS: SiteGroup[] = [
@@ -32,7 +32,7 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'Python 학습', desc: 'Python 기초, 데이터 분석, 자동화, 웹 스크래핑', url: 'https://python-study.dreamitbiz.com' },
     { name: '코딩 학습', desc: 'C, Java, Python 코딩 문제 풀기, 플레이그라운드', url: 'https://coding.dreamitbiz.com' },
     { name: '웹 개발 학습', desc: '웹 개발 기초부터 실전까지 종합 학습 플랫폼', url: 'https://web.dreamitbiz.com' },
-    { name: 'Sample Gallery — 웹 디자인 샘플', desc: '개인·회사·학습·블로그 등 다양한 정적 사이트 샘플과 소스코드 제공', url: 'https://sample.dreamitbiz.com' },
+    { name: 'Sample Gallery — 웹 디자인 샘플', desc: '개인·회사·학습·블로그 등 다양한 정적 사이트 샘플과 소스코드 제공', url: 'https://sample.dreamitbiz.com', featured: true },
   ] },
   { id: 'cs', label: 'CS 전공', icon: '🧮', owner: 'mine', sites: [
     { name: 'AI·SW 개론', desc: 'SW·DS·AIoT·AI·XR·HMI 분야 탐색, 한신대학교 교과목', url: 'https://aisw.dreamitbiz.com' },
