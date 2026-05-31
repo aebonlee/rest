@@ -18,6 +18,7 @@ const Assessment = lazy(() => import('../pages/Assessment'));
 const ProjectGuide = lazy(() => import('../pages/ProjectGuide'));
 const ProjectTeams = lazy(() => import('../pages/ProjectTeams'));
 const ProjectBoard = lazy(() => import('../pages/ProjectBoard'));
+const ProjectVote = lazy(() => import('../pages/ProjectVote'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 // Auth 페이지
@@ -74,6 +75,7 @@ const PublicLayout = (): ReactElement => {
             <Route path="/assessment/:type" element={<Assessment />} />
             <Route path="/project-guide" element={<ProjectGuide />} />
             <Route path="/project-guide/:id" element={<ProjectGuide />} />
+            <Route path="/project-vote" element={<AuthGuard><ProjectVote /></AuthGuard>} />
             <Route path="/project-teams" element={<AuthGuard><ProjectTeams /></AuthGuard>} />
             <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
 

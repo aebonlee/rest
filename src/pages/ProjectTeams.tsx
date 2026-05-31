@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, type ReactElement } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
@@ -14,8 +14,9 @@ const ProjectTeams = (): ReactElement => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
+  const [searchParams] = useSearchParams();
   const [name, setName] = useState('');
-  const [topic, setTopic] = useState('');
+  const [topic, setTopic] = useState(searchParams.get('topic') || '');
 
   const me = (): TeamMember => ({
     id: user!.id,

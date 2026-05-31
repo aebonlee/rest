@@ -273,3 +273,50 @@ CREATE POLICY "rest_team_posts_delete" ON rest_team_posts FOR DELETE
     );
 
 CREATE INDEX IF NOT EXISTS idx_rest_team_posts_team ON rest_team_posts(team_id);
+
+-- ============================================
+-- 프로젝트 주제 투표
+--  · rest_project_topics: 학생이 제안한 추가 주제 (프리셋 7종은 코드 상수)
+--  · rest_topic_votes: 1인 1표 (UNIQUE(user_id), 재투표 시 변경)
+--    topic_key = 프리셋 'p1'~'p7' 또는 추가 주제 행 id
+-- ============================================
+CREATE TABLE IF NOT EXISTS rest_project_topics (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    title TEXT NOT NULL,
+    description TEXT DEFAULT '',
+    created_by UUID REFERENCES auth.users(id),
+    created_by_name TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE rest_project_topics ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "rest_project_topics_select" ON rest_project_topics FOR SELECT
+    USING (auth.uid() IS NOT NULL);
+CREATE POLICY "rest_project_topics_insert" ON rest_project_topics FOR INSERT
+    WITH CHECK (auth.uid() = created_by);
+CREATE POLICY "rest_project_topics_delete" ON rest_project_topics FOR DELETE
+    USING (
+        auth.uid() = created_by
+        OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr')
+    );
+
+CREATE TABLE IF NOT EXISTS rest_topic_votes (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    topic_key TEXT NOT NULL,
+    user_id UUID REFERENCES auth.users(id),
+    user_name TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT now(),
+    UNIQUE(user_id)
+);
+
+ALTER TABLE rest_topic_votes ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "rest_topic_votes_select" ON rest_topic_votes FOR SELECT
+    USING (auth.uid() IS NOT NULL);
+CREATE POLICY "rest_topic_votes_insert" ON rest_topic_votes FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "rest_topic_votes_update" ON rest_topic_votes FOR UPDATE
+    USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "rest_topic_votes_delete" ON rest_topic_votes FOR DELETE
+    USING (auth.uid() = user_id);
+
+CREATE INDEX IF NOT EXISTS idx_rest_topic_votes_key ON rest_topic_votes(topic_key);
