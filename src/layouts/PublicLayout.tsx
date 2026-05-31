@@ -37,6 +37,7 @@ const QnA = lazy(() => import('../pages/QnA'));
 // 관리자 페이지
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
 const AdminStudents = lazy(() => import('../pages/admin/AdminStudents'));
+const AdminRoster = lazy(() => import('../pages/admin/AdminRoster'));
 const AdminMaterials = lazy(() => import('../pages/admin/AdminMaterials'));
 const AdminAssignments = lazy(() => import('../pages/admin/AdminAssignments'));
 const AdminAttendance = lazy(() => import('../pages/admin/AdminAttendance'));
@@ -95,6 +96,7 @@ const PublicLayout = (): ReactElement => {
             {/* 관리자 */}
             <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />
             <Route path="/admin/students" element={<AdminGuard><AdminStudents /></AdminGuard>} />
+            <Route path="/admin/roster" element={<AdminGuard><AdminRoster /></AdminGuard>} />
             <Route path="/admin/materials" element={<AdminGuard><AdminMaterials /></AdminGuard>} />
             <Route path="/admin/assignments" element={<AdminGuard><AdminAssignments /></AdminGuard>} />
             <Route path="/admin/attendance" element={<AdminGuard><AdminAttendance /></AdminGuard>} />

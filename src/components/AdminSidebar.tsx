@@ -4,6 +4,7 @@ import type { ReactElement } from 'react';
 const adminMenuItems = [
   { path: '/admin', label: '대시보드', icon: '📊' },
   { path: '/admin/students', label: '수강생 관리', icon: '👥' },
+  { path: '/admin/roster', label: '명단 대조', icon: '🧾' },
   { path: '/admin/materials', label: '자료 관리', icon: '📁' },
   { path: '/admin/assignments', label: '과제 관리', icon: '📝' },
   { path: '/admin/attendance', label: '출석 관리', icon: '✅' },

@@ -59,6 +59,14 @@ rest_assessments(
 - [x] Vite dev 모듈 트랜스폼 정상(assessmentData/Assessment/assessments 200)
 - [x] `pick()` 선별 번호 전부 풀(1~50) 내 존재 → 모듈 로드 시 예외 없음
 
-## 7. 후속(미완료)
-- **수강생 명단 ↔ 회원가입 일치도 확인**: 외부 수강생 명단 파일 + `user_profiles`(signup_domain=rest.dreamitbiz.com) 데이터 필요. 명단 수령 후 대조 스크립트/관리자 화면으로 진행 예정.
+## 7. 수강생 명단 ↔ 회원가입 대조 (관리자 도구)
+- 수강생 명단 30명을 `src/data/rosterData.ts`에 내장(이름·성별·전공·계열·관련경험 + 경험수준 분류 입문/기초/경험자).
+- **명단에 이메일·전화가 없어 `이름 기준` 매칭**. `src/pages/admin/AdminRoster.tsx`(`/admin/roster`, 사이드바 "명단 대조"):
+  - `user_profiles`(signup_domain=rest 또는 visited_sites 포함) 가입자와 대조
+  - 미가입(명단O·가입X) / 명단외 가입(가입O·명단X) / 전체 명단+가입상태 + 경험수준 분포
+  - 동명이인·닉네임 가입은 수동 확인 필요(주의 문구 표기)
+- 정확한 가입 현황은 **배포 + 관리자 로그인 상태**에서 표시됨(로컬은 Supabase 미연결).
+
+## 8. 후속(선택)
+- 명단에 이메일 컬럼 확보 시 이메일 기준 정밀 매칭으로 강화
 - 사후평가 합격선(현재 60점) 운영 기준 최종 확정
