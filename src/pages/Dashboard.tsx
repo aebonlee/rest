@@ -145,12 +145,14 @@ const Dashboard = (): ReactElement => {
             <div className="dashboard-section">
               <h3>🔗 바로가기</h3>
               <div className="quick-links">
-                <Link to="/materials" className="quick-link-card">📁 학습자료</Link>
+                <Link to="/materials" className="quick-link-card">📁 강의자료</Link>
                 <Link to="/assignments" className="quick-link-card">📝 과제</Link>
-                <Link to="/teams" className="quick-link-card">🤝 팀</Link>
-                <Link to="/projects" className="quick-link-card">🚀 프로젝트</Link>
+                <Link to="/project-vote" className="quick-link-card">🧩 팀구성</Link>
+                <Link to="/project-board" className="quick-link-card">🗂️ 프로젝트 관리</Link>
                 <Link to="/qna" className="quick-link-card">❓ Q&A</Link>
-                <Link to="/schedule" className="quick-link-card">📅 일정표</Link>
+                <Link to="/classroom" className="quick-link-card">💻 온라인강의실</Link>
+                <Link to="/mypage" className="quick-link-card">👤 마이페이지</Link>
+                <a href="https://padlet.com/aebon/rest01" target="_blank" rel="noopener noreferrer" className="quick-link-card">📌 ReBoot 1기 출석판</a>
               </div>
             </div>
           </div>

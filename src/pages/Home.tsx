@@ -55,7 +55,7 @@ const Home = (): ReactElement => {
             </div>
             <div className="hero-buttons">
               <Link to="/curriculum" className="btn btn-primary">{t('site.home.viewCurriculum')}</Link>
-              <Link to="/register" className="btn btn-secondary">{t('site.home.applyNow')}</Link>
+              <Link to="/classroom" className="btn btn-secondary">{t('site.nav.classroom')}</Link>
             </div>
           </div>
         </div>

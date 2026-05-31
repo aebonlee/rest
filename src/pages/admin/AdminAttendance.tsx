@@ -21,18 +21,19 @@ const AdminAttendance = (): ReactElement => {
     const client = getSupabase();
     if (!client) { setLoading(false); return; }
 
-    // 출석 대상: 본 사이트 가입 학생 + 유관기관 관리자(admin/superadmin)
+    // 출석 대상: 본 사이트 가입 학생 + 총괄 관리자(superadmin)만
     const [attRes, signupRes, staffRes] = await Promise.all([
       client.from(TABLES.attendance).select('*').eq('date', selectedDate),
       client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
-      client.from('user_profiles').select('*').in('role', STAFF_ROLES),
+      client.from('user_profiles').select('*').eq('role', 'superadmin'),
     ]);
 
     if (attRes.data) setRecords(attRes.data as Attendance[]);
 
-    // 중복 제거 (관리자가 본 사이트에서 가입한 경우)
+    // 가입 학생 중 관리자/총괄관리자는 제외(학생만) + 총괄 관리자 합치기
+    const students = (signupRes.data || []).filter((u) => !STAFF_ROLES.includes((u as UserProfile).role));
     const merged = new Map<string, UserProfile>();
-    [...(signupRes.data || []), ...(staffRes.data || [])].forEach((u) => {
+    [...students, ...(staffRes.data || [])].forEach((u) => {
       merged.set((u as UserProfile).id, u as UserProfile);
     });
     const list = Array.from(merged.values()).sort((a, b) => {

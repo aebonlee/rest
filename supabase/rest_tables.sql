@@ -320,3 +320,25 @@ CREATE POLICY "rest_topic_votes_delete" ON rest_topic_votes FOR DELETE
     USING (auth.uid() = user_id);
 
 CREATE INDEX IF NOT EXISTS idx_rest_topic_votes_key ON rest_topic_votes(topic_key);
+
+-- ============================================
+-- 수강 다짐 (마이페이지) — 1인 1개
+-- ============================================
+CREATE TABLE IF NOT EXISTS rest_pledges (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id UUID REFERENCES auth.users(id) UNIQUE,
+    user_name TEXT DEFAULT '',
+    content TEXT DEFAULT '',
+    updated_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE rest_pledges ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "rest_pledges_select" ON rest_pledges FOR SELECT
+    USING (
+        auth.uid() = user_id
+        OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr')
+    );
+CREATE POLICY "rest_pledges_insert" ON rest_pledges FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+CREATE POLICY "rest_pledges_update" ON rest_pledges FOR UPDATE
+    USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);

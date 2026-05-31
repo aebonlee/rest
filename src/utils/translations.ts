@@ -174,6 +174,7 @@ export const translations: Record<string, Record<string, unknown>> = {
         curriculum: '커리큘럼',
         schedule: '일정표',
         instructor: '강사소개',
+        classroom: '온라인강의실',
         prerequisite: '선수과정',
         regular: '정규과정',
         coaching: '기술코칭',

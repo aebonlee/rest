@@ -55,6 +55,7 @@ const site: SiteConfig = {
       activePath: '/about',
       dropdown: [
         { path: '/about', labelKey: 'nav.about' },
+        { path: '/classroom', labelKey: 'site.nav.classroom' },
         { path: '/curriculum', labelKey: 'site.nav.curriculum' },
         { path: '/schedule', labelKey: 'site.nav.schedule' },
         { path: '/instructor', labelKey: 'site.nav.instructor' },

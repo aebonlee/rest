@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, type ReactElement, type MouseEvent } from 
 import { Link, useLocation } from 'react-router-dom';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { useCart } from '../../contexts/CartContext';
 import { useAuth } from '../../contexts/AuthContext';
 import SearchModal from '../SearchModal';
 import site from '../../config/site';
@@ -24,7 +23,6 @@ const Navbar = (): ReactElement => {
   const location = useLocation();
   const { mode, toggleTheme, colorTheme, setColorTheme } = useTheme();
   const { language, toggleLanguage, t } = useLanguage();
-  const { cartCount } = useCart();
   const { isLoggedIn, isAdmin, profile, signOut } = useAuth();
 
   useEffect(() => {
@@ -134,16 +132,6 @@ const Navbar = (): ReactElement => {
                   <line x1="21" y1="21" x2="16.65" y2="16.65" />
                 </svg>
               </button>
-            )}
-            {site.features.shop && (
-              <Link to="/cart" className="cart-icon-link" aria-label="Cart">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="cart-icon-svg">
-                  <circle cx="9" cy="21" r="1" />
-                  <circle cx="20" cy="21" r="1" />
-                  <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6" />
-                </svg>
-                {cartCount > 0 && <span className="cart-badge">{cartCount}</span>}
-              </Link>
             )}
             <button className="lang-switcher" onClick={toggleLanguage} aria-label={language === 'ko' ? 'Switch to English' : '한국어로 전환'}>
               {language === 'ko' ? 'EN' : 'KR'}

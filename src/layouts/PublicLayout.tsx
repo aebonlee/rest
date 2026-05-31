@@ -13,6 +13,7 @@ const Schedule = lazy(() => import('../pages/Schedule'));
 const Competition = lazy(() => import('../pages/Competition'));
 const Resources = lazy(() => import('../pages/Resources'));
 const Instructor = lazy(() => import('../pages/Instructor'));
+const Classroom = lazy(() => import('../pages/Classroom'));
 const Learning = lazy(() => import('../pages/Learning'));
 const Assessment = lazy(() => import('../pages/Assessment'));
 const ProjectGuide = lazy(() => import('../pages/ProjectGuide'));
@@ -69,6 +70,7 @@ const PublicLayout = (): ReactElement => {
             <Route path="/competition" element={<Competition />} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/instructor" element={<Instructor />} />
+            <Route path="/classroom" element={<Classroom />} />
             <Route path="/learning/:phase" element={<Learning />} />
             <Route path="/assessment" element={<Assessment />} />
             <Route path="/assessment/:type" element={<Assessment />} />
