@@ -22,6 +22,26 @@
     --text-white: #FFFFFF;
     --border-light: #E5E7EB;
     --border-medium: #CBD5E0;
+
+    /* ── 호환 별칭 (코드 곳곳에서 쓰지만 미정의였던 변수명) ──
+       실제 테마 변수를 참조하므로 다크모드에서도 자동으로 따라갑니다.
+       (var() 치환은 사용 지점의 테마 컨텍스트에서 해석됨) */
+    --bg-card: var(--bg-white);
+    --bg-secondary: var(--bg-light-gray);
+    --bg-primary: var(--bg-white);
+    --border-color: var(--border-light);
+    --border: var(--border-light);
+    --text-muted: var(--text-secondary);
+    --text-inverse: var(--text-white);
+    --font-base: 1rem;
+    --font-semibold: 600;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-6: 24px;
+    --space-8: 32px;
+    --transition-fast: all 0.15s ease;
+
     --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
     --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);

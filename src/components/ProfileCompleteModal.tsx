@@ -79,7 +79,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
       <form
         onSubmit={handleSubmit}
         style={{
-          background: '#fff', borderRadius: '16px', padding: '36px 32px 28px',
+          background: 'var(--bg-white, #fff)', color: 'var(--text-primary, #111827)', borderRadius: '16px', padding: '36px 32px 28px',
           width: '100%', maxWidth: '400px', boxShadow: '0 20px 60px rgba(0,0,0,0.3)',
           margin: '16px', position: 'relative',
         }}
