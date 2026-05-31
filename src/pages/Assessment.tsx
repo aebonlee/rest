@@ -147,7 +147,7 @@ const Assessment = (): ReactElement => {
 
     if (submitted) {
       const q = set.mcq.find((q) => q.no === no);
-      if (!q) return { bg: 'transparent', color: 'inherit', border: 'var(--border-color)' };
+      if (!q) return { bg: 'transparent', color: 'inherit', border: 'var(--border-light)' };
       const isCorrect = userAnswer === q.answer;
       if (!isAnswered) {
         return { bg: '#fee2e2', color: '#991b1b', border: '#ef4444' };  // 미응답
@@ -162,7 +162,7 @@ const Assessment = (): ReactElement => {
     if (isAnswered) {
       return { bg: 'var(--primary-blue, #0046C8)', color: '#fff', border: 'var(--primary-blue, #0046C8)' };
     }
-    return { bg: 'transparent', color: 'var(--text-secondary, #6b7280)', border: 'var(--border-color, #e5e7eb)' };
+    return { bg: 'transparent', color: 'var(--text-secondary, #6b7280)', border: 'var(--border-light, #e5e7eb)' };
   };
 
   return (
@@ -186,7 +186,7 @@ const Assessment = (): ReactElement => {
           <div style={{
             display: 'flex', gap: '8px', flexWrap: 'wrap',
             marginBottom: '24px',
-            borderBottom: '1px solid var(--border-color, #e5e7eb)',
+            borderBottom: '1px solid var(--border-light, #e5e7eb)',
             paddingBottom: '12px',
           }}>
             {TYPE_ORDER.map((t) => {
@@ -203,7 +203,7 @@ const Assessment = (): ReactElement => {
                     textDecoration: 'none',
                     background: isActive ? 'var(--primary-blue, #0046C8)' : 'transparent',
                     color: isActive ? '#fff' : 'var(--text-primary, #1a1a1a)',
-                    border: '1px solid var(--border-color, #e5e7eb)',
+                    border: '1px solid var(--border-light, #e5e7eb)',
                   }}
                 >
                   {assessmentSets[t].title}
@@ -245,10 +245,10 @@ const Assessment = (): ReactElement => {
                   }}>
                     {result.correct} / {result.total}
                   </h2>
-                  <p style={{ fontSize: '20px', fontWeight: 700, color: 'var(--text-primary, #1a1a1a)', margin: '0 0 4px' }}>
+                  <p style={{ fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>
                     {result.scorePercent}점
                   </p>
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', margin: 0 }}>
+                  <p style={{ fontSize: '14px', color: '#4B5563', margin: 0 }}>
                     합격 기준: {set.passingScore}점 이상
                   </p>
                 </div>
@@ -256,7 +256,7 @@ const Assessment = (): ReactElement => {
 
               {/* 평가 개요 */}
               <div style={{
-                background: 'var(--bg-secondary, #f8f9fa)',
+                background: 'var(--bg-light-gray, #f8f9fa)',
                 borderLeft: '4px solid var(--primary-blue, #0046C8)',
                 padding: '20px 24px',
                 borderRadius: '0 12px 12px 0',
@@ -288,7 +288,7 @@ const Assessment = (): ReactElement => {
                   const isWrong = submitted && isAnswered && userAnswer !== q.answer;
                   const isUnanswered = submitted && !isAnswered;
 
-                  let borderColor = 'var(--border-color, #e5e7eb)';
+                  let borderColor = 'var(--border-light, #e5e7eb)';
                   if (isCorrect) borderColor = '#10b981';
                   else if (isWrong || isUnanswered) borderColor = '#ef4444';
 
@@ -297,7 +297,7 @@ const Assessment = (): ReactElement => {
                       key={q.no}
                       ref={(el) => { questionRefs.current[q.no] = el; }}
                       style={{
-                        background: 'var(--bg-card, #fff)',
+                        background: 'var(--bg-white, #fff)',
                         border: `2px solid ${borderColor}`,
                         borderRadius: '12px',
                         padding: '20px 24px',
@@ -338,7 +338,7 @@ const Assessment = (): ReactElement => {
 
                           let bg = 'transparent';
                           let color = 'var(--text-primary, #1a1a1a)';
-                          let optBorderColor = 'var(--border-color, #e5e7eb)';
+                          let optBorderColor = 'var(--border-light, #e5e7eb)';
 
                           if (reveal) {
                             if (isCorrectOption) {
@@ -351,7 +351,7 @@ const Assessment = (): ReactElement => {
                               optBorderColor = '#ef4444';
                             }
                           } else if (isUserChoice) {
-                            bg = 'var(--bg-secondary, #f0f4ff)';
+                            bg = 'var(--bg-light-gray, #f0f4ff)';
                             optBorderColor = 'var(--primary-blue, #0046C8)';
                           }
 
@@ -401,7 +401,7 @@ const Assessment = (): ReactElement => {
                         <div style={{
                           marginTop: '14px',
                           padding: '14px 16px',
-                          background: 'var(--bg-secondary, #f8f9fa)',
+                          background: 'var(--bg-light-gray, #f8f9fa)',
                           borderLeft: '3px solid var(--primary-blue, #0046C8)',
                           borderRadius: '0 8px 8px 0',
                         }}>
@@ -424,8 +424,8 @@ const Assessment = (): ReactElement => {
               <div style={{
                 position: 'sticky',
                 top: '90px',
-                background: 'var(--bg-card, #fff)',
-                border: '1px solid var(--border-color, #e5e7eb)',
+                background: 'var(--bg-white, #fff)',
+                border: '1px solid var(--border-light, #e5e7eb)',
                 borderRadius: '12px',
                 padding: '16px',
               }}>
@@ -454,7 +454,7 @@ const Assessment = (): ReactElement => {
                 {/* 진행률 막대 (미제출) */}
                 {!submitted && (
                   <div style={{
-                    background: 'var(--bg-secondary, #f8f9fa)',
+                    background: 'var(--bg-light-gray, #f8f9fa)',
                     height: '6px',
                     borderRadius: '3px',
                     overflow: 'hidden',
@@ -517,7 +517,7 @@ const Assessment = (): ReactElement => {
                   color: 'var(--text-secondary, #6b7280)',
                   marginBottom: '16px',
                   padding: '10px',
-                  background: 'var(--bg-secondary, #f8f9fa)',
+                  background: 'var(--bg-light-gray, #f8f9fa)',
                   borderRadius: '6px',
                 }}>
                   {submitted ? (
@@ -538,7 +538,7 @@ const Assessment = (): ReactElement => {
                         응답 완료
                       </div>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <span style={{ width: '12px', height: '12px', background: 'transparent', border: '1.5px solid var(--border-color, #e5e7eb)', borderRadius: '3px' }} />
+                        <span style={{ width: '12px', height: '12px', background: 'transparent', border: '1.5px solid var(--border-light, #e5e7eb)', borderRadius: '3px' }} />
                         미응답
                       </div>
                     </>
@@ -552,7 +552,7 @@ const Assessment = (): ReactElement => {
                       <p style={{
                         margin: 0, fontSize: '12px', lineHeight: 1.6,
                         color: 'var(--text-secondary, #6b7280)',
-                        padding: '10px', background: 'var(--bg-secondary, #f8f9fa)', borderRadius: '6px',
+                        padding: '10px', background: 'var(--bg-light-gray, #f8f9fa)', borderRadius: '6px',
                       }}>
                         자습용 평가입니다. 정답과 해설이 공개되어 있으니 사후평가 전 스스로 풀어보세요.
                       </p>
@@ -562,7 +562,7 @@ const Assessment = (): ReactElement => {
                         style={{
                           padding: '10px 16px', fontSize: '13px', fontWeight: 600,
                           background: 'transparent', color: 'var(--text-secondary, #6b7280)',
-                          border: '1px solid var(--border-color, #e5e7eb)', borderRadius: '8px',
+                          border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '8px',
                           cursor: 'pointer', width: '100%',
                         }}
                       >
@@ -597,7 +597,7 @@ const Assessment = (): ReactElement => {
                           fontWeight: 600,
                           background: 'transparent',
                           color: 'var(--text-secondary, #6b7280)',
-                          border: '1px solid var(--border-color, #e5e7eb)',
+                          border: '1px solid var(--border-light, #e5e7eb)',
                           borderRadius: '8px',
                           cursor: 'pointer',
                           width: '100%',
@@ -616,7 +616,7 @@ const Assessment = (): ReactElement => {
                           background:
                             saveStatus === 'saved' ? '#ecfdf5'
                             : saveStatus === 'error' ? '#fef2f2'
-                            : 'var(--bg-secondary, #f8f9fa)',
+                            : 'var(--bg-light-gray, #f8f9fa)',
                           color:
                             saveStatus === 'saved' ? '#065f46'
                             : saveStatus === 'error' ? '#991b1b'

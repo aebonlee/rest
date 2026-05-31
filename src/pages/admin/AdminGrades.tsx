@@ -90,8 +90,8 @@ const AdminGrades = (): ReactElement => {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginBottom: '24px' }}>
             {stats.map((s) => (
               <div key={s.type} style={{
-                border: '1px solid var(--border-color, #e5e7eb)', borderRadius: '12px',
-                padding: '16px 18px', background: 'var(--bg-card, #fff)',
+                border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '12px',
+                padding: '16px 18px', background: 'var(--bg-white, #fff)',
               }}>
                 <strong style={{ fontSize: '14px' }}>{TYPE_LABEL[s.type]}</strong>
                 <div style={{ display: 'flex', gap: '18px', marginTop: '8px', fontSize: '13px' }}>
@@ -107,7 +107,7 @@ const AdminGrades = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : students.length === 0 ? (
             <div style={{
-              textAlign: 'center', padding: '60px 20px', background: 'var(--bg-secondary, #f8f9fa)',
+              textAlign: 'center', padding: '60px 20px', background: 'var(--bg-light-gray, #f8f9fa)',
               borderRadius: '12px', color: 'var(--text-secondary, #6b7280)',
             }}>
               본 사이트에 가입한 학생이 없습니다.

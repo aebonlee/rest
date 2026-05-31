@@ -85,11 +85,11 @@ const Dashboard = (): ReactElement => {
                 const g = grades.find((x) => x.type === t);
                 return (
                   <div key={t} style={{
-                    border: '1px solid var(--border-color, #e5e7eb)',
-                    borderLeft: `4px solid ${g ? (g.passed ? '#10b981' : '#ef4444') : 'var(--border-color, #e5e7eb)'}`,
+                    border: '1px solid var(--border-light, #e5e7eb)',
+                    borderLeft: `4px solid ${g ? (g.passed ? '#10b981' : '#ef4444') : 'var(--border-light, #e5e7eb)'}`,
                     borderRadius: '0 10px 10px 0',
                     padding: '16px 18px',
-                    background: 'var(--bg-card, #fff)',
+                    background: 'var(--bg-white, #fff)',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                       <strong style={{ fontSize: '14px' }}>{ASSESSMENT_LABEL[t]}</strong>

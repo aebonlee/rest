@@ -92,8 +92,8 @@ const AdminRoster = (): ReactElement => {
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
             {summary.map((c) => (
               <div key={c.label} style={{
-                flex: '1 1 130px', border: '1px solid var(--border-color, #e5e7eb)',
-                borderRadius: '10px', padding: '12px 14px', background: 'var(--bg-card, #fff)',
+                flex: '1 1 130px', border: '1px solid var(--border-light, #e5e7eb)',
+                borderRadius: '10px', padding: '12px 14px', background: 'var(--bg-white, #fff)',
               }}>
                 <div style={{ fontSize: '22px', fontWeight: 800, color: c.color }}>{c.val}</div>
                 <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>{c.label}</div>
@@ -106,7 +106,7 @@ const AdminRoster = (): ReactElement => {
             {Object.entries(levelDist).map(([lvl, n]) => (
               <span key={lvl} style={{
                 padding: '4px 12px', borderRadius: '999px', fontWeight: 700,
-                background: 'var(--bg-secondary, #f8f9fa)', color: levelColor[lvl],
+                background: 'var(--bg-light-gray, #f8f9fa)', color: levelColor[lvl],
                 border: `1px solid ${levelColor[lvl]}`,
               }}>{lvl} {n}명</span>
             ))}
