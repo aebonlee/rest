@@ -33,19 +33,22 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
     }
 
     const rawDigits = phone.replace(/\D/g, '');
-    if (rawDigits && !/^01[0-9]\d{7,8}$/.test(rawDigits)) {
+    if (!rawDigits) {
+      setError('전화번호를 입력해주세요. (필수)');
+      return;
+    }
+    if (!/^01[0-9]\d{7,8}$/.test(rawDigits)) {
       setError('올바른 전화번호를 입력해주세요. (예: 010-1234-5678)');
       return;
     }
 
     setSaving(true);
     try {
-      const updates: Record<string, string> = {
+      await updateProfile(user.id, {
         name: trimmedName,
         display_name: trimmedName,
-      };
-      if (rawDigits) updates.phone = formatPhone(rawDigits);
-      await updateProfile(user.id, updates);
+        phone: formatPhone(rawDigits),
+      });
       await onComplete();
     } catch (err) {
       setError('저장에 실패했습니다. 다시 시도해주세요.');
@@ -53,19 +56,6 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
     } finally {
       setSaving(false);
     }
-  };
-
-  const handleSkip = async () => {
-    // 이름이 있으면 저장하고 스킵
-    const trimmedName = name.trim();
-    if (trimmedName) {
-      try {
-        await updateProfile(user.id, { name: trimmedName, display_name: trimmedName });
-      } catch {
-        // 저장 실패해도 모달 닫기
-      }
-    }
-    await onComplete();
   };
 
   return (
@@ -85,27 +75,12 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* 닫기 버튼 */}
-        <button
-          type="button"
-          onClick={handleSkip}
-          style={{
-            position: 'absolute', top: '14px', right: '14px',
-            background: 'none', border: 'none', color: '#9CA3AF',
-            cursor: 'pointer', fontSize: '20px', lineHeight: 1,
-            padding: '4px 8px', borderRadius: '6px',
-          }}
-          title="나중에 입력"
-        >
-          ✕
-        </button>
-
         <h2 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: 700, color: '#111' }}>
           프로필 정보 입력
         </h2>
         <p style={{ margin: '0 0 24px', fontSize: '16px', color: '#666', lineHeight: 1.5 }}>
-          원활한 수업 운영을 위해 아래 정보를 입력해주세요.<br />
-          <span style={{ color: '#9CA3AF', fontSize: '14px' }}>전화번호는 선택 사항입니다.</span>
+          원활한 수업 운영을 위해 <strong>이름(실명)과 전화번호</strong>를 입력해주세요.<br />
+          <span style={{ color: '#dc2626', fontSize: '14px' }}>두 항목 모두 필수입니다.</span>
         </p>
 
         <label style={{ display: 'block', marginBottom: '16px' }}>
@@ -131,7 +106,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
 
         <label style={{ display: 'block', marginBottom: '20px' }}>
           <span style={{ display: 'block', fontSize: '15px', fontWeight: 600, color: '#333', marginBottom: '6px' }}>
-            전화번호 <span style={{ color: '#9CA3AF', fontWeight: 400 }}>(선택)</span>
+            전화번호 <span style={{ color: '#dc2626' }}>*</span>
           </span>
           <input
             type="tel"
@@ -166,20 +141,6 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
           }}
         >
           {saving ? '저장 중...' : '저장하고 시작하기'}
-        </button>
-
-        <button
-          type="button"
-          onClick={handleSkip}
-          disabled={saving}
-          style={{
-            width: '100%', padding: '10px', fontSize: '16px', fontWeight: 500,
-            color: '#6B7280', background: 'none',
-            border: '1px solid #E5E7EB', borderRadius: '8px',
-            cursor: saving ? 'not-allowed' : 'pointer',
-          }}
-        >
-          나중에 입력하기
         </button>
       </form>
     </div>
