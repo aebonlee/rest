@@ -51,21 +51,6 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'AWS 자격증', desc: 'AWS 클라우드 자격증 시험 대비 학습 플랫폼', url: 'https://aws.dreamitbiz.com' },
     { name: 'AICE Associate 학습', desc: 'AICE Associate 자격증 시험 대비 학습 플랫폼', url: 'https://aice.dreamitbiz.com' },
   ] },
-  { id: 'hub', label: '학습 허브', icon: '🗂️', owner: 'mine', sites: [
-    { name: '교육 종합 허브', desc: '전체 교육 사이트 통합 포털', url: 'https://edu-hub.dreamitbiz.com' },
-    { name: '코딩 학습 허브', desc: 'HTML, React, Python, Java, C 등 7개 플랫폼', url: 'https://coding-hub.dreamitbiz.com' },
-    { name: 'CS전공 학습 허브', desc: '알고리즘, 자료구조, DB, SW공학 등 5개 플랫폼', url: 'https://cs-hub.dreamitbiz.com' },
-    { name: 'AI 전문 학습 허브', desc: '챗봇, 자동화, 데이터, 미디어 등 11개 AI 플랫폼', url: 'https://ai-hub.dreamitbiz.com' },
-    { name: '자격증 학습 허브', desc: '정보처리기사, SQLD, 리눅스마스터 등 5개 플랫폼', url: 'https://exam-hub.dreamitbiz.com' },
-  ] },
-  { id: 'company', label: '회사·운영', icon: '🏢', owner: 'mine', sites: [
-    { name: '드림아이티비즈 메인', desc: '공식 홈페이지 — 회사소개, 서비스 안내, 전체 사이트 허브', url: 'https://www.dreamitbiz.com' },
-    { name: '드림아이티 출판', desc: '교재 판매, 디지털 콘텐츠, 교육 자료, E-Publishing', url: 'https://books.dreamitbiz.com' },
-    { name: '강의 예약', desc: '강의 일정 관리, 예약, 강사 매칭, 관리자 대시보드', url: 'https://reserve.dreamitbiz.com' },
-    { name: '학습 자료 라이브러리', desc: '프로그래밍, CS, 수학, 과학, 영어, 경영, 자격증 분류', url: 'https://docs.dreamitbiz.com' },
-    { name: '쉬었음청년 AI교육', desc: 'AI·바이브코딩 교육, AI 리부트 경진대회, LMS, 코칭', url: 'https://rest.dreamitbiz.com' },
-    { name: 'DreamIT 전체 사이트 포탈', desc: '전체 사이트 목록 및 카테고리별 분류 포탈', url: 'https://site.dreamitbiz.com' },
-  ] },
   { id: 'external', label: '외부 AI·개발 도구', icon: '🌐', owner: 'external', sites: [
     { name: 'ChatGPT', desc: 'OpenAI ChatGPT', url: 'https://chat.openai.com/' },
     { name: 'Claude', desc: 'Anthropic Claude', url: 'https://claude.ai/' },
