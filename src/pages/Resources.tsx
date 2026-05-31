@@ -1,87 +1,119 @@
-import { useState, useEffect, type ReactElement } from 'react';
-import { useLanguage } from '../contexts/LanguageContext';
+import { useState, type ReactElement } from 'react';
 import SEOHead from '../components/SEOHead';
-import getSupabase from '../utils/supabase';
-import site from '../config/site';
-import type { Resource } from '../types';
-
-const TABLES = { resources: `${site.dbPrefix}resources` };
-
-const defaultResources: Resource[] = [
-  { id: '1', title: 'Solar API', description: 'Upstage Solar LLM API 문서', url: 'https://developers.upstage.ai/', category: 'llm', icon: '☀️', sort_order: 1 },
-  { id: '2', title: 'ChatGPT', description: 'OpenAI ChatGPT', url: 'https://chat.openai.com/', category: 'llm', icon: '🤖', sort_order: 2 },
-  { id: '3', title: 'Gemini', description: 'Google Gemini AI', url: 'https://gemini.google.com/', category: 'llm', icon: '💎', sort_order: 3 },
-  { id: '4', title: 'Claude', description: 'Anthropic Claude AI', url: 'https://claude.ai/', category: 'llm', icon: '🧠', sort_order: 4 },
-  { id: '5', title: 'VS Code', description: '코드 에디터', url: 'https://code.visualstudio.com/', category: 'tool', icon: '💻', sort_order: 5 },
-  { id: '6', title: 'Cursor', description: 'AI 기반 코드 에디터', url: 'https://cursor.sh/', category: 'tool', icon: '⚡', sort_order: 6 },
-  { id: '7', title: 'GitHub', description: '소스코드 관리', url: 'https://github.com/', category: 'tool', icon: '🐙', sort_order: 7 },
-  { id: '8', title: 'Supabase', description: 'Backend-as-a-Service', url: 'https://supabase.com/', category: 'tool', icon: '⚡', sort_order: 8 },
-  { id: '9', title: 'React 공식 문서', description: 'React 프레임워크 문서', url: 'https://react.dev/', category: 'reference', icon: '⚛️', sort_order: 9 },
-  { id: '10', title: 'Vite 공식 문서', description: 'Vite 빌드 도구 문서', url: 'https://vite.dev/', category: 'reference', icon: '⚡', sort_order: 10 },
-];
-
-const categoryLabels: Record<string, string> = {
-  all: '전체',
-  llm: 'LLM/AI',
-  tool: '개발 도구',
-  reference: '참고 문서',
-  tutorial: '튜토리얼',
-};
+import { SITE_GROUPS } from '../data/resourceSites';
 
 const Resources = (): ReactElement => {
-  const { t } = useLanguage();
-  const [resources, setResources] = useState<Resource[]>(defaultResources);
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [active, setActive] = useState(SITE_GROUPS[0].id);
+  const group = SITE_GROUPS.find((g) => g.id === active) || SITE_GROUPS[0];
+  const mine = SITE_GROUPS.filter((g) => g.owner === 'mine');
+  const external = SITE_GROUPS.filter((g) => g.owner === 'external');
 
-  useEffect(() => {
-    const loadResources = async () => {
-      const client = getSupabase();
-      if (!client) return;
-      const { data } = await client.from(TABLES.resources).select('*').order('sort_order');
-      if (data && data.length > 0) setResources(data as Resource[]);
-    };
-    loadResources();
-  }, []);
+  const navBtn = (g: typeof SITE_GROUPS[number]): ReactElement => {
+    const on = g.id === active;
+    return (
+      <button
+        key={g.id}
+        type="button"
+        onClick={() => setActive(g.id)}
+        style={{
+          display: 'flex', alignItems: 'center', gap: '9px', width: '100%',
+          padding: '10px 12px', borderRadius: '9px', cursor: 'pointer',
+          fontSize: '15px', fontWeight: on ? 700 : 500, textAlign: 'left',
+          border: '1px solid', borderColor: on ? 'var(--primary-blue)' : 'transparent',
+          background: on ? 'var(--primary-blue)' : 'transparent',
+          color: on ? '#fff' : 'var(--text-primary)',
+        }}
+      >
+        <span style={{ fontSize: '18px' }}>{g.icon}</span>
+        <span style={{ flex: 1 }}>{g.label}</span>
+        <span style={{ fontSize: '12px', opacity: 0.8 }}>{g.sites.length}</span>
+      </button>
+    );
+  };
 
-  const filtered = activeCategory === 'all' ? resources : resources.filter(r => r.category === activeCategory);
+  const sectionLabel = (text: string): ReactElement => (
+    <p style={{ margin: '4px 8px 6px', fontSize: '12px', fontWeight: 800, letterSpacing: '0.04em', color: 'var(--text-secondary)' }}>{text}</p>
+  );
 
   return (
     <>
-      <SEOHead title="리소스" path="/resources" />
+      <SEOHead title="학습자료" description="드림아이티비즈 학습 사이트와 외부 AI·개발 자료를 분야별로 모았습니다." path="/resources" />
 
       <section className="page-header">
         <div className="container">
-          <h2>{t('site.resources.title')}</h2>
-          <p>{t('site.resources.subtitle')}</p>
+          <h2>학습자료</h2>
+          <p>내가 만든 학습 사이트와 외부 자료·도구를 분야별로 모았습니다.</p>
         </div>
       </section>
 
-      <section className="section">
+      <section className="section" style={{ padding: '40px 0 80px' }}>
         <div className="container">
-          <div className="curriculum-filter">
-            {Object.entries(categoryLabels).map(([key, label]) => (
-              <button key={key} className={`filter-btn ${activeCategory === key ? 'active' : ''}`}
-                onClick={() => setActiveCategory(key)}>
-                {label}
-              </button>
-            ))}
-          </div>
+          <div className="resources-layout" style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr)', gap: '24px' }}>
+            {/* 본문 */}
+            <div style={{ minWidth: 0, order: 2 }} className="resources-main">
+              <h3 style={{ margin: '0 0 4px', fontSize: '20px', color: 'var(--text-primary)' }}>
+                {group.icon} {group.label}
+                <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)' }}> · {group.sites.length}개</span>
+              </h3>
+              <p style={{ margin: '0 0 18px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                {group.owner === 'mine' ? '드림아이티비즈가 운영하는 학습 사이트입니다.' : '제3자가 제공하는 외부 사이트·도구입니다.'}
+              </p>
 
-          <div className="resource-grid">
-            {filtered.map((resource) => (
-              <a key={resource.id} href={resource.url} target="_blank" rel="noopener noreferrer" className="resource-card">
-                <span className="resource-icon">{resource.icon}</span>
-                <div className="resource-info">
-                  <h4>{resource.title}</h4>
-                  <p>{resource.description}</p>
-                  <span className="resource-category">{categoryLabels[resource.category] || resource.category}</span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
+                {group.sites.map((s) => (
+                  <a
+                    key={s.url}
+                    href={s.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{
+                      display: 'flex', flexDirection: 'column', gap: '5px',
+                      padding: '16px 18px', borderRadius: '12px', textDecoration: 'none',
+                      border: '1px solid var(--border-light)', background: 'var(--bg-white)',
+                      color: 'var(--text-primary)', transition: 'border-color 0.15s, transform 0.1s',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary-blue)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = 'var(--border-light)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                  >
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
+                      <strong style={{ fontSize: '15px' }}>{s.name}</strong>
+                      <span style={{ color: 'var(--primary-blue)', fontWeight: 700, flexShrink: 0 }}>→</span>
+                    </div>
+                    <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{s.desc}</span>
+                    <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', opacity: 0.7 }}>{s.url.replace('https://', '')}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            {/* 왼쪽 사이드바 */}
+            <aside style={{ order: 1 }} className="resources-sidebar">
+              <div style={{
+                position: 'sticky', top: '90px',
+                background: 'var(--bg-white)', border: '1px solid var(--border-light)',
+                borderRadius: '12px', padding: '14px 10px',
+              }}>
+                {sectionLabel('내가 만든 사이트')}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '14px' }}>
+                  {mine.map(navBtn)}
                 </div>
-                <span className="resource-arrow">→</span>
-              </a>
-            ))}
+                {sectionLabel('외부 사이트')}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
+                  {external.map(navBtn)}
+                </div>
+              </div>
+            </aside>
           </div>
         </div>
       </section>
+
+      <style>{`
+        @media (min-width: 1024px) {
+          .resources-layout { grid-template-columns: 240px 1fr !important; }
+          .resources-sidebar { order: 1 !important; }
+          .resources-main { order: 2 !important; }
+        }
+      `}</style>
     </>
   );
 };

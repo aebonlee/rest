@@ -224,8 +224,8 @@ export const translations: Record<string, Record<string, unknown>> = {
         subtitle: '국내 LLM 활용 AI 서비스 개발 경진대회 안내'
       },
       resources: {
-        title: '리소스',
-        subtitle: 'AI 도구, LLM, 개발 도구, 참고 문서 모음'
+        title: '학습자료',
+        subtitle: '내가 만든 학습 사이트와 외부 자료·도구를 분야별로'
       },
       instructor: {
         title: '강사소개',
