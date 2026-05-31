@@ -152,7 +152,7 @@ const Dashboard = (): ReactElement => {
                 <Link to="/qna" className="quick-link-card">❓ Q&A</Link>
                 <Link to="/classroom" className="quick-link-card">💻 온라인강의실</Link>
                 <Link to="/mypage" className="quick-link-card">👤 마이페이지</Link>
-                <a href="https://padlet.com/aebon/rest01" target="_blank" rel="noopener noreferrer" className="quick-link-card">📌 ReBoot 1기 출석판</a>
+                <a href="https://padlet.com/aebon/rest01" target="_blank" rel="noopener noreferrer" className="quick-link-card">📌 공유 게시판</a>
               </div>
             </div>
           </div>

@@ -51,7 +51,7 @@ const MyPage = (): ReactElement => {
     const client = getSupabase();
     if (!client || !user) return;
     const [attRes, pledgeRes] = await Promise.all([
-      client.from(TABLES.attendance).select('date, status, check_in_time').eq('student_id', user.id).order('date', { ascending: false }).limit(20),
+      client.from(TABLES.attendance).select('date, status, check_in_time').eq('student_id', user.id).order('date', { ascending: false }).limit(40),
       client.from(TABLES.pledges).select('content').eq('user_id', user.id).maybeSingle(),
     ]);
     const rows = (attRes.data || []) as AttRow[];
@@ -196,24 +196,70 @@ const MyPage = (): ReactElement => {
                     {checking ? '체크 중…' : '오늘 출석체크'}
                   </button>
                 )}
-                <a href={PADLET_URL} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '10px 18px' }}>
-                  📌 ReBoot 1기 출석판 →
-                </a>
               </div>
             </div>
 
-            {recent.length > 0 && (
-              <div style={{ marginTop: '16px' }}>
-                <div style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '8px' }}>최근 출결 (출석 {recent.filter((r) => r.status === 'present').length}일)</div>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
-                  {recent.map((r) => (
-                    <span key={r.date} style={{ fontSize: '12px', padding: '4px 10px', borderRadius: '999px', background: 'var(--bg-light-gray)', color: STATUS_COLOR[r.status] || 'var(--text-secondary)', fontWeight: 700 }}>
-                      {r.date.slice(5)} {STATUS_LABEL[r.status] || r.status}
-                    </span>
-                  ))}
+            {/* 6월 출석 달력 (날짜별 도장) */}
+            {(() => {
+              const attMap: Record<string, string> = {};
+              recent.forEach((r) => { attMap[r.date] = r.status; });
+              const firstDow = new Date(2026, 5, 1).getDay();
+              const HOLIDAY = '2026-06-03';
+              const presentDays = recent.filter((r) => r.status === 'present' && r.date.startsWith('2026-06')).length;
+              const cells: ReactElement[] = [];
+              for (let i = 0; i < firstDow; i++) cells.push(<div key={`b${i}`} />);
+              for (let d = 1; d <= 30; d++) {
+                const ds = `2026-06-${String(d).padStart(2, '0')}`;
+                const dow = new Date(2026, 5, d).getDay();
+                const isWeekend = dow === 0 || dow === 6;
+                const isHoliday = ds === HOLIDAY;
+                const isClass = !isWeekend && d <= 22 && !isHoliday;
+                const status = attMap[ds];
+                const col = status ? STATUS_COLOR[status] : '';
+                cells.push(
+                  <div key={ds} style={{
+                    position: 'relative', aspectRatio: '1 / 1', borderRadius: '8px',
+                    border: `1px solid ${isClass ? 'var(--border-light)' : 'transparent'}`,
+                    background: isHoliday ? '#fef3c7' : isClass ? 'var(--bg-white)' : 'var(--bg-light-gray)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    opacity: isWeekend && !status ? 0.45 : 1,
+                  }}>
+                    <span style={{ position: 'absolute', top: '4px', left: '6px', fontSize: '11px', fontWeight: 600, color: dow === 0 ? '#ef4444' : dow === 6 ? '#2563eb' : 'var(--text-secondary)' }}>{d}</span>
+                    {status ? (
+                      <div style={{
+                        width: '34px', height: '34px', borderRadius: '50%',
+                        border: `2px solid ${col}`, color: col, background: `${col}1f`,
+                        display: 'flex', alignItems: 'center', justifyContent: 'center',
+                        fontSize: '11px', fontWeight: 800, transform: 'rotate(-12deg)',
+                      }}>{STATUS_LABEL[status] || status}</div>
+                    ) : isHoliday ? (
+                      <span style={{ fontSize: '11px', color: '#92400e', fontWeight: 700 }}>휴강</span>
+                    ) : null}
+                  </div>
+                );
+              }
+              return (
+                <div style={{ marginTop: '18px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
+                    <div style={{ fontSize: '14px', fontWeight: 700 }}>📅 6월 출석 달력</div>
+                    <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>출석 <strong style={{ color: '#10b981' }}>{presentDays}</strong>일</div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px', marginBottom: '6px' }}>
+                    {['일', '월', '화', '수', '목', '금', '토'].map((w, i) => (
+                      <div key={w} style={{ textAlign: 'center', fontSize: '12px', fontWeight: 700, color: i === 0 ? '#ef4444' : i === 6 ? '#2563eb' : 'var(--text-secondary)' }}>{w}</div>
+                    ))}
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: '6px' }}>{cells}</div>
+                  <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginTop: '10px', fontSize: '12px', color: 'var(--text-secondary)' }}>
+                    {Object.entries(STATUS_LABEL).map(([k, v]) => (
+                      <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <span style={{ width: '10px', height: '10px', borderRadius: '50%', border: `2px solid ${STATUS_COLOR[k]}` }} />{v}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
 
           {/* 수강 다짐 */}
@@ -254,6 +300,9 @@ const MyPage = (): ReactElement => {
                   <span style={{ fontSize: '20px' }}>{l.icon}</span>{l.label}
                 </Link>
               ))}
+              <a href={PADLET_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 15px', borderRadius: '10px', textDecoration: 'none', border: '1px solid var(--border-light)', background: 'var(--bg-white)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '15px' }}>
+                <span style={{ fontSize: '20px' }}>📌</span>공유 게시판
+              </a>
               {isAdmin && (
                 <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 15px', borderRadius: '10px', textDecoration: 'none', border: '1px solid var(--primary-blue)', background: 'var(--primary-blue)', color: '#fff', fontWeight: 600, fontSize: '15px' }}>
                   <span style={{ fontSize: '20px' }}>🛠️</span>관리자
