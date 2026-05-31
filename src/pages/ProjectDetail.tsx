@@ -34,7 +34,7 @@ const ProjectDetail = (): ReactElement => {
       <SEOHead title={project.title} path={`/projects/${id}`} noindex />
       <section className="page-header">
         <div className="container">
-          <Link to="/projects" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', fontSize: '14px' }}>← 프로젝트 목록</Link>
+          <Link to="/projects" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', fontSize: '16px' }}>← 프로젝트 목록</Link>
           <h2>{project.title}</h2>
           <p>{statusLabels[project.status] || project.status}</p>
         </div>

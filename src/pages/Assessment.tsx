@@ -199,7 +199,7 @@ const Assessment = (): ReactElement => {
                     padding: '10px 18px',
                     borderRadius: '8px',
                     fontWeight: 600,
-                    fontSize: '14px',
+                    fontSize: '16px',
                     textDecoration: 'none',
                     background: isActive ? 'var(--primary-blue, #0046C8)' : 'transparent',
                     color: isActive ? '#fff' : 'var(--text-primary, #1a1a1a)',
@@ -232,7 +232,7 @@ const Assessment = (): ReactElement => {
                   textAlign: 'center',
                 }}>
                   <p style={{
-                    fontSize: '14px', fontWeight: 600,
+                    fontSize: '16px', fontWeight: 600,
                     color: passed ? '#065f46' : '#991b1b',
                     margin: '0 0 8px',
                     letterSpacing: '0.05em',
@@ -248,7 +248,7 @@ const Assessment = (): ReactElement => {
                   <p style={{ fontSize: '20px', fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>
                     {result.scorePercent}점
                   </p>
-                  <p style={{ fontSize: '14px', color: '#4B5563', margin: 0 }}>
+                  <p style={{ fontSize: '16px', color: '#4B5563', margin: 0 }}>
                     합격 기준: {set.passingScore}점 이상
                   </p>
                 </div>
@@ -264,8 +264,8 @@ const Assessment = (): ReactElement => {
                 lineHeight: 1.7,
                 color: 'var(--text-primary, #1a1a1a)',
               }}>
-                <p style={{ margin: '0 0 10px', fontSize: '14px' }}>{set.description}</p>
-                <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', fontSize: '13px' }}>
+                <p style={{ margin: '0 0 10px', fontSize: '16px' }}>{set.description}</p>
+                <div style={{ display: 'flex', gap: '18px', flexWrap: 'wrap', fontSize: '15px' }}>
                   <span><strong>제한 시간:</strong> {set.duration}</span>
                   {isPractice ? (
                     <span><strong>방식:</strong> 자습용 · 채점 없음 · 정답·해설 공개</span>
@@ -319,7 +319,7 @@ const Assessment = (): ReactElement => {
                           <span style={{
                             flexShrink: 0,
                             padding: '4px 10px',
-                            fontSize: '12px',
+                            fontSize: '14px',
                             fontWeight: 700,
                             borderRadius: '999px',
                             background: isCorrect ? '#d1fae5' : '#fee2e2',
@@ -386,10 +386,10 @@ const Assessment = (): ReactElement => {
                                 <span style={{ marginRight: '6px', fontWeight: 600 }}>{String.fromCharCode(0x2460 + i)}</span>
                                 {opt}
                                 {isCorrectOption && (
-                                  <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 700 }}>← 정답</span>
+                                  <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 700 }}>← 정답</span>
                                 )}
                                 {isWrongChoice && (
-                                  <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 700 }}>← 내 답</span>
+                                  <span style={{ marginLeft: '8px', fontSize: '14px', fontWeight: 700 }}>← 내 답</span>
                                 )}
                               </span>
                             </label>
@@ -405,10 +405,10 @@ const Assessment = (): ReactElement => {
                           borderLeft: '3px solid var(--primary-blue, #0046C8)',
                           borderRadius: '0 8px 8px 0',
                         }}>
-                          <p style={{ margin: '0 0 4px', fontSize: '12px', fontWeight: 700, color: 'var(--primary-blue, #0046C8)', letterSpacing: '0.05em' }}>
+                          <p style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: 'var(--primary-blue, #0046C8)', letterSpacing: '0.05em' }}>
                             💡 해설
                           </p>
-                          <p style={{ margin: 0, fontSize: '13.5px', lineHeight: 1.7, color: 'var(--text-primary, #1a1a1a)' }}>
+                          <p style={{ margin: 0, fontSize: '15.5px', lineHeight: 1.7, color: 'var(--text-primary, #1a1a1a)' }}>
                             {q.explanation}
                           </p>
                         </div>
@@ -433,7 +433,7 @@ const Assessment = (): ReactElement => {
                 <div style={{ marginBottom: '14px' }}>
                   <p style={{
                     margin: '0 0 4px',
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontWeight: 700,
                     color: 'var(--primary-blue, #0046C8)',
                     letterSpacing: '0.05em',
@@ -486,7 +486,7 @@ const Assessment = (): ReactElement => {
                         aria-label={`${q.no}번 문항으로 이동`}
                         style={{
                           aspectRatio: '1 / 1',
-                          fontSize: '12px',
+                          fontSize: '14px',
                           fontWeight: 700,
                           background: style.bg,
                           color: style.color,
@@ -513,7 +513,7 @@ const Assessment = (): ReactElement => {
                   display: 'flex',
                   flexDirection: 'column',
                   gap: '4px',
-                  fontSize: '11px',
+                  fontSize: '13px',
                   color: 'var(--text-secondary, #6b7280)',
                   marginBottom: '16px',
                   padding: '10px',
@@ -550,7 +550,7 @@ const Assessment = (): ReactElement => {
                   {isPractice ? (
                     <>
                       <p style={{
-                        margin: 0, fontSize: '12px', lineHeight: 1.6,
+                        margin: 0, fontSize: '14px', lineHeight: 1.6,
                         color: 'var(--text-secondary, #6b7280)',
                         padding: '10px', background: 'var(--bg-light-gray, #f8f9fa)', borderRadius: '6px',
                       }}>
@@ -560,7 +560,7 @@ const Assessment = (): ReactElement => {
                         type="button"
                         onClick={handleReset}
                         style={{
-                          padding: '10px 16px', fontSize: '13px', fontWeight: 600,
+                          padding: '10px 16px', fontSize: '15px', fontWeight: 600,
                           background: 'transparent', color: 'var(--text-secondary, #6b7280)',
                           border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '8px',
                           cursor: 'pointer', width: '100%',
@@ -576,7 +576,7 @@ const Assessment = (): ReactElement => {
                         onClick={handleSubmit}
                         style={{
                           padding: '12px 16px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           fontWeight: 700,
                           background: 'var(--primary-blue, #0046C8)',
                           color: '#fff',
@@ -593,7 +593,7 @@ const Assessment = (): ReactElement => {
                         onClick={handleReset}
                         style={{
                           padding: '10px 16px',
-                          fontSize: '13px',
+                          fontSize: '15px',
                           fontWeight: 600,
                           background: 'transparent',
                           color: 'var(--text-secondary, #6b7280)',
@@ -611,7 +611,7 @@ const Assessment = (): ReactElement => {
                       {/* 성적 저장 상태 */}
                       {saveStatus !== 'idle' && (
                         <div style={{
-                          fontSize: '12px', fontWeight: 600, textAlign: 'center',
+                          fontSize: '14px', fontWeight: 600, textAlign: 'center',
                           padding: '8px 10px', borderRadius: '6px',
                           background:
                             saveStatus === 'saved' ? '#ecfdf5'
@@ -633,7 +633,7 @@ const Assessment = (): ReactElement => {
                         onClick={handleReset}
                         style={{
                           padding: '12px 16px',
-                          fontSize: '14px',
+                          fontSize: '16px',
                           fontWeight: 700,
                           background: 'var(--primary-blue, #0046C8)',
                           color: '#fff',

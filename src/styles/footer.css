@@ -37,7 +37,7 @@
     color: rgba(255, 255, 255, 0.8);
     line-height: 1.7;
     margin-bottom: 24px;
-    font-size: 15px;
+    font-size: 16px;
 }
 
 .company-info {
@@ -48,7 +48,7 @@
 
 .company-info p {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 14px;
+    font-size: 16px;
     margin-bottom: 6px;
     line-height: 1.7;
 }
@@ -61,7 +61,7 @@
 .footer-contact h4,
 .footer-section h3,
 .footer-info h4 {
-    font-size: 16px;
+    font-size: 17px;
     margin-bottom: 16px;
     color: var(--text-white);
 }
@@ -80,7 +80,7 @@
 .footer-links a {
     color: rgba(255, 255, 255, 0.8);
     text-decoration: none;
-    font-size: 15px;
+    font-size: 16px;
     transition: color 0.2s ease;
     line-height: 1.6;
 }
@@ -92,7 +92,7 @@
 .footer-contact p,
 .footer-info p {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 15px;
+    font-size: 16px;
     margin-bottom: 10px;
     line-height: 1.7;
 }
@@ -113,7 +113,7 @@
     color: rgba(255, 255, 255, 0.8);
     border: 1px solid rgba(255, 255, 255, 0.15);
     border-radius: 6px;
-    font-size: 13px;
+    font-size: 15px;
     cursor: pointer;
     appearance: auto;
 }
@@ -132,7 +132,7 @@
     padding-top: 24px;
     border-top: 1px solid rgba(255, 255, 255, 0.08);
     color: rgba(255, 255, 255, 0.6);
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .footer-info {
@@ -142,7 +142,7 @@
 }
 
 .info-section h4 {
-    font-size: 16px;
+    font-size: 17px;
     margin-bottom: 16px;
     color: var(--text-white);
     font-weight: 600;
@@ -150,7 +150,7 @@
 
 .info-section p {
     color: rgba(255, 255, 255, 0.8);
-    font-size: 15px;
+    font-size: 16px;
     margin-bottom: 8px;
     line-height: 1.7;
 }
@@ -180,6 +180,6 @@
     }
 
     .footer-bottom {
-        font-size: 12px;
+        font-size: 14px;
     }
 }

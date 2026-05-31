@@ -60,12 +60,12 @@ const ROW_LABEL: React.CSSProperties = {
   width: '120px',
   fontWeight: 600,
   color: 'var(--text-secondary, #6b7280)',
-  fontSize: '13px',
+  fontSize: '15px',
   flexShrink: 0,
 };
 const ROW_VALUE: React.CSSProperties = {
   color: 'var(--text-primary, #1a1a1a)',
-  fontSize: '14px',
+  fontSize: '16px',
   lineHeight: 1.6,
 };
 
@@ -101,7 +101,7 @@ export default function About(): ReactElement {
             color: 'var(--text-primary, #1a1a1a)',
           }}>
             <p style={{
-              fontSize: '13px',
+              fontSize: '15px',
               fontWeight: 700,
               letterSpacing: '0.1em',
               color: 'var(--primary-blue, #0046C8)',
@@ -110,7 +110,7 @@ export default function About(): ReactElement {
             <h2 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 16px', color: 'var(--text-primary, #1a1a1a)' }}>
               본 사이트는 강사의 회사가 직접 운영합니다.
             </h2>
-            <p style={{ margin: 0, fontSize: '15px' }}>
+            <p style={{ margin: 0, fontSize: '16px' }}>
               <strong>AI Reboot Academy</strong>는 본 과정의 총괄 책임교수인 <strong>이애본 박사</strong>가 대표로 있는{' '}
               <strong>드림아이티비즈(DreamIT Biz)</strong>가 운영합니다. 강사가 본 과정을 진행하기 위해
               직접 기획·설계·개발한 사이트로, 강의 자료·과제·평가·팀 프로젝트가 하나의 LMS로 통합되어 있습니다.
@@ -150,10 +150,10 @@ export default function About(): ReactElement {
               <h4 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary, #1a1a1a)' }}>
                 이애본 (Ph.D Aebon Lee)
               </h4>
-              <p style={{ margin: '0 0 4px', fontSize: '15px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+              <p style={{ margin: '0 0 4px', fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
                 총괄 책임교수 · DreamIT Biz 대표
               </p>
-              <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
+              <p style={{ margin: '0 0 16px', fontSize: '16px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
                 한신대학교 AI·SW대학 겸임교수 · 드림아이티비즈 대표.<br />
                 대학 강의와 기업 교육 현장에서 AI·SW·경영정보 분야를 가르치며, 본 과정은 회사 대표인 강사가 직접 설계하고
                 운영하는 단기 집중 트랙입니다.
@@ -165,7 +165,7 @@ export default function About(): ReactElement {
                     background: 'var(--bg-secondary, #f0f4ff)',
                     color: 'var(--primary-blue, #0046C8)',
                     borderRadius: '999px',
-                    fontSize: '12px',
+                    fontSize: '14px',
                     fontWeight: 600,
                   }}>{tag}</span>
                 ))}
@@ -174,7 +174,7 @@ export default function About(): ReactElement {
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '6px',
-                fontSize: '13.5px',
+                fontSize: '15.5px',
                 fontWeight: 600,
                 color: 'var(--primary-blue, #0046C8)',
                 textDecoration: 'none',
@@ -218,10 +218,10 @@ export default function About(): ReactElement {
                 }}>
                   <span role="img" aria-label={r.title}>{r.emoji}</span>
                 </div>
-                <strong style={{ fontSize: '16px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '8px' }}>
+                <strong style={{ fontSize: '17px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '8px' }}>
                   {r.title}
                 </strong>
-                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
+                <p style={{ margin: 0, fontSize: '16px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.7 }}>
                   {r.desc}
                 </p>
               </div>
@@ -241,13 +241,13 @@ export default function About(): ReactElement {
             lineHeight: 1.8,
           }}>
             <p style={{
-              fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
+              fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em',
               color: 'var(--primary-blue, #0046C8)', margin: '0 0 8px',
             }}>COMPANY</p>
             <h4 style={{ fontSize: '24px', fontWeight: 700, margin: '0 0 12px', color: 'var(--text-primary, #1a1a1a)' }}>
               드림아이티비즈 (DreamIT Biz)
             </h4>
-            <p style={{ margin: 0, fontSize: '15px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.8 }}>
+            <p style={{ margin: 0, fontSize: '16px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.8 }}>
               드림아이티비즈는 본 과정의 강사가 대표로 운영하는 <strong>에듀테크 전문 회사</strong>입니다.
               대학·기관 위탁교육과 기업 맞춤형 AI 교육을 중심으로, 자체 인프라로 90여 개의 교육 사이트를
               설계·운영합니다. 본 과정 또한 회사의 교육 운영 사례 중 하나로, 강사가 대표 자격이자
@@ -273,10 +273,10 @@ export default function About(): ReactElement {
                 <div style={{ fontSize: '28px', lineHeight: 1, marginBottom: '10px' }}>
                   <span role="img" aria-label={b.title}>{b.emoji}</span>
                 </div>
-                <strong style={{ fontSize: '15px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '6px' }}>
+                <strong style={{ fontSize: '16px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '6px' }}>
                   {b.title}
                 </strong>
-                <p style={{ margin: 0, fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.65 }}>
+                <p style={{ margin: 0, fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.65 }}>
                   {b.desc}
                 </p>
               </div>
@@ -300,10 +300,10 @@ export default function About(): ReactElement {
               borderRadius: '12px',
             }}>
               <p style={{
-                fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
+                fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em',
                 color: 'var(--primary-blue, #0046C8)', margin: '0 0 16px',
               }}>회사 정보</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '16px' }}>
                 <div style={{ display: 'flex' }}>
                   <span style={ROW_LABEL}>상호</span>
                   <span style={ROW_VALUE}>{c.name}</span>
@@ -342,14 +342,14 @@ export default function About(): ReactElement {
               borderRadius: '12px',
             }}>
               <p style={{
-                fontSize: '12px', fontWeight: 700, letterSpacing: '0.1em',
+                fontSize: '14px', fontWeight: 700, letterSpacing: '0.1em',
                 color: 'var(--primary-blue, #0046C8)', margin: '0 0 16px',
               }}>연락처</p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '14px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '16px' }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="이메일">📧</span>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>이메일 (강사 직통)</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>이메일 (강사 직통)</div>
                     <a href={`mailto:${c.email}`} style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
                       {c.email}
                     </a>
@@ -359,7 +359,7 @@ export default function About(): ReactElement {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="전화">📞</span>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>전화</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>전화</div>
                     <a href={`tel:${c.phone.replace(/-/g, '')}`} style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
                       {c.phone}
                     </a>
@@ -370,7 +370,7 @@ export default function About(): ReactElement {
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                     <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="카카오톡">💬</span>
                     <div>
-                      <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>카카오톡 ID</div>
+                      <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>카카오톡 ID</div>
                       <span style={{ color: 'var(--text-primary, #1a1a1a)', fontWeight: 600 }}>@{c.kakao}</span>
                     </div>
                   </div>
@@ -379,7 +379,7 @@ export default function About(): ReactElement {
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="본 사이트">🌐</span>
                   <div>
-                    <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>회사 본 사이트</div>
+                    <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>회사 본 사이트</div>
                     <a href={site.parentSite.url} target="_blank" rel="noopener noreferrer"
                        style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
                       www.dreamitbiz.com
@@ -398,7 +398,7 @@ export default function About(): ReactElement {
                   회사가 운영하는 다른 교육 사이트
                 </span>
               </h3>
-              <p style={{ fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 20px', lineHeight: 1.7 }}>
+              <p style={{ fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 20px', lineHeight: 1.7 }}>
                 강사의 회사가 동일한 인프라로 운영 중인 사이트 예시입니다. 본 과정도 이 운영 체계 위에서 안정적으로 진행됩니다.
               </p>
               <div style={{
@@ -418,7 +418,7 @@ export default function About(): ReactElement {
                     borderRadius: '10px',
                     textDecoration: 'none',
                     color: 'var(--text-primary, #1a1a1a)',
-                    fontSize: '14px',
+                    fontSize: '16px',
                     fontWeight: 600,
                   }}>
                     <span role="img" aria-label="link" style={{ fontSize: '18px', lineHeight: 1 }}>🔗</span>
@@ -434,7 +434,7 @@ export default function About(): ReactElement {
             marginTop: '40px',
             padding: '20px',
             textAlign: 'center',
-            fontSize: '12.5px',
+            fontSize: '14.5px',
             color: 'var(--text-muted, #9ca3af)',
             borderTop: '1px solid var(--border-color, #e5e7eb)',
           }}>

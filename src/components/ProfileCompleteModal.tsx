@@ -103,13 +103,13 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
         <h2 style={{ margin: '0 0 6px', fontSize: '20px', fontWeight: 700, color: '#111' }}>
           프로필 정보 입력
         </h2>
-        <p style={{ margin: '0 0 24px', fontSize: '14px', color: '#666', lineHeight: 1.5 }}>
+        <p style={{ margin: '0 0 24px', fontSize: '16px', color: '#666', lineHeight: 1.5 }}>
           원활한 수업 운영을 위해 아래 정보를 입력해주세요.<br />
-          <span style={{ color: '#9CA3AF', fontSize: '12px' }}>전화번호는 선택 사항입니다.</span>
+          <span style={{ color: '#9CA3AF', fontSize: '14px' }}>전화번호는 선택 사항입니다.</span>
         </p>
 
         <label style={{ display: 'block', marginBottom: '16px' }}>
-          <span style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#333', marginBottom: '6px' }}>
+          <span style={{ display: 'block', fontSize: '15px', fontWeight: 600, color: '#333', marginBottom: '6px' }}>
             이름 <span style={{ color: '#dc2626' }}>*</span>
           </span>
           <input
@@ -119,7 +119,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
             placeholder="실명을 입력해주세요"
             autoFocus
             style={{
-              width: '100%', padding: '10px 12px', fontSize: '15px',
+              width: '100%', padding: '10px 12px', fontSize: '16px',
               border: '1.5px solid #d1d5db', borderRadius: '8px',
               outline: 'none', boxSizing: 'border-box',
               transition: 'border-color 0.2s',
@@ -130,7 +130,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
         </label>
 
         <label style={{ display: 'block', marginBottom: '20px' }}>
-          <span style={{ display: 'block', fontSize: '13px', fontWeight: 600, color: '#333', marginBottom: '6px' }}>
+          <span style={{ display: 'block', fontSize: '15px', fontWeight: 600, color: '#333', marginBottom: '6px' }}>
             전화번호 <span style={{ color: '#9CA3AF', fontWeight: 400 }}>(선택)</span>
           </span>
           <input
@@ -139,7 +139,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
             onChange={(e) => setPhone(formatPhone(e.target.value))}
             placeholder="010-0000-0000"
             style={{
-              width: '100%', padding: '10px 12px', fontSize: '15px',
+              width: '100%', padding: '10px 12px', fontSize: '16px',
               border: '1.5px solid #d1d5db', borderRadius: '8px',
               outline: 'none', boxSizing: 'border-box',
               transition: 'border-color 0.2s',
@@ -150,7 +150,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
         </label>
 
         {error && (
-          <p style={{ margin: '0 0 14px', fontSize: '13px', color: '#dc2626', fontWeight: 500 }}>
+          <p style={{ margin: '0 0 14px', fontSize: '15px', color: '#dc2626', fontWeight: 500 }}>
             {error}
           </p>
         )}
@@ -159,7 +159,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
           type="submit"
           disabled={saving}
           style={{
-            width: '100%', padding: '12px', fontSize: '15px', fontWeight: 600,
+            width: '100%', padding: '12px', fontSize: '16px', fontWeight: 600,
             color: '#fff', background: saving ? '#93c5fd' : '#2563eb',
             border: 'none', borderRadius: '8px', cursor: saving ? 'not-allowed' : 'pointer',
             transition: 'background 0.2s', marginBottom: '10px',
@@ -173,7 +173,7 @@ const ProfileCompleteModal = ({ user, onComplete }: Props) => {
           onClick={handleSkip}
           disabled={saving}
           style={{
-            width: '100%', padding: '10px', fontSize: '14px', fontWeight: 500,
+            width: '100%', padding: '10px', fontSize: '16px', fontWeight: 500,
             color: '#6B7280', background: 'none',
             border: '1px solid #E5E7EB', borderRadius: '8px',
             cursor: saving ? 'not-allowed' : 'pointer',

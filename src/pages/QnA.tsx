@@ -144,12 +144,12 @@ const QnA = (): ReactElement => {
                         <div className="qna-reply-form">
                           <textarea value={replyContent} onChange={e => setReplyContent(e.target.value)} rows={3} placeholder="답변을 입력하세요..." />
                           <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                            <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }} onClick={() => handleReply(item.id)}>답변 등록</button>
-                            <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '14px' }} onClick={() => setReplyingId(null)}>취소</button>
+                            <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '16px' }} onClick={() => handleReply(item.id)}>답변 등록</button>
+                            <button className="btn btn-secondary" style={{ padding: '8px 16px', fontSize: '16px' }} onClick={() => setReplyingId(null)}>취소</button>
                           </div>
                         </div>
                       ) : (
-                        <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '13px', marginTop: '8px' }} onClick={() => setReplyingId(item.id)}>답변하기</button>
+                        <button className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '15px', marginTop: '8px' }} onClick={() => setReplyingId(item.id)}>답변하기</button>
                       )}
                     </>
                   )}

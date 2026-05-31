@@ -60,7 +60,7 @@
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 500;
-    font-size: 14px;
+    font-size: 16px;
     transition: color 0.2s ease;
     position: relative;
 }
@@ -124,7 +124,7 @@
     padding: 12px 20px;
     color: var(--text-primary);
     text-decoration: none;
-    font-size: 14px;
+    font-size: 16px;
     transition: all 0.2s ease;
     border-radius: 4px;
     margin: 0 4px;
@@ -176,7 +176,7 @@
     border-radius: 50%;
     background: var(--primary-blue);
     color: white;
-    font-size: 11px;
+    font-size: 13px;
     font-weight: 700;
     text-decoration: none;
     transition: var(--transition-base);
@@ -374,7 +374,7 @@
   border-radius: 50%;
   background: var(--primary-blue);
   color: white;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -432,7 +432,7 @@
   border-radius: 50%;
   background: var(--primary-blue);
   color: white;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 700;
   display: flex;
   align-items: center;
@@ -447,7 +447,7 @@
 }
 
 .dropdown-user-name {
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   color: var(--text-primary);
   white-space: nowrap;
@@ -456,7 +456,7 @@
 }
 
 .dropdown-user-email {
-  font-size: 11px;
+  font-size: 13px;
   color: var(--text-light);
   white-space: nowrap;
   overflow: hidden;
@@ -469,7 +469,7 @@
   gap: 10px;
   width: 100%;
   padding: 10px 16px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 500;
   color: var(--text-primary);
   text-decoration: none;
@@ -523,7 +523,7 @@
   border-radius: 20px;
   background: var(--primary-blue);
   color: white !important;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 600;
   text-decoration: none !important;
   transition: all 0.2s ease;
@@ -565,7 +565,7 @@
 
   .nav-link {
     padding: 14px 24px;
-    font-size: 16px;
+    font-size: 17px;
     border-bottom: 1px solid var(--border-light);
   }
 
@@ -592,7 +592,7 @@
 
   .dropdown-menu li a {
     padding: 12px 40px;
-    font-size: 15px;
+    font-size: 16px;
     margin: 0;
     border-radius: 0;
   }
@@ -634,18 +634,18 @@
   .lang-switcher {
     width: 30px;
     height: 30px;
-    font-size: 10px;
+    font-size: 12px;
   }
 
   .nav-login-btn {
     padding: 5px 14px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   .nav-user-avatar-placeholder {
     width: 28px;
     height: 28px;
-    font-size: 12px;
+    font-size: 14px;
   }
 
   /* 색상 픽커 위치 보정 */

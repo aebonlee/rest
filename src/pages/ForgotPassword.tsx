@@ -55,7 +55,7 @@ const ForgotPassword = (): ReactElement => {
               <p style={{ fontWeight: 600, marginBottom: '8px', color: 'var(--text-primary)' }}>
                 {t('auth.resetEmailSent')}
               </p>
-              <p style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
+              <p style={{ fontSize: '16px', color: 'var(--text-secondary)', marginBottom: '24px' }}>
                 {t('auth.checkEmailForReset')}
               </p>
               <Link to="/login" className="auth-next-btn" style={{ display: 'inline-block', textDecoration: 'none', textAlign: 'center' }}>

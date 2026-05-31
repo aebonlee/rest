@@ -86,7 +86,7 @@ const AssignmentDetail = (): ReactElement => {
       <SEOHead title={assignment.title} path={`/assignments/${id}`} noindex />
       <section className="page-header">
         <div className="container">
-          <Link to="/assignments" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', fontSize: '14px' }}>← 과제 목록</Link>
+          <Link to="/assignments" style={{ color: 'rgba(255,255,255,0.8)', textDecoration: 'none', fontSize: '16px' }}>← 과제 목록</Link>
           <h2>{assignment.title}</h2>
           <p>Day {assignment.day_number} | {assignment.is_team ? '팀 과제' : '개인 과제'} | 배점: {assignment.max_score}점</p>
         </div>

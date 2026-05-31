@@ -72,11 +72,11 @@ const AdminAttendance = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
               <h2 style={{ margin: 0 }}>출석 관리</h2>
-              <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
                 <strong>rest.dreamitbiz.com 가입 학생</strong>과 <strong>유관기관 관리자(admin/superadmin)</strong>만 표시됩니다.
               </p>
             </div>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               총 {students.length}명
             </div>
           </div>
@@ -110,7 +110,7 @@ const AdminAttendance = (): ReactElement => {
                             display: 'inline-block',
                             padding: '3px 10px',
                             borderRadius: '999px',
-                            fontSize: '11.5px',
+                            fontSize: '13.5px',
                             fontWeight: 700,
                             background: isStaff ? '#fef3c7' : '#dbeafe',
                             color: isStaff ? '#92400e' : '#1e3a8a',

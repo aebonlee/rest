@@ -22,7 +22,7 @@ const site: SiteConfig = {
       { text: 'Reboot', className: 'brand-it' }
     ]
   },
-  themeColor: '#0D2B5E',
+  themeColor: '#0046C8',
   company: {
     name: '드림아이티비즈(DreamIT Biz)',
     ceo: '이애본',
@@ -42,7 +42,7 @@ const site: SiteConfig = {
     license: false,
   },
   colors: [
-    { name: 'blue', color: '#0D2B5E' },
+    { name: 'blue', color: '#0046C8' },
     { name: 'red', color: '#C8102E' },
     { name: 'green', color: '#00855A' },
     { name: 'purple', color: '#6B21A8' },

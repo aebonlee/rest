@@ -82,7 +82,7 @@ const AdminRoster = (): ReactElement => {
         <div className="admin-content">
           <div style={{ marginBottom: '16px' }}>
             <h2 style={{ margin: 0 }}>수강생 명단 ↔ 회원가입 대조</h2>
-            <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' }}>
+            <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
               내장된 수강생 명단 <strong>{ROSTER_COUNT}명</strong>을 본 사이트 가입 회원과 <strong>이름 기준</strong>으로 대조합니다.
               (명단에 이메일이 없어 이름 매칭이며, 동명이인·닉네임 가입은 수동 확인이 필요합니다.)
             </p>
@@ -96,13 +96,13 @@ const AdminRoster = (): ReactElement => {
                 borderRadius: '10px', padding: '12px 14px', background: 'var(--bg-white, #fff)',
               }}>
                 <div style={{ fontSize: '22px', fontWeight: 800, color: c.color }}>{c.val}</div>
-                <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>{c.label}</div>
+                <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{c.label}</div>
               </div>
             ))}
           </div>
 
           {/* 경험 수준 분포 */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '24px', fontSize: '13px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '24px', fontSize: '15px' }}>
             {Object.entries(levelDist).map(([lvl, n]) => (
               <span key={lvl} style={{
                 padding: '4px 12px', borderRadius: '999px', fontWeight: 700,
@@ -119,7 +119,7 @@ const AdminRoster = (): ReactElement => {
               {/* 미가입 — 가장 중요 */}
               <h3 style={{ margin: '8px 0 10px', color: '#ef4444' }}>⚠ 미가입 ({notSignedUp.length}) — 명단에 있으나 회원가입 미확인</h3>
               {notSignedUp.length === 0 ? (
-                <p style={{ color: '#10b981', fontSize: '14px', marginBottom: '24px' }}>✓ 명단 전원이 가입을 완료했습니다.</p>
+                <p style={{ color: '#10b981', fontSize: '16px', marginBottom: '24px' }}>✓ 명단 전원이 가입을 완료했습니다.</p>
               ) : (
                 <div className="admin-table-wrapper" style={{ marginBottom: '24px' }}>
                   <table className="admin-table">
@@ -152,7 +152,7 @@ const AdminRoster = (): ReactElement => {
                             <td>{p.display_name || p.name || '-'}</td>
                             <td>{p.email}</td>
                             <td>{p.phone || '-'}</td>
-                            <td style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>{p.provider || '-'}</td>
+                            <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{p.provider || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -177,19 +177,19 @@ const AdminRoster = (): ReactElement => {
                         <td style={{ color: levelColor[r.student.level], fontWeight: 700 }}>{r.student.level}</td>
                         <td>
                           <span style={{
-                            fontSize: '11.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
+                            fontSize: '13.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
                             background: r.profile ? '#d1fae5' : '#fee2e2',
                             color: r.profile ? '#065f46' : '#991b1b',
                           }}>{r.profile ? '가입' : '미가입'}</span>
                         </td>
-                        <td style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>{r.profile?.email || '-'}</td>
+                        <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{r.profile?.email || '-'}</td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
               {!loading && profiles.length === 0 && (
-                <p style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)', marginTop: '12px' }}>
+                <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginTop: '12px' }}>
                   ※ Supabase가 연결되지 않았거나 아직 가입한 회원이 없어 가입 데이터를 불러오지 못했습니다.
                   배포 환경(관리자 로그인 상태)에서 정확히 표시됩니다.
                 </p>

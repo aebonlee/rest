@@ -60,11 +60,11 @@ const AdminStudents = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
               <h2 style={{ margin: 0 }}>수강생 관리</h2>
-              <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
                 <strong>rest.dreamitbiz.com</strong>{scope === 'signup' ? '에서 가입한 회원' : '에 접속한 회원'}만 표시됩니다.
               </p>
             </div>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               총 {filtered.length}명{keyword && ` (전체 ${students.length}명 중)`}
             </div>
           </div>
@@ -85,7 +85,7 @@ const AdminStudents = (): ReactElement => {
                 onClick={() => setScope('signup')}
                 style={{
                   padding: '8px 14px',
-                  fontSize: '13px',
+                  fontSize: '15px',
                   fontWeight: 600,
                   borderRadius: '6px',
                   border: '1px solid var(--border-color, #e5e7eb)',
@@ -99,7 +99,7 @@ const AdminStudents = (): ReactElement => {
                 onClick={() => setScope('visited')}
                 style={{
                   padding: '8px 14px',
-                  fontSize: '13px',
+                  fontSize: '15px',
                   fontWeight: 600,
                   borderRadius: '6px',
                   border: '1px solid var(--border-color, #e5e7eb)',
@@ -118,7 +118,7 @@ const AdminStudents = (): ReactElement => {
                 flex: 1,
                 minWidth: '200px',
                 padding: '8px 12px',
-                fontSize: '13.5px',
+                fontSize: '15.5px',
                 border: '1px solid var(--border-color, #e5e7eb)',
                 borderRadius: '6px',
                 background: 'var(--bg-card, #fff)',
@@ -156,7 +156,7 @@ const AdminStudents = (): ReactElement => {
                       <td>{s.email}</td>
                       <td>{s.phone || '-'}</td>
                       <td>{s.provider}</td>
-                      <td style={{ fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)' }}>
+                      <td style={{ fontSize: '14.5px', color: 'var(--text-secondary, #6b7280)' }}>
                         {s.signup_domain || '-'}
                       </td>
                       <td><span className={`role-badge ${s.role}`}>{s.role}</span></td>

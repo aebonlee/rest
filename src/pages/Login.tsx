@@ -92,7 +92,7 @@ const Login = (): ReactElement | null => {
                 style={{
                   display: 'block', marginTop: '8px', background: 'none',
                   border: 'none', textDecoration: 'underline', cursor: 'pointer',
-                  color: 'inherit', fontSize: '12px', padding: 0,
+                  color: 'inherit', fontSize: '14px', padding: 0,
                 }}
               >
                 닫기
@@ -170,7 +170,7 @@ const Login = (): ReactElement | null => {
               </form>
 
               <div className="auth-forgot-link" style={{ textAlign: 'center', marginBottom: '12px' }}>
-                <Link to="/forgot-password" style={{ fontSize: '13px', color: 'var(--text-light)' }}>
+                <Link to="/forgot-password" style={{ fontSize: '15px', color: 'var(--text-light)' }}>
                   {t('auth.forgotPassword')}
                 </Link>
               </div>

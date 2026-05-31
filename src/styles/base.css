@@ -124,7 +124,7 @@ html[data-color="orange"] {
 
 html {
     scroll-behavior: smooth;
-    font-size: 16px;
+    font-size: 17px;
     height: 100%;
 }
 
@@ -184,7 +184,7 @@ h4 { line-height: 1.45; letter-spacing: -0.01em; }
     align-items: center;
     justify-content: center;
     padding: 14px 32px;
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 600;
     text-decoration: none;
     border-radius: var(--radius-md);
@@ -361,7 +361,7 @@ h4 { line-height: 1.45; letter-spacing: -0.01em; }
   margin-bottom: 12px;
 }
 .not-found-desc {
-  font-size: 15px;
+  font-size: 16px;
   color: var(--text-secondary);
   margin-bottom: 32px;
   line-height: 1.6;
@@ -370,7 +370,7 @@ h4 { line-height: 1.45; letter-spacing: -0.01em; }
 .not-found-btn {
   padding: 12px 28px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 600;
   text-decoration: none;
   transition: all 0.2s;
@@ -406,17 +406,17 @@ h4 { line-height: 1.45; letter-spacing: -0.01em; }
   }
 
   .section-subtitle {
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .btn {
     padding: 12px 24px;
-    font-size: 15px;
+    font-size: 16px;
   }
 
   .btn-primary-large {
     padding: 14px 28px;
-    font-size: 16px;
+    font-size: 17px;
   }
 
   .not-found-code {

@@ -76,7 +76,7 @@ const Materials = (): ReactElement => {
                     </div>
                   </div>
                   {m.file_url && (
-                    <a href={m.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px' }}>
+                    <a href={m.file_url} target="_blank" rel="noopener noreferrer" className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '16px' }}>
                       다운로드
                     </a>
                   )}

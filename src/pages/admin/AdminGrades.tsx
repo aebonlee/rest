@@ -61,7 +61,7 @@ const AdminGrades = (): ReactElement => {
       <span style={{ fontWeight: 700, color: g.passed ? '#10b981' : '#ef4444' }}>
         {g.score}점
         <span style={{
-          marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 7px', borderRadius: '999px',
+          marginLeft: '6px', fontSize: '13px', fontWeight: 700, padding: '1px 7px', borderRadius: '999px',
           background: g.passed ? '#d1fae5' : '#fee2e2', color: g.passed ? '#065f46' : '#991b1b',
         }}>{g.passed ? '합격' : '불합격'}</span>
       </span>
@@ -77,11 +77,11 @@ const AdminGrades = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
               <h2 style={{ margin: 0 }}>학습평가 성적</h2>
-              <p style={{ margin: '6px 0 0', fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
                 <strong>선수평가</strong>(합격 40점) · <strong>사후평가</strong>(합격 60점) 채점 결과입니다. 진단평가는 자습용이라 집계되지 않습니다.
               </p>
             </div>
-            <div style={{ fontSize: '14px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               수강생 {students.length}명
             </div>
           </div>
@@ -93,8 +93,8 @@ const AdminGrades = (): ReactElement => {
                 border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '12px',
                 padding: '16px 18px', background: 'var(--bg-white, #fff)',
               }}>
-                <strong style={{ fontSize: '14px' }}>{TYPE_LABEL[s.type]}</strong>
-                <div style={{ display: 'flex', gap: '18px', marginTop: '8px', fontSize: '13px' }}>
+                <strong style={{ fontSize: '16px' }}>{TYPE_LABEL[s.type]}</strong>
+                <div style={{ display: 'flex', gap: '18px', marginTop: '8px', fontSize: '15px' }}>
                   <span>응시 <strong>{s.taken}</strong></span>
                   <span>합격 <strong style={{ color: '#10b981' }}>{s.passed}</strong></span>
                   <span>평균 <strong>{s.avg}점</strong></span>

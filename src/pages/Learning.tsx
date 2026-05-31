@@ -67,7 +67,7 @@ const CodeBlock = ({ lang, content }: { lang?: string; content: string }): React
         borderBottom: '1px solid #334155',
       }}>
         <span style={{
-          fontSize: '11px',
+          fontSize: '13px',
           color: '#94a3b8',
           textTransform: 'uppercase',
           letterSpacing: '0.05em',
@@ -82,7 +82,7 @@ const CodeBlock = ({ lang, content }: { lang?: string; content: string }): React
             alignItems: 'center',
             gap: '6px',
             padding: '4px 12px',
-            fontSize: '12px',
+            fontSize: '14px',
             fontWeight: 600,
             color: copied ? '#10b981' : '#cbd5e1',
             background: copied ? '#064e3b' : '#334155',
@@ -116,7 +116,7 @@ const CodeBlock = ({ lang, content }: { lang?: string; content: string }): React
         padding: '16px 18px',
         borderRadius: '0 0 8px 8px',
         overflowX: 'auto',
-        fontSize: '13px',
+        fontSize: '15px',
         lineHeight: 1.6,
         fontFamily: "'JetBrains Mono', 'Consolas', 'Courier New', monospace",
         margin: 0,
@@ -131,7 +131,7 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
   <div key={idx} style={{ marginBottom: '20px' }}>
     {section.subtitle && (
       <h4 style={{
-        fontSize: '15px',
+        fontSize: '16px',
         fontWeight: 700,
         margin: '24px 0 10px',
         color: 'var(--text-primary, #1a1a1a)',
@@ -157,7 +157,7 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
         <table style={{
           width: '100%',
           borderCollapse: 'collapse',
-          fontSize: '13.5px',
+          fontSize: '15.5px',
           border: '1px solid var(--border-color, #e5e7eb)',
         }}>
           <thead>
@@ -197,7 +197,7 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
         padding: '12px 16px',
         borderRadius: '0 8px 8px 0',
         margin: '8px 0 14px',
-        fontSize: '13.5px',
+        fontSize: '15.5px',
         lineHeight: 1.7,
         color: '#1a1a1a',
       }}>
@@ -271,7 +271,7 @@ const Learning = (): ReactElement => {
                     {tp.subSections && tp.subSections.length > 0 && (
                       <span style={{
                         marginLeft: '8px',
-                        fontSize: '11px',
+                        fontSize: '13px',
                         opacity: 0.7,
                         transform: expanded ? 'rotate(90deg)' : 'rotate(0)',
                         transition: 'transform 0.2s',
@@ -296,7 +296,7 @@ const Learning = (): ReactElement => {
                         style={{
                           textAlign: 'left',
                           padding: '6px 10px',
-                          fontSize: '13px',
+                          fontSize: '15px',
                           fontWeight: selectedSubIndex === null ? 700 : 500,
                           color: selectedSubIndex === null
                             ? 'var(--primary-blue, #0046C8)'
@@ -319,7 +319,7 @@ const Learning = (): ReactElement => {
                           style={{
                             textAlign: 'left',
                             padding: '6px 10px',
-                            fontSize: '13px',
+                            fontSize: '15px',
                             fontWeight: selectedSubIndex === si ? 700 : 500,
                             color: selectedSubIndex === si
                               ? 'var(--primary-blue, #0046C8)'
@@ -350,7 +350,7 @@ const Learning = (): ReactElement => {
               <div className="topic-card-title">
                 {activeSub ? (
                   <>
-                    <span style={{ fontSize: '13px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)', display: 'block', marginBottom: '4px' }}>
+                    <span style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)', display: 'block', marginBottom: '4px' }}>
                       {topic.title}
                     </span>
                     {activeSub.title}
@@ -362,7 +362,7 @@ const Learning = (): ReactElement => {
               {activeSub ? (
                 <>
                   {activeSub.summary && (
-                    <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                    <p style={{ fontSize: '16px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
                       {activeSub.summary}
                     </p>
                   )}
@@ -370,7 +370,7 @@ const Learning = (): ReactElement => {
                 </>
               ) : (
                 <>
-                  <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                  <p style={{ fontSize: '16px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
                     {topic.description}
                   </p>
                   {topic.content.map((section, idx) => renderSection(section, idx))}

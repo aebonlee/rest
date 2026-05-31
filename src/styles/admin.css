@@ -25,7 +25,7 @@
 }
 
 .admin-sidebar-header h3 {
-    font-size: 16px;
+    font-size: 17px;
     font-weight: 700;
     color: var(--primary-blue);
 }
@@ -42,7 +42,7 @@
     border-radius: 8px;
     text-decoration: none;
     color: var(--text-secondary);
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     transition: all 0.2s;
     margin-bottom: 2px;
@@ -112,7 +112,7 @@
 }
 
 .admin-stat-card .stat-label {
-    font-size: 13px;
+    font-size: 15px;
     color: var(--text-light);
 }
 
@@ -132,7 +132,7 @@
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 14px;
+    font-size: 16px;
 }
 
 .admin-table th {
@@ -156,7 +156,7 @@
 }
 
 .role-badge {
-    font-size: 12px;
+    font-size: 14px;
     padding: 3px 8px;
     border-radius: 4px;
     font-weight: 500;
@@ -168,7 +168,7 @@
 
 .btn-danger-sm {
     padding: 4px 12px;
-    font-size: 13px;
+    font-size: 15px;
     background: #FEE2E2;
     color: #991B1B;
     border: 1px solid #FECACA;
@@ -195,12 +195,12 @@
     padding: 10px 14px;
     border: 1.5px solid var(--border-light);
     border-radius: 8px;
-    font-size: 14px;
+    font-size: 16px;
     font-family: inherit;
 }
 
 .attendance-status {
-    font-size: 12px;
+    font-size: 14px;
     padding: 4px 10px;
     border-radius: 6px;
     font-weight: 500;
@@ -219,7 +219,7 @@
 
 .att-btn {
     padding: 4px 10px;
-    font-size: 12px;
+    font-size: 14px;
     border: 1px solid var(--border-light);
     border-radius: 4px;
     background: var(--bg-white);

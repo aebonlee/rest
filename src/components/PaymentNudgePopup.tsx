@@ -135,7 +135,7 @@ export default function PaymentNudgePopup({
         <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: 700, color: '#111' }}>
           더 나은 학습 경험을 위해
         </h2>
-        <p style={{ margin: '0 0 20px', fontSize: '14px', color: '#666', lineHeight: 1.6 }}>
+        <p style={{ margin: '0 0 20px', fontSize: '16px', color: '#666', lineHeight: 1.6 }}>
           이용권을 구매하시면 모든 콘텐츠를<br />
           제한 없이 평생 이용하실 수 있습니다.
         </p>
@@ -146,18 +146,18 @@ export default function PaymentNudgePopup({
           marginBottom: '20px', textAlign: 'left',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-            <span style={{ fontSize: '14px', color: '#333' }}>개별 사이트 이용권</span>
-            <span style={{ fontSize: '16px', fontWeight: 700, color: '#2563EB' }}>30,000원</span>
+            <span style={{ fontSize: '16px', color: '#333' }}>개별 사이트 이용권</span>
+            <span style={{ fontSize: '17px', fontWeight: 700, color: '#2563EB' }}>30,000원</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', color: '#333' }}>
+            <span style={{ fontSize: '16px', color: '#333' }}>
               전체 사이트 이용권
               <span style={{
-                background: '#DC2626', color: '#fff', fontSize: '11px', fontWeight: 600,
+                background: '#DC2626', color: '#fff', fontSize: '13px', fontWeight: 600,
                 padding: '2px 6px', borderRadius: '4px', marginLeft: '6px',
               }}>~55% 할인</span>
             </span>
-            <span style={{ fontSize: '16px', fontWeight: 700, color: '#DC2626' }}>150,000원</span>
+            <span style={{ fontSize: '17px', fontWeight: 700, color: '#DC2626' }}>150,000원</span>
           </div>
         </div>
 
@@ -167,7 +167,7 @@ export default function PaymentNudgePopup({
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            display: 'block', width: '100%', padding: '13px', fontSize: '15px', fontWeight: 600,
+            display: 'block', width: '100%', padding: '13px', fontSize: '16px', fontWeight: 600,
             color: '#fff', background: '#2563EB', border: 'none', borderRadius: '8px',
             cursor: 'pointer', textDecoration: 'none', textAlign: 'center',
             marginBottom: '10px', boxSizing: 'border-box',
@@ -180,7 +180,7 @@ export default function PaymentNudgePopup({
         <button
           onClick={handleDismiss}
           style={{
-            width: '100%', padding: '11px', fontSize: '14px', fontWeight: 500,
+            width: '100%', padding: '11px', fontSize: '16px', fontWeight: 500,
             color: '#6B7280', background: 'none',
             border: '1px solid #E5E7EB', borderRadius: '8px',
             cursor: 'pointer',
@@ -189,7 +189,7 @@ export default function PaymentNudgePopup({
           다음에 할게요
         </button>
 
-        <p style={{ margin: '14px 0 0', fontSize: '12px', color: '#9CA3AF' }}>
+        <p style={{ margin: '14px 0 0', fontSize: '14px', color: '#9CA3AF' }}>
           1회 결제로 평생 무제한 이용
         </p>
       </div>

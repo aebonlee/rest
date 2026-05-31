@@ -92,10 +92,10 @@ const Dashboard = (): ReactElement => {
                     background: 'var(--bg-white, #fff)',
                   }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <strong style={{ fontSize: '14px' }}>{ASSESSMENT_LABEL[t]}</strong>
+                      <strong style={{ fontSize: '16px' }}>{ASSESSMENT_LABEL[t]}</strong>
                       {g && (
                         <span style={{
-                          fontSize: '11px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
+                          fontSize: '13px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
                           background: g.passed ? '#d1fae5' : '#fee2e2',
                           color: g.passed ? '#065f46' : '#991b1b',
                         }}>{g.passed ? '합격' : '불합격'}</span>
@@ -104,14 +104,14 @@ const Dashboard = (): ReactElement => {
                     {g ? (
                       <>
                         <div style={{ fontSize: '28px', fontWeight: 800, color: g.passed ? '#10b981' : '#ef4444' }}>
-                          {g.score}<span style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>점</span>
+                          {g.score}<span style={{ fontSize: '16px', color: 'var(--text-secondary, #6b7280)' }}>점</span>
                         </div>
-                        <div style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)' }}>
+                        <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
                           {g.correct}/{g.total} 정답 · {g.submitted_at ? new Date(g.submitted_at).toLocaleDateString('ko-KR') : ''}
                         </div>
                       </>
                     ) : (
-                      <Link to={`/assessment/${t}`} style={{ fontSize: '13px', color: 'var(--primary-blue, #0046C8)', fontWeight: 600 }}>
+                      <Link to={`/assessment/${t}`} style={{ fontSize: '15px', color: 'var(--primary-blue, #0046C8)', fontWeight: 600 }}>
                         아직 응시하지 않았습니다 → 평가 보기
                       </Link>
                     )}
@@ -119,7 +119,7 @@ const Dashboard = (): ReactElement => {
                 );
               })}
             </div>
-            <p style={{ fontSize: '12px', color: 'var(--text-secondary, #6b7280)', marginTop: '10px' }}>
+            <p style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginTop: '10px' }}>
               💡 <Link to="/assessment/diagnostic" style={{ color: 'var(--primary-blue, #0046C8)' }}>진단평가</Link>는 사후평가 전 자습용으로, 정답·해설이 공개되어 있고 성적에는 반영되지 않습니다.
             </p>
           </div>

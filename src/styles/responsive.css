@@ -284,7 +284,7 @@
     .lang-switcher {
         width: 28px;
         height: 28px;
-        font-size: 9px;
+        font-size: 11px;
     }
 
     /* Hero */
@@ -293,7 +293,7 @@
     }
 
     .hero-description {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .hero-buttons {
@@ -306,7 +306,7 @@
 
     .hero-buttons .btn {
         padding: 10px 20px;
-        font-size: 14px;
+        font-size: 16px;
         white-space: nowrap;
         border-radius: var(--radius-md);
     }
@@ -314,7 +314,7 @@
     .carousel-arrow {
         width: 36px;
         height: 36px;
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .carousel-arrow--prev { left: 10px; }
@@ -672,7 +672,7 @@
     }
 
     .section-subtitle {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.7;
     }
 
@@ -696,7 +696,7 @@
     }
 
     .cta-content p {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .footer {
@@ -795,7 +795,7 @@
     }
 
     .blog-detail-excerpt {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.7;
         margin-bottom: 24px;
         padding-bottom: 24px;
@@ -807,7 +807,7 @@
     }
 
     .review-text {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.75;
     }
 
@@ -824,7 +824,7 @@
     }
 
     .service-overview-text p {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.85;
     }
 }
@@ -852,7 +852,7 @@
     .carousel-arrow {
         width: 32px;
         height: 32px;
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .carousel-arrow--prev { left: 8px; }
@@ -933,7 +933,7 @@
     }
 
     .hero-description {
-        font-size: 15px;
+        font-size: 16px;
         margin-bottom: 16px;
     }
 
@@ -944,7 +944,7 @@
 
     .hero-buttons .btn {
         padding: 8px 16px;
-        font-size: 13px;
+        font-size: 15px;
     }
 
     .section-title {
@@ -953,7 +953,7 @@
     }
 
     .section-subtitle {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .section-header {
@@ -980,7 +980,7 @@
     }
 
     .cta-content p {
-        font-size: 15px;
+        font-size: 16px;
         margin-bottom: 24px;
     }
 
@@ -994,15 +994,15 @@
     }
 
     .footer-brand p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .footer-links a {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .footer-bottom {
-        font-size: 12px;
+        font-size: 14px;
     }
 
     /* Service cards */
@@ -1011,7 +1011,7 @@
     }
 
     .service-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .service-card {
@@ -1024,7 +1024,7 @@
     }
 
     .feature-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .feature-card {
@@ -1037,7 +1037,7 @@
     }
 
     .value-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .value-card {
@@ -1058,7 +1058,7 @@
     }
 
     .pricing-features li {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Blog */
@@ -1067,21 +1067,21 @@
     }
 
     .blog-content h3 {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .blog-content p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .blog-detail-content {
-        font-size: 15px;
+        font-size: 16px;
         line-height: 1.9;
     }
 
     /* Board */
     .board-detail-body {
-        font-size: 14px;
+        font-size: 16px;
         line-height: 1.9;
     }
 
@@ -1091,11 +1091,11 @@
     }
 
     .info-content h3 {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .info-content p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .contact-form,
@@ -1104,11 +1104,11 @@
     }
 
     .company-detail-card h3 {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .company-detail-card p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Service detail */
@@ -1117,7 +1117,7 @@
     }
 
     .service-overview-text p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Category cards */
@@ -1130,16 +1130,16 @@
     }
 
     .category-card p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Course cards */
     .course-card h4 {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .course-card p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Review */
@@ -1148,7 +1148,7 @@
     }
 
     .review-text {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* Vision */
@@ -1161,16 +1161,16 @@
     }
 
     .vision-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     /* Timeline */
     .timeline-content h4 {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     .timeline-content p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* About stats */
@@ -1179,12 +1179,12 @@
     }
 
     .stat-label {
-        font-size: 13px;
+        font-size: 15px;
     }
 
     /* Gallery */
     .gallery-info h4 {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     .lightbox-body h3 {
@@ -1192,7 +1192,7 @@
     }
 
     .lightbox-body p {
-        font-size: 14px;
+        font-size: 16px;
     }
 
     /* ── Mobile Header 2-Row: Logo+Login+☰ Row1, Actions Row2 [2026-04-23] ── */
@@ -1254,11 +1254,11 @@
     }
 
     .product-title {
-        font-size: 15px;
+        font-size: 16px;
     }
 
     .product-price {
-        font-size: 16px;
+        font-size: 17px;
     }
 
     /* Cart & Checkout */
@@ -1286,6 +1286,6 @@
     }
 
     .design-card p {
-        font-size: 15px;
+        font-size: 16px;
     }
 }
