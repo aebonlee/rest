@@ -78,13 +78,17 @@ const MyPage = (): ReactElement => {
     const client = getSupabase();
     if (!client || !user) return;
     setChecking(true);
+    // 수업 시작 14:00 기준 — 14:10 이후 체크인은 지각 처리
+    const now = new Date();
+    const mins = now.getHours() * 60 + now.getMinutes();
+    const status = mins > 14 * 60 + 10 ? 'late' : 'present';
     const { error } = await client.from(TABLES.attendance).upsert(
-      { student_id: user.id, date: todayStr, status: 'present', check_in_time: new Date().toISOString() },
+      { student_id: user.id, date: todayStr, status, check_in_time: now.toISOString() },
       { onConflict: 'student_id,date' }
     );
     setChecking(false);
     if (error) showToast('출석체크 실패: ' + error.message, 'error');
-    else { showToast('오늘 출석체크 완료!', 'success'); load(); }
+    else { showToast(status === 'late' ? '지각으로 체크되었습니다 (14:10 이후).' : '출석 완료!', status === 'late' ? 'warning' : 'success'); load(); }
   };
 
   const handleSavePledge = async () => {
@@ -184,7 +188,7 @@ const MyPage = (): ReactElement => {
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h3 style={{ margin: '0 0 4px', fontSize: '18px' }}>오늘 출결</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>{todayStr}</p>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>{todayStr} · 수업시작 14:00 (14:10 이후 체크인은 지각)</p>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {today ? (

@@ -54,15 +54,20 @@ const AdminAttendance = (): ReactElement => {
     if (!client) return;
     const existing = records.find(r => r.student_id === studentId);
     if (existing) {
-      await client.from(TABLES.attendance).update({ status, check_in_time: new Date().toISOString() }).eq('id', existing.id);
+      // 관리자 수정·보완: 상태만 변경, 학생의 원래 체크인 시각은 보존
+      await client.from(TABLES.attendance).update({ status }).eq('id', existing.id);
     } else {
       await client.from(TABLES.attendance).insert({ student_id: studentId, date: selectedDate, status, check_in_time: new Date().toISOString() });
     }
-    showToast('출석이 기록되었습니다.', 'success');
+    showToast('출결이 수정되었습니다.', 'success');
     await loadData();
   };
 
   const getStatus = (studentId: string) => records.find(r => r.student_id === studentId)?.status || 'none';
+  const getCheckIn = (studentId: string) => {
+    const t = records.find(r => r.student_id === studentId)?.check_in_time;
+    return t ? new Date(t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '-';
+  };
 
   return (
     <>
@@ -72,9 +77,9 @@ const AdminAttendance = (): ReactElement => {
         <div className="admin-content">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
-              <h2 style={{ margin: 0 }}>출석 관리</h2>
+              <h2 style={{ margin: 0 }}>출결일지</h2>
               <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
-                <strong>rest.dreamitbiz.com 가입 학생</strong>과 <strong>유관기관 관리자(admin/superadmin)</strong>만 표시됩니다.
+                학생 자가 체크인 시각을 확인하고 출결을 <strong>수정·보완</strong>하세요. <strong>rest.dreamitbiz.com 가입 학생</strong> + 총괄 관리자만 표시됩니다.
               </p>
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
@@ -99,7 +104,7 @@ const AdminAttendance = (): ReactElement => {
           ) : (
             <div className="admin-table-wrapper">
               <table className="admin-table">
-                <thead><tr><th>구분</th><th>이름</th><th>이메일</th><th>상태</th><th>출석 관리</th></tr></thead>
+                <thead><tr><th>구분</th><th>이름</th><th>이메일</th><th>체크인</th><th>상태</th><th>수정·보완</th></tr></thead>
                 <tbody>
                   {students.map(s => {
                     const status = getStatus(s.id);
@@ -121,6 +126,7 @@ const AdminAttendance = (): ReactElement => {
                         </td>
                         <td>{s.display_name || s.name || '-'}</td>
                         <td>{s.email}</td>
+                        <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary, #6b7280)' }}>{getCheckIn(s.id)}</td>
                         <td><span className={`attendance-status ${status}`}>{status === 'present' ? '출석' : status === 'absent' ? '결석' : status === 'late' ? '지각' : status === 'excused' ? '사유' : '-'}</span></td>
                         <td>
                           <div className="attendance-actions">
