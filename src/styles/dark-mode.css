@@ -55,6 +55,18 @@
     --primary-gradient: linear-gradient(135deg, #C4832B 0%, #E7A04A 100%);
 }
 
+/* 기본 blue 테마의 다크모드 보정 — site.css의 짙은 네이비(#0D2B5E)가
+   다크 네비게이션 위에서 안 보이는 문제 해결 (로고·메뉴 호버 컬러).
+   [data-theme="dark"][data-color="blue"] (특이도 0,2,0)가
+   html[data-color="blue"] (0,1,1)를 이겨 밝은 블루로 덮어씀. */
+[data-theme="dark"][data-color="blue"] {
+    --primary-blue: #4A8FE7;
+    --primary-blue-dark: #2B6CC4;
+    --primary-blue-light: #93C5FD;
+    --primary-gradient: linear-gradient(135deg, #1A5AC8 0%, #4A8FE7 100%);
+    --accent-gradient: linear-gradient(135deg, #2B6CC4 0%, #4A8FE7 50%, #93C5FD 100%);
+}
+
 [data-theme="dark"] .particle {
     background: rgba(74, 143, 231, 0.25);
 }
