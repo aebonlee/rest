@@ -74,7 +74,16 @@ const site: SiteConfig = {
       ]
     },
     { path: '/competition', labelKey: 'site.nav.competition' },
-    { path: '/project-guide', labelKey: 'site.nav.projectGuide' },
+    {
+      labelKey: 'site.nav.project',
+      path: '/project-guide',
+      activePath: '/project',
+      dropdown: [
+        { path: '/project-guide', labelKey: 'site.nav.projectIntro' },
+        { path: '/project-teams', labelKey: 'site.nav.projectTeams' },
+        { path: '/project-board', labelKey: 'site.nav.projectBoard' },
+      ]
+    },
     { path: '/resources', labelKey: 'site.nav.resources' },
     {
       labelKey: 'site.nav.lms',
@@ -84,8 +93,6 @@ const site: SiteConfig = {
         { path: '/dashboard', labelKey: 'site.nav.dashboard' },
         { path: '/materials', labelKey: 'site.nav.materials' },
         { path: '/assignments', labelKey: 'site.nav.assignments' },
-        { path: '/teams', labelKey: 'site.nav.teams' },
-        { path: '/projects', labelKey: 'site.nav.projects' },
         { path: '/qna', labelKey: 'site.nav.qna' },
       ]
     },

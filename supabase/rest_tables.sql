@@ -226,3 +226,50 @@ CREATE POLICY "rest_assessments_update" ON rest_assessments FOR UPDATE
 
 CREATE INDEX IF NOT EXISTS idx_rest_assessments_student ON rest_assessments(student_id);
 CREATE INDEX IF NOT EXISTS idx_rest_assessments_type ON rest_assessments(type);
+
+-- ============================================
+-- 프로젝트 팀별 게시판 (팀별 비공개)
+--  · 해당 팀의 members JSONB에 포함된 사용자 + 관리자만 조회 가능
+-- ============================================
+CREATE TABLE IF NOT EXISTS rest_team_posts (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    team_id UUID REFERENCES rest_teams(id) ON DELETE CASCADE,
+    author_id UUID REFERENCES auth.users(id),
+    author_name TEXT DEFAULT '',
+    title TEXT NOT NULL,
+    content TEXT DEFAULT '',
+    created_at TIMESTAMPTZ DEFAULT now()
+);
+
+ALTER TABLE rest_team_posts ENABLE ROW LEVEL SECURITY;
+
+-- 조회: 글이 속한 팀의 members에 내 uid가 들어있거나, 관리자
+CREATE POLICY "rest_team_posts_select" ON rest_team_posts FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM rest_teams t
+            WHERE t.id = rest_team_posts.team_id
+              AND t.members @> jsonb_build_array(jsonb_build_object('id', (auth.uid())::text))
+        )
+        OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr')
+    );
+
+-- 작성: 본인 글 + 자기가 속한 팀에만
+CREATE POLICY "rest_team_posts_insert" ON rest_team_posts FOR INSERT
+    WITH CHECK (
+        auth.uid() = author_id
+        AND EXISTS (
+            SELECT 1 FROM rest_teams t
+            WHERE t.id = rest_team_posts.team_id
+              AND t.members @> jsonb_build_array(jsonb_build_object('id', (auth.uid())::text))
+        )
+    );
+
+-- 삭제: 작성자 본인 또는 관리자
+CREATE POLICY "rest_team_posts_delete" ON rest_team_posts FOR DELETE
+    USING (
+        auth.uid() = author_id
+        OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr')
+    );
+
+CREATE INDEX IF NOT EXISTS idx_rest_team_posts_team ON rest_team_posts(team_id);
