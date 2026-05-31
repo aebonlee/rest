@@ -1,5 +1,5 @@
 import { lazy, Suspense, type ReactElement } from 'react';
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, Navigate } from 'react-router-dom';
 import AuthGuard from '../components/AuthGuard';
 import AdminGuard from '../components/AdminGuard';
 import Navbar from '../components/layout/Navbar';
@@ -16,7 +16,6 @@ const Instructor = lazy(() => import('../pages/Instructor'));
 const Learning = lazy(() => import('../pages/Learning'));
 const Assessment = lazy(() => import('../pages/Assessment'));
 const ProjectGuide = lazy(() => import('../pages/ProjectGuide'));
-const ProjectTeams = lazy(() => import('../pages/ProjectTeams'));
 const ProjectBoard = lazy(() => import('../pages/ProjectBoard'));
 const ProjectVote = lazy(() => import('../pages/ProjectVote'));
 const NotFound = lazy(() => import('../pages/NotFound'));
@@ -76,7 +75,7 @@ const PublicLayout = (): ReactElement => {
             <Route path="/project-guide" element={<ProjectGuide />} />
             <Route path="/project-guide/:id" element={<ProjectGuide />} />
             <Route path="/project-vote" element={<AuthGuard><ProjectVote /></AuthGuard>} />
-            <Route path="/project-teams" element={<AuthGuard><ProjectTeams /></AuthGuard>} />
+            <Route path="/project-teams" element={<Navigate to="/project-vote" replace />} />
             <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
 
             {/* Auth */}

@@ -81,7 +81,6 @@ const site: SiteConfig = {
       dropdown: [
         { path: '/project-guide', labelKey: 'site.nav.projectIntro' },
         { path: '/project-vote', labelKey: 'site.nav.projectVote' },
-        { path: '/project-teams', labelKey: 'site.nav.projectTeams' },
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
       ]
     },

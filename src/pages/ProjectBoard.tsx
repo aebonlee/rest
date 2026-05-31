@@ -77,7 +77,7 @@ const ProjectBoard = (): ReactElement => {
           ) : !team ? (
             <div style={{ ...card, textAlign: 'center', padding: '48px 22px' }}>
               <p style={{ margin: '0 0 16px', color: 'var(--text-secondary)' }}>아직 소속된 팀이 없습니다. 먼저 팀을 만들거나 합류하세요.</p>
-              <Link to="/project-teams" className="btn btn-primary">프로젝트 구성으로 이동</Link>
+              <Link to="/project-vote" className="btn btn-primary">팀구성으로 이동</Link>
             </div>
           ) : (
             <>
