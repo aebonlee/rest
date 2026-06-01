@@ -45,20 +45,41 @@ WHERE members IS NULL OR members = '[]'::jsonb;
 -- SELECT name, project_topic, members FROM rest_teams ORDER BY created_at;
 
 
--- 3) (선택) 백진주(a01094819953@gmail.com) — 관리자 페이지에서 RLS 보호 데이터까지 보이게 하려면
---    아래처럼 관리자 RLS 정책에 이메일을 추가하세요. 대시보드(카운트/명단)만 필요하면 생략 가능.
---    프론트엔드(ADMIN_EMAILS)에는 이미 추가되어 대시보드 접속은 가능합니다.
---
--- 예: 학습평가 성적 조회 권한 부여
--- DROP POLICY IF EXISTS "rest_assessments_select" ON rest_assessments;
--- CREATE POLICY "rest_assessments_select" ON rest_assessments FOR SELECT
---   USING (
---     auth.uid() = student_id
---     OR (auth.jwt() ->> 'email') IN (
---       'aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr',
---       'a01094819953@gmail.com'
---     )
---   );
+-- 3) 백진주(a01094819953@gmail.com) — 학습평가 성적(/admin/grades) 조회 권한 부여
+--    프론트엔드 ADMIN_EMAILS에는 이미 추가됨(대시보드 접속 가능). 성적 페이지는 RLS 보호
+--    테이블 rest_assessments(성적) + user_profiles(명단)를 읽으므로 둘 다 권한 필요:
+--      · rest_assessments → 아래 §3 실행 (rest 수강생 성적만 들어있어 사이트 한정과 일치)
+--      · user_profiles    → RLS 미적용(현재 열림) 상태면 자동 OK / §4 적용 시엔 §4의
+--                           'a01094819953 AND signup_domain=rest' 분기로 rest 명단 조회 가능
+BEGIN;
+
+-- 기존 SELECT 정책 제거 (이름이 달라도 동적으로)
+DO $$
+DECLARE pol record;
+BEGIN
+  FOR pol IN
+    SELECT policyname FROM pg_policies
+    WHERE schemaname='public' AND tablename='rest_assessments' AND cmd='SELECT'
+  LOOP
+    EXECUTE format('DROP POLICY %I ON public.rest_assessments', pol.policyname);
+  END LOOP;
+END $$;
+
+-- 본인 + 운영자 + 백진주(rest 한정 관리자) 조회 가능
+CREATE POLICY "rest_assessments_select" ON public.rest_assessments FOR SELECT
+  USING (
+    auth.uid() = student_id
+    OR (auth.jwt() ->> 'email') IN (
+      'aebon@kakao.com', 'radical8566@gmail.com', 'aebon@kyonggi.ac.kr',
+      'a01094819953@gmail.com'
+    )
+  );
+
+COMMIT;
+
+-- 검증: SELECT 정책이 1개로 정리됐는지
+-- SELECT policyname, qual FROM pg_policies
+--   WHERE schemaname='public' AND tablename='rest_assessments' AND cmd='SELECT';
 
 
 -- ============================================================
