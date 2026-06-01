@@ -5,6 +5,8 @@ import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
 import { getAllAssessments, type AssessmentRecord } from '../../utils/assessments';
 import { groupByPerson } from '../../utils/people';
+import { exportTableExcel, exportTablePdf, type Cell } from '../../utils/exportTable';
+import { ADMIN_EMAILS } from '../../config/admin';
 import type { UserProfile } from '../../types';
 
 const REST_HOSTNAME = new URL(site.url).hostname;
@@ -25,8 +27,9 @@ const AdminGrades = (): ReactElement => {
         client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
         getAllAssessments(),
       ]);
+      // 총괄관리자·관리자(역할) + 백진주 등 관리자 이메일(ADMIN_EMAILS) 제외 → 순수 수강생만
       const list = ((signupRes.data || []) as UserProfile[])
-        .filter((u) => !STAFF_ROLES.includes(u.role))
+        .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()))
         .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));
       setStudents(list);
       setGrades(gradeList);
@@ -70,6 +73,32 @@ const AdminGrades = (): ReactElement => {
       return { type: t, taken: rows.length, passed, avg };
     });
   }, [gradeMap]);
+
+  // ── 성적표 다운로드 (선수평가 / 사후평가 × Excel / PDF) ──
+  const GRADE_COLUMNS = ['이름', '이메일', '점수', '합격여부', '정답수', '총문항', '응시일시'];
+  const PASS_SCORE: Record<string, number> = { prerequisite: 40, summative: 60 };
+
+  const buildGradeRows = (type: typeof GRADED_TYPES[number]): Cell[][] =>
+    people.map((g) => {
+      const rec = (gradeMap.get(g.key) || {})[type];
+      return [
+        g.name,
+        g.emails.join(' / '),
+        rec ? rec.score : '',
+        rec ? (rec.passed ? '합격' : '불합격') : '미응시',
+        rec ? rec.correct : '',
+        rec ? rec.total : '',
+        rec?.submitted_at ? new Date(rec.submitted_at).toLocaleString('ko-KR') : '',
+      ];
+    });
+
+  const subtitleFor = (type: typeof GRADED_TYPES[number]): string =>
+    `AI Reboot Academy · ${TYPE_LABEL[type]} · 합격기준 ${PASS_SCORE[type]}점 · 수강생 ${people.length}명 · 발행 ${new Date().toLocaleDateString('ko-KR')}`;
+
+  const downloadExcel = (type: typeof GRADED_TYPES[number]) =>
+    exportTableExcel(`${TYPE_LABEL[type]}_성적표.xlsx`, TYPE_LABEL[type], GRADE_COLUMNS, buildGradeRows(type));
+  const downloadPdf = (type: typeof GRADED_TYPES[number]) =>
+    exportTablePdf(`${TYPE_LABEL[type]} 성적표`, GRADE_COLUMNS, buildGradeRows(type), subtitleFor(type));
 
   const scoreCell = (g: AssessmentRecord | undefined): ReactElement => {
     if (!g) return <span style={{ color: 'var(--text-secondary, #9ca3af)' }}>미응시</span>;
@@ -120,6 +149,27 @@ const AdminGrades = (): ReactElement => {
                   <span>합격 <strong style={{ color: '#10b981' }}>{s.passed}</strong></span>
                   <span>평균 <strong>{s.avg}점</strong></span>
                 </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 성적표 다운로드 */}
+          <div style={{
+            display: 'flex', flexWrap: 'wrap', gap: '14px', marginBottom: '24px',
+            padding: '14px 16px', background: 'var(--bg-light-gray, #f8f9fa)',
+            border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '12px',
+          }}>
+            {GRADED_TYPES.map((t) => (
+              <div key={t} style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                <strong style={{ fontSize: '15px' }}>{TYPE_LABEL[t]} 성적표</strong>
+                <button type="button" onClick={() => downloadExcel(t)} disabled={loading || people.length === 0} style={{
+                  padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                  border: 'none', borderRadius: '7px', background: '#107c41', color: '#fff',
+                }}>⬇ Excel</button>
+                <button type="button" onClick={() => downloadPdf(t)} disabled={loading || people.length === 0} style={{
+                  padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+                  border: 'none', borderRadius: '7px', background: '#b91c1c', color: '#fff',
+                }}>⬇ PDF</button>
               </div>
             ))}
           </div>

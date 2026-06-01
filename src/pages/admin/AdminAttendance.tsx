@@ -5,6 +5,8 @@ import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
 import { groupByPerson, type PersonGroup } from '../../utils/people';
+import { exportTableWord, exportTablePdf, type Cell } from '../../utils/exportTable';
+import { ADMIN_EMAILS } from '../../config/admin';
 import type { Attendance, UserProfile } from '../../types';
 
 const TABLES = { attendance: `${site.dbPrefix}attendance` };
@@ -36,30 +38,19 @@ const AdminAttendance = (): ReactElement => {
     const client = getSupabase();
     if (!client) { setLoading(false); return; }
 
-    // 출석 대상: 본 사이트 가입 학생 + 총괄 관리자(superadmin)만
-    const [attRes, monthRes, signupRes, staffRes] = await Promise.all([
+    // 출석 대상: 본 사이트 가입 학생만 (총괄관리자/관리자 역할 + 백진주 등 관리자 이메일 제외)
+    const [attRes, monthRes, signupRes] = await Promise.all([
       client.from(TABLES.attendance).select('*').eq('date', selectedDate),
       client.from(TABLES.attendance).select('student_id, date, status').gte('date', '2026-06-01').lte('date', '2026-06-30'),
       client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
-      client.from('user_profiles').select('*').eq('role', 'superadmin'),
     ]);
 
     if (attRes.data) setRecords(attRes.data as Attendance[]);
     setMonthly((monthRes.data || []) as Attendance[]);
 
-    // 가입 학생 중 관리자/총괄관리자는 제외(학생만) + 총괄 관리자 합치기
-    const students = (signupRes.data || []).filter((u) => !STAFF_ROLES.includes((u as UserProfile).role));
-    const merged = new Map<string, UserProfile>();
-    [...students, ...(staffRes.data || [])].forEach((u) => {
-      merged.set((u as UserProfile).id, u as UserProfile);
-    });
-    const list = Array.from(merged.values()).sort((a, b) => {
-      // 관리자 먼저, 그 다음 학생 — 같은 그룹 내에서는 이름순
-      const aStaff = STAFF_ROLES.includes(a.role) ? 0 : 1;
-      const bStaff = STAFF_ROLES.includes(b.role) ? 0 : 1;
-      if (aStaff !== bStaff) return aStaff - bStaff;
-      return (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || '');
-    });
+    const list = ((signupRes.data || []) as UserProfile[])
+      .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()))
+      .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));
     setStudents(list);
     setLoading(false);
   };
@@ -107,6 +98,16 @@ const AdminAttendance = (): ReactElement => {
   });
   const tally = (pkey: string, st: string) => CLASS_DAYS.filter(d => monthLookup[`${pkey}|${dateOfJune(d)}`] === st).length;
 
+  // ── 일자별 출결일지 다운로드 (Word / PDF) ──
+  const STATUS_KO: Record<string, string> = { present: '출석', late: '지각', absent: '결석', excused: '사유', none: '-' };
+  const ATT_COLUMNS = ['이름', '이메일', '체크인', '출결상태'];
+  const buildAttendanceRows = (): Cell[][] =>
+    people.map((g) => [g.name, g.emails.join(' / '), getCheckIn(g.ids), STATUS_KO[getStatus(g.ids)] || '-']);
+  const attTitle = `출결일지 ${selectedDate}`;
+  const attSubtitle = `AI Reboot Academy · ${selectedDate} · 대상 ${people.length}명 · 발행 ${new Date().toLocaleDateString('ko-KR')}`;
+  const downloadAttWord = () => exportTableWord(`출결일지_${selectedDate}`, attTitle, ATT_COLUMNS, buildAttendanceRows(), attSubtitle);
+  const downloadAttPdf = () => exportTablePdf(attTitle, ATT_COLUMNS, buildAttendanceRows(), attSubtitle);
+
   return (
     <>
       <SEOHead title="출석 관리" path="/admin/attendance" noindex />
@@ -117,7 +118,7 @@ const AdminAttendance = (): ReactElement => {
             <div>
               <h2 style={{ margin: 0 }}>출결일지</h2>
               <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
-                학생 자가 체크인 시각을 확인하고 출결을 <strong>수정·보완</strong>하세요. <strong>rest.dreamitbiz.com 가입 학생</strong> + 총괄 관리자만 표시됩니다.
+                학생 자가 체크인 시각을 확인하고 출결을 <strong>수정·보완</strong>하세요. <strong>rest.dreamitbiz.com 가입 학생</strong>만 표시됩니다(관리자 제외).
               </p>
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
@@ -129,8 +130,17 @@ const AdminAttendance = (): ReactElement => {
               )}
             </div>
           </div>
-          <div style={{ marginBottom: '24px' }}>
+          <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="date-input" />
+            <span style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>이 날짜 출결일지:</span>
+            <button type="button" onClick={downloadAttWord} disabled={loading || people.length === 0} style={{
+              padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+              border: 'none', borderRadius: '7px', background: '#2b579a', color: '#fff',
+            }}>⬇ Word</button>
+            <button type="button" onClick={downloadAttPdf} disabled={loading || people.length === 0} style={{
+              padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+              border: 'none', borderRadius: '7px', background: '#b91c1c', color: '#fff',
+            }}>⬇ PDF</button>
           </div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
