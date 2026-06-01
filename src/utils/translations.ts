@@ -226,7 +226,7 @@ export const translations: Record<string, Record<string, unknown>> = {
       },
       resources: {
         title: '학습자료',
-        subtitle: '내가 만든 학습 사이트와 외부 자료·도구를 분야별로'
+        subtitle: 'DreamIT 사에서 만든 학습 사이트와 외부 자료·도구를 분야별로'
       },
       instructor: {
         title: '강사소개',

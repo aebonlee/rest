@@ -1,4 +1,4 @@
-/** 학습자료 페이지 데이터 — 내가 만든 사이트(분야별) + 외부 사이트 */
+/** 학습자료 페이지 데이터 — DreamIT 사에서 만든 사이트(분야별) + 외부 사이트 */
 export interface SiteLink { name: string; desc: string; url: string; featured?: boolean; }
 export interface SiteGroup { id: string; label: string; icon: string; owner: 'mine' | 'external'; sites: SiteLink[]; }
 

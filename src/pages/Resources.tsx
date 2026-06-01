@@ -42,7 +42,7 @@ const Resources = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>학습자료</h2>
-          <p>내가 만든 학습 사이트와 외부 자료·도구를 분야별로 모았습니다.</p>
+          <p>DreamIT 사에서 만든 학습 사이트와 외부 자료·도구를 분야별로 모았습니다.</p>
         </div>
       </section>
 
@@ -99,7 +99,7 @@ const Resources = (): ReactElement => {
                 background: 'var(--bg-white)', border: '1px solid var(--border-light)',
                 borderRadius: '12px', padding: '14px 10px',
               }}>
-                {sectionLabel('내가 만든 사이트')}
+                {sectionLabel('DreamIT 사에서 만든 사이트')}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '3px', marginBottom: '14px' }}>
                   {mine.map(navBtn)}
                 </div>
