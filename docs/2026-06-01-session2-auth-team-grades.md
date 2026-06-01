@@ -43,9 +43,21 @@
 - 대시보드/명단(anon·로그인 읽기 가능 데이터)은 즉시 접근 가능
 - RLS 보호 데이터(성적·다짐 등)까지 보이게 하려면 `ops_2026-06-01.sql` §3(선택)으로 RLS 정책에 이메일 추가
 
+## 6. user_profiles RLS 축소 — PII 노출 차단 (SQL — 실행 대기)
+- **이슈**: `user_profiles` SELECT가 전면 개방 → 공개 번들 anon 키로 가입자 600+명 PII(이름·이메일·전화) 조회 가능 (1차 세션 미해결 건)
+- **공유 테이블 영향 점검**: 같은 Supabase(`hcmgdztsgjvzcyxyayaj`)를 rest·joongang·openclaw·coding·DevLab이 공유. 로컬 전수 조사 결과 **일반 사용자는 본인 프로필만**(`.eq('id', 본인)`), 타인 조회는 **관리자 페이지(운영자 aebon)** 한정 → `본인+관리자` 정책 안전
+- **잔여 리스크**: autowork·ai-prompt·chatgpt·vibe 등 로컬에 없는 사이트는 미점검 → 폴백 SQL(로그인사용자만 / 전면개방) 동봉
+- **정책 결정**: `본인 + 관리자`로 확정 (운영자 선택)
+  - 본인(`auth.uid()=id`) + 글로벌 운영자(role admin/superadmin via `is_platform_admin()` SECURITY DEFINER 함수, 또는 aebon 이메일 4종) + **rest 한정 관리자 백진주는 `signup_domain='rest.dreamitbiz.com'` 가입자만**
+  - RLS 재귀 방지 위해 role 판별은 SECURITY DEFINER 함수로 분리
+- SQL: `supabase/ops_2026-06-01.sql` §4 (트랜잭션 + 검증 + 폴백 A/B 포함). **상태: 미실행**
+
 ---
 
 ## 후속 필요 (운영자 액션)
-1. Supabase SQL Editor에서 `supabase/ops_2026-06-01.sql` 실행 (§1 전유미 성적, §2 팀 정리 필수 / §3 선택)
-2. `npm run deploy`로 gh-pages 발행 (프론트 변경분: 타임아웃·평가저장·팀가드·관리자 승급)
-3. (별건) 1차 세션에서 발견한 `user_profiles` anon SELECT 전면개방 개인정보 노출 이슈 — 후속 조치 미해결
+1. Supabase SQL Editor에서 `supabase/ops_2026-06-01.sql` 실행
+   - §1 전유미 선수평가 55점 / §2 팀 강사멤버 정리 (필수)
+   - §4 user_profiles RLS 축소 (실행 전 §4-0으로 현재 정책 먼저 확인 권장) — 실행 후 anon 조회 0건 검증
+   - §3 백진주 성적 RLS (선택)
+2. ✅ 프론트 변경분(타임아웃·평가저장·팀가드·관리자 승급)은 본 세션에서 `npm run deploy` 발행 완료
+3. (점검 권장) RLS 작업 시 user_profiles의 **UPDATE/INSERT 정책**도 과개방 아닌지 함께 확인 (§4-0 쿼리로 전체 정책 조회)
