@@ -4,6 +4,7 @@ import SEOHead from '../../components/SEOHead';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
 import { getAllAssessments, type AssessmentRecord } from '../../utils/assessments';
+import { groupByPerson } from '../../utils/people';
 import type { UserProfile } from '../../types';
 
 const REST_HOSTNAME = new URL(site.url).hostname;
@@ -34,26 +35,41 @@ const AdminGrades = (): ReactElement => {
     load();
   }, []);
 
-  /** 학생 id → { type → 성적 } 매핑 */
+  // 동일인(전화/이름) 통합 — 이메일 2개여도 한 명, 성적은 두 계정 중 최고점 채택
+  const people = useMemo(() => groupByPerson(students), [students]);
+
+  /** 같은 사람의 여러 계정(student_id) 중, 한 평가종류에서 최고점 기록 */
+  const pickBest = (g1: AssessmentRecord | undefined, g2: AssessmentRecord): AssessmentRecord => {
+    if (!g1) return g2;
+    if (g2.score !== g1.score) return g2.score > g1.score ? g2 : g1;
+    // 동점이면 더 최근 제출
+    return (g2.submitted_at || '') > (g1.submitted_at || '') ? g2 : g1;
+  };
+
+  /** personKey → { type → 성적(동일인 합산) } 매핑 */
   const gradeMap = useMemo(() => {
     const m = new Map<string, Record<string, AssessmentRecord>>();
-    grades.forEach((g) => {
-      const byType = m.get(g.student_id) || {};
-      byType[g.type] = g;
-      m.set(g.student_id, byType);
+    people.forEach((p) => {
+      const idSet = new Set(p.ids);
+      const byType: Record<string, AssessmentRecord> = {};
+      grades.forEach((g) => {
+        if (!idSet.has(g.student_id)) return;
+        byType[g.type] = pickBest(byType[g.type], g);
+      });
+      m.set(p.key, byType);
     });
     return m;
-  }, [grades]);
+  }, [grades, people]);
 
-  /** 평가별 통계 (응시자 수 / 합격자 수 / 평균) */
+  /** 평가별 통계 (응시 인원 / 합격 인원 / 평균) — 동일인 1명 기준 */
   const stats = useMemo(() => {
     return GRADED_TYPES.map((t) => {
-      const rows = grades.filter((g) => g.type === t);
+      const rows = Array.from(gradeMap.values()).map((byType) => byType[t]).filter(Boolean) as AssessmentRecord[];
       const passed = rows.filter((g) => g.passed).length;
       const avg = rows.length ? Math.round(rows.reduce((s, g) => s + g.score, 0) / rows.length) : 0;
       return { type: t, taken: rows.length, passed, avg };
     });
-  }, [grades]);
+  }, [gradeMap]);
 
   const scoreCell = (g: AssessmentRecord | undefined): ReactElement => {
     if (!g) return <span style={{ color: 'var(--text-secondary, #9ca3af)' }}>미응시</span>;
@@ -82,7 +98,12 @@ const AdminGrades = (): ReactElement => {
               </p>
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
-              수강생 {students.length}명
+              수강생 {people.length}명
+              {people.length !== students.length && (
+                <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
+                  {' '}· 계정 {students.length}개(동일인 통합)
+                </span>
+              )}
             </div>
           </div>
 
@@ -105,7 +126,7 @@ const AdminGrades = (): ReactElement => {
 
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
-          ) : students.length === 0 ? (
+          ) : people.length === 0 ? (
             <div style={{
               textAlign: 'center', padding: '60px 20px', background: 'var(--bg-light-gray, #f8f9fa)',
               borderRadius: '12px', color: 'var(--text-secondary, #6b7280)',
@@ -117,14 +138,26 @@ const AdminGrades = (): ReactElement => {
               <table className="admin-table">
                 <thead><tr><th>이름</th><th>이메일</th><th>선수평가</th><th>사후평가</th><th>최근 응시</th></tr></thead>
                 <tbody>
-                  {students.map((s) => {
-                    const byType = gradeMap.get(s.id) || {};
+                  {people.map((g) => {
+                    const byType = gradeMap.get(g.key) || {};
                     const dates = GRADED_TYPES.map((t) => byType[t]?.submitted_at).filter(Boolean) as string[];
                     const latest = dates.sort().slice(-1)[0];
                     return (
-                      <tr key={s.id}>
-                        <td>{s.display_name || s.name || '-'}</td>
-                        <td>{s.email}</td>
+                      <tr key={g.key}>
+                        <td>
+                          {g.name}
+                          {g.isMerged && (
+                            <span title={`동일인 ${g.accounts.length}계정 — 최고점 합산`} style={{
+                              marginLeft: '6px', fontSize: '12px', fontWeight: 700, padding: '1px 7px',
+                              borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
+                            }}>동일인 {g.accounts.length}계정</span>
+                          )}
+                        </td>
+                        <td>
+                          {g.emails.map((e, i) => (
+                            <div key={e} style={i > 0 ? { fontSize: '14px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                          ))}
+                        </td>
                         <td>{scoreCell(byType.prerequisite)}</td>
                         <td>{scoreCell(byType.summative)}</td>
                         <td>{latest ? new Date(latest).toLocaleDateString('ko-KR') : '-'}</td>

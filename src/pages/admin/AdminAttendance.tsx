@@ -1,9 +1,10 @@
-import { useState, useEffect, type ReactElement } from 'react';
+import { useState, useEffect, useMemo, type ReactElement } from 'react';
 import AdminSidebar from '../../components/AdminSidebar';
 import SEOHead from '../../components/SEOHead';
 import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
+import { groupByPerson, type PersonGroup } from '../../utils/people';
 import type { Attendance, UserProfile } from '../../types';
 
 const TABLES = { attendance: `${site.dbPrefix}attendance` };
@@ -65,30 +66,46 @@ const AdminAttendance = (): ReactElement => {
 
   useEffect(() => { loadData(); }, [selectedDate]);
 
-  const markAttendance = async (studentId: string, status: 'present' | 'absent' | 'late' | 'excused') => {
+  // 동일인(전화/이름) 통합 — 이메일 2개여도 한 명. 출결은 모든 계정 id 기준으로 조회
+  const people = useMemo(() => groupByPerson(students), [students]);
+
+  /** 동일인의 여러 계정 중 선택일 출결 레코드 */
+  const findRecord = (ids: string[]) => records.find(r => ids.includes(r.student_id));
+
+  const markAttendance = async (person: PersonGroup, status: 'present' | 'absent' | 'late' | 'excused') => {
     const client = getSupabase();
     if (!client) return;
-    const existing = records.find(r => r.student_id === studentId);
+    const existing = findRecord(person.ids);
     if (existing) {
       // 관리자 수정·보완: 상태만 변경, 학생의 원래 체크인 시각은 보존
       await client.from(TABLES.attendance).update({ status }).eq('id', existing.id);
     } else {
-      await client.from(TABLES.attendance).insert({ student_id: studentId, date: selectedDate, status, check_in_time: new Date().toISOString() });
+      // 신규 기록은 대표 계정 id로 저장
+      await client.from(TABLES.attendance).insert({ student_id: person.primary.id, date: selectedDate, status, check_in_time: new Date().toISOString() });
     }
     showToast('출결이 수정되었습니다.', 'success');
     await loadData();
   };
 
-  const getStatus = (studentId: string) => records.find(r => r.student_id === studentId)?.status || 'none';
-  const getCheckIn = (studentId: string) => {
-    const t = records.find(r => r.student_id === studentId)?.check_in_time;
+  const getStatus = (ids: string[]) => findRecord(ids)?.status || 'none';
+  const getCheckIn = (ids: string[]) => {
+    const t = findRecord(ids)?.check_in_time;
     return t ? new Date(t).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '-';
   };
 
-  // 월별 매트릭스 조회 { studentId|date → status }
+  // 월별 매트릭스 조회 { personKey|date → status } — 동일인 합산(우선순위: 출석>지각>사유>결석)
+  const STATUS_RANK: Record<string, number> = { present: 3, late: 2, excused: 1, absent: 0 };
+  const idToKey = new Map<string, string>();
+  people.forEach(p => p.ids.forEach(id => idToKey.set(id, p.key)));
   const monthLookup: Record<string, string> = {};
-  monthly.forEach(r => { monthLookup[`${r.student_id}|${r.date}`] = r.status; });
-  const tally = (sid: string, st: string) => CLASS_DAYS.filter(d => monthLookup[`${sid}|${dateOfJune(d)}`] === st).length;
+  monthly.forEach(r => {
+    const pkey = idToKey.get(r.student_id);
+    if (!pkey) return;
+    const k = `${pkey}|${r.date}`;
+    const prev = monthLookup[k];
+    if (!prev || (STATUS_RANK[r.status] ?? -1) > (STATUS_RANK[prev] ?? -1)) monthLookup[k] = r.status;
+  });
+  const tally = (pkey: string, st: string) => CLASS_DAYS.filter(d => monthLookup[`${pkey}|${dateOfJune(d)}`] === st).length;
 
   return (
     <>
@@ -104,7 +121,12 @@ const AdminAttendance = (): ReactElement => {
               </p>
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
-              총 {students.length}명
+              총 {people.length}명
+              {people.length !== students.length && (
+                <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
+                  {' '}· 계정 {students.length}개(동일인 통합)
+                </span>
+              )}
             </div>
           </div>
           <div style={{ marginBottom: '24px' }}>
@@ -112,7 +134,7 @@ const AdminAttendance = (): ReactElement => {
           </div>
           {loading ? (
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
-          ) : students.length === 0 ? (
+          ) : people.length === 0 ? (
             <div style={{
               textAlign: 'center',
               padding: '60px 20px',
@@ -127,11 +149,12 @@ const AdminAttendance = (): ReactElement => {
               <table className="admin-table">
                 <thead><tr><th>구분</th><th>이름</th><th>이메일</th><th>체크인</th><th>상태</th><th>수정·보완</th></tr></thead>
                 <tbody>
-                  {students.map(s => {
-                    const status = getStatus(s.id);
+                  {people.map(g => {
+                    const s = g.primary;
+                    const status = getStatus(g.ids);
                     const isStaff = STAFF_ROLES.includes(s.role);
                     return (
-                      <tr key={s.id}>
+                      <tr key={g.key}>
                         <td>
                           <span className={`role-badge ${s.role}`} style={{
                             display: 'inline-block',
@@ -145,16 +168,28 @@ const AdminAttendance = (): ReactElement => {
                             {s.role === 'superadmin' ? '총괄 관리자' : s.role === 'admin' ? '관리자' : '학생'}
                           </span>
                         </td>
-                        <td>{s.display_name || s.name || '-'}</td>
-                        <td>{s.email}</td>
-                        <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary, #6b7280)' }}>{getCheckIn(s.id)}</td>
+                        <td>
+                          {g.name}
+                          {g.isMerged && (
+                            <span title={`동일인 ${g.accounts.length}계정`} style={{
+                              marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                              borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
+                            }}>동일인 {g.accounts.length}</span>
+                          )}
+                        </td>
+                        <td>
+                          {g.emails.map((e, i) => (
+                            <div key={e} style={i > 0 ? { fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                          ))}
+                        </td>
+                        <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary, #6b7280)' }}>{getCheckIn(g.ids)}</td>
                         <td><span className={`attendance-status ${status}`}>{status === 'present' ? '출석' : status === 'absent' ? '결석' : status === 'late' ? '지각' : status === 'excused' ? '사유' : '-'}</span></td>
                         <td>
                           <div className="attendance-actions">
-                            <button className={`att-btn ${status === 'present' ? 'active' : ''}`} onClick={() => markAttendance(s.id, 'present')}>출석</button>
-                            <button className={`att-btn ${status === 'late' ? 'active' : ''}`} onClick={() => markAttendance(s.id, 'late')}>지각</button>
-                            <button className={`att-btn ${status === 'absent' ? 'active' : ''}`} onClick={() => markAttendance(s.id, 'absent')}>결석</button>
-                            <button className={`att-btn ${status === 'excused' ? 'active' : ''}`} onClick={() => markAttendance(s.id, 'excused')}>사유</button>
+                            <button className={`att-btn ${status === 'present' ? 'active' : ''}`} onClick={() => markAttendance(g, 'present')}>출석</button>
+                            <button className={`att-btn ${status === 'late' ? 'active' : ''}`} onClick={() => markAttendance(g, 'late')}>지각</button>
+                            <button className={`att-btn ${status === 'absent' ? 'active' : ''}`} onClick={() => markAttendance(g, 'absent')}>결석</button>
+                            <button className={`att-btn ${status === 'excused' ? 'active' : ''}`} onClick={() => markAttendance(g, 'excused')}>사유</button>
                           </div>
                         </td>
                       </tr>
@@ -166,7 +201,7 @@ const AdminAttendance = (): ReactElement => {
           )}
 
           {/* 월별 전체 출석 현황 */}
-          {!loading && students.length > 0 && (
+          {!loading && people.length > 0 && (
             <div style={{ marginTop: '40px' }}>
               <h3 style={{ margin: '0 0 4px' }}>6월 전체 출석 현황</h3>
               <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
@@ -184,20 +219,20 @@ const AdminAttendance = (): ReactElement => {
                     </tr>
                   </thead>
                   <tbody>
-                    {students.map(s => (
-                      <tr key={s.id}>
-                        <td style={{ position: 'sticky', left: 0, background: 'var(--bg-white, #fff)', fontWeight: 600, whiteSpace: 'nowrap' }}>{s.display_name || s.name || s.email}</td>
+                    {people.map(g => (
+                      <tr key={g.key}>
+                        <td style={{ position: 'sticky', left: 0, background: 'var(--bg-white, #fff)', fontWeight: 600, whiteSpace: 'nowrap' }}>{g.name}</td>
                         {CLASS_DAYS.map(d => {
-                          const st = monthLookup[`${s.id}|${dateOfJune(d)}`];
+                          const st = monthLookup[`${g.key}|${dateOfJune(d)}`];
                           return (
                             <td key={d} style={{ textAlign: 'center', padding: '6px 2px' }}>
                               {st ? <span style={{ fontWeight: 800, color: ABBR_COLOR[st] }}>{ABBR[st]}</span> : <span style={{ color: 'var(--border-light, #d1d5db)' }}>·</span>}
                             </td>
                           );
                         })}
-                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#10b981' }}>{tally(s.id, 'present')}</td>
-                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#d97706' }}>{tally(s.id, 'late')}</td>
-                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#ef4444' }}>{tally(s.id, 'absent')}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#10b981' }}>{tally(g.key, 'present')}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#d97706' }}>{tally(g.key, 'late')}</td>
+                        <td style={{ textAlign: 'center', fontWeight: 700, color: '#ef4444' }}>{tally(g.key, 'absent')}</td>
                       </tr>
                     ))}
                   </tbody>

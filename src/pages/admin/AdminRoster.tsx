@@ -4,6 +4,7 @@ import SEOHead from '../../components/SEOHead';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
 import { ROSTER, ROSTER_COUNT, type RosterStudent } from '../../data/rosterData';
+import { groupByPerson, type PersonGroup } from '../../utils/people';
 import type { UserProfile } from '../../types';
 
 const REST_HOSTNAME = new URL(site.url).hostname;
@@ -13,7 +14,7 @@ const norm = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '').trim();
 
 interface RosterRow {
   student: RosterStudent;
-  profile: UserProfile | null;
+  person: PersonGroup | null;
 }
 
 const levelColor: Record<string, string> = { 입문: '#ef4444', 기초: '#d97706', 경험자: '#10b981' };
@@ -39,25 +40,29 @@ const AdminRoster = (): ReactElement => {
   }, []);
 
   const { rows, notInRoster, matchedCount } = useMemo(() => {
-    const byName = new Map<string, UserProfile>();
-    profiles.forEach((p) => {
-      if (p.name) byName.set(norm(p.name), p);
-      if (p.display_name) byName.set(norm(p.display_name), p);
+    // 동일인(전화/이름) 통합 후 이름으로 매칭
+    const people = groupByPerson(profiles);
+    const byName = new Map<string, PersonGroup>();
+    people.forEach((g) => {
+      g.accounts.forEach((a) => {
+        if (a.name) byName.set(norm(a.name), g);
+        if (a.display_name) byName.set(norm(a.display_name), g);
+      });
     });
-    const used = new Set<string>();
+    const usedKeys = new Set<string>();
     const rows: RosterRow[] = ROSTER.map((student) => {
-      const profile = byName.get(norm(student.name)) || null;
-      if (profile) used.add(profile.id);
-      return { student, profile };
+      const person = byName.get(norm(student.name)) || null;
+      if (person) usedKeys.add(person.key);
+      return { student, person };
     });
     return {
       rows,
-      matchedCount: rows.filter((r) => r.profile).length,
-      notInRoster: profiles.filter((p) => !used.has(p.id)),
+      matchedCount: rows.filter((r) => r.person).length,
+      notInRoster: people.filter((g) => !usedKeys.has(g.key)),
     };
   }, [profiles]);
 
-  const notSignedUp = rows.filter((r) => !r.profile);
+  const notSignedUp = rows.filter((r) => !r.person);
 
   // 경험 수준 분포
   const levelDist = useMemo(() => {
@@ -68,7 +73,7 @@ const AdminRoster = (): ReactElement => {
 
   const summary = [
     { label: '명단 인원', val: ROSTER_COUNT, color: 'var(--text-primary, #1a1a1a)' },
-    { label: '가입 회원', val: profiles.length, color: 'var(--primary-blue, #0046C8)' },
+    { label: '가입 회원', val: matchedCount + notInRoster.length, color: 'var(--primary-blue, #0046C8)' },
     { label: '일치(가입완료)', val: matchedCount, color: '#10b981' },
     { label: '미가입', val: notSignedUp.length, color: '#ef4444' },
     { label: '명단외 가입', val: notInRoster.length, color: '#d97706' },
@@ -147,12 +152,24 @@ const AdminRoster = (): ReactElement => {
                     <table className="admin-table">
                       <thead><tr><th>이름</th><th>이메일</th><th>전화</th><th>가입경로</th></tr></thead>
                       <tbody>
-                        {notInRoster.map((p) => (
-                          <tr key={p.id}>
-                            <td>{p.display_name || p.name || '-'}</td>
-                            <td>{p.email}</td>
-                            <td>{p.phone || '-'}</td>
-                            <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{p.provider || '-'}</td>
+                        {notInRoster.map((g) => (
+                          <tr key={g.key}>
+                            <td>
+                              {g.name}
+                              {g.isMerged && (
+                                <span title={`동일인 ${g.accounts.length}계정`} style={{
+                                  marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                                  borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
+                                }}>동일인 {g.accounts.length}</span>
+                              )}
+                            </td>
+                            <td>
+                              {g.emails.map((e, i) => (
+                                <div key={e} style={i > 0 ? { fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                              ))}
+                            </td>
+                            <td>{g.phone || '-'}</td>
+                            <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{Array.from(new Set(g.accounts.map(a => a.provider).filter(Boolean))).join(', ') || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -178,11 +195,15 @@ const AdminRoster = (): ReactElement => {
                         <td>
                           <span style={{
                             fontSize: '13.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
-                            background: r.profile ? '#d1fae5' : '#fee2e2',
-                            color: r.profile ? '#065f46' : '#991b1b',
-                          }}>{r.profile ? '가입' : '미가입'}</span>
+                            background: r.person ? '#d1fae5' : '#fee2e2',
+                            color: r.person ? '#065f46' : '#991b1b',
+                          }}>{r.person ? '가입' : '미가입'}</span>
                         </td>
-                        <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{r.profile?.email || '-'}</td>
+                        <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
+                          {r.person ? r.person.emails.map((e, i) => (
+                            <div key={e} style={i > 0 ? { fontSize: '13px' } : undefined}>{e}</div>
+                          )) : '-'}
+                        </td>
                       </tr>
                     ))}
                   </tbody>

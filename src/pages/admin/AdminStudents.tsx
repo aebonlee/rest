@@ -3,6 +3,7 @@ import AdminSidebar from '../../components/AdminSidebar';
 import SEOHead from '../../components/SEOHead';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
+import { groupByPerson } from '../../utils/people';
 import type { UserProfile } from '../../types';
 
 const REST_HOSTNAME = new URL(site.url).hostname; // 'rest.dreamitbiz.com'
@@ -40,16 +41,21 @@ const AdminStudents = (): ReactElement => {
     load();
   }, [scope]);
 
+  // 동일인(전화/이름 기준) 통합 — 이메일 2개여도 한 명으로 표시
+  const people = useMemo(() => groupByPerson(students), [students]);
+
   const filtered = useMemo(() => {
-    if (!keyword.trim()) return students;
+    if (!keyword.trim()) return people;
     const k = keyword.trim().toLowerCase();
-    return students.filter(s =>
-      (s.email || '').toLowerCase().includes(k) ||
-      (s.display_name || '').toLowerCase().includes(k) ||
-      (s.name || '').toLowerCase().includes(k) ||
-      (s.phone || '').includes(k)
+    return people.filter(g =>
+      g.emails.some(e => e.toLowerCase().includes(k)) ||
+      g.accounts.some(a =>
+        (a.display_name || '').toLowerCase().includes(k) ||
+        (a.name || '').toLowerCase().includes(k)
+      ) ||
+      (g.phone || '').includes(k)
     );
-  }, [students, keyword]);
+  }, [people, keyword]);
 
   return (
     <>
@@ -65,7 +71,12 @@ const AdminStudents = (): ReactElement => {
               </p>
             </div>
             <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
-              총 {filtered.length}명{keyword && ` (전체 ${students.length}명 중)`}
+              총 {filtered.length}명{keyword && ` (전체 ${people.length}명 중)`}
+              {people.length !== students.length && (
+                <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
+                  {' '}· 계정 {students.length}개(동일인 통합)
+                </span>
+              )}
             </div>
           </div>
 
@@ -150,19 +161,34 @@ const AdminStudents = (): ReactElement => {
                   <tr><th>이름</th><th>이메일</th><th>전화번호</th><th>가입방식</th><th>가입처</th><th>역할</th><th>최근접속</th></tr>
                 </thead>
                 <tbody>
-                  {filtered.map(s => (
-                    <tr key={s.id}>
-                      <td>{s.display_name || s.name || '-'}</td>
-                      <td>{s.email}</td>
-                      <td>{s.phone || '-'}</td>
-                      <td>{s.provider}</td>
-                      <td style={{ fontSize: '14.5px', color: 'var(--text-secondary, #6b7280)' }}>
-                        {s.signup_domain || '-'}
-                      </td>
-                      <td><span className={`role-badge ${s.role}`}>{s.role}</span></td>
-                      <td>{s.last_sign_in_at ? new Date(s.last_sign_in_at).toLocaleDateString('ko-KR') : '-'}</td>
-                    </tr>
-                  ))}
+                  {filtered.map(g => {
+                    const s = g.primary;
+                    return (
+                      <tr key={g.key}>
+                        <td>
+                          {g.name}
+                          {g.isMerged && (
+                            <span title={`동일 전화번호 ${g.phone}로 ${g.accounts.length}개 계정`} style={{
+                              marginLeft: '6px', fontSize: '12px', fontWeight: 700, padding: '1px 7px',
+                              borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
+                            }}>동일인 {g.accounts.length}계정</span>
+                          )}
+                        </td>
+                        <td>
+                          {g.emails.map((e, i) => (
+                            <div key={e} style={i > 0 ? { fontSize: '14px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                          ))}
+                        </td>
+                        <td>{g.phone || '-'}</td>
+                        <td>{Array.from(new Set(g.accounts.map(a => a.provider).filter(Boolean))).join(', ') || '-'}</td>
+                        <td style={{ fontSize: '14.5px', color: 'var(--text-secondary, #6b7280)' }}>
+                          {s.signup_domain || '-'}
+                        </td>
+                        <td><span className={`role-badge ${s.role}`}>{s.role}</span></td>
+                        <td>{s.last_sign_in_at ? new Date(s.last_sign_in_at).toLocaleDateString('ko-KR') : '-'}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

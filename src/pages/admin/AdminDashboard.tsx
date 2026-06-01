@@ -4,6 +4,8 @@ import AdminSidebar from '../../components/AdminSidebar';
 import SEOHead from '../../components/SEOHead';
 import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
+import { groupByPerson } from '../../utils/people';
+import type { UserProfile } from '../../types';
 
 const TABLES = {
   attendance: `${site.dbPrefix}attendance`,
@@ -21,14 +23,16 @@ const AdminDashboard = (): ReactElement => {
       const client = getSupabase();
       if (!client) return;
       const [profileRes, assignRes, subRes, teamRes, projRes] = await Promise.all([
-        client.from('user_profiles').select('id', { count: 'exact' }).like('visited_sites', '%rest.dreamitbiz.com%'),
+        client.from('user_profiles').select('id, name, display_name, phone, last_sign_in_at, updated_at').like('visited_sites', '%rest.dreamitbiz.com%'),
         client.from(TABLES.assignments).select('id', { count: 'exact' }),
         client.from(TABLES.submissions).select('id', { count: 'exact' }),
         client.from(TABLES.teams).select('id', { count: 'exact' }),
         client.from(TABLES.projects).select('id', { count: 'exact' }),
       ]);
+      // 동일인(전화/이름) 통합 인원수
+      const studentCount = groupByPerson((profileRes.data || []) as UserProfile[]).length;
       setStats({
-        students: profileRes.count || 0,
+        students: studentCount,
         assignments: assignRes.count || 0,
         submissions: subRes.count || 0,
         teams: teamRes.count || 0,
