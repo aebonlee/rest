@@ -62,7 +62,7 @@ const Competition = (): ReactElement => {
                 </div>
                 <div className="llm-card">
                   <h4>💬 ChatGPT (OpenAI)</h4>
-                  <p>범용 LLM - 유료 플랜 제공</p>
+                  <p>범용 LLM</p>
                   <span className="llm-badge">해외</span>
                 </div>
                 <div className="llm-card">
@@ -72,7 +72,7 @@ const Competition = (): ReactElement => {
                 </div>
                 <div className="llm-card">
                   <h4>🧠 Claude (Anthropic)</h4>
-                  <p>안전한 AI 어시스턴트</p>
+                  <p>안전한 AI 어시스턴트 - 유료 플랜 1개월 제공(6월 한달)</p>
                   <span className="llm-badge">해외</span>
                 </div>
               </div>
