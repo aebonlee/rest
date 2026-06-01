@@ -140,7 +140,7 @@ const Home = (): ReactElement => {
               <p>국내 LLM(Solar 등)을 활용한 서비스 개발 경진대회에 출품합니다.</p>
               <ul>
                 <li>국내 LLM 활용 가산점</li>
-                <li>ChatGPT 유료 플랜 제공</li>
+                <li>Claude 유료 플랜 1개월 제공(6월 한달)</li>
                 <li>국내 LLM API 비용 지원</li>
               </ul>
               <Link to="/competition" className="btn btn-primary">대회 상세 보기</Link>
@@ -162,7 +162,7 @@ const Home = (): ReactElement => {
             </div>
             <div className="eligibility-card">
               <h4>AI 도구 지원</h4>
-              <p>ChatGPT 유료 플랜 제공 + 국내 LLM API 비용 지원</p>
+              <p>Claude 유료 플랜 1개월 제공(6월 한달) + 국내 LLM API 비용 지원</p>
             </div>
             <div className="eligibility-card">
               <h4>수료 후 혜택</h4>

@@ -44,7 +44,7 @@ const Competition = (): ReactElement => {
             <div className="competition-info-card">
               <h3>🎁 참가 혜택</h3>
               <ul className="benefit-list">
-                <li>ChatGPT 유료 플랜 제공 (교육 기간)</li>
+                <li>Claude 유료 플랜 1개월 제공(6월 한달)</li>
                 <li>국내 LLM API 비용 지원 (Solar 등)</li>
                 <li>전문 기술코칭 8시간 지원</li>
                 <li>프로젝트 포트폴리오 완성</li>
