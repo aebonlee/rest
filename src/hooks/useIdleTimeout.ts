@@ -1,9 +1,9 @@
 import { useEffect, useRef, useCallback } from 'react'
 
 interface UseIdleTimeoutOptions {
-  /** 자동 로그아웃 시간 (ms). 기본값 10분 */
+  /** 자동 로그아웃 시간 (ms). 기본값 60분 */
   timeout?: number
-  /** 타임아웃 전 경고 시점 (ms). 기본값 1분 전 */
+  /** 타임아웃 전 경고 시점 (ms). 기본값 2분 전 */
   warningBefore?: number
   /** 타임아웃 시 호출할 콜백 */
   onTimeout: () => void
@@ -12,11 +12,13 @@ interface UseIdleTimeoutOptions {
 }
 
 export function useIdleTimeout({
-  timeout = 10 * 60 * 1000,
-  warningBefore = 60 * 1000,
+  timeout = 60 * 60 * 1000,
+  warningBefore = 2 * 60 * 1000,
   onTimeout,
   enabled = true,
 }: UseIdleTimeoutOptions) {
+  const timeoutMinutes = Math.round(timeout / 60000)
+  const warningMinutes = Math.round(warningBefore / 60000)
   const onTimeoutRef = useRef(onTimeout)
   onTimeoutRef.current = onTimeout
 
@@ -56,9 +58,9 @@ export function useIdleTimeout({
       'position:fixed;top:16px;right:16px;z-index:99999;background:#f59e0b;color:#fff;' +
       'padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;' +
       'box-shadow:0 4px 12px rgba(0,0,0,.15);animation:idleSlideIn .3s ease;'
-    el.textContent = '\u26a0\ufe0f 1분 후 자동 로그아웃됩니다. 활동을 계속하려면 마우스를 움직여주세요.'
+    el.textContent = `\u26a0\ufe0f ${warningMinutes}분 후 자동 로그아웃됩니다. 활동을 계속하려면 화면을 클릭하거나 마우스를 움직여주세요.`
     document.body.appendChild(el)
-  }, [ensureStyle])
+  }, [ensureStyle, warningMinutes])
 
   const showLogoutNotice = useCallback(() => {
     removeWarning()
@@ -68,13 +70,13 @@ export function useIdleTimeout({
       'position:fixed;top:16px;right:16px;z-index:99999;background:#ef4444;color:#fff;' +
       'padding:12px 20px;border-radius:8px;font-size:14px;font-weight:500;' +
       'box-shadow:0 4px 12px rgba(0,0,0,.15);animation:idleSlideIn .3s ease;'
-    el.textContent = '\ud83d\udd12 10분 무동작으로 자동 로그아웃되었습니다.'
+    el.textContent = `\ud83d\udd12 ${timeoutMinutes}분 무동작으로 자동 로그아웃되었습니다.`
     document.body.appendChild(el)
     setTimeout(() => {
       el.style.animation = 'idleFadeOut .3s ease forwards'
       setTimeout(() => el.remove(), 300)
     }, 4700)
-  }, [removeWarning, ensureStyle])
+  }, [removeWarning, ensureStyle, timeoutMinutes])
 
   const resetTimers = useCallback(() => {
     clearTimers()

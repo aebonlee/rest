@@ -170,12 +170,14 @@ export const AuthProvider = ({ children }: AuthProviderProps): ReactElement => {
   const needsProfileCompletion = isLoggedIn && !!profile && (!profile.name || !profile.phone);
 
 
-  // 10분 무동작 세션 타임아웃
+  // 60분 무동작 세션 타임아웃 (시험·강의 중 끊김 방지)
   useIdleTimeout({
-  enabled: isLoggedIn,
-  onTimeout: () => {
-  authSignOut().catch(() => {});
-  },
+    timeout: 60 * 60 * 1000,
+    enabled: isLoggedIn,
+    onTimeout: () => {
+      // 로컬 상태까지 즉시 정리해 UI가 로그인된 채로 남지 않도록 함
+      signOut().catch(() => {});
+    },
   });
 
   return (

@@ -75,6 +75,7 @@ const ProjectVote = (): ReactElement => {
   };
 
   const handleCreateTeam = async (title: string) => {
+    if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
     if (myTeam) { showToast('이미 다른 팀에 속해 있습니다.', 'warning'); return; }
     setBusy(true);
     const res = await createTeam(title, title, me('팀장'));
@@ -84,6 +85,7 @@ const ProjectVote = (): ReactElement => {
   };
 
   const handleJoin = async (team: Team) => {
+    if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
     setBusy(true);
     const res = await joinTeam(team, me('팀원'));
     setBusy(false);
@@ -150,6 +152,11 @@ const ProjectVote = (): ReactElement => {
                 총 <strong style={{ color: 'var(--primary-blue)' }}>{votes.length}</strong>표 · 주제 {rows.length}개
                 {myTeam && <span> · 내 팀: <strong style={{ color: 'var(--primary-blue)' }}>{myTeam.name}</strong> <Link to="/project-board" style={{ color: 'var(--primary-blue)' }}>(게시판)</Link></span>}
               </div>
+              {isAdmin && (
+                <div style={{ fontSize: '14px', color: 'var(--text-secondary)', background: 'var(--bg-light-gray)', borderRadius: '8px', padding: '10px 14px' }}>
+                  강사 계정입니다. 팀 결성·합류는 수강생이 직접 진행하며, 클릭한 학생이 팀장이 됩니다. (강사는 팀에 포함되지 않습니다)
+                </div>
+              )}
 
               {rows.map((r, idx) => {
                 const voters = votersByKey[r.key] || [];
@@ -209,7 +216,7 @@ const ProjectVote = (): ReactElement => {
                         {mineVote ? '✓ 내 투표 (취소)' : '이 주제에 투표'}
                       </button>
 
-                      {!team && !myTeam && (
+                      {!team && !myTeam && !isAdmin && (
                         <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleCreateTeam(r.title)}>
                           이 주제로 팀 만들기
                         </button>
@@ -220,7 +227,7 @@ const ProjectVote = (): ReactElement => {
                           <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleLeave(team)}>팀 나가기</button>
                         </>
                       )}
-                      {team && !inThisTeam && !myTeam && (
+                      {team && !inThisTeam && !myTeam && !isAdmin && (
                         <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || full} onClick={() => handleJoin(team)}>
                           {full ? '정원 마감' : '이 팀에 합류'}
                         </button>

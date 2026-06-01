@@ -106,6 +106,16 @@ const Assessment = (): ReactElement => {
     setSaveStatus(res.saved ? 'saved' : 'error');
   };
 
+  // 세션 끊김 등으로 저장되지 못한 채점 결과를 로그인 복구 시 자동 저장.
+  // (시험 중 자동 로그아웃 → 제출 시 게스트 처리된 경우, 다시 로그인해 평가 페이지를 열면 반영됨)
+  useEffect(() => {
+    if (isPractice || !submitted || !user) return;
+    if (saveStatus === 'saving' || saveStatus === 'saved') return;
+    const correct = set.mcq.reduce((acc, q) => acc + (answers[q.no] === q.answer ? 1 : 0), 0);
+    void persistResult(correct, set.mcq.length);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, submitted, set.type]);
+
   const handleSubmit = () => {
     const unanswered = set.mcq.filter((q) => answers[q.no] === undefined);
     if (unanswered.length > 0) {
