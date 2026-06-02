@@ -24,14 +24,14 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'Manus AI 학습 플랫폼', desc: 'Manus AI — 세계 최초 자율형 AI 에이전트 플랫폼 종합 학습', url: 'https://manus.dreamitbiz.com' },
   ] },
   { id: 'coding', label: '코딩·웹 개발', icon: '💻', owner: 'mine', sites: [
-    { name: 'HTML/CSS 학습', desc: '웹 프론트엔드 기초, HTML5, CSS3, 반응형 웹', url: 'https://html.dreamitbiz.com' },
-    { name: '웹 개발 학습', desc: '웹 개발 종합 (HTML, CSS, JS, 프레임워크)', url: 'https://webstudy.dreamitbiz.com' },
+    { name: 'UI/UX 용어 사전', desc: 'Vibe Coding으로 배우는 인터랙티브 UI/UX 용어집', url: 'https://html.dreamitbiz.com' },
+    { name: '바이브코딩 백엔드', desc: '바이브코딩으로 배우는 백엔드 완전정복', url: 'https://webstudy.dreamitbiz.com' },
     { name: 'React 학습', desc: 'React 기초부터 Hooks, 상태관리, 프로젝트 실습', url: 'https://reactstudy.dreamitbiz.com' },
     { name: 'C언어 학습', desc: 'C언어 기초 문법, 포인터, 구조체, 파일 처리', url: 'https://c-study.dreamitbiz.com' },
     { name: 'Java 학습', desc: 'Java 기초, OOP, 컬렉션, 스레드, 프로젝트 실습', url: 'https://java-study.dreamitbiz.com' },
     { name: 'Python 학습', desc: 'Python 기초, 데이터 분석, 자동화, 웹 스크래핑', url: 'https://python-study.dreamitbiz.com' },
     { name: '코딩 학습', desc: 'C, Java, Python 코딩 문제 풀기, 플레이그라운드', url: 'https://coding.dreamitbiz.com' },
-    { name: '웹 개발 학습', desc: '웹 개발 기초부터 실전까지 종합 학습 플랫폼', url: 'https://web.dreamitbiz.com' },
+    { name: '웹 프론트엔드 기초', desc: '웹 프론트엔드 기초 — HTML5, CSS3, JavaScript, 반응형 웹', url: 'https://web.dreamitbiz.com' },
     { name: 'Sample Gallery — 웹 디자인 샘플', desc: '개인·회사·학습·블로그 등 다양한 정적 사이트 샘플과 소스코드 제공', url: 'https://sample.dreamitbiz.com', featured: true },
   ] },
   { id: 'cs', label: 'CS 전공', icon: '🧮', owner: 'mine', sites: [
