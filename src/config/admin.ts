@@ -5,4 +5,7 @@ export const ADMIN_EMAILS: string[] = [
   'radical8566@gmail.com',
   'aebon@kyonggi.ac.kr',
   'a01094819953@gmail.com', // 백진주 — 쉬었음(rest) 사이트 한정 관리자(대시보드 접속)
+  'jotu117@gmail.com', // 조두수 수석 — rest 사이트 한정 관리자(대시보드 접속)
+  'jooym6016@kidico.or.kr', // 주윤미 책임 — rest 사이트 한정 관리자(대시보드 접속)
+  'tlskaksmf@naver.com', // 주윤미 책임 보조 이메일 — rest 사이트 한정 관리자
 ];
