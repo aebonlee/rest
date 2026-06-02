@@ -62,21 +62,24 @@ const AdminRoster = (): ReactElement => {
     };
   }, [profiles]);
 
-  const notSignedUp = rows.filter((r) => !r.person);
+  // 중도포기는 미가입 경고에서 제외 (출석 대상이 아니므로)
+  const notSignedUp = rows.filter((r) => !r.person && !r.student.dropped);
+  const droppedCount = useMemo(() => ROSTER.filter((s) => s.dropped).length, []);
 
-  // 경험 수준 분포
+  // 경험 수준 분포 (중도포기 제외 = 실제 수강 인원 기준)
   const levelDist = useMemo(() => {
     const d: Record<string, number> = { 입문: 0, 기초: 0, 경험자: 0 };
-    ROSTER.forEach((s) => { d[s.level] += 1; });
+    ROSTER.filter((s) => !s.dropped).forEach((s) => { d[s.level] += 1; });
     return d;
   }, []);
 
   const summary = [
-    { label: '명단 인원', val: ROSTER_COUNT, color: 'var(--text-primary, #1a1a1a)' },
+    { label: '명단 인원', val: ROSTER_COUNT - droppedCount, color: 'var(--text-primary, #1a1a1a)' },
     { label: '가입 회원', val: matchedCount + notInRoster.length, color: 'var(--primary-blue, #0046C8)' },
     { label: '일치(가입완료)', val: matchedCount, color: '#10b981' },
     { label: '미가입', val: notSignedUp.length, color: '#ef4444' },
     { label: '명단외 가입', val: notInRoster.length, color: '#d97706' },
+    ...(droppedCount > 0 ? [{ label: '중도포기', val: droppedCount, color: '#6b7280' }] : []),
   ];
 
   return (
@@ -184,20 +187,32 @@ const AdminRoster = (): ReactElement => {
                 <table className="admin-table">
                   <thead><tr><th>No</th><th>이름</th><th>성별</th><th>전공</th><th>계열</th><th>수준</th><th>가입</th><th>가입 이메일</th></tr></thead>
                   <tbody>
-                    {rows.map((r) => (
-                      <tr key={r.student.no}>
+                    {rows.map((r) => {
+                      const dropped = !!r.student.dropped;
+                      return (
+                      <tr key={r.student.no} style={dropped ? { textDecoration: 'line-through', color: 'var(--text-secondary, #9ca3af)', opacity: 0.65 } : undefined}>
                         <td>{r.student.no}</td>
-                        <td>{r.student.name}</td>
+                        <td>
+                          {r.student.name}
+                          {dropped && (
+                            <span style={{
+                              marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                              borderRadius: '999px', background: '#f3f4f6', color: '#6b7280',
+                              textDecoration: 'none', display: 'inline-block', verticalAlign: 'middle',
+                            }}>중도포기</span>
+                          )}
+                        </td>
                         <td>{r.student.gender}</td>
                         <td>{r.student.major}</td>
                         <td>{r.student.majorCategory}</td>
-                        <td style={{ color: levelColor[r.student.level], fontWeight: 700 }}>{r.student.level}</td>
+                        <td style={{ color: dropped ? '#9ca3af' : levelColor[r.student.level], fontWeight: 700 }}>{r.student.level}</td>
                         <td>
                           <span style={{
                             fontSize: '13.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
-                            background: r.person ? '#d1fae5' : '#fee2e2',
-                            color: r.person ? '#065f46' : '#991b1b',
-                          }}>{r.person ? '가입' : '미가입'}</span>
+                            textDecoration: 'none',
+                            background: dropped ? '#f3f4f6' : (r.person ? '#d1fae5' : '#fee2e2'),
+                            color: dropped ? '#6b7280' : (r.person ? '#065f46' : '#991b1b'),
+                          }}>{dropped ? '중도포기' : (r.person ? '가입' : '미가입')}</span>
                         </td>
                         <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
                           {r.person ? r.person.emails.map((e, i) => (
@@ -205,7 +220,8 @@ const AdminRoster = (): ReactElement => {
                           )) : '-'}
                         </td>
                       </tr>
-                    ))}
+                      );
+                    })}
                   </tbody>
                 </table>
               </div>

@@ -12,6 +12,8 @@ export interface RosterStudent {
   major: string;
   majorCategory: string;
   experience: string;
+  /** 중도포기 — 명단 취소선 표시, 통계·미가입 집계에서 제외 */
+  dropped?: boolean;
   level: ExpLevel;
 }
 
@@ -42,7 +44,7 @@ const RAW: Omit<RosterStudent, 'level'>[] = [
   { no: 17, name: '이초월', gender: '여', major: '디지털미디어디자인', majorCategory: '예체능계열', experience: 'IT/AI 기초 보유' },
   { no: 18, name: '임윤서', gender: '여', major: '경제학부', majorCategory: '사회계열', experience: '이번이 처음' },
   { no: 19, name: '임종권', gender: '남', major: '전기공학부', majorCategory: '공학계열', experience: 'IT/AI 기초 보유' },
-  { no: 20, name: '임지윤', gender: '여', major: '경제학과', majorCategory: '사회계열', experience: '이번이 처음' },
+  { no: 20, name: '임지윤', gender: '여', major: '경제학과', majorCategory: '사회계열', experience: '이번이 처음', dropped: true },
   { no: 21, name: '장호준', gender: '남', major: '스포츠 매니지먼트', majorCategory: '인문계열', experience: '이번이 처음' },
   { no: 22, name: '전유미', gender: '여', major: '환경공학과', majorCategory: '공학계열', experience: '전공/부트캠프/공모전 경험' },
   { no: 23, name: '정미경', gender: '여', major: '융합학과', majorCategory: '예체능계열', experience: 'IT/AI 기초 보유' },
