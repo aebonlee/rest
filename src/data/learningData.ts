@@ -5628,7 +5628,7 @@ function greet(user: User) {
 
   {
     id: 'reg-check-1',
-    title: '1차 기초점검일',
+    title: 'Day 4 · 1차 기초점검일',
     icon: '📝',
     description: 'HTML·CSS·JavaScript 학습 내용을 점검하고, 프로젝트 1차 팀별 회의를 진행하는 날입니다.',
     content: [
@@ -5663,7 +5663,7 @@ function greet(user: User) {
 
   {
     id: 'reg-4',
-    title: 'Day 4 · React 기초',
+    title: 'Day 5 · React 기초',
     icon: '⚛️',
     description: '컴포넌트 · Props · State · JSX · 핵심 Hook(useState/useEffect)을 코드와 함께 학습하고, 흔한 안티패턴을 회피하는 방법을 익힙니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -7540,7 +7540,7 @@ return <button onClick={() => handleClick(id)}>버튼</button>;` } },
 
   {
     id: 'reg-5',
-    title: 'Day 5 · React 심화 + 라우팅',
+    title: 'Day 6 · React 심화 + 라우팅',
     icon: '🔀',
     description: 'React Router v6, Context API 전역 상태, React.lazy 코드 스플리팅, AuthGuard 인증 보호 패턴까지 — 실제 SPA에 필요한 심화 주제를 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -8787,7 +8787,7 @@ export default function AdminLayout() {
 
   {
     id: 'reg-6',
-    title: 'Day 6 · Supabase 백엔드',
+    title: 'Day 7 · Supabase 백엔드',
     icon: '🗄️',
     description: 'Supabase 프로젝트 셋업부터 Auth(회원가입/소셜로그인), Database(CRUD), RLS(행 단위 보안), Storage(파일 업로드)까지 풀스택 백엔드를 코드로 구축합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -10486,7 +10486,7 @@ serve(async (req) => {
 
   {
     id: 'reg-7',
-    title: 'Day 7 · AI 서비스 설계',
+    title: 'Day 8 · AI 서비스 설계',
     icon: '📐',
     description: 'PRD 작성, 사용자 스토리, MoSCoW 우선순위, AI 통합 아키텍처 — 경진대회 출품작이 될 서비스의 기획 단계를 체계화합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -11832,8 +11832,43 @@ Should 합:  16pt
   },
 
   {
+    id: 'reg-check-2',
+    title: 'Day 9 · 2차 학습점검일',
+    icon: '🔎',
+    description: 'React·Supabase·AI·LLM API 연동 학습 내용을 점검하고, 프로젝트 2차 팀별 회의를 진행하는 날입니다.',
+    content: [
+      { subtitle: '⚛️ React 점검', items: [
+        '컴포넌트·Props·State·JSX 이해',
+        '핵심 Hook(useState·useEffect)과 의존성 배열',
+        '리스트·조건부 렌더링과 이벤트 처리',
+        '라우팅(react-router)과 페이지 구성',
+      ] },
+      { subtitle: '🗄️ Supabase 백엔드 점검', items: [
+        '테이블 설계와 CRUD(select·insert·update·delete)',
+        '인증(Auth)과 세션 관리',
+        'RLS(행 수준 보안) 기본 개념',
+        '프론트엔드 연동(supabase-js) 흐름',
+      ] },
+      { subtitle: '🤖 AI · LLM API 연동 점검', items: [
+        'LLM API 호출 구조(요청·응답·토큰)',
+        '프롬프트 설계와 파라미터(temperature 등)',
+        'API 키 보안과 환경변수 관리',
+        '응답 처리·에러 핸들링·스트리밍 기초',
+      ] },
+      { callout: { type: 'tip', text: '연동이 막히는 지점(인증·CORS·키 관리)을 미리 점검해 두면 실전 프로젝트에서 시간을 크게 아낄 수 있습니다.' } },
+      { subtitle: '👥 프로젝트 2차 팀별 회의', items: [
+        '1차 회의 이후 진행 상황 공유',
+        '핵심 기능 구현 현황 점검 및 일정 조정',
+        '기술 이슈·블로커 정리와 역할 재분담',
+        '발표 시나리오·데모 범위 초안 논의',
+      ] },
+      { callout: { type: 'info', text: '2차 회의 결과와 남은 마일스톤을 팀 게시판에 업데이트하세요.' } },
+    ],
+  },
+
+  {
     id: 'reg-8',
-    title: 'Day 8 · LLM API 연동',
+    title: 'Day 10 · LLM API 연동',
     icon: '🔌',
     description: 'OpenAI 호환 형식, messages 배열 구조, 스트리밍 응답, temperature/max_tokens 튜닝, 에러 처리·재시도까지 — 프로덕션 품질의 LLM 통합을 코드로 구현합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -13418,43 +13453,8 @@ async function getTodayCost(): Promise<number> {
   },
 
   {
-    id: 'reg-check-2',
-    title: '2차 학습점검일',
-    icon: '🔎',
-    description: 'React·Supabase·AI·LLM API 연동 학습 내용을 점검하고, 프로젝트 2차 팀별 회의를 진행하는 날입니다.',
-    content: [
-      { subtitle: '⚛️ React 점검', items: [
-        '컴포넌트·Props·State·JSX 이해',
-        '핵심 Hook(useState·useEffect)과 의존성 배열',
-        '리스트·조건부 렌더링과 이벤트 처리',
-        '라우팅(react-router)과 페이지 구성',
-      ] },
-      { subtitle: '🗄️ Supabase 백엔드 점검', items: [
-        '테이블 설계와 CRUD(select·insert·update·delete)',
-        '인증(Auth)과 세션 관리',
-        'RLS(행 수준 보안) 기본 개념',
-        '프론트엔드 연동(supabase-js) 흐름',
-      ] },
-      { subtitle: '🤖 AI · LLM API 연동 점검', items: [
-        'LLM API 호출 구조(요청·응답·토큰)',
-        '프롬프트 설계와 파라미터(temperature 등)',
-        'API 키 보안과 환경변수 관리',
-        '응답 처리·에러 핸들링·스트리밍 기초',
-      ] },
-      { callout: { type: 'tip', text: '연동이 막히는 지점(인증·CORS·키 관리)을 미리 점검해 두면 실전 프로젝트에서 시간을 크게 아낄 수 있습니다.' } },
-      { subtitle: '👥 프로젝트 2차 팀별 회의', items: [
-        '1차 회의 이후 진행 상황 공유',
-        '핵심 기능 구현 현황 점검 및 일정 조정',
-        '기술 이슈·블로커 정리와 역할 재분담',
-        '발표 시나리오·데모 범위 초안 논의',
-      ] },
-      { callout: { type: 'info', text: '2차 회의 결과와 남은 마일스톤을 팀 게시판에 업데이트하세요.' } },
-    ],
-  },
-
-  {
     id: 'reg-9',
-    title: 'Day 9 · 프로젝트 프론트엔드 개발',
+    title: 'Day 11 · 프로젝트 프론트엔드 개발',
     icon: '🎨',
     description: '디자인 토큰 · 컴포넌트 분리 · 로딩/에러/빈 상태 UI · 모바일 우선 반응형 — 실전 프론트엔드 품질을 결정하는 핵심 패턴을 한꺼번에 적용합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -14871,7 +14871,7 @@ npm run build && npm run preview
 
   {
     id: 'reg-10',
-    title: 'Day 10 · 프로젝트 백엔드 연동',
+    title: 'Day 12 · 프로젝트 백엔드 연동',
     icon: '🔗',
     description: 'Supabase Realtime 구독, 파일 업로드 + 미리보기, 폼 검증 분리, .env 환경별 분리 — 실제 프로젝트의 백엔드 연동 흐름을 빈틈없이 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -16156,7 +16156,7 @@ jobs:
 
   {
     id: 'reg-11',
-    title: 'Day 11 · 테스트 및 디버깅',
+    title: 'Day 13 · 테스트 및 디버깅',
     icon: '🐛',
     description: 'Chrome DevTools 4대 탭, React DevTools Profiler, Lighthouse 4지표, AI 코드 리뷰 — 실서비스 품질로 끌어올리기 위한 점검 도구를 종합 학습합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -17392,7 +17392,7 @@ export default class ErrorBoundary extends Component<Props, State> {
 
   {
     id: 'reg-12',
-    title: 'Day 12 · 배포와 발표 준비',
+    title: 'Day 14 · 배포와 발표 준비',
     icon: '🚀',
     description: 'Vite 빌드·GitHub Pages 자동화·CNAME·base path 설정과 5~10분 발표 자료 8슬라이드 권장 구성을 마무리합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
@@ -18683,7 +18683,7 @@ TTL:    3600` } },
 
   {
     id: 'reg-13',
-    title: 'Day 13 · 최종 발표 및 평가',
+    title: 'Day 15 · 최종 발표 및 평가',
     icon: '🏆',
     description: '5~10분 발표·라이브 데모·피어 리뷰·예상 질문 대응 — 경진대회 출품 직전 모든 요소를 완성하고 검증합니다. (4시간 강의 / 50분 × 4세션)',
     content: [
