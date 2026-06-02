@@ -18,6 +18,7 @@ export interface ContentSection {
   code?: { lang?: string; content: string };
   table?: { headers: string[]; rows: string[][] };
   callout?: { type: 'tip' | 'warn' | 'info'; text: string };
+  svg?: string;   // 인라인 SVG 다이어그램 (정적 콘텐츠)
 }
 
 export interface SubTopic {
@@ -2342,6 +2343,36 @@ AI 답변 받음
               ['목록', '<dd>', '용어의 정의'],
             ],
           } },
+
+          { subtitle: '시맨틱 레이아웃 한눈에 보기 (표준 페이지 영역)' },
+          { svg: `<svg viewBox="0 0 600 440" role="img" aria-label="시맨틱 태그로 구성한 표준 웹페이지 레이아웃" style="width:100%;max-width:620px;height:auto;font-family:system-ui,-apple-system,sans-serif">
+  <rect x="4" y="4" width="592" height="432" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <rect x="16" y="16" width="568" height="50" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+  <text x="28" y="37" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#1e3a8a">&lt;header&gt;</text>
+  <text x="120" y="37" font-size="12" fill="#1e40af">로고 · 사이트 제목 · &lt;h1&gt;</text>
+  <rect x="16" y="72" width="568" height="40" rx="6" fill="#e0e7ff" stroke="#6366f1"/>
+  <text x="28" y="97" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#3730a3">&lt;nav&gt;</text>
+  <text x="96" y="97" font-size="12" fill="#4338ca">주요 탐색 메뉴 (메뉴 링크 모음)</text>
+  <rect x="16" y="118" width="404" height="256" rx="6" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="28" y="137" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#065f46">&lt;main&gt;</text>
+  <rect x="30" y="148" width="376" height="212" rx="6" fill="#d1fae5" stroke="#059669"/>
+  <text x="42" y="167" font-family="ui-monospace,monospace" font-size="13" font-weight="700" fill="#047857">&lt;article&gt;</text>
+  <rect x="44" y="178" width="348" height="80" rx="5" fill="#a7f3d0" stroke="#10b981"/>
+  <text x="56" y="202" font-family="ui-monospace,monospace" font-size="12" font-weight="700" fill="#065f46">&lt;section&gt;</text>
+  <text x="150" y="202" font-size="11" fill="#065f46">주제 그룹 1 · &lt;h2&gt; &lt;p&gt;</text>
+  <rect x="44" y="266" width="348" height="84" rx="5" fill="#a7f3d0" stroke="#10b981"/>
+  <text x="56" y="290" font-family="ui-monospace,monospace" font-size="12" font-weight="700" fill="#065f46">&lt;section&gt;</text>
+  <text x="150" y="290" font-size="11" fill="#065f46">주제 그룹 2 · &lt;figure&gt;</text>
+  <rect x="428" y="118" width="156" height="256" rx="6" fill="#fef3c7" stroke="#f59e0b"/>
+  <text x="440" y="138" font-family="ui-monospace,monospace" font-size="14" font-weight="700" fill="#92400e">&lt;aside&gt;</text>
+  <text x="440" y="160" font-size="11" fill="#b45309">보조 정보</text>
+  <text x="440" y="178" font-size="11" fill="#b45309">사이드바 · 광고</text>
+  <text x="440" y="196" font-size="11" fill="#b45309">관련 링크</text>
+  <rect x="16" y="380" width="568" height="48" rx="6" fill="#ede9fe" stroke="#8b5cf6"/>
+  <text x="28" y="408" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#5b21b6">&lt;footer&gt;</text>
+  <text x="130" y="408" font-size="12" fill="#6d28d9">저작권 · 연락처 · &lt;address&gt;</text>
+</svg>` },
+          { callout: { type: 'tip', text: '실제 페이지는 위 영역 구조를 그대로 태그로 옮기면 됩니다. div 대신 의미 있는 태그(header·nav·main·aside·footer)를 쓰면 스크린리더·검색엔진이 구조를 이해합니다.' } },
 
           { subtitle: '실전 페이지 구조 — 4개 표준 템플릿' },
           { code: { lang: 'html', content: `<!-- 템플릿 1 · 회사 홈페이지 -->

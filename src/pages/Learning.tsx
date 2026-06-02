@@ -191,6 +191,12 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
         </table>
       </div>
     )}
+    {section.svg && (
+      <div
+        style={{ margin: '10px 0 18px', textAlign: 'center', overflowX: 'auto' }}
+        dangerouslySetInnerHTML={{ __html: section.svg }}
+      />
+    )}
     {section.callout && (
       <div style={{
         background: calloutColors[section.callout.type].bg,
