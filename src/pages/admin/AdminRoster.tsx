@@ -5,10 +5,18 @@ import getSupabase from '../../utils/supabase';
 import site from '../../config/site';
 import { ROSTER, ROSTER_COUNT, type RosterStudent } from '../../data/rosterData';
 import { groupByPerson, type PersonGroup } from '../../utils/people';
+import { SAME_PERSON_EMAIL_GROUPS } from '../../config/admin';
 import type { UserProfile } from '../../types';
 
 const REST_HOSTNAME = new URL(site.url).hostname;
 const STAFF_ROLES = ['admin', 'superadmin'];
+
+// 동일인 묶음에 등록된 이메일은 도메인 조건/STAFF 역할과 무관하게 항상 명단 대조에 포함한다.
+// (다른 사이트로 가입했거나 관리자 역할이어도 '명단외 가입'에 보여야 하는 사람)
+const INCLUDE_EMAILS = SAME_PERSON_EMAIL_GROUPS
+  .flatMap((g) => g.emails)
+  .map((e) => e.toLowerCase());
+const INCLUDE_SET = new Set(INCLUDE_EMAILS);
 
 const norm = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '').trim();
 
@@ -32,7 +40,24 @@ const AdminRoster = (): ReactElement => {
         .from('user_profiles')
         .select('*')
         .or(`signup_domain.eq.${REST_HOSTNAME},visited_sites.cs.{${REST_HOSTNAME}}`);
-      const list = ((data || []) as UserProfile[]).filter((u) => !STAFF_ROLES.includes(u.role));
+      const merged = [...((data || []) as UserProfile[])];
+
+      // 동일인 묶음 이메일은 도메인 조건에 안 걸려도 별도 조회해 합친다 (예: 다른 사이트로 가입)
+      if (INCLUDE_EMAILS.length) {
+        const { data: extra } = await client
+          .from('user_profiles')
+          .select('*')
+          .in('email', INCLUDE_EMAILS);
+        const seen = new Set(merged.map((u) => u.id));
+        for (const u of (extra || []) as UserProfile[]) {
+          if (!seen.has(u.id)) merged.push(u);
+        }
+      }
+
+      // STAFF 역할은 제외하되, 동일인 묶음 이메일은 예외로 항상 포함
+      const list = merged.filter(
+        (u) => !STAFF_ROLES.includes(u.role) || INCLUDE_SET.has((u.email || '').toLowerCase())
+      );
       setProfiles(list);
       setLoading(false);
     };
