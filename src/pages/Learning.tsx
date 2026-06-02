@@ -265,6 +265,7 @@ const Learning = (): ReactElement => {
             {topics.map((tp, i) => {
               const isActive = selectedIndex === i;
               const isToday = isRegular && REGULAR_DATES[i] === today;
+              const isCheckpoint = tp.id.startsWith('reg-check');   // 점검일 — 호버 배경 상시 유지
               const expanded = isActive && !!tp.subSections && tp.subSections.length > 0;
               const dateLabel = isRegular && REGULAR_DATES[i] ? fmtKDate(REGULAR_DATES[i]) : '';
               return (
@@ -277,6 +278,10 @@ const Learning = (): ReactElement => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       width: '100%',
+                      // 점검일은 호버 배경색을 상시 유지 (선택 시엔 active 그라데이션 우선)
+                      ...(isCheckpoint && !isActive
+                        ? { background: 'rgba(13, 43, 94, 0.06)', color: 'var(--primary-blue)' }
+                        : {}),
                     }}
                   >
                     <span style={{ textAlign: 'left', flex: 1 }}>
