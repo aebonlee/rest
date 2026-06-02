@@ -9,6 +9,7 @@ import {
   type Topic,
   type ContentSection,
 } from '../data/learningData';
+import { REGULAR_DATES, fmtKDate, todayISO } from '../config/regularSchedule';
 
 const phaseMap: Record<string, { topics: Topic[]; titleKey: string; subtitleKey: string }> = {
   prerequisite: {
@@ -213,7 +214,14 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
 const Learning = (): ReactElement => {
   const { phase } = useParams<{ phase: string }>();
   const { t } = useLanguage();
-  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  // 정규과정: 오늘 날짜에 해당하는 Day를 기본 선택(없으면 지난 마지막 Day)
+  const [selectedIndex, setSelectedIndex] = useState<number>(() => {
+    if (phase !== 'regular') return 0;
+    const today = todayISO();
+    let idx = 0;
+    REGULAR_DATES.forEach((d, i) => { if (d && d <= today) idx = i; });
+    return idx;
+  });
   // subIndex: null = 일자 개요(2차 메뉴 콘텐츠), 0~N = 3차 메뉴 상세
   const [selectedSubIndex, setSelectedSubIndex] = useState<number | null>(null);
 
@@ -221,6 +229,8 @@ const Learning = (): ReactElement => {
   if (!config) return <Navigate to="/" replace />;
 
   const { topics, titleKey, subtitleKey } = config;
+  const isRegular = phase === 'regular';
+  const today = todayISO();
   const topic = topics[selectedIndex];
   const hasSubSections = !!(topic.subSections && topic.subSections.length > 0);
   const activeSub = (hasSubSections && selectedSubIndex !== null)
@@ -254,7 +264,9 @@ const Learning = (): ReactElement => {
           <nav className="sidebar-menu">
             {topics.map((tp, i) => {
               const isActive = selectedIndex === i;
+              const isToday = isRegular && REGULAR_DATES[i] === today;
               const expanded = isActive && !!tp.subSections && tp.subSections.length > 0;
+              const dateLabel = isRegular && REGULAR_DATES[i] ? fmtKDate(REGULAR_DATES[i]) : '';
               return (
                 <div key={tp.id}>
                   <button
@@ -267,7 +279,20 @@ const Learning = (): ReactElement => {
                       width: '100%',
                     }}
                   >
-                    <span style={{ textAlign: 'left', flex: 1 }}>{tp.title}</span>
+                    <span style={{ textAlign: 'left', flex: 1 }}>
+                      {tp.title}
+                      {dateLabel && (
+                        <span style={{ marginLeft: '6px', fontSize: '12.5px', opacity: 0.7, fontWeight: 500 }}>
+                          {dateLabel}
+                        </span>
+                      )}
+                      {isToday && (
+                        <span style={{
+                          marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 6px',
+                          borderRadius: '999px', background: 'var(--primary-blue, #0046C8)', color: '#fff',
+                        }}>오늘</span>
+                      )}
+                    </span>
                     {tp.subSections && tp.subSections.length > 0 && (
                       <span style={{
                         marginLeft: '8px',
