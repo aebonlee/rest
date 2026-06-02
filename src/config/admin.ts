@@ -9,3 +9,15 @@ export const ADMIN_EMAILS: string[] = [
   'jooym6016@kidico.or.kr', // 주윤미 책임 — rest 사이트 한정 관리자(대시보드 접속)
   'tlskaksmf@naver.com', // 주윤미 책임 보조 이메일 — rest 사이트 한정 관리자
 ];
+
+// 동일인이지만 계정(이메일)을 2개 이상 만든 사람 — 화면에서 한 명으로 묶어 표시.
+// groupByPerson 이 전화/이름으로 못 묶는 경우(전화·이름이 다른 계정)를 명시적으로 통합한다.
+// name 을 주면 묶인 사람의 표시 이름으로 사용한다.
+export interface SamePersonGroup {
+  name?: string;
+  emails: string[];
+}
+
+export const SAME_PERSON_EMAIL_GROUPS: SamePersonGroup[] = [
+  { name: '주윤미', emails: ['jooym6016@kidico.or.kr', 'tlskaksmf@naver.com'] },
+];

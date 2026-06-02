@@ -55,7 +55,7 @@ const RAW: Omit<RosterStudent, 'level'>[] = [
   { no: 28, name: '최재영', gender: '남', major: '컴퓨터공학및영어', majorCategory: '공학계열', experience: '전공/부트캠프/공모전 경험' },
   { no: 29, name: '하소희', gender: '여', major: '컴퓨터과학', majorCategory: '공학계열', experience: '전공/부트캠프/공모전 경험' },
   { no: 30, name: '한승우', gender: '남', major: '정보통신공학과', majorCategory: '공학계열', experience: '전공/부트캠프/공모전 경험' },
-  { no: 31, name: '윤혜수', major: '바이오', majorCategory: '자연계열', experience: '' }, // jkl459@naver.com — 성별·경험은 가입 시 접수
+  { no: 31, name: '윤혜수', gender: '여', major: '바이오', majorCategory: '자연계열', experience: '' }, // jkl459@naver.com — 성별 여 (경험은 가입 시 접수)
 ];
 
 export const ROSTER: RosterStudent[] = RAW.map((s) => ({ ...s, level: toLevel(s.experience) }));

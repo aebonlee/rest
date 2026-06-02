@@ -4,6 +4,7 @@
  *  · 비파괴: 계정은 그대로 두고(두 이메일 모두 로그인 가능) 화면에서만 한 명으로 묶음.
  */
 import type { UserProfile } from '../types';
+import { SAME_PERSON_EMAIL_GROUPS } from '../config/admin';
 
 /** 전화번호에서 숫자만 추출 (동일인 판별 키) */
 export const normalizePhone = (phone?: string | null): string =>
@@ -12,8 +13,23 @@ export const normalizePhone = (phone?: string | null): string =>
 const normName = (s?: string | null): string =>
   (s || '').toLowerCase().replace(/\s+/g, '').trim();
 
-/** 같은 사람을 묶는 키: 전화번호(숫자) 우선, 없으면 이름, 그것도 없으면 id(단독) */
+const normEmail = (s?: string | null): string => (s || '').toLowerCase().trim();
+
+/** 명시적 동일인 묶음: 이메일(소문자) → { 묶음 키, 표시 이름 } */
+const EMAIL_ALIAS = new Map<string, { key: string; name?: string }>();
+for (const g of SAME_PERSON_EMAIL_GROUPS) {
+  const emails = g.emails.map(normEmail).filter(Boolean);
+  const canon = [...emails].sort()[0];
+  const key = `same:${canon}`;
+  for (const e of emails) EMAIL_ALIAS.set(e, { key, name: g.name });
+}
+
+const aliasOf = (p: UserProfile) => EMAIL_ALIAS.get(normEmail(p.email));
+
+/** 같은 사람을 묶는 키: 명시적 동일인 묶음 > 전화번호(숫자) > 이름 > id(단독) */
 export const personKey = (p: UserProfile): string => {
+  const alias = aliasOf(p);
+  if (alias) return alias.key;
   const phone = normalizePhone(p.phone);
   if (phone) return `tel:${phone}`;
   const name = normName(p.display_name) || normName(p.name);
@@ -58,13 +74,15 @@ export function groupByPerson(profiles: UserProfile[]): PersonGroup[] {
   return order.map((key) => {
     const accounts = [...map.get(key)!].sort((a, b) => recency(b) - recency(a));
     const primary = accounts[0];
+    // 명시적 동일인 묶음에 지정한 이름이 있으면 표시 이름으로 우선 사용
+    const aliasName = accounts.map(aliasOf).find((a) => a?.name)?.name;
     return {
       key,
       primary,
       accounts,
       ids: accounts.map((a) => a.id),
       emails: accounts.map((a) => a.email).filter(Boolean),
-      name: primary.display_name || primary.name || primary.email || '-',
+      name: aliasName || primary.display_name || primary.name || primary.email || '-',
       phone: primary.phone || '',
       isMerged: accounts.length > 1,
     };
