@@ -68,6 +68,40 @@ export async function leaveTeam(team: Team, userId: string): Promise<{ ok: boole
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+/** 팀장 지원/취소 — 본인 역할을 '팀장후보' ↔ '팀원' 토글 (확정 팀장은 변경 안 함) */
+export async function volunteerLeader(team: Team, userId: string, on: boolean): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const next = members(team).map((m) =>
+    m.id === userId && m.role !== '팀장' ? { ...m, role: on ? '팀장후보' : '팀원' } : m,
+  );
+  const { error } = await client.from(TEAMS_TABLE).update({ members: next }).eq('id', team.id);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+/** 강사 전용: 팀장 확정 — 지정 멤버를 '팀장', 나머지 팀장/후보는 '팀원'으로 */
+export async function confirmLeader(team: Team, memberId: string): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const next = members(team).map((m) => ({
+    ...m,
+    role: m.id === memberId ? '팀장' : (m.role === '팀장' || m.role === '팀장후보' ? '팀원' : m.role),
+  }));
+  const { error } = await client.from(TEAMS_TABLE).update({ members: next }).eq('id', team.id);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+/** 강사 전용: 팀장/후보 초기화 — 모두 '팀원'으로 */
+export async function resetLeaders(team: Team): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const next = members(team).map((m) =>
+    (m.role === '팀장' || m.role === '팀장후보') ? { ...m, role: '팀원' } : m,
+  );
+  const { error } = await client.from(TEAMS_TABLE).update({ members: next }).eq('id', team.id);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 export async function listTeamPosts(teamId: string): Promise<TeamPost[]> {
   const client = getSupabase();
   if (!client) return [];

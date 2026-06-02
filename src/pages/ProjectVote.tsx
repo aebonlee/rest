@@ -10,6 +10,7 @@ import {
 } from '../utils/projectVote';
 import {
   listTeams, findMyTeam, createTeam, joinTeam, leaveTeam, MAX_TEAM_SIZE,
+  volunteerLeader, confirmLeader, resetLeaders,
 } from '../utils/projectTeams';
 import type { Team, TeamMember } from '../types';
 
@@ -78,7 +79,7 @@ const ProjectVote = (): ReactElement => {
     if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
     if (myTeam) { showToast('이미 다른 팀에 속해 있습니다.', 'warning'); return; }
     setBusy(true);
-    const res = await createTeam(title, title, me('팀장'));
+    const res = await createTeam(title, title, me('팀장후보'));
     setBusy(false);
     if (res.ok) { showToast(`'${title}' 팀이 만들어졌습니다!`, 'success'); reload(); }
     else showToast('팀 생성 실패: ' + (res.error || ''), 'error');
@@ -100,6 +101,31 @@ const ProjectVote = (): ReactElement => {
     setBusy(false);
     if (res.ok) { showToast('팀에서 나왔습니다.', 'info'); reload(); }
     else showToast('탈퇴 실패: ' + (res.error || ''), 'error');
+  };
+
+  const handleVolunteer = async (team: Team, on: boolean) => {
+    setBusy(true);
+    const res = await volunteerLeader(team, user!.id, on);
+    setBusy(false);
+    if (res.ok) { showToast(on ? '팀장에 지원했습니다. 최종 확정은 강사가 합니다.' : '팀장 지원을 취소했습니다.', 'success'); reload(); }
+    else showToast('처리 실패: ' + (res.error || ''), 'error');
+  };
+
+  const handleConfirmLeader = async (team: Team, memberId: string) => {
+    setBusy(true);
+    const res = await confirmLeader(team, memberId);
+    setBusy(false);
+    if (res.ok) { showToast('팀장을 확정했습니다.', 'success'); reload(); }
+    else showToast('확정 실패: ' + (res.error || ''), 'error');
+  };
+
+  const handleResetLeaders = async (team: Team) => {
+    if (!confirm(`'${team.name}' 팀의 팀장을 초기화할까요?`)) return;
+    setBusy(true);
+    const res = await resetLeaders(team);
+    setBusy(false);
+    if (res.ok) { showToast('팀장을 초기화했습니다.', 'info'); reload(); }
+    else showToast('초기화 실패: ' + (res.error || ''), 'error');
   };
 
   const handleAdd = async () => {
@@ -154,7 +180,7 @@ const ProjectVote = (): ReactElement => {
               </div>
               {isAdmin && (
                 <div style={{ fontSize: '14px', color: 'var(--text-secondary)', background: 'var(--bg-light-gray)', borderRadius: '8px', padding: '10px 14px' }}>
-                  강사 계정입니다. 팀 결성·합류는 수강생이 직접 진행하며, 클릭한 학생이 팀장이 됩니다. (강사는 팀에 포함되지 않습니다)
+                  강사 계정입니다. 팀 결성·합류·팀장 지원은 수강생이 직접 하고, 팀장 최종 확정은 강사가 합니다. 각 팀의 '팀장 확정'·'팀장 초기화' 버튼으로 모든 팀을 관리하세요. (강사는 팀에 포함되지 않습니다)
                 </div>
               )}
 
@@ -195,13 +221,42 @@ const ProjectVote = (): ReactElement => {
                       </div>
                     )}
 
-                    {/* 팀 결성 현황 */}
+                    {/* 팀 결성 현황 + 팀장(지원/확정) */}
                     {team && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '12px' }}>
+                      <div style={{ marginBottom: '12px' }}>
                         <span style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: 700 }}>팀원:</span>
-                        {members(team).map((m, i) => (
-                          <span key={i} style={chip('#eff6ff', '#1e40af')}>{m.name}{m.role === '팀장' && ' · 팀장'}</span>
-                        ))}
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '6px' }}>
+                          {members(team).map((m) => (
+                            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
+                              <span style={chip('#eff6ff', '#1e40af')}>{m.name}</span>
+                              {m.role === '팀장' && <span style={chip('#fef3c7', '#92400e')}>★ 팀장(확정)</span>}
+                              {m.role === '팀장후보' && <span style={chip('#e0e7ff', '#3730a3')}>팀장 지원</span>}
+                              {isAdmin && m.role !== '팀장' && (
+                                <button onClick={() => handleConfirmLeader(team, m.id)} disabled={busy}
+                                  style={{ fontSize: '12px', padding: '2px 9px', borderRadius: '6px', border: '1px solid var(--primary-blue)', background: 'none', color: 'var(--primary-blue)', cursor: 'pointer' }}>
+                                  팀장 확정
+                                </button>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                        {isAdmin && members(team).some((m) => m.role === '팀장' || m.role === '팀장후보') && (
+                          <button onClick={() => handleResetLeaders(team)} disabled={busy}
+                            style={{ marginTop: '8px', fontSize: '12px', padding: '2px 10px', borderRadius: '6px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}>
+                            이 팀 팀장 초기화
+                          </button>
+                        )}
+                        {!isAdmin && inThisTeam && (() => {
+                          const meM = members(team).find((m) => m.id === user?.id);
+                          if (meM?.role === '팀장') return null;
+                          const isCand = meM?.role === '팀장후보';
+                          return (
+                            <button onClick={() => handleVolunteer(team, !isCand)} disabled={busy}
+                              style={{ marginTop: '8px', fontSize: '12px', padding: '3px 12px', borderRadius: '6px', border: '1px solid var(--primary-blue)', background: isCand ? 'var(--primary-blue)' : 'none', color: isCand ? '#fff' : 'var(--primary-blue)', cursor: 'pointer' }}>
+                              {isCand ? '팀장 지원 취소' : '팀장 지원하기'}
+                            </button>
+                          );
+                        })()}
                       </div>
                     )}
 
