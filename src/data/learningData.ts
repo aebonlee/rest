@@ -5627,6 +5627,41 @@ function greet(user: User) {
   },
 
   {
+    id: 'reg-check-1',
+    title: '1차 기초점검일',
+    icon: '📝',
+    description: 'HTML·CSS·JavaScript 학습 내용을 점검하고, 프로젝트 1차 팀별 회의를 진행하는 날입니다.',
+    content: [
+      { subtitle: '🔍 HTML 점검', items: [
+        '시맨틱 태그(header·nav·main·section·article·footer)를 적절히 사용했는가',
+        '폼 요소와 입력 검증(label·input·required·type)',
+        '문서 구조·접근성(alt, 제목 계층, aria)',
+      ] },
+      { subtitle: '🎨 CSS 점검', items: [
+        '박스 모델(margin·border·padding·content) 이해',
+        'Flexbox·Grid 레이아웃 활용',
+        '반응형 디자인(media query, 상대 단위)',
+        '선택자 우선순위와 CSS 변수(custom properties)',
+      ] },
+      { subtitle: '⚙️ JavaScript 점검', items: [
+        '변수(let·const)·함수·스코프',
+        'DOM 조작과 이벤트 처리',
+        '배열·객체 메서드(map·filter·reduce 등)',
+        '비동기(fetch, async/await) 기초',
+      ] },
+      { callout: { type: 'tip', text: '점검은 평가가 아니라 복습입니다. 막히는 부분은 표시해 두고 팀 회의에서 함께 해결하세요.' } },
+      { subtitle: '👥 프로젝트 1차 팀별 회의', items: [
+        '팀 구성·역할 분담 확정(기획·프론트엔드·백엔드·발표)',
+        '프로젝트 주제 후보 도출 및 1차 선정',
+        '핵심 기능(MVP) 범위 정의',
+        '개발 일정·마일스톤 수립',
+        '협업 도구(GitHub·팀 게시판) 셋업 확인',
+      ] },
+      { callout: { type: 'info', text: '회의 결과(주제·역할·일정)는 팀 게시판에 기록해 주세요. 다음 점검일에 진행 상황을 함께 확인합니다.' } },
+    ],
+  },
+
+  {
     id: 'reg-4',
     title: 'Day 4 · React 기초',
     icon: '⚛️',
@@ -13379,6 +13414,41 @@ async function getTodayCost(): Promise<number> {
           } },
         ],
       },
+    ],
+  },
+
+  {
+    id: 'reg-check-2',
+    title: '2차 학습점검일',
+    icon: '🔎',
+    description: 'React·Supabase·AI·LLM API 연동 학습 내용을 점검하고, 프로젝트 2차 팀별 회의를 진행하는 날입니다.',
+    content: [
+      { subtitle: '⚛️ React 점검', items: [
+        '컴포넌트·Props·State·JSX 이해',
+        '핵심 Hook(useState·useEffect)과 의존성 배열',
+        '리스트·조건부 렌더링과 이벤트 처리',
+        '라우팅(react-router)과 페이지 구성',
+      ] },
+      { subtitle: '🗄️ Supabase 백엔드 점검', items: [
+        '테이블 설계와 CRUD(select·insert·update·delete)',
+        '인증(Auth)과 세션 관리',
+        'RLS(행 수준 보안) 기본 개념',
+        '프론트엔드 연동(supabase-js) 흐름',
+      ] },
+      { subtitle: '🤖 AI · LLM API 연동 점검', items: [
+        'LLM API 호출 구조(요청·응답·토큰)',
+        '프롬프트 설계와 파라미터(temperature 등)',
+        'API 키 보안과 환경변수 관리',
+        '응답 처리·에러 핸들링·스트리밍 기초',
+      ] },
+      { callout: { type: 'tip', text: '연동이 막히는 지점(인증·CORS·키 관리)을 미리 점검해 두면 실전 프로젝트에서 시간을 크게 아낄 수 있습니다.' } },
+      { subtitle: '👥 프로젝트 2차 팀별 회의', items: [
+        '1차 회의 이후 진행 상황 공유',
+        '핵심 기능 구현 현황 점검 및 일정 조정',
+        '기술 이슈·블로커 정리와 역할 재분담',
+        '발표 시나리오·데모 범위 초안 논의',
+      ] },
+      { callout: { type: 'info', text: '2차 회의 결과와 남은 마일스톤을 팀 게시판에 업데이트하세요.' } },
     ],
   },
 
