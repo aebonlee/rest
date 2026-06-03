@@ -17,6 +17,8 @@ const INCLUDE_EMAILS = SAME_PERSON_EMAIL_GROUPS
   .flatMap((g) => g.emails)
   .map((e) => e.toLowerCase());
 const INCLUDE_SET = new Set(INCLUDE_EMAILS);
+const INCLUDE_NAMES = SAME_PERSON_EMAIL_GROUPS.map((g) => g.name).filter(Boolean) as string[];
+const NAME_SET = new Set(INCLUDE_NAMES.map((n) => n.replace(/\s+/g, '')));
 
 const norm = (s: string) => (s || '').toLowerCase().replace(/\s+/g, '').trim();
 
@@ -29,6 +31,7 @@ const levelColor: Record<string, string> = { 입문: '#ef4444', 기초: '#d97706
 
 const AdminRoster = (): ReactElement => {
   const [profiles, setProfiles] = useState<UserProfile[]>([]);
+  const [diag, setDiag] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,24 +44,31 @@ const AdminRoster = (): ReactElement => {
         .select('*')
         .or(`signup_domain.eq.${REST_HOSTNAME},visited_sites.cs.{${REST_HOSTNAME}}`);
       const merged = [...((data || []) as UserProfile[])];
+      const seen = new Set(merged.map((u) => u.id));
+      const addAll = (rows: UserProfile[] | null) => {
+        for (const u of rows || []) if (!seen.has(u.id)) { seen.add(u.id); merged.push(u); }
+      };
 
       // 동일인 묶음 이메일은 도메인 조건에 안 걸려도 별도 조회해 합친다 (예: 다른 사이트로 가입)
       if (INCLUDE_EMAILS.length) {
-        const { data: extra } = await client
-          .from('user_profiles')
-          .select('*')
-          .in('email', INCLUDE_EMAILS);
-        const seen = new Set(merged.map((u) => u.id));
-        for (const u of (extra || []) as UserProfile[]) {
-          if (!seen.has(u.id)) merged.push(u);
-        }
+        const { data: byEmail } = await client.from('user_profiles').select('*').in('email', INCLUDE_EMAILS);
+        addAll(byEmail as UserProfile[] | null);
+      }
+      // 이메일이 달라도 이름(예: 주윤미)으로도 추가 조회해 누락을 막는다
+      if (INCLUDE_NAMES.length) {
+        const nameOr = INCLUDE_NAMES.flatMap((n) => [`name.eq.${n}`, `display_name.eq.${n}`]).join(',');
+        const { data: byName } = await client.from('user_profiles').select('*').or(nameOr);
+        addAll(byName as UserProfile[] | null);
       }
 
-      // STAFF 역할은 제외하되, 동일인 묶음 이메일은 예외로 항상 포함
-      const list = merged.filter(
-        (u) => !STAFF_ROLES.includes(u.role) || INCLUDE_SET.has((u.email || '').toLowerCase())
-      );
+      // STAFF 역할은 제외하되, 동일인 묶음 이메일/이름은 예외로 항상 포함
+      const isIncluded = (u: UserProfile) =>
+        INCLUDE_SET.has((u.email || '').toLowerCase()) ||
+        NAME_SET.has((u.name || '').replace(/\s+/g, '')) ||
+        NAME_SET.has((u.display_name || '').replace(/\s+/g, ''));
+      const list = merged.filter((u) => !STAFF_ROLES.includes(u.role) || isIncluded(u));
       setProfiles(list);
+      setDiag(merged.filter(isIncluded));
       setLoading(false);
     };
     load();
@@ -120,6 +130,34 @@ const AdminRoster = (): ReactElement => {
               (명단에 이메일이 없어 이름 매칭이며, 동명이인·닉네임 가입은 수동 확인이 필요합니다.)
             </p>
           </div>
+
+          {/* 동일인 진단 — 묶음 이메일/이름으로 실제 로드된 계정 확인 (정확한 점검용) */}
+          {!loading && SAME_PERSON_EMAIL_GROUPS.length > 0 && (
+            <div style={{
+              border: '1px dashed #d97706', background: '#fffbeb', borderRadius: '10px',
+              padding: '12px 14px', marginBottom: '16px', fontSize: '13.5px',
+            }}>
+              <strong style={{ color: '#b45309' }}>동일인 진단</strong>{' '}
+              <span style={{ color: '#92400e' }}>
+                (설정: {SAME_PERSON_EMAIL_GROUPS.map((g) => `${g.name || '-'} · ${g.emails.join(' / ')}`).join(' | ')})
+              </span>
+              <div style={{ marginTop: '6px' }}>
+                실제 로드된 계정 <strong>{diag.length}</strong>개
+                {diag.length === 0 && (
+                  <span style={{ color: '#b91c1c' }}> — 해당 이메일/이름으로 가입 레코드를 찾지 못했습니다(실제 가입 이메일 확인 필요).</span>
+                )}
+              </div>
+              {diag.length > 0 && (
+                <ul style={{ margin: '6px 0 0', paddingLeft: '18px' }}>
+                  {diag.map((u) => (
+                    <li key={u.id}>
+                      {(u.display_name || u.name || '-')} · {u.email || '(이메일 없음)'} · role={u.role || '-'} · domain={u.signup_domain || '-'}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
 
           {/* 요약 카운트 */}
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', marginBottom: '20px' }}>
