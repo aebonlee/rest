@@ -154,9 +154,10 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
       <CodeBlock lang={section.code.lang} content={section.code.content} />
     )}
     {section.table && (
-      <div style={{ overflowX: 'auto', margin: '8px 0 16px' }}>
+      <div className="content-table-wrap" style={{ overflowX: 'auto', margin: '8px 0 16px' }}>
         <table style={{
           width: '100%',
+          minWidth: 'max-content',
           borderCollapse: 'collapse',
           fontSize: '15.5px',
           border: '1px solid var(--border-color, #e5e7eb)',

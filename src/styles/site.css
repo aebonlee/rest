@@ -543,7 +543,7 @@ html[data-color="purple"] {
     .page-header h2 { font-size: 28px; }
     .form-row { grid-template-columns: 1fr; }
 
-    /* 사이드바 → 가로 스크롤 탭 */
+    /* 사이드바(학습노트 날짜·회차) → 모바일에서 세로 목록 */
     .sidebar-layout {
         flex-direction: column;
         gap: 16px;
@@ -556,17 +556,15 @@ html[data-color="purple"] {
         overflow-y: visible;
     }
     .sidebar-menu {
-        flex-direction: row;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+        flex-direction: column;
         gap: 6px;
         padding: 8px;
     }
     .sidebar-item {
-        white-space: nowrap;
-        flex-shrink: 0;
+        white-space: normal;
+        width: 100%;
         font-size: 15px;
-        padding: 8px 12px;
+        padding: 10px 12px;
     }
     .topic-card { padding: 20px; }
     .instructor-grid { grid-template-columns: 1fr; }
@@ -1028,4 +1026,29 @@ html[data-color="purple"] {
     padding: 6px 0;
     font-size: 1rem;
     color: var(--text-secondary);
+}
+
+/* ──────────────────────────────────────────────
+   콘텐츠 테이블 — 좌우 제스처 스크롤 유지 + 모바일 최적화
+   ────────────────────────────────────────────── */
+.content-table-wrap {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;   /* 모바일 관성 스크롤 */
+  border: 1px solid var(--border-light, #e5e7eb);
+  border-radius: 8px;
+  /* 우측에 스크롤 가능 힌트(그라데이션) */
+  background:
+    linear-gradient(to right, var(--bg-white, #fff) 30%, rgba(255,255,255,0)),
+    linear-gradient(to right, rgba(0,0,0,0.08), rgba(255,255,255,0) 12px) 100% 0;
+  background-repeat: no-repeat;
+  background-size: 40px 100%, 14px 100%;
+  background-attachment: local, scroll;
+}
+.content-table-wrap table { border: none !important; }
+
+@media (max-width: 768px) {
+  .content-table-wrap table { font-size: 14px; }
+  .content-table-wrap th, .content-table-wrap td { padding: 8px 10px !important; }
+  /* 표 안 셀은 줄바꿈 최소화해 좌우 스크롤로 읽히게 */
+  .content-table-wrap th { white-space: nowrap; }
 }
