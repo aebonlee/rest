@@ -392,7 +392,7 @@ const Assessment = (): ReactElement => {
                                   cursor: submitted ? 'default' : 'pointer',
                                 }}
                               />
-                              <span style={{ color, lineHeight: 1.5, flex: 1, fontWeight: isCorrectOption ? 700 : 400 }}>
+                              <span style={{ color, lineHeight: 1.5, flex: 1, minWidth: 0, wordBreak: 'break-word', overflowWrap: 'anywhere', fontWeight: isCorrectOption ? 700 : 400 }}>
                                 <span style={{ marginRight: '6px', fontWeight: 600 }}>{String.fromCharCode(0x2460 + i)}</span>
                                 {opt}
                                 {isCorrectOption && (

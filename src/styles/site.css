@@ -555,6 +555,12 @@ html[data-color="purple"] {
         max-height: none;
         overflow-y: visible;
     }
+    /* 세로 스택에서 콘텐츠가 내용 너비로 늘어나 화면을 넘기지 않도록 폭 고정 */
+    .sidebar-content {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
     .sidebar-menu {
         flex-direction: column;
         gap: 6px;
