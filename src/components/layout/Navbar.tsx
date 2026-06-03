@@ -99,9 +99,8 @@ const Navbar = (): ReactElement => {
                       to={item.path}
                       className={`nav-link ${isActive(item) ? 'active' : ''}`}
                       onClick={(e: MouseEvent<HTMLAnchorElement>) => {
-                        // 769~1100px(햄버거 슬라이드인): 탭 시 드롭다운 토글
-                        // ≤768px(1줄 가로 메뉴): 토글 대신 상위 경로로 이동
-                        if (window.innerWidth > 768 && window.innerWidth <= 1100) {
+                        // ≤1100px(햄버거 슬라이드인): 탭 시 드롭다운 토글
+                        if (window.innerWidth <= 1100) {
                           e.preventDefault();
                           setActiveDropdown(activeDropdown === index ? null : index);
                         }

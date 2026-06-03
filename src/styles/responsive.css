@@ -1291,52 +1291,36 @@
 }
 
 /* ──────────────────────────────────────────────
-   모바일(≤768px): 상단 메뉴를 1줄 가로 스크롤로,
-   EN(언어)·컬러팔레트·햄버거는 숨김 (파일 끝 — 최종 우선순위)
+   모바일(≤768px) 상단바: 한 줄로
+   [로고 / 돋보기 / 테마전환 / 로그인 / 햄버거]
+   · EN(언어)·컬러팔레트는 숨김
+   · 메뉴는 햄버거 안(슬라이드인) — ≤1100 규칙 사용
+   (파일 끝 — 최종 우선순위)
    ────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  /* 한 줄 유지: 줄바꿈/줄나눔 해제 */
+  .nav-wrapper { flex-wrap: nowrap !important; }
+  .nav-wrapper::after { display: none !important; }
+
+  /* nav-actions를 다시 한 줄 flex로 (display:contents·order 해제) */
+  .nav-actions {
+    display: flex !important;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  /* 로고는 왼쪽, 액션은 오른쪽 */
+  .logo { order: 0 !important; margin-right: auto !important; min-width: 0; }
+
+  /* 표시 순서: 돋보기 · 테마 · 로그인/유저 · 햄버거 */
+  .nav-search-btn { display: inline-flex !important; order: 1; }
+  .theme-toggle { display: inline-flex !important; order: 2; }
+  .nav-login-btn, .nav-user-menu { order: 3; flex-shrink: 0; }
+  .mobile-toggle { display: flex !important; order: 4; flex-shrink: 0; }
+
+  /* 숨김: EN(언어 전환) · 컬러팔레트 · 장바구니 */
   .navbar .lang-switcher,
   .navbar .color-picker-wrapper,
-  .navbar .mobile-toggle { display: none !important; }
-
-  .nav-wrapper { flex-wrap: wrap; }
-
-  /* 슬라이드인 해제 → 로고 아래 전체폭 1줄 메뉴 */
-  .nav-menu {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    order: 10;
-    flex-basis: 100%;
-    width: 100%;
-    height: auto !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap;
-    align-items: center;
-    gap: 2px;
-    margin-top: 6px;
-    padding: 2px 0 !important;
-    background: transparent !important;
-    border-top: 1px solid var(--border-light);
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-  }
-  .nav-menu::-webkit-scrollbar { display: none; }
-  .nav-menu.active { left: auto !important; }
-
-  .nav-menu > li { flex-shrink: 0; width: auto !important; }
-  .nav-item-dropdown { width: auto !important; }
-  .nav-link {
-    width: auto !important;
-    white-space: nowrap;
-    padding: 8px 11px !important;
-    font-size: 14px;
-    border-bottom: none !important;
-  }
-  .nav-link::after { display: none; }
-
-  /* 1줄 메뉴에서는 드롭다운 펼침 대신 상위 경로로 이동 */
-  .nav-menu .dropdown-menu { display: none !important; }
+  .navbar .cart-icon-link { display: none !important; }
 }
