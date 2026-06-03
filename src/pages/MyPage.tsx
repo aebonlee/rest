@@ -5,6 +5,7 @@ import { useToast } from '../contexts/ToastContext';
 import { updateProfile } from '../utils/auth';
 import getSupabase from '../utils/supabase';
 import site from '../config/site';
+import { REGULAR_DATES } from '../config/regularSchedule';
 import SEOHead from '../components/SEOHead';
 
 const TABLES = {
@@ -41,6 +42,7 @@ const MyPage = (): ReactElement => {
   const [checking, setChecking] = useState(false);
 
   const todayStr = new Date().toISOString().split('T')[0];
+  const isClassDay = REGULAR_DATES.includes(todayStr); // 정규 수업일에만 출석체크 (공휴일·주말 제외)
   const userName = profile?.name || profile?.display_name || user?.email || '수강생';
 
   useEffect(() => {
@@ -77,6 +79,7 @@ const MyPage = (): ReactElement => {
   const handleCheckIn = async () => {
     const client = getSupabase();
     if (!client || !user) return;
+    if (!isClassDay) { showToast('오늘은 수업일이 아닙니다 (공휴일·주말 등).', 'warning'); return; }
     setChecking(true);
     // 수업 시작 14:00 기준 — 14:10 이후 체크인은 지각 처리
     const now = new Date();
@@ -183,22 +186,29 @@ const MyPage = (): ReactElement => {
             </div>
           </div>
 
-          {/* 출결 체크 */}
+          {/* 출결 체크 — 관리자는 출석 대상이 아니므로 제외 */}
+          {!isAdmin && (
           <div style={{ ...card, borderLeft: '4px solid var(--primary-blue)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
                 <h3 style={{ margin: '0 0 4px', fontSize: '18px' }}>오늘 출결</h3>
-                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>{todayStr} · 수업시작 14:00 (14:10 이후 체크인은 지각)</p>
+                <p style={{ margin: 0, fontSize: '14px', color: 'var(--text-secondary)' }}>
+                  {todayStr} · {isClassDay ? '수업시작 14:00 (14:10 이후 체크인은 지각)' : '오늘은 수업일이 아닙니다 (공휴일·주말 등)'}
+                </p>
               </div>
               <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                 {today ? (
                   <span style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 18px', borderRadius: '8px', fontWeight: 700, background: '#d1fae5', color: '#065f46' }}>
                     ✓ {STATUS_LABEL[today.status] || today.status} 완료 ({new Date(today.check_in_time).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })})
                   </span>
-                ) : (
+                ) : isClassDay ? (
                   <button className="btn btn-primary" style={{ padding: '10px 22px' }} disabled={checking} onClick={handleCheckIn}>
                     {checking ? '체크 중…' : '오늘 출석체크'}
                   </button>
+                ) : (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 18px', borderRadius: '8px', fontWeight: 700, background: 'var(--bg-light-gray)', color: 'var(--text-secondary)' }}>
+                    수업 없음
+                  </span>
                 )}
               </div>
             </div>
@@ -237,7 +247,7 @@ const MyPage = (): ReactElement => {
                         fontSize: '11px', fontWeight: 800, transform: 'rotate(-12deg)',
                       }}>{STATUS_LABEL[status] || status}</div>
                     ) : isHoliday ? (
-                      <span style={{ fontSize: '11px', color: '#92400e', fontWeight: 700 }}>휴강</span>
+                      <span style={{ fontSize: '11px', color: '#92400e', fontWeight: 700 }}>공휴일</span>
                     ) : null}
                   </div>
                 );
@@ -265,6 +275,7 @@ const MyPage = (): ReactElement => {
               );
             })()}
           </div>
+          )}
 
           {/* 수강 다짐 */}
           <div style={card}>

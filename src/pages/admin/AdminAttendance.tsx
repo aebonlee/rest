@@ -13,7 +13,7 @@ const TABLES = { attendance: `${site.dbPrefix}attendance` };
 const REST_HOSTNAME = new URL(site.url).hostname;
 const STAFF_ROLES = ['admin', 'superadmin'];
 
-/** 정규 수업일 (6/1~6/22 평일, 6/3 휴강) */
+/** 정규 수업일 (6/1~6/22 평일, 6/3 공휴일) */
 const CLASS_DAYS: number[] = (() => {
   const arr: number[] = [];
   for (let d = 1; d <= 22; d++) {
@@ -75,6 +75,17 @@ const AdminAttendance = (): ReactElement => {
       await client.from(TABLES.attendance).insert({ student_id: person.primary.id, date: selectedDate, status, check_in_time: new Date().toISOString() });
     }
     showToast('출결이 수정되었습니다.', 'success');
+    await loadData();
+  };
+
+  // 상태 해제 — 선택일의 출결 기록 삭제(미체크 상태로 되돌림)
+  const clearAttendance = async (person: PersonGroup) => {
+    const client = getSupabase();
+    if (!client) return;
+    const existing = findRecord(person.ids);
+    if (!existing) return;
+    await client.from(TABLES.attendance).delete().eq('id', existing.id);
+    showToast('출결 상태를 해제했습니다.', 'success');
     await loadData();
   };
 
@@ -200,6 +211,7 @@ const AdminAttendance = (): ReactElement => {
                             <button className={`att-btn ${status === 'late' ? 'active' : ''}`} onClick={() => markAttendance(g, 'late')}>지각</button>
                             <button className={`att-btn ${status === 'absent' ? 'active' : ''}`} onClick={() => markAttendance(g, 'absent')}>결석</button>
                             <button className={`att-btn ${status === 'excused' ? 'active' : ''}`} onClick={() => markAttendance(g, 'excused')}>사유</button>
+                            <button className="att-btn att-btn-clear" onClick={() => clearAttendance(g)} disabled={status === 'none'} title="출결 상태 해제(미체크로 되돌림)">상태해제</button>
                           </div>
                         </td>
                       </tr>
@@ -215,7 +227,7 @@ const AdminAttendance = (): ReactElement => {
             <div style={{ marginTop: '40px' }}>
               <h3 style={{ margin: '0 0 4px' }}>6월 전체 출석 현황</h3>
               <p style={{ margin: '0 0 14px', fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
-                정규 수업일 {CLASS_DAYS.length}일 기준 (6/1~6/22 평일, 6/3 휴강) · <span style={{ color: '#10b981', fontWeight: 700 }}>출</span> 출석 · <span style={{ color: '#d97706', fontWeight: 700 }}>지</span> 지각 · <span style={{ color: '#ef4444', fontWeight: 700 }}>결</span> 결석 · <span style={{ color: '#6b7280', fontWeight: 700 }}>사</span> 사유
+                정규 수업일 {CLASS_DAYS.length}일 기준 (6/1~6/22 평일, 6/3 공휴일) · <span style={{ color: '#10b981', fontWeight: 700 }}>출</span> 출석 · <span style={{ color: '#d97706', fontWeight: 700 }}>지</span> 지각 · <span style={{ color: '#ef4444', fontWeight: 700 }}>결</span> 결석 · <span style={{ color: '#6b7280', fontWeight: 700 }}>사</span> 사유
               </p>
               <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
                 <table className="admin-table" style={{ fontSize: '12px' }}>

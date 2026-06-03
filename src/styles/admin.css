@@ -249,3 +249,8 @@
     .admin-content { padding: 24px 16px; }
     .admin-stats { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* 출결 상태 해제 버튼 */
+.att-btn-clear { color: var(--text-secondary); }
+.att-btn-clear:hover:not(:disabled) { background: #fee2e2; color: #991b1b; border-color: #fecaca; }
+.att-btn:disabled { opacity: 0.4; cursor: not-allowed; }
