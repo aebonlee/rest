@@ -66,14 +66,14 @@ const AdminStudents = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
               <h2 style={{ margin: 0 }}>수강생 관리</h2>
-              <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
                 <strong>rest.dreamitbiz.com</strong>{scope === 'signup' ? '에서 가입한 회원' : '에 접속한 회원'}만 표시됩니다.
               </p>
             </div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+            <div style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               총 {filtered.length}명{keyword && ` (전체 ${people.length}명 중)`}
               {people.length !== students.length && (
-                <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
                   {' '}· 계정 {students.length}개(동일인 통합)
                 </span>
               )}
@@ -96,7 +96,7 @@ const AdminStudents = (): ReactElement => {
                 onClick={() => setScope('signup')}
                 style={{
                   padding: '8px 14px',
-                  fontSize: '15px',
+                  fontSize: '13.5px',
                   fontWeight: 600,
                   borderRadius: '6px',
                   border: '1px solid var(--border-color, #e5e7eb)',
@@ -110,7 +110,7 @@ const AdminStudents = (): ReactElement => {
                 onClick={() => setScope('visited')}
                 style={{
                   padding: '8px 14px',
-                  fontSize: '15px',
+                  fontSize: '13.5px',
                   fontWeight: 600,
                   borderRadius: '6px',
                   border: '1px solid var(--border-color, #e5e7eb)',
@@ -129,7 +129,7 @@ const AdminStudents = (): ReactElement => {
                 flex: 1,
                 minWidth: '200px',
                 padding: '8px 12px',
-                fontSize: '15.5px',
+                fontSize: '14px',
                 border: '1px solid var(--border-color, #e5e7eb)',
                 borderRadius: '6px',
                 background: 'var(--bg-card, #fff)',
@@ -169,19 +169,19 @@ const AdminStudents = (): ReactElement => {
                           {g.name}
                           {g.isMerged && (
                             <span title={`동일 전화번호 ${g.phone}로 ${g.accounts.length}개 계정`} style={{
-                              marginLeft: '6px', fontSize: '12px', fontWeight: 700, padding: '1px 7px',
+                              marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 7px',
                               borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
                             }}>동일인 {g.accounts.length}계정</span>
                           )}
                         </td>
                         <td>
                           {g.emails.map((e, i) => (
-                            <div key={e} style={i > 0 ? { fontSize: '14px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                            <div key={e} style={i > 0 ? { fontSize: '13px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
                           ))}
                         </td>
                         <td>{g.phone || '-'}</td>
                         <td>{Array.from(new Set(g.accounts.map(a => a.provider).filter(Boolean))).join(', ') || '-'}</td>
-                        <td style={{ fontSize: '14.5px', color: 'var(--text-secondary, #6b7280)' }}>
+                        <td style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
                           {s.signup_domain || '-'}
                         </td>
                         <td><span className={`role-badge ${s.role}`}>{s.role}</span></td>

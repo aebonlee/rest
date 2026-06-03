@@ -117,14 +117,14 @@ const AdminAttendance = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '12px', marginBottom: '16px' }}>
             <div>
               <h2 style={{ margin: 0 }}>출결일지</h2>
-              <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
                 학생 자가 체크인 시각을 확인하고 출결을 <strong>수정·보완</strong>하세요. <strong>rest.dreamitbiz.com 가입 학생</strong>만 표시됩니다(관리자 제외).
               </p>
             </div>
-            <div style={{ fontSize: '16px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
+            <div style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               총 {people.length}명
               {people.length !== students.length && (
-                <span style={{ fontSize: '13.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
+                <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
                   {' '}· 계정 {students.length}개(동일인 통합)
                 </span>
               )}
@@ -132,13 +132,13 @@ const AdminAttendance = (): ReactElement => {
           </div>
           <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
             <input type="date" value={selectedDate} onChange={e => setSelectedDate(e.target.value)} className="date-input" />
-            <span style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>이 날짜 출결일지:</span>
+            <span style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>이 날짜 출결일지:</span>
             <button type="button" onClick={downloadAttWord} disabled={loading || people.length === 0} style={{
-              padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+              padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               border: 'none', borderRadius: '7px', background: '#2b579a', color: '#fff',
             }}>⬇ Word</button>
             <button type="button" onClick={downloadAttPdf} disabled={loading || people.length === 0} style={{
-              padding: '7px 14px', fontSize: '14px', fontWeight: 600, cursor: 'pointer',
+              padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               border: 'none', borderRadius: '7px', background: '#b91c1c', color: '#fff',
             }}>⬇ PDF</button>
           </div>
@@ -170,7 +170,7 @@ const AdminAttendance = (): ReactElement => {
                             display: 'inline-block',
                             padding: '3px 10px',
                             borderRadius: '999px',
-                            fontSize: '13.5px',
+                            fontSize: '12.5px',
                             fontWeight: 700,
                             background: isStaff ? '#fef3c7' : '#dbeafe',
                             color: isStaff ? '#92400e' : '#1e3a8a',
@@ -182,14 +182,14 @@ const AdminAttendance = (): ReactElement => {
                           {g.name}
                           {g.isMerged && (
                             <span title={`동일인 ${g.accounts.length}계정`} style={{
-                              marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                              marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 6px',
                               borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
                             }}>동일인 {g.accounts.length}</span>
                           )}
                         </td>
                         <td>
                           {g.emails.map((e, i) => (
-                            <div key={e} style={i > 0 ? { fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                            <div key={e} style={i > 0 ? { fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
                           ))}
                         </td>
                         <td style={{ fontVariantNumeric: 'tabular-nums', color: 'var(--text-secondary, #6b7280)' }}>{getCheckIn(g.ids)}</td>
@@ -214,11 +214,11 @@ const AdminAttendance = (): ReactElement => {
           {!loading && people.length > 0 && (
             <div style={{ marginTop: '40px' }}>
               <h3 style={{ margin: '0 0 4px' }}>6월 전체 출석 현황</h3>
-              <p style={{ margin: '0 0 14px', fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
+              <p style={{ margin: '0 0 14px', fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
                 정규 수업일 {CLASS_DAYS.length}일 기준 (6/1~6/22 평일, 6/3 휴강) · <span style={{ color: '#10b981', fontWeight: 700 }}>출</span> 출석 · <span style={{ color: '#d97706', fontWeight: 700 }}>지</span> 지각 · <span style={{ color: '#ef4444', fontWeight: 700 }}>결</span> 결석 · <span style={{ color: '#6b7280', fontWeight: 700 }}>사</span> 사유
               </p>
               <div className="admin-table-wrapper" style={{ overflowX: 'auto' }}>
-                <table className="admin-table" style={{ fontSize: '13px' }}>
+                <table className="admin-table" style={{ fontSize: '12px' }}>
                   <thead>
                     <tr>
                       <th style={{ position: 'sticky', left: 0, background: 'var(--bg-light-gray, #f5f7fa)' }}>이름</th>

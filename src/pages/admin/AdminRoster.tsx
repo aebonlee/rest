@@ -123,7 +123,7 @@ const AdminRoster = (): ReactElement => {
         <div className="admin-content">
           <div style={{ marginBottom: '16px' }}>
             <h2 style={{ margin: 0 }}>수강생 명단 ↔ 회원가입 대조</h2>
-            <p style={{ margin: '6px 0 0', fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)' }}>
+            <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
               내장된 수강생 명단 <strong>{ROSTER_COUNT}명</strong>을 본 사이트 가입 회원과 <strong>이름 기준</strong>으로 대조합니다.
               (명단에 이메일이 없어 이름 매칭이며, 동명이인·닉네임 가입은 수동 확인이 필요합니다.)
             </p>
@@ -136,14 +136,14 @@ const AdminRoster = (): ReactElement => {
                 flex: '1 1 130px', border: '1px solid var(--border-light, #e5e7eb)',
                 borderRadius: '10px', padding: '12px 14px', background: 'var(--bg-white, #fff)',
               }}>
-                <div style={{ fontSize: '22px', fontWeight: 800, color: c.color }}>{c.val}</div>
-                <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{c.label}</div>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: c.color }}>{c.val}</div>
+                <div style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>{c.label}</div>
               </div>
             ))}
           </div>
 
           {/* 경험 수준 분포 */}
-          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '24px', fontSize: '15px' }}>
+          <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap', marginBottom: '24px', fontSize: '13.5px' }}>
             {Object.entries(levelDist).map(([lvl, n]) => (
               <span key={lvl} style={{
                 padding: '4px 12px', borderRadius: '999px', fontWeight: 700,
@@ -160,7 +160,7 @@ const AdminRoster = (): ReactElement => {
               {/* 미가입 — 가장 중요 */}
               <h3 style={{ margin: '8px 0 10px', color: '#ef4444' }}>⚠ 미가입 ({notSignedUp.length}) — 명단에 있으나 회원가입 미확인</h3>
               {notSignedUp.length === 0 ? (
-                <p style={{ color: '#10b981', fontSize: '16px', marginBottom: '24px' }}>✓ 명단 전원이 가입을 완료했습니다.</p>
+                <p style={{ color: '#10b981', fontSize: '14.5px', marginBottom: '24px' }}>✓ 명단 전원이 가입을 완료했습니다.</p>
               ) : (
                 <div className="admin-table-wrapper" style={{ marginBottom: '24px' }}>
                   <table className="admin-table">
@@ -194,18 +194,18 @@ const AdminRoster = (): ReactElement => {
                               {g.name}
                               {g.isMerged && (
                                 <span title={`동일인 ${g.accounts.length}계정`} style={{
-                                  marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                                  marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 6px',
                                   borderRadius: '999px', background: '#ede9fe', color: '#5b21b6',
                                 }}>동일인 {g.accounts.length}</span>
                               )}
                             </td>
                             <td>
                               {g.emails.map((e, i) => (
-                                <div key={e} style={i > 0 ? { fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
+                                <div key={e} style={i > 0 ? { fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)' } : undefined}>{e}</div>
                               ))}
                             </td>
                             <td>{g.phone || '-'}</td>
-                            <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>{Array.from(new Set(g.accounts.map(a => a.provider).filter(Boolean))).join(', ') || '-'}</td>
+                            <td style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>{Array.from(new Set(g.accounts.map(a => a.provider).filter(Boolean))).join(', ') || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -229,7 +229,7 @@ const AdminRoster = (): ReactElement => {
                           {r.student.name}
                           {dropped && (
                             <span style={{
-                              marginLeft: '6px', fontSize: '11.5px', fontWeight: 700, padding: '1px 6px',
+                              marginLeft: '6px', fontSize: '11px', fontWeight: 700, padding: '1px 6px',
                               borderRadius: '999px', background: '#f3f4f6', color: '#6b7280',
                               textDecoration: 'none', display: 'inline-block', verticalAlign: 'middle',
                             }}>중도포기</span>
@@ -241,15 +241,15 @@ const AdminRoster = (): ReactElement => {
                         <td style={{ color: dropped ? '#9ca3af' : levelColor[r.student.level], fontWeight: 700 }}>{r.student.level}</td>
                         <td>
                           <span style={{
-                            fontSize: '13.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
+                            fontSize: '12.5px', fontWeight: 700, padding: '2px 8px', borderRadius: '999px',
                             textDecoration: 'none',
                             background: dropped ? '#f3f4f6' : (r.person ? '#d1fae5' : '#fee2e2'),
                             color: dropped ? '#6b7280' : (r.person ? '#065f46' : '#991b1b'),
                           }}>{dropped ? '중도포기' : (r.person ? '가입' : '미가입')}</span>
                         </td>
-                        <td style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)' }}>
+                        <td style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
                           {r.person ? r.person.emails.map((e, i) => (
-                            <div key={e} style={i > 0 ? { fontSize: '13px' } : undefined}>{e}</div>
+                            <div key={e} style={i > 0 ? { fontSize: '12px' } : undefined}>{e}</div>
                           )) : '-'}
                         </td>
                       </tr>
@@ -259,7 +259,7 @@ const AdminRoster = (): ReactElement => {
                 </table>
               </div>
               {!loading && profiles.length === 0 && (
-                <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', marginTop: '12px' }}>
+                <p style={{ fontSize: '13.5px', color: 'var(--text-secondary, #6b7280)', marginTop: '12px' }}>
                   ※ Supabase가 연결되지 않았거나 아직 가입한 회원이 없어 가입 데이터를 불러오지 못했습니다.
                   배포 환경(관리자 로그인 상태)에서 정확히 표시됩니다.
                 </p>
