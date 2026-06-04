@@ -10,7 +10,7 @@ import {
 } from '../utils/projectVote';
 import {
   listTeams, findMyTeam, createTeam, joinTeam, leaveTeam, MAX_TEAM_SIZE,
-  claimLeader, confirmLeader, resetLeaders,
+  claimLeader, resetLeaders,
 } from '../utils/projectTeams';
 import type { Team, TeamMember } from '../types';
 
@@ -103,22 +103,14 @@ const ProjectVote = (): ReactElement => {
     else showToast('탈퇴 실패: ' + (res.error || ''), 'error');
   };
 
-  const handleClaimLeader = async (team: Team) => {
-    if (!confirm(`'${team.name}' 팀의 팀장을 맡으시겠습니까?\n먼저 누른 한 명이 팀장이 되며, 이후에는 강사만 변경할 수 있습니다.`)) return;
+  const handleClaimLeader = async (team: Team, memberId: string, memberName: string) => {
+    if (!confirm(`${memberName} 님을 '${team.name}' 팀장으로 신청합니다.\n먼저 신청한 한 명이 팀장이 되며, 이후에는 강사만 변경할 수 있습니다.`)) return;
     setBusy(true);
-    const res = await claimLeader(team.id, user!.id);
+    const res = await claimLeader(team.id, memberId);
     setBusy(false);
-    if (res.ok) { showToast('🎉 팀장이 되었습니다!', 'success'); reload(); }
+    if (res.ok) { showToast(`🎉 ${memberName} 님이 팀장이 되었습니다!`, 'success'); reload(); }
     else if (res.error === 'taken') showToast(`이미 ${res.takenBy || '다른 팀원'}님이 팀장이 되었습니다.`, 'info');
     else { showToast('처리 실패: ' + (res.error || ''), 'error'); reload(); }
-  };
-
-  const handleConfirmLeader = async (team: Team, memberId: string) => {
-    setBusy(true);
-    const res = await confirmLeader(team, memberId);
-    setBusy(false);
-    if (res.ok) { showToast('팀장을 확정했습니다.', 'success'); reload(); }
-    else showToast('확정 실패: ' + (res.error || ''), 'error');
   };
 
   const handleResetLeaders = async (team: Team) => {
@@ -231,32 +223,28 @@ const ProjectVote = (): ReactElement => {
                       return (
                       <div style={{ marginBottom: '12px' }}>
                         <span style={{ fontSize: '12px', color: 'var(--primary-blue)', fontWeight: 700 }}>팀원:</span>
+                        {!hasLeader && (
+                          <p style={{ margin: '6px 0 2px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+                            팀장 미정 — 아래에서 팀장 맡을 사람의 <strong>‘팀장 신청’</strong>을 누르세요. (먼저 누른 한 명이 팀장)
+                          </p>
+                        )}
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '5px', marginTop: '6px' }}>
                           {members(team).map((m) => (
                             <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                               <span style={chip('#eff6ff', '#1e40af')}>{m.name}</span>
                               {m.role === '팀장' && <span style={chip('#fef3c7', '#92400e')}>👑 팀장</span>}
-                              {isAdmin && m.role !== '팀장' && (
-                                <button onClick={() => handleConfirmLeader(team, m.id)} disabled={busy}
-                                  style={{ fontSize: '12px', padding: '2px 9px', borderRadius: '6px', border: '1px solid var(--primary-blue)', background: 'none', color: 'var(--primary-blue)', cursor: 'pointer' }}>
-                                  팀장 지정
+                              {/* 팀장 미정: 팀원·관리자가 각 이름별로 팀장 신청 */}
+                              {!hasLeader && (inThisTeam || isAdmin) && (
+                                <button onClick={() => handleClaimLeader(team, m.id, m.name)} disabled={busy}
+                                  style={{ fontSize: '12px', fontWeight: 700, padding: '3px 11px', borderRadius: '6px', border: 'none', background: 'var(--primary-blue)', color: '#fff', cursor: 'pointer' }}>
+                                  팀장 신청
                                 </button>
                               )}
                             </div>
                           ))}
                         </div>
-                        {/* 학생: 팀장 미정이면 선착순 버튼 */}
-                        {!isAdmin && inThisTeam && !hasLeader && (
-                          <button onClick={() => handleClaimLeader(team)} disabled={busy}
-                            style={{ marginTop: '10px', fontSize: '13px', fontWeight: 700, padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'var(--primary-blue)', color: '#fff', cursor: 'pointer' }}>
-                            👑 내가 팀장 할게요 (선착순)
-                          </button>
-                        )}
                         {!isAdmin && iAmLeader && (
                           <p style={{ margin: '8px 0 0', fontSize: '12.5px', fontWeight: 700, color: '#92400e' }}>👑 당신이 이 팀의 팀장입니다.</p>
-                        )}
-                        {!isAdmin && inThisTeam && hasLeader && !iAmLeader && (
-                          <p style={{ margin: '8px 0 0', fontSize: '12.5px', color: 'var(--text-secondary)' }}>팀장이 정해졌습니다.</p>
                         )}
                         {isAdmin && hasLeader && (
                           <button onClick={() => handleResetLeaders(team)} disabled={busy}

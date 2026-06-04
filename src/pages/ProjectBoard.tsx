@@ -16,6 +16,7 @@ const ProjectBoard = (): ReactElement => {
   const { user, profile, isAdmin } = useAuth();
   const { showToast } = useToast();
   const [team, setTeam] = useState<Team | null>(null);
+  const [allTeams, setAllTeams] = useState<Team[]>([]);
   const [posts, setPosts] = useState<TeamPost[]>([]);
   const [comments, setComments] = useState<TeamComment[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,16 +32,36 @@ const ProjectBoard = (): ReactElement => {
 
   const authorName = profile?.name || profile?.display_name || user?.email || '수강생';
 
+  const loadBoard = async (t: Team | null) => {
+    if (t) { setPosts(await listTeamPosts(t.id)); setComments(await listTeamComments(t.id)); }
+    else { setPosts([]); setComments([]); }
+  };
+
   const load = useCallback(async () => {
     if (!user) return;
     setLoading(true);
-    const mine = findMyTeam(await listTeams(), user.id);
-    setTeam(mine);
-    if (mine) { setPosts(await listTeamPosts(mine.id)); setComments(await listTeamComments(mine.id)); }
-    else { setPosts([]); setComments([]); }
+    const teams = await listTeams();
+    if (isAdmin) {
+      // 관리자: 모든 팀 열람 (기본 첫 팀)
+      setAllTeams(teams);
+      const cur = teams.find((t) => t.id === team?.id) || teams[0] || null;
+      setTeam(cur);
+      await loadBoard(cur);
+    } else {
+      const mine = findMyTeam(teams, user.id);
+      setTeam(mine);
+      await loadBoard(mine);
+    }
     setLoading(false);
-  }, [user]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, isAdmin]);
   useEffect(() => { load(); }, [load]);
+
+  const selectTeam = async (id: string) => {
+    const t = allTeams.find((x) => x.id === id) || null;
+    setTeam(t);
+    await loadBoard(t);
+  };
 
   const refresh = async () => { if (team) { setPosts(await listTeamPosts(team.id)); setComments(await listTeamComments(team.id)); } };
 
@@ -94,11 +115,24 @@ const ProjectBoard = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : !team ? (
             <div style={{ ...card, textAlign: 'center', padding: '48px 22px' }}>
-              <p style={{ margin: '0 0 16px', color: 'var(--text-secondary)' }}>아직 소속된 팀이 없습니다. 먼저 팀을 만들거나 합류하세요.</p>
-              <Link to="/project-vote" className="btn btn-primary">프로젝트 팀구성으로 이동</Link>
+              {isAdmin ? (
+                <><p style={{ margin: '0 0 16px', color: 'var(--text-secondary)' }}>편성된 팀이 없습니다. 먼저 팀을 편성하세요.</p><Link to="/admin/teams" className="btn btn-primary">팀 편성 관리로 이동</Link></>
+              ) : (
+                <><p style={{ margin: '0 0 16px', color: 'var(--text-secondary)' }}>아직 소속된 팀이 없습니다. 먼저 팀을 만들거나 합류하세요.</p><Link to="/project-vote" className="btn btn-primary">프로젝트 팀구성으로 이동</Link></>
+              )}
             </div>
           ) : (
             <>
+              {/* 관리자: 팀 선택 드롭다운 (모든 팀 열람) */}
+              {isAdmin && (
+                <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)' }}>👑 관리자 — 팀 선택</span>
+                  <select value={team.id} onChange={(e) => selectTeam(e.target.value)} style={{ ...input, width: 'auto', flex: 1, minWidth: '200px' }}>
+                    {allTeams.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.project_topic || '주제 미정'}</option>)}
+                  </select>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>전체 {allTeams.length}팀 · 열람·삭제 가능</span>
+                </div>
+              )}
               <div style={{ ...card, borderLeft: '4px solid var(--primary-blue)' }}>
                 <h3 style={{ margin: '0 0 4px', fontSize: '20px' }}>{team.name}</h3>
                 <p style={{ margin: '0 0 10px', color: 'var(--text-secondary)', fontSize: '15px' }}>주제: {team.project_topic || '미정'}</p>
@@ -109,6 +143,7 @@ const ProjectBoard = (): ReactElement => {
                 </div>
               </div>
 
+              {!isAdmin && (
               <div style={card}>
                 <h4 style={{ margin: '0 0 10px', fontSize: '16px' }}>새 글 작성</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -125,6 +160,7 @@ const ProjectBoard = (): ReactElement => {
                   <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handlePost}>등록</button>
                 </div>
               </div>
+              )}
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 <button type="button" style={chip(filter === 'all')} onClick={() => setFilter('all')}>전체 {posts.length}</button>
@@ -156,10 +192,12 @@ const ProjectBoard = (): ReactElement => {
                             {(c.author_id === user?.id || isAdmin) && <button onClick={() => handleDeleteComment(c)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}>✕</button>}
                           </div>
                         ))}
-                        <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
-                          <input style={{ ...input, fontSize: '14px', padding: '8px 12px' }} placeholder="댓글 달기…" value={commentText[p.id] || ''} onChange={(e) => setCommentText((s) => ({ ...s, [p.id]: e.target.value }))} onKeyDown={(e) => e.key === 'Enter' && handleComment(p.id)} />
-                          <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px', flexShrink: 0 }} onClick={() => handleComment(p.id)}>댓글</button>
-                        </div>
+                        {!isAdmin && (
+                          <div style={{ display: 'flex', gap: '8px', marginTop: '8px' }}>
+                            <input style={{ ...input, fontSize: '14px', padding: '8px 12px' }} placeholder="댓글 달기…" value={commentText[p.id] || ''} onChange={(e) => setCommentText((s) => ({ ...s, [p.id]: e.target.value }))} onKeyDown={(e) => e.key === 'Enter' && handleComment(p.id)} />
+                            <button className="btn btn-primary" style={{ padding: '8px 16px', fontSize: '14px', flexShrink: 0 }} onClick={() => handleComment(p.id)}>댓글</button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   );

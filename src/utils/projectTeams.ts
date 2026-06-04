@@ -105,7 +105,7 @@ export async function volunteerLeader(team: Team, userId: string, on: boolean): 
  * 선착순 팀장 등록 — 먼저 누른 1명이 팀장.
  * 최신 팀 상태를 다시 읽어 이미 팀장이 있으면 거절(taken), 없으면 본인을 '팀장'으로 확정.
  */
-export async function claimLeader(teamId: string, userId: string): Promise<{ ok: boolean; error?: string; takenBy?: string }> {
+export async function claimLeader(teamId: string, memberId: string): Promise<{ ok: boolean; error?: string; takenBy?: string }> {
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };
   const { data, error: fe } = await client.from(TEAMS_TABLE).select('*').eq('id', teamId).single();
@@ -114,8 +114,8 @@ export async function claimLeader(teamId: string, userId: string): Promise<{ ok:
   const list = members(team);
   const existing = list.find((m) => m.role === '팀장');
   if (existing) return { ok: false, error: 'taken', takenBy: existing.name };
-  if (!list.some((m) => m.id === userId)) return { ok: false, error: 'not-member' };
-  const next = list.map((m) => ({ ...m, role: m.id === userId ? '팀장' : '팀원' }));
+  if (!list.some((m) => m.id === memberId)) return { ok: false, error: 'not-member' };
+  const next = list.map((m) => ({ ...m, role: m.id === memberId ? '팀장' : '팀원' }));
   const { error } = await client.from(TEAMS_TABLE).update({ members: next }).eq('id', teamId);
   return error ? { ok: false, error: error.message } : { ok: true };
 }
