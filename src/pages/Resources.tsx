@@ -43,6 +43,19 @@ const Resources = (): ReactElement => {
         <div className="container">
           <h2>학습자료</h2>
           <p>DreamIT 사에서 만든 학습 사이트와 외부 자료·도구를 분야별로 모았습니다.</p>
+          <a
+            href="https://padlet.com/aebon/rest01"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: 'inline-flex', alignItems: 'center', gap: '8px', marginTop: '14px',
+              padding: '10px 18px', borderRadius: '999px', textDecoration: 'none',
+              fontSize: '14px', fontWeight: 700, color: '#fff', background: 'var(--primary-blue, #0046C8)',
+              boxShadow: '0 4px 14px rgba(0,70,200,0.25)',
+            }}
+          >
+            📌 학습기간 참고사이트 — ReBoot 1기 ↗
+          </a>
         </div>
       </section>
 
