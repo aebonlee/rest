@@ -74,19 +74,20 @@ const AdminRoster = (): ReactElement => {
 
   const { rows, notInRoster, matchedCount } = useMemo(() => {
     // 동일인(전화/이름) 통합 후 이름으로 매칭
+    // 같은 이름 그룹이 여러 개면(전화번호 등으로 분리된 동일인 계정) 모두 매칭 처리해
+    // 한 계정만 매칭되고 나머지가 '명단외'로 남는 문제를 방지한다.
     const people = groupByPerson(profiles);
-    const byName = new Map<string, PersonGroup>();
+    const byName = new Map<string, PersonGroup[]>();
     people.forEach((g) => {
-      g.accounts.forEach((a) => {
-        if (a.name) byName.set(norm(a.name), g);
-        if (a.display_name) byName.set(norm(a.display_name), g);
-      });
+      const names = new Set<string>();
+      g.accounts.forEach((a) => { if (a.name) names.add(norm(a.name)); if (a.display_name) names.add(norm(a.display_name)); });
+      names.forEach((n) => { const arr = byName.get(n) || []; arr.push(g); byName.set(n, arr); });
     });
     const usedKeys = new Set<string>();
     const rows: RosterRow[] = ROSTER.map((student) => {
-      const person = byName.get(norm(student.name)) || null;
-      if (person) usedKeys.add(person.key);
-      return { student, person };
+      const groups = byName.get(norm(student.name)) || [];
+      groups.forEach((g) => usedKeys.add(g.key));
+      return { student, person: groups[0] || null };
     });
     return {
       rows,
