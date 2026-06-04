@@ -24,4 +24,6 @@ export const SAME_PERSON_EMAIL_GROUPS: SamePersonGroup[] = [
   { name: '이유민', emails: ['yoominggg2164@gmail.com'] },
   // 임종권: 계정 2개로 응시 — 본 계정 ssujklim 으로 통합(성적은 최고점 채택)
   { name: '임종권', emails: ['ssujklim@gmail.com', 'deathbed0104@gmail.com'] },
+  // 최재영: 계정 2개(jkl459 는 실명 없이 저장됨) → 통합
+  { name: '최재영', emails: ['istp0109318@gmail.com', 'jkl459@naver.com'] },
 ];
