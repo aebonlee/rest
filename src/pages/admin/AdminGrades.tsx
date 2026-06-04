@@ -23,12 +23,23 @@ const AdminGrades = (): ReactElement => {
     const load = async () => {
       const client = getSupabase();
       if (!client) { setLoading(false); return; }
-      const [signupRes, gradeList] = await Promise.all([
-        client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
-        getAllAssessments(),
-      ]);
+      const gradeList = await getAllAssessments();
+      // 본 사이트 수강생: signup_domain 일치 OR visited_sites 에 호스트 포함
+      // (다른 dreamitbiz 사이트로 가입했지만 rest 에서 평가를 본 사람도 포함)
+      const { data: base } = await client
+        .from('user_profiles')
+        .select('*')
+        .or(`signup_domain.eq.${REST_HOSTNAME},visited_sites.cs.{${REST_HOSTNAME}}`);
+      const merged = [...((base || []) as UserProfile[])];
+      const seen = new Set(merged.map((u) => u.id));
+      // 평가기록은 있으나 위 목록에 없는 계정(타 도메인 가입 등)은 student_id 로 직접 보강 → 점수 누락 방지
+      const missingIds = [...new Set(gradeList.map((g) => g.student_id))].filter((id) => id && !seen.has(id));
+      if (missingIds.length) {
+        const { data: byId } = await client.from('user_profiles').select('*').in('id', missingIds);
+        for (const u of (byId || []) as UserProfile[]) if (!seen.has(u.id)) { seen.add(u.id); merged.push(u); }
+      }
       // 총괄관리자·관리자(역할) + 백진주 등 관리자 이메일(ADMIN_EMAILS) 제외 → 순수 수강생만
-      const list = ((signupRes.data || []) as UserProfile[])
+      const list = merged
         .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()))
         .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));
       setStudents(list);
