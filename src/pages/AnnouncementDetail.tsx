@@ -29,6 +29,13 @@ const AnnouncementDetail = (): ReactElement => {
   return (
     <>
       <SEOHead title={item ? `공지 · ${item.title}` : '공지사항'} path={`/announcements/${id ?? ''}`} noindex />
+      <section className="page-header">
+        <div className="container">
+          <h2>공지사항</h2>
+          <p>AI Reboot Academy 전체 공지입니다.</p>
+        </div>
+      </section>
+
       <section className="section">
         <div className="container" style={{ maxWidth: '820px' }}>
           <Link to="/announcements" style={{ fontSize: '14px', color: 'var(--primary-blue, #0046C8)', textDecoration: 'none' }}>
