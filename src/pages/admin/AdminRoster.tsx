@@ -183,7 +183,7 @@ const AdminRoster = (): ReactElement => {
               {/* 명단외 가입 */}
               {notInRoster.length > 0 && (
                 <>
-                  <h3 style={{ margin: '8px 0 10px', color: '#d97706' }}>명단외 가입 ({notInRoster.length}) — 가입했으나 명단에 이름 없음</h3>
+                  <h3 style={{ margin: '8px 0 10px', color: '#d97706' }}>명단외 가입 ({notInRoster.length}) — 운영사 관리자</h3>
                   <div className="admin-table-wrapper" style={{ marginBottom: '24px' }}>
                     <table className="admin-table">
                       <thead><tr><th>이름</th><th>이메일</th><th>전화</th><th>가입경로</th></tr></thead>
