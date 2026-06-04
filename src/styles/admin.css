@@ -177,6 +177,18 @@
     transition: all 0.2s;
 }
 
+.btn-secondary-sm {
+    padding: 4px 12px;
+    font-size: 14px;
+    background: #E0E7FF;
+    color: #3730A3;
+    border: 1px solid #C7D2FE;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-secondary-sm:hover { background: #0046C8; color: #fff; }
+
 .btn-danger-sm:hover {
     background: #DC2626;
     color: #fff;
