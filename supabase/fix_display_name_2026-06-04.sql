@@ -14,6 +14,8 @@ UPDATE rest_assessments
 SET student_name = '이유민'
 WHERE student_email = 'yoominggg2164@gmail.com';
 
--- (선택) 최재영 2번째 계정(jkl459)도 실명으로 통일하려면:
--- UPDATE user_profiles SET name='최재영', display_name='최재영' WHERE email='jkl459@naver.com';
--- UPDATE rest_assessments SET student_name='최재영' WHERE student_email='jkl459@naver.com';
+-- 3) 윤혜수: jkl459@naver.com 계정으로 응시했으나 평가기록에 이름이 이메일로 저장됨 → 실명 교정
+--    (프로필 이름은 이미 '윤혜수' 이므로 평가기록만 보정)
+UPDATE rest_assessments
+SET student_name = '윤혜수'
+WHERE student_email = 'jkl459@naver.com';
