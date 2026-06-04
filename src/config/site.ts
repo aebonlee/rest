@@ -92,6 +92,7 @@ const site: SiteConfig = {
       activePath: '/dashboard',
       dropdown: [
         { path: '/dashboard', labelKey: 'site.nav.dashboard' },
+        { path: '/announcements', labelKey: 'site.nav.announcements' },
         { path: '/materials', labelKey: 'site.nav.materials' },
         { path: '/assignments', labelKey: 'site.nav.assignments' },
         { path: '/qna', labelKey: 'site.nav.qna' },
