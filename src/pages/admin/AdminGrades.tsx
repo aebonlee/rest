@@ -241,14 +241,15 @@ const AdminGrades = (): ReactElement => {
           ) : (
             <div className="admin-table-wrapper">
               <table className="admin-table">
-                <thead><tr><th>이름</th><th>이메일</th><th>선수평가</th><th>사후평가</th><th>최근 응시</th></tr></thead>
+                <thead><tr><th style={{ width: '48px', textAlign: 'center' }}>No.</th><th>이름</th><th>이메일</th><th>선수평가</th><th>사후평가</th><th>최근 응시</th></tr></thead>
                 <tbody>
-                  {people.map((g) => {
+                  {people.map((g, idx) => {
                     const byType = gradeMap.get(g.key) || {};
                     const dates = GRADED_TYPES.map((t) => byType[t]?.submitted_at).filter(Boolean) as string[];
                     const latest = dates.sort().slice(-1)[0];
                     return (
                       <tr key={g.key}>
+                        <td style={{ textAlign: 'center', color: 'var(--text-secondary, #6b7280)' }}>{idx + 1}</td>
                         <td>
                           {g.name}
                           {g.isMerged && (
