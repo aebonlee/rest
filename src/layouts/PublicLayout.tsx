@@ -36,6 +36,8 @@ const Teams = lazy(() => import('../pages/Teams'));
 const Projects = lazy(() => import('../pages/Projects'));
 const ProjectDetail = lazy(() => import('../pages/ProjectDetail'));
 const QnA = lazy(() => import('../pages/QnA'));
+const Announcements = lazy(() => import('../pages/Announcements'));
+const AnnouncementDetail = lazy(() => import('../pages/AnnouncementDetail'));
 
 // 관리자 페이지
 const AdminDashboard = lazy(() => import('../pages/admin/AdminDashboard'));
@@ -99,6 +101,8 @@ const PublicLayout = (): ReactElement => {
             <Route path="/projects" element={<AuthGuard><Projects /></AuthGuard>} />
             <Route path="/projects/:id" element={<AuthGuard><ProjectDetail /></AuthGuard>} />
             <Route path="/qna" element={<AuthGuard><QnA /></AuthGuard>} />
+            <Route path="/announcements" element={<AuthGuard><Announcements /></AuthGuard>} />
+            <Route path="/announcements/:id" element={<AuthGuard><AnnouncementDetail /></AuthGuard>} />
 
             {/* 관리자 */}
             <Route path="/admin" element={<AdminGuard><AdminDashboard /></AdminGuard>} />

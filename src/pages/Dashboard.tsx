@@ -126,13 +126,16 @@ const Dashboard = (): ReactElement => {
 
           <div className="dashboard-grid">
             <div className="dashboard-section">
-              <h3>📢 공지사항</h3>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <h3>📢 공지사항</h3>
+                <Link to="/announcements" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)', textDecoration: 'none' }}>전체보기 →</Link>
+              </div>
               {announcements.length > 0 ? (
                 <ul className="dashboard-list">
                   {announcements.map(a => (
                     <li key={a.id} className={a.is_pinned ? 'pinned' : ''}>
                       {a.is_pinned && <span className="pin-badge">고정</span>}
-                      <span className="list-title">{a.title}</span>
+                      <Link to={`/announcements/${a.id}`} className="list-title" style={{ color: 'inherit', textDecoration: 'none' }}>{a.title}</Link>
                       <span className="list-date">{new Date(a.created_at).toLocaleDateString('ko-KR')}</span>
                     </li>
                   ))}
@@ -145,6 +148,7 @@ const Dashboard = (): ReactElement => {
             <div className="dashboard-section">
               <h3>🔗 바로가기</h3>
               <div className="quick-links">
+                <Link to="/announcements" className="quick-link-card">📢 공지사항</Link>
                 <Link to="/materials" className="quick-link-card">📁 강의자료</Link>
                 <Link to="/assignments" className="quick-link-card">📝 과제</Link>
                 <Link to="/project-vote" className="quick-link-card">🧩 팀구성</Link>
