@@ -60,7 +60,9 @@ const Resources = (): ReactElement => {
               </p>
 
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '12px' }}>
-                {[...group.sites].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)).map((s) => (
+                {[...group.sites].sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0)).map((s) => {
+                  const accent = s.accent || 'var(--primary-blue)';
+                  return (
                   <a
                     key={s.url}
                     href={s.url}
@@ -69,26 +71,27 @@ const Resources = (): ReactElement => {
                     style={{
                       display: 'flex', flexDirection: 'column', gap: '5px',
                       padding: '16px 18px', borderRadius: '12px', textDecoration: 'none',
-                      border: s.featured ? '2px solid var(--primary-blue)' : '1px solid var(--border-light)',
+                      border: s.featured ? `2px solid ${accent}` : '1px solid var(--border-light)',
                       background: s.featured ? 'var(--bg-light-gray)' : 'var(--bg-white)',
-                      boxShadow: s.featured ? '0 4px 16px rgba(0,70,200,0.12)' : 'none',
+                      boxShadow: s.featured ? `0 4px 16px ${s.accent ? 'rgba(220,38,38,0.16)' : 'rgba(0,70,200,0.12)'}` : 'none',
                       color: 'var(--text-primary)', transition: 'border-color 0.15s, transform 0.1s',
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = 'var(--primary-blue)'; e.currentTarget.style.transform = 'translateY(-2px)'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = s.featured ? 'var(--primary-blue)' : 'var(--border-light)'; e.currentTarget.style.transform = 'translateY(0)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = accent; e.currentTarget.style.transform = 'translateY(-2px)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = s.featured ? accent : 'var(--border-light)'; e.currentTarget.style.transform = 'translateY(0)'; }}
                   >
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '8px' }}>
                       <strong style={{ fontSize: s.featured ? '16px' : '15px' }}>
                         {s.featured && <span style={{ marginRight: '6px' }}>⭐</span>}{s.name}
                       </strong>
                       {s.featured
-                        ? <span style={{ flexShrink: 0, fontSize: '11px', fontWeight: 800, color: '#fff', background: 'var(--primary-blue)', padding: '2px 9px', borderRadius: '999px' }}>추천</span>
+                        ? <span style={{ flexShrink: 0, fontSize: '11px', fontWeight: 800, color: '#fff', background: accent, padding: '2px 9px', borderRadius: '999px' }}>{s.badge || '추천'}</span>
                         : <span style={{ color: 'var(--primary-blue)', fontWeight: 700, flexShrink: 0 }}>→</span>}
                     </div>
                     <span style={{ fontSize: '13px', color: 'var(--text-secondary)', lineHeight: 1.5 }}>{s.desc}</span>
                     <span style={{ fontSize: '11.5px', color: 'var(--text-secondary)', opacity: 0.7 }}>{s.url.replace('https://', '')}</span>
                   </a>
-                ))}
+                  );
+                })}
               </div>
             </div>
 
