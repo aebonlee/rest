@@ -22,4 +22,6 @@ export const SAME_PERSON_EMAIL_GROUPS: SamePersonGroup[] = [
   { name: '주윤미', emails: ['jooym6016@kidico.or.kr', 'tlskaksmf@naver.com'] },
   // 이유민: 프로필 실명이 비어 자동 닉네임('행복한흰이마기러기')으로 저장됨 → 실명 표시 고정
   { name: '이유민', emails: ['yoominggg2164@gmail.com'] },
+  // 임종권: 계정 2개로 응시 — 본 계정 ssujklim 으로 통합(성적은 최고점 채택)
+  { name: '임종권', emails: ['ssujklim@gmail.com', 'deathbed0104@gmail.com'] },
 ];

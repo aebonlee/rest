@@ -20,7 +20,7 @@ export const CONFIRMED_TEAMS: RosterTeam[] = [
   { no: 7, topic: '문화재 AI 해설 앱', members: ['박남영'] },
   { no: 8, topic: '나이대별 한국사 학습·시험 앱', members: ['이유민'] },
   { no: 9, topic: '자격증 취약점 분석 학습 앱', members: ['장호준'] },
-  { no: 10, topic: 'AI 자기소개서·면접 코치', members: ['김권우'] },
+  { no: 10, topic: 'AI 자기소개서·면접 코치', members: ['최재영', '김권우'] },
   { no: 11, topic: '밀려도 괜찮은, AI 생성 학습 플래너', members: ['임윤서'] },
   { no: 12, topic: '내 아이 근시 관리용 플랫폼', members: ['조하령'] },
   { no: 13, topic: 'JD 기반 채용 진단 서비스', members: ['정미경'] },
