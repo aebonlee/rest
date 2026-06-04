@@ -64,6 +64,17 @@ const AdminGrades = (): ReactElement => {
     return m;
   }, [grades, people]);
 
+  /**
+   * 고아 점수 — 평가기록은 있으나 표시된 수강생 목록에 매칭되는 계정이 없는 경우.
+   * (signup_domain 불일치·관리자필터·프로필 누락 등으로 student_id 가 안 잡힘 →
+   *  점수가 DB엔 있는데 표에서 조용히 사라지던 문제를 드러냄)
+   */
+  const orphanGrades = useMemo(() => {
+    const known = new Set<string>();
+    people.forEach((p) => p.ids.forEach((id) => known.add(id)));
+    return grades.filter((g) => !known.has(g.student_id));
+  }, [grades, people]);
+
   /** 평가별 통계 (응시 인원 / 합격 인원 / 평균) — 동일인 1명 기준 */
   const stats = useMemo(() => {
     return GRADED_TYPES.map((t) => {
@@ -152,6 +163,39 @@ const AdminGrades = (): ReactElement => {
               </div>
             ))}
           </div>
+
+          {/* 고아 점수 경고 — 기록은 있으나 수강생 목록에 매칭 안 된 평가 */}
+          {!loading && orphanGrades.length > 0 && (
+            <div style={{
+              marginBottom: '24px', padding: '14px 16px', borderRadius: '12px',
+              background: '#fff7ed', border: '1px solid #fdba74',
+            }}>
+              <strong style={{ fontSize: '14px', color: '#9a3412' }}>
+                ⚠ 매칭 안 된 평가기록 {orphanGrades.length}건
+              </strong>
+              <p style={{ margin: '4px 0 10px', fontSize: '12.5px', color: '#9a3412' }}>
+                점수는 저장돼 있으나 수강생 계정과 연결되지 않았습니다. 가입 도메인이 다르거나(다른 사이트로 가입),
+                프로필이 없는 계정으로 응시한 경우입니다. 아래 이메일로 가입 상태를 확인하세요.
+              </p>
+              <div className="admin-table-wrapper">
+                <table className="admin-table">
+                  <thead><tr><th>이름</th><th>이메일</th><th>평가</th><th>점수</th><th>응시일시</th><th>student_id</th></tr></thead>
+                  <tbody>
+                    {orphanGrades.map((g) => (
+                      <tr key={`${g.student_id}-${g.type}`}>
+                        <td>{g.student_name || '-'}</td>
+                        <td>{g.student_email || '-'}</td>
+                        <td>{TYPE_LABEL[g.type] || g.type}</td>
+                        <td>{scoreCell(g)}</td>
+                        <td>{g.submitted_at ? new Date(g.submitted_at).toLocaleString('ko-KR') : '-'}</td>
+                        <td style={{ fontSize: '11px', color: 'var(--text-secondary, #9ca3af)', fontFamily: 'monospace' }}>{g.student_id}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
 
           {/* 성적표 다운로드 */}
           <div style={{
