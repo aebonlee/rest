@@ -97,13 +97,14 @@ const AdminGrades = (): ReactElement => {
   }, [gradeMap]);
 
   // ── 성적표 다운로드 (선수평가 / 사후평가 × Excel / PDF) ──
-  const GRADE_COLUMNS = ['이름', '이메일', '점수', '합격여부', '정답수', '총문항', '응시일시'];
+  const GRADE_COLUMNS = ['No.', '이름', '이메일', '점수', '합격여부', '정답수', '총문항', '응시일시'];
   const PASS_SCORE: Record<string, number> = { prerequisite: 40, summative: 60 };
 
   const buildGradeRows = (type: typeof GRADED_TYPES[number]): Cell[][] =>
-    people.map((g) => {
+    people.map((g, idx) => {
       const rec = (gradeMap.get(g.key) || {})[type];
       return [
+        idx + 1,
         g.name,
         g.emails.join(' / '),
         rec ? rec.score : '',
