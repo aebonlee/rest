@@ -9,7 +9,17 @@ import type { Team, TeamMember } from '../types';
 
 export const TEAMS_TABLE = `${site.dbPrefix}teams`;
 export const TEAM_POSTS_TABLE = `${site.dbPrefix}team_posts`;
+export const TEAM_COMMENTS_TABLE = `${site.dbPrefix}team_comments`;
 export const MAX_TEAM_SIZE = 6;
+
+/** 글 카테고리 */
+export type PostCategory = 'note' | 'idea' | 'resource' | 'etc';
+export const POST_CATEGORIES: { key: PostCategory; label: string; emoji: string }[] = [
+  { key: 'note', label: '회의록', emoji: '📝' },
+  { key: 'idea', label: '아이디어', emoji: '💡' },
+  { key: 'resource', label: '자료', emoji: '📎' },
+  { key: 'etc', label: '기타', emoji: '🗨️' },
+];
 
 export interface TeamPost {
   id: string;
@@ -17,6 +27,18 @@ export interface TeamPost {
   author_id: string;
   author_name: string;
   title: string;
+  content: string;
+  category: PostCategory;
+  code: string;
+  created_at: string;
+}
+
+export interface TeamComment {
+  id: string;
+  post_id: string;
+  team_id: string;
+  author_id: string;
+  author_name: string;
   content: string;
   created_at: string;
 }
@@ -129,11 +151,11 @@ export async function listTeamPosts(teamId: string): Promise<TeamPost[]> {
   return (data ?? []) as TeamPost[];
 }
 
-export async function createTeamPost(teamId: string, authorId: string, authorName: string, title: string, content: string): Promise<{ ok: boolean; error?: string }> {
+export async function createTeamPost(teamId: string, authorId: string, authorName: string, title: string, content: string, category: PostCategory = 'note', code = ''): Promise<{ ok: boolean; error?: string }> {
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };
   const { error } = await client.from(TEAM_POSTS_TABLE).insert({
-    team_id: teamId, author_id: authorId, author_name: authorName, title, content,
+    team_id: teamId, author_id: authorId, author_name: authorName, title, content, category, code,
   });
   return error ? { ok: false, error: error.message } : { ok: true };
 }
@@ -142,5 +164,28 @@ export async function deleteTeamPost(postId: string): Promise<{ ok: boolean; err
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };
   const { error } = await client.from(TEAM_POSTS_TABLE).delete().eq('id', postId);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+// ── 댓글 ──
+export async function listTeamComments(teamId: string): Promise<TeamComment[]> {
+  const client = getSupabase();
+  if (!client) return [];
+  const { data, error } = await client.from(TEAM_COMMENTS_TABLE).select('*').eq('team_id', teamId).order('created_at');
+  if (error) { console.error('listTeamComments', error); return []; }
+  return (data ?? []) as TeamComment[];
+}
+
+export async function createTeamComment(postId: string, teamId: string, authorId: string, authorName: string, content: string): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const { error } = await client.from(TEAM_COMMENTS_TABLE).insert({ post_id: postId, team_id: teamId, author_id: authorId, author_name: authorName, content });
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+export async function deleteTeamComment(commentId: string): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const { error } = await client.from(TEAM_COMMENTS_TABLE).delete().eq('id', commentId);
   return error ? { ok: false, error: error.message } : { ok: true };
 }
