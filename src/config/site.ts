@@ -83,6 +83,7 @@ const site: SiteConfig = {
         { path: '/project-guide', labelKey: 'site.nav.projectIntro' },
         { path: '/project-vote', labelKey: 'site.nav.projectVote' },
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
+        { path: '/projects/apps', labelKey: 'site.nav.projectApps' },
       ]
     },
     { path: '/resources', labelKey: 'site.nav.resources' },
