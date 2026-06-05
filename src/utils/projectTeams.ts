@@ -30,6 +30,7 @@ export interface TeamPost {
   content: string;
   category: PostCategory;
   code: string;
+  link_url: string;
   created_at: string;
 }
 
@@ -40,6 +41,7 @@ export interface TeamComment {
   author_id: string;
   author_name: string;
   content: string;
+  is_staff: boolean;
   created_at: string;
 }
 
@@ -151,11 +153,11 @@ export async function listTeamPosts(teamId: string): Promise<TeamPost[]> {
   return (data ?? []) as TeamPost[];
 }
 
-export async function createTeamPost(teamId: string, authorId: string, authorName: string, title: string, content: string, category: PostCategory = 'note', code = ''): Promise<{ ok: boolean; error?: string }> {
+export async function createTeamPost(teamId: string, authorId: string, authorName: string, title: string, content: string, category: PostCategory = 'note', code = '', linkUrl = ''): Promise<{ ok: boolean; error?: string }> {
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };
   const { error } = await client.from(TEAM_POSTS_TABLE).insert({
-    team_id: teamId, author_id: authorId, author_name: authorName, title, content, category, code,
+    team_id: teamId, author_id: authorId, author_name: authorName, title, content, category, code, link_url: linkUrl,
   });
   return error ? { ok: false, error: error.message } : { ok: true };
 }
@@ -176,10 +178,10 @@ export async function listTeamComments(teamId: string): Promise<TeamComment[]> {
   return (data ?? []) as TeamComment[];
 }
 
-export async function createTeamComment(postId: string, teamId: string, authorId: string, authorName: string, content: string): Promise<{ ok: boolean; error?: string }> {
+export async function createTeamComment(postId: string, teamId: string, authorId: string, authorName: string, content: string, isStaff = false): Promise<{ ok: boolean; error?: string }> {
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };
-  const { error } = await client.from(TEAM_COMMENTS_TABLE).insert({ post_id: postId, team_id: teamId, author_id: authorId, author_name: authorName, content });
+  const { error } = await client.from(TEAM_COMMENTS_TABLE).insert({ post_id: postId, team_id: teamId, author_id: authorId, author_name: authorName, content, is_staff: isStaff });
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
