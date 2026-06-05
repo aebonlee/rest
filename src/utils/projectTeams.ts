@@ -162,6 +162,23 @@ export async function createTeamPost(teamId: string, authorId: string, authorNam
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+export interface TeamPostEdit {
+  title: string;
+  content: string;
+  category: PostCategory;
+  code: string;
+  link_url: string;
+}
+
+export async function updateTeamPost(postId: string, patch: TeamPostEdit): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const { error } = await client.from(TEAM_POSTS_TABLE).update({
+    title: patch.title, content: patch.content, category: patch.category, code: patch.code, link_url: patch.link_url,
+  }).eq('id', postId);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 export async function deleteTeamPost(postId: string): Promise<{ ok: boolean; error?: string }> {
   const client = getSupabase();
   if (!client) return { ok: false, error: 'no-client' };

@@ -4,9 +4,9 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import {
-  listTeams, findMyTeam, listTeamPosts, createTeamPost, deleteTeamPost,
+  listTeams, findMyTeam, listTeamPosts, createTeamPost, updateTeamPost, deleteTeamPost,
   listTeamComments, createTeamComment, deleteTeamComment,
-  POST_CATEGORIES, type TeamPost, type TeamComment, type PostCategory,
+  POST_CATEGORIES, type TeamPost, type TeamComment, type PostCategory, type TeamPostEdit,
 } from '../utils/projectTeams';
 import type { Team, TeamMember } from '../types';
 
@@ -32,6 +32,7 @@ const ProjectBoard = (): ReactElement => {
   const [commentText, setCommentText] = useState<Record<string, string>>({});
   const [showGuide, setShowGuide] = useState(false);
   const [showResources, setShowResources] = useState(false);
+  const [edit, setEdit] = useState<(TeamPostEdit & { id: string }) | null>(null);
 
   const authorName = profile?.name || profile?.display_name || user?.email || '수강생';
 
@@ -76,6 +77,22 @@ const ProjectBoard = (): ReactElement => {
     setBusy(false);
     if (res.ok) { setTitle(''); setContent(''); setCode(''); setShowCode(false); setLinkUrl(''); setCategory('note'); showToast('글이 등록되었습니다.', 'success'); refresh(); }
     else showToast('등록 실패: ' + (res.error || ''), 'error');
+  };
+
+  const startEdit = (p: TeamPost) => setEdit({
+    id: p.id, title: p.title, content: p.content || '',
+    category: (p.category || 'note') as PostCategory, code: p.code || '', link_url: p.link_url || '',
+  });
+
+  const handleUpdate = async () => {
+    if (!edit) return;
+    if (!edit.title.trim()) { showToast('제목을 입력하세요.', 'warning'); return; }
+    setBusy(true);
+    const { id, ...patch } = edit;
+    const res = await updateTeamPost(id, { ...patch, title: patch.title.trim(), content: patch.content.trim(), link_url: patch.link_url.trim() });
+    setBusy(false);
+    if (res.ok) { setEdit(null); showToast('수정되었습니다.', 'success'); refresh(); }
+    else showToast('수정 실패: ' + (res.error || ''), 'error');
   };
 
   const handleDelete = async (p: TeamPost) => {
@@ -192,9 +209,8 @@ const ProjectBoard = (): ReactElement => {
                 </div>
               )}
 
-              {!isAdmin && (
               <div style={card}>
-                <h4 style={{ margin: '0 0 10px', fontSize: '16px' }}>새 글 작성</h4>
+                <h4 style={{ margin: '0 0 10px', fontSize: '16px' }}>{isAdmin ? '새 글 작성 (관리자)' : '새 글 작성'}</h4>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                     {POST_CATEGORIES.map((c) => <button key={c.key} type="button" style={chip(category === c.key)} onClick={() => setCategory(c.key)}>{c.emoji} {c.label}</button>)}
@@ -210,7 +226,6 @@ const ProjectBoard = (): ReactElement => {
                   <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handlePost}>등록</button>
                 </div>
               </div>
-              )}
 
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                 <button type="button" style={chip(filter === 'all')} onClick={() => setFilter('all')}>전체 {posts.length}</button>
@@ -225,9 +240,30 @@ const ProjectBoard = (): ReactElement => {
                   const postComments = comments.filter((c) => c.post_id === p.id);
                   return (
                     <div key={p.id} style={card}>
+                      {edit?.id === p.id ? (
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                            {POST_CATEGORIES.map((c) => <button key={c.key} type="button" style={chip(edit.category === c.key)} onClick={() => setEdit((s) => s && { ...s, category: c.key })}>{c.emoji} {c.label}</button>)}
+                          </div>
+                          <input style={input} placeholder="제목" value={edit.title} onChange={(e) => setEdit((s) => s && { ...s, title: e.target.value })} />
+                          <textarea style={{ ...input, minHeight: '100px', resize: 'vertical', fontFamily: 'inherit', lineHeight: 1.6 }} placeholder="내용" value={edit.content} onChange={(e) => setEdit((s) => s && { ...s, content: e.target.value })} />
+                          <input style={{ ...input, fontSize: '14px' }} placeholder="🔗 자료 링크 (선택)" value={edit.link_url} onChange={(e) => setEdit((s) => s && { ...s, link_url: e.target.value })} />
+                          <textarea style={{ ...input, minHeight: '110px', resize: 'vertical', fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace', fontSize: '13px', lineHeight: 1.5, background: 'var(--bg-light-gray)' }} placeholder="소스코드 (선택)" value={edit.code} onChange={(e) => setEdit((s) => s && { ...s, code: e.target.value })} />
+                          <div style={{ display: 'flex', gap: '8px' }}>
+                            <button className="btn btn-primary" style={{ padding: '9px 20px' }} disabled={busy} onClick={handleUpdate}>저장</button>
+                            <button type="button" style={{ padding: '9px 20px', border: '1px solid var(--border-light)', borderRadius: '8px', background: 'var(--bg-white)', color: 'var(--text-secondary)', cursor: 'pointer', fontWeight: 600 }} onClick={() => setEdit(null)}>취소</button>
+                          </div>
+                        </div>
+                      ) : (
+                      <>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: '10px' }}>
                         <h4 style={{ margin: 0, fontSize: '17px' }}><span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 9px', borderRadius: '999px', background: 'var(--bg-light-gray)', color: 'var(--text-secondary)', marginRight: '8px' }}>{cm.emoji} {cm.label}</span>{p.title}</h4>
-                        {(p.author_id === user?.id || isAdmin) && <button onClick={() => handleDelete(p)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '13px', flexShrink: 0 }}>삭제</button>}
+                        {(p.author_id === user?.id || isAdmin) && (
+                          <div style={{ display: 'flex', gap: '10px', flexShrink: 0 }}>
+                            <button onClick={() => startEdit(p)} style={{ background: 'none', border: 'none', color: 'var(--primary-blue)', cursor: 'pointer', fontSize: '13px' }}>수정</button>
+                            <button onClick={() => handleDelete(p)} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '13px' }}>삭제</button>
+                          </div>
+                        )}
                       </div>
                       <div style={{ fontSize: '13px', color: 'var(--text-secondary)', margin: '4px 0 10px' }}>{p.author_name} · {new Date(p.created_at).toLocaleString('ko-KR')}</div>
                       {p.content && <p style={{ margin: '0 0 10px', whiteSpace: 'pre-wrap', lineHeight: 1.7 }}>{p.content}</p>}
@@ -238,6 +274,8 @@ const ProjectBoard = (): ReactElement => {
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.link_url}</span>
                           <span style={{ flexShrink: 0 }}>↗</span>
                         </a>
+                      )}
+                      </>
                       )}
 
                       <div style={{ borderTop: '1px solid var(--border-light)', marginTop: '6px', paddingTop: '10px' }}>
