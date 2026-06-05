@@ -9,7 +9,7 @@ import {
   type CustomTopic, type TopicVote,
 } from '../utils/projectVote';
 import {
-  listTeams, findMyTeam, createTeam, joinTeam, leaveTeam, MAX_TEAM_SIZE,
+  listTeams, createTeam, joinTeam, leaveTeam, MAX_TEAM_SIZE,
   claimLeader, resetLeaders,
 } from '../utils/projectTeams';
 import type { Team, TeamMember } from '../types';
@@ -48,7 +48,11 @@ const ProjectVote = (): ReactElement => {
   useEffect(() => { reload(); }, [reload]);
 
   const myVoteKey = useMemo(() => votes.find((v) => v.user_id === user?.id)?.topic_key, [votes, user]);
-  const myTeam = useMemo(() => (user ? findMyTeam(teams, user.id) : null), [teams, user]);
+  // 중복신청 허용: 내가 속한 팀이 여러 개일 수 있음
+  const myTeams = useMemo(
+    () => (user ? teams.filter((t) => (Array.isArray(t.members) ? t.members : []).some((m) => m.id === user.id)) : []),
+    [teams, user],
+  );
 
   const votersByKey = useMemo(() => {
     const m: Record<string, string[]> = {};
@@ -77,7 +81,7 @@ const ProjectVote = (): ReactElement => {
 
   const handleCreateTeam = async (title: string) => {
     if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
-    if (myTeam) { showToast('이미 다른 팀에 속해 있습니다.', 'warning'); return; }
+    // 중복신청 허용: 한 사람이 여러 주제에 팀을 만들거나 합류할 수 있습니다.
     setBusy(true);
     const res = await createTeam(title, title, me('팀장후보'));
     setBusy(false);
@@ -158,7 +162,7 @@ const ProjectVote = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>팀구성 · 주제 투표</h2>
-          <p>주제에 투표하면 관심 있는 사람이 모입니다. 바로 팀을 만들거나 합류해 보세요. (1인 1표)</p>
+          <p>주제에 투표하면 관심 있는 사람이 모입니다. 바로 팀을 만들거나 합류해 보세요. (투표는 1인 1표 · 팀 신청은 중복 허용 — 여러 주제에 참여할 수 있어요)</p>
         </div>
       </section>
 
@@ -170,7 +174,7 @@ const ProjectVote = (): ReactElement => {
             <>
               <div style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>
                 총 <strong style={{ color: 'var(--primary-blue)' }}>{votes.length}</strong>표 · 주제 {rows.length}개
-                {myTeam && <span> · 내 팀: <strong style={{ color: 'var(--primary-blue)' }}>{myTeam.name}</strong> <Link to="/project-board" style={{ color: 'var(--primary-blue)' }}>(게시판)</Link></span>}
+                {myTeams.length > 0 && <span> · 내 팀: <strong style={{ color: 'var(--primary-blue)' }}>{myTeams.map((t) => t.name).join(', ')}</strong> <Link to="/project-board" style={{ color: 'var(--primary-blue)' }}>(게시판)</Link></span>}
               </div>
               {isAdmin && (
                 <div style={{ fontSize: '14px', color: 'var(--text-secondary)', background: 'var(--bg-light-gray)', borderRadius: '8px', padding: '10px 14px' }}>
@@ -267,7 +271,7 @@ const ProjectVote = (): ReactElement => {
                         {mineVote ? '✓ 내 투표 (취소)' : '이 주제에 투표'}
                       </button>
 
-                      {!team && !myTeam && !isAdmin && (
+                      {!team && !isAdmin && (
                         <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleCreateTeam(r.title)}>
                           이 주제로 팀 만들기
                         </button>
@@ -278,7 +282,7 @@ const ProjectVote = (): ReactElement => {
                           <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleLeave(team)}>팀 나가기</button>
                         </>
                       )}
-                      {team && !inThisTeam && !myTeam && !isAdmin && (
+                      {team && !inThisTeam && !isAdmin && (
                         <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || full} onClick={() => handleJoin(team)}>
                           {full ? '정원 마감' : '이 팀에 합류'}
                         </button>

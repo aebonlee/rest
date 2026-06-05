@@ -84,6 +84,21 @@ export const TEAM_PROJECTS: TeamProject[] = [
     tagline: '관광객의 위치와 취향을 바탕으로 최적의 맛집 동선을 실시간 안내하는 앱',
     icon: '🍜', color: '#ef4444', members: ['하소희'],
   },
+  {
+    id: 15, slug: 'cat-life-diary', title: '육묘(猫)일기 — 고양이 생애주기 앱',
+    tagline: '병원 방문·모래 교체·예방접종 주기 알람과 체중·건강 수치(BUN·CREA 등) 기록을 한곳에서',
+    icon: '🐱', color: '#8B5CF6', members: ['이유민'], note: '학생 제안',
+  },
+  {
+    id: 16, slug: 'warm-words-chat', title: '마음 한 스푼 — 위로·격려 챗 앱',
+    tagline: '지친 마음에 따뜻한 말을 클릭 한 번으로 — 기분을 고르면 위로·격려를 건네는 챗 앱',
+    icon: '🫂', color: '#FB7185', members: ['이초월'], note: '학생 제안',
+  },
+  {
+    id: 17, slug: 'ai-literacy-gap', title: '청년 AI 리터러시 격차 진단·정책 수요 예측',
+    tagline: '자가진단으로 AI 리터러시 격차를 측정하고 집단별 정책·교육 수요를 예측하는 모델',
+    icon: '📊', color: '#2563EB', members: ['최윤경'], note: '학생 제안',
+  },
 ];
 
 export const getTeamProject = (id: number): TeamProject | undefined =>

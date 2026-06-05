@@ -12,7 +12,7 @@ const AppGallery = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>팀 프로젝트 앱</h2>
-          <p>AI 리부트 14개 팀이 정한 주제로 만든 실전 배포 앱입니다. 카드를 누르면 새 창에서 실행됩니다.</p>
+          <p>AI 리부트 팀이 정한 주제로 만든 실전 배포 앱입니다. 카드를 누르면 새 창에서 실행됩니다.</p>
         </div>
       </section>
 
@@ -54,7 +54,7 @@ const AppGallery = (): ReactElement => {
           </div>
 
           <p style={{ marginTop: '20px', fontSize: '12.5px', color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
-            각 앱은 팀별 GitHub 저장소(project01~14)에서 자동 배포됩니다.
+            각 앱은 팀별 GitHub 저장소(project01~17)에서 자동 배포됩니다.
           </p>
         </div>
       </section>
