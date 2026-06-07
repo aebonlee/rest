@@ -773,34 +773,13 @@ npm run deploy
     ],
   },
 
-  // ── 부록 박스(선수과정 5번째) · 파이썬 & 데모앱 ──
+  // ── 부록 박스 ① 파이썬 A to Z ──
   {
-    id: 'pre-5',
-    title: '🐍 파이썬 & 데모앱 (Gradio·Streamlit)',
+    id: 'pre-5-python',
+    title: '파이썬 A to Z',
     icon: '🐍',
-    description: '선수과정 보너스 모듈 — 파이썬 핵심 문법을 빠르게 훑고, Gradio·Streamlit으로 코드 몇 줄로 AI 데모 웹앱을 띄웁니다.',
+    description: '설치부터 변수·자료구조·함수·클래스·라이브러리까지 핵심만 한 페이지로.',
     content: [
-      { subtitle: '📦 이 부록에서 배우는 것' },
-      { text: '선수과정 Day 1~4를 마친 뒤, 코드로 직접 “움직이는 결과물”을 만들어 보는 보너스 모듈입니다. 파이썬 기초를 빠르게 정리하고, Gradio·Streamlit으로 AI 데모 웹앱을 코드 몇 줄로 만들어 공유까지 해봅니다.' },
-      { table: {
-        headers: ['페이지', '내용'],
-        rows: [
-          ['🐍 파이썬 A to Z', '변수·자료구조·함수·클래스 + AI/데이터 라이브러리'],
-          ['🎛️ 그라이디오 Tip!', '파이썬 함수를 즉시 웹 데모로 (AI 모델 시연용)'],
-          ['📊 스트림릿 Tip!', '파이썬 스크립트를 데이터 대시보드로'],
-        ],
-      } },
-      { callout: { type: 'tip', text: '왼쪽 메뉴에서 이 박스를 펼치면 세 페이지로 이동할 수 있습니다. 설치가 번거로우면 Google Colab(colab.research.google.com)에서 브라우저로 바로 실행해도 됩니다.' } },
-      { callout: { type: 'info', text: 'Gradio = 함수 단위 빠른 AI 데모, Streamlit = 스크립트 단위 데이터 대시보드. 목적에 맞게 골라 쓰면 됩니다.' } },
-    ],
-    subSections: [
-      // ── 페이지 1: 파이썬 A to Z ──
-      {
-        id: 'pre-5-python',
-        title: '파이썬 A to Z',
-        icon: '🐍',
-        summary: '설치부터 변수·자료구조·함수·클래스·라이브러리까지 핵심만 한 페이지로.',
-        content: [
           { subtitle: '파이썬을 배우는 이유' },
           { text: '파이썬은 문법이 영어 문장에 가깝고, AI·데이터·자동화 생태계가 가장 넓은 언어입니다. 코드를 처음 접해도 “읽고 고치는” 진입장벽이 낮아 바이브코딩과 특히 잘 맞습니다.' },
           { callout: { type: 'tip', text: '설치 없이 시작하려면 Google Colab에서 브라우저로 바로 실행할 수 있습니다. 로컬 설치는 python.org 또는 Anaconda를 권장합니다.' } },
@@ -894,17 +873,192 @@ print(d.bark())              # 바둑이: 멍멍` } },
               ['gradio / streamlit', '데모 웹앱 만들기'],
             ],
           } },
+          { subtitle: '━━ 심화 학습 (전문가가 짚어주는 파이썬) ━━' },
+
+          { subtitle: '8) 연산자 한눈에' },
+          { table: {
+            headers: ['분류', '연산자', '예'],
+            rows: [
+              ['산술', '+  -  *  /  //  %  **', '7 // 2 = 3,  7 % 2 = 1,  2 ** 3 = 8'],
+              ['비교', '==  !=  >  >=  <  <=', '3 == 3 → True'],
+              ['논리', 'and  or  not', 'x > 0 and x < 10'],
+              ['멤버십', 'in  /  not in', '"a" in "cat" → True'],
+              ['할당', '=  +=  -=  *=', 'n += 1  (n = n + 1과 같음)'],
+            ],
+          } },
+          { callout: { type: 'tip', text: '/ 는 항상 실수(3/2=1.5), // 는 몫(3//2=1), % 는 나머지입니다. 짝수 판별은 n % 2 == 0.' } },
+
+          { subtitle: '9) 문자열 깊게 다루기 (인덱싱·슬라이싱·메서드)' },
+          { code: { lang: 'python', content: `s = "Hello, Python"
+print(len(s))                 # 12 (길이)
+print(s.upper(), s.lower())   # HELLO, PYTHON / hello, python
+print(s.replace("Python", "World"))   # Hello, World
+print(s.split(", "))          # ['Hello', 'Python']
+print(s.strip())              # 양쪽 공백 제거
+print(s[0], s[-1])            # H n  (인덱싱: 0부터, 음수는 뒤에서)
+print(s[0:5])                 # Hello (슬라이싱 [시작:끝])
+print(s[7:])                  # Python
+print("3" + str(4))           # 34 (문자열 결합)
+print(int("3") + 4)           # 7  (형변환 후 계산)
+name, age = "길동", 25
+print(f"{name}은 {age}살")     # f-string 포매팅` } },
+
+          { subtitle: '10) 리스트·딕셔너리 컴프리헨션 (파이썬다운 표현)' },
+          { text: '반복문을 한 줄로 압축하는 표현입니다. 가독성이 좋아 실무에서 매우 자주 씁니다.' },
+          { code: { lang: 'python', content: `# 1~5의 제곱 리스트
+squares = [n * n for n in range(1, 6)]        # [1, 4, 9, 16, 25]
+
+# 짝수만 거르기(조건부)
+evens = [n for n in range(10) if n % 2 == 0]  # [0, 2, 4, 6, 8]
+
+# 딕셔너리 컴프리헨션
+price = {"사과": 1000, "배": 3000}
+sale = {k: v * 0.9 for k, v in price.items()} # 10% 할인
+
+# 자주 쓰는 내장 함수
+nums = [5, 2, 8, 1]
+print(sorted(nums))           # [1, 2, 5, 8]
+print(sum(nums), max(nums), min(nums))
+for i, v in enumerate(["a", "b"]):   # 인덱스+값 동시
+    print(i, v)
+for nm, sc in zip(["A", "B"], [90, 80]):  # 둘씩 묶기
+    print(nm, sc)` } },
+
+          { subtitle: '11) 반복 제어 — break · continue · while' },
+          { code: { lang: 'python', content: `for n in range(10):
+    if n == 5:
+        break          # 반복 즉시 종료
+    if n % 2 == 1:
+        continue       # 이번 회차 건너뛰고 다음으로
+    print(n)           # 0 2 4
+
+# while: 조건이 참인 동안 반복
+count = 3
+while count > 0:
+    print(count)
+    count -= 1         # 무한루프 방지 — 반드시 조건을 바꾼다` } },
+
+          { subtitle: '12) 함수 심화 — 가변 인자·람다' },
+          { code: { lang: 'python', content: `def total(*args):              # 여러 개를 튜플로 받음
+    return sum(args)
+print(total(1, 2, 3))         # 6
+
+def profile(**kwargs):         # 키워드들을 딕셔너리로
+    return kwargs
+print(profile(name="길동", age=25))
+
+double = lambda x: x * 2       # 람다: 이름 없는 한 줄 함수
+print(double(10))             # 20
+print(sorted(["bbb", "a", "cc"], key=lambda w: len(w)))  # 길이순` } },
+          { callout: { type: 'warn', text: '함정: 기본 인자에 리스트 같은 가변 객체를 쓰면(def f(x=[])) 호출 사이에 공유되어 버그가 납니다. def f(x=None): if x is None: x = [] 패턴을 쓰세요.' } },
+
+          { subtitle: '13) 표준 라이브러리 — 설치 없이 바로 쓰는 도구' },
+          { table: {
+            headers: ['모듈', '용도', '예'],
+            rows: [
+              ['math', '수학 함수', 'math.sqrt(9) → 3.0'],
+              ['random', '난수·무작위', 'random.randint(1, 6)'],
+              ['datetime', '날짜·시간', 'datetime.now()'],
+              ['json', 'JSON ↔ 딕셔너리', 'json.loads / json.dumps'],
+              ['os', '경로·환경변수', 'os.environ.get("KEY")'],
+            ],
+          } },
+          { code: { lang: 'python', content: `import random, json, os
+print(random.choice(["가위", "바위", "보"]))
+data = json.loads('{"name": "길동"}')      # 문자열 → 딕셔너리
+print(data["name"])                        # 길동
+api_key = os.environ.get("OPENAI_API_KEY") # 환경변수에서 키 읽기(안전)` } },
+
+          { subtitle: '14) 예외 처리 제대로 (try·except·else·finally)' },
+          { code: { lang: 'python', content: `def divide(a, b):
+    try:
+        result = a / b
+    except ZeroDivisionError:
+        print("0으로 나눌 수 없습니다")
+        return None
+    else:
+        return result          # 예외가 없을 때만 실행
+    finally:
+        print("항상 실행(정리 작업)")
+
+def set_age(age):
+    if age < 0:
+        raise ValueError("나이는 음수가 될 수 없습니다")   # 직접 에러 발생` } },
+
+          { subtitle: '15) 클래스 심화 — 상속과 특수 메서드' },
+          { code: { lang: 'python', content: `class Animal:
+    def __init__(self, name):
+        self.name = name
+    def speak(self):
+        return "..."
+    def __str__(self):                 # print() 할 때의 표현
+        return f"Animal({self.name})"
+
+class Cat(Animal):                     # 상속
+    def speak(self):                   # 메서드 재정의(오버라이드)
+        return "야옹"
+
+c = Cat("나비")
+print(c.name, c.speak())               # 나비 야옹
+print(c)                               # Animal(나비)` } },
+
+          { subtitle: '16) 가상환경 & 패키지 관리 (협업·배포의 기본)' },
+          { text: '프로젝트마다 라이브러리를 격리해 버전 충돌을 막습니다. 실무의 필수 습관입니다.' },
+          { code: { lang: 'bash', content: `python -m venv venv            # 가상환경 생성
+source venv/bin/activate       # 활성화 (mac/linux)
+# venv\\Scripts\\activate        # 윈도우
+
+pip install requests pandas    # 라이브러리 설치
+pip freeze > requirements.txt  # 설치 목록 기록
+pip install -r requirements.txt   # 다른 PC에서 동일하게 설치` } },
+
+          { subtitle: '17) 초보가 자주 하는 실수' },
+          { table: {
+            headers: ['실수', '올바른 방법'],
+            rows: [
+              ['들여쓰기 섞임(탭+공백)', '공백 4칸으로 통일'],
+              ['== 와 is 혼동', '값 비교는 ==, 동일 객체 확인은 is(주로 is None)'],
+              ['인덱스 범위 초과(IndexError)', 'len()으로 범위 확인, 음수 인덱스 활용'],
+              ['문자열+숫자 직접 결합', 'str()/int()로 형변환 후 결합'],
+              ['가변 기본 인자(x=[])', '기본값 None + 함수 안에서 생성'],
+            ],
+          } },
+
+          { subtitle: '18) 디버깅 & 타입 힌트' },
+          { code: { lang: 'python', content: `def add(a: int, b: int) -> int:   # 타입 힌트 — 가독성·도구 자동완성
+    return a + b
+
+x = [1, 2, 3]
+print(type(x), len(x))            # 무엇인지·몇 개인지 확인
+print(repr("a\\nb"))               # 보이지 않는 문자까지 표시
+# 막히면: 의심되는 값을 print로 찍어 흐름을 따라가는 것이 가장 빠른 디버깅` } },
+
+          { subtitle: '🎯 미니 실습 (직접 해보기)' },
+          { items: [
+            '1~100 중 3의 배수의 합을 구해 출력하기 (for + if + %)',
+            '이름 리스트를 입력받아 가나다순으로 정렬해 출력하기 (sorted)',
+            '딕셔너리로 간단한 영한사전을 만들고 단어 검색 기능 만들기',
+            '숫자 맞히기 게임: random으로 정답 생성 + while로 반복 입력받기',
+          ] },
+          { callout: { type: 'tip', text: '막히면 AI에게 “이 코드가 왜 이렇게 동작하는지 한 줄씩 설명해줘”라고 물어보세요. 정답 코드를 받는 것보다 “이해”가 목표입니다.' } },
+          { subtitle: '📚 더 배우기' },
+          { items: [
+            '점프 투 파이썬(wikidocs.net) — 무료 한글 입문서',
+            '파이썬 공식 튜토리얼(docs.python.org/ko)',
+            'Google Colab — 설치 없이 브라우저에서 바로 실습',
+          ] },
+
           { callout: { type: 'info', text: '다음 페이지에서 이 파이썬으로 Gradio·Streamlit을 써서 코드 몇 줄로 AI 데모 웹앱을 띄워봅니다.' } },
         ],
       },
 
-      // ── 페이지 2: 그라이디오 Tip! ──
-      {
-        id: 'pre-5-gradio',
-        title: '그라이디오 Tip!',
-        icon: '🎛️',
-        summary: '파이썬 함수를 그대로 웹 UI로 — 코드 몇 줄로 AI 데모를 띄우는 Gradio 핵심 팁.',
-        content: [
+  // ── 부록 박스 ② 그라이디오 Tip! ──
+  {
+    id: 'pre-5-gradio',
+    title: '그라이디오 Tip!',
+    icon: '🎛️',
+    description: '파이썬 함수를 그대로 웹 UI로 — 코드 몇 줄로 AI 데모를 띄우는 Gradio 핵심 팁.',
+    content: [
           { subtitle: 'Gradio란?' },
           { text: 'Gradio는 파이썬 함수에 입력창·출력창을 자동으로 붙여 “웹 데모”로 만들어 주는 라이브러리입니다. HTML/CSS를 몰라도 함수 하나면 공유 가능한 AI 데모가 완성됩니다. (Hugging Face Spaces 배포의 표준 도구)' },
           { code: { lang: 'bash', content: `pip install gradio` } },
@@ -955,16 +1109,121 @@ gr.ChatInterface(fn=chat).launch()` } },
             'API 키는 코드에 직접 쓰지 말고 os.environ으로 불러온다.',
           ] },
           { callout: { type: 'warn', text: 'share=True 링크는 누구나 접속할 수 있습니다. 민감한 데이터나 API 키가 노출되지 않도록 주의하세요.' } },
+
+          { subtitle: '━━ 심화 학습 (전문가가 짚어주는 Gradio) ━━' },
+
+          { subtitle: '실행 환경 3가지' },
+          { table: {
+            headers: ['환경', '특징'],
+            rows: [
+              ['로컬(PC)', 'pip install 후 python app.py — 가장 자유로움'],
+              ['Google Colab', '설치 불필요, launch(share=True)로 외부 접속'],
+              ['Hugging Face Spaces', 'app.py + requirements.txt 올리면 무료 영구 호스팅'],
+            ],
+          } },
+
+          { subtitle: 'Interface 깊이 — 여러 입력/출력 + 옵션' },
+          { code: { lang: 'python', content: `import gradio as gr
+
+def bmi(weight, height):
+    h = height / 100
+    score = weight / (h * h)
+    judge = "정상" if 18.5 <= score < 25 else "관리 필요"
+    return round(score, 1), judge
+
+demo = gr.Interface(
+    fn=bmi,
+    inputs=[gr.Number(label="몸무게(kg)"), gr.Slider(100, 220, label="키(cm)")],
+    outputs=[gr.Number(label="BMI"), gr.Textbox(label="판정")],
+    title="BMI 계산기",
+    description="몸무게와 키를 입력하세요",
+    examples=[[60, 170], [80, 175]],   # 예시 입력 버튼
+)
+demo.launch()` } },
+
+          { subtitle: 'Blocks 깊이 — 자유 레이아웃 + 이벤트' },
+          { text: 'Interface로 부족할 때 사용합니다. Row/Column으로 배치하고, 버튼 클릭(.click) 같은 이벤트를 직접 연결합니다.' },
+          { code: { lang: 'python', content: `import gradio as gr
+
+with gr.Blocks() as demo:
+    gr.Markdown("## 인사 앱")
+    with gr.Row():
+        name = gr.Textbox(label="이름")
+        out = gr.Textbox(label="결과")
+    btn = gr.Button("인사하기")
+    # 클릭 시 함수 실행: 입력 name → 출력 out
+    btn.click(fn=lambda n: f"안녕, {n}!", inputs=name, outputs=out)
+
+demo.launch()` } },
+
+          { subtitle: '컴포넌트 카탈로그(확장)' },
+          { table: {
+            headers: ['컴포넌트', '용도'],
+            rows: [
+              ['Textbox / Number', '텍스트·숫자'],
+              ['Slider / Dropdown / Radio', '선택형 입력'],
+              ['Checkbox / CheckboxGroup', '체크박스'],
+              ['Image / Audio / Video', '미디어 입출력'],
+              ['File / Dataframe', '파일·표'],
+              ['Chatbot / ChatInterface', '대화형 UI'],
+              ['Markdown / HTML', '서식 있는 텍스트'],
+            ],
+          } },
+
+          { subtitle: 'LLM 챗봇 — 시스템 프롬프트 + 키 보안' },
+          { code: { lang: 'python', content: `import gradio as gr, os
+# from openai import OpenAI            # 실제 사용 시
+# client = OpenAI(api_key=os.environ["OPENAI_API_KEY"])
+
+SYSTEM = "너는 친절한 건설기계 상담 도우미다."
+
+def chat(message, history):
+    # history: [[user, bot], ...] 형태로 자동 전달됨
+    # 실제로는 client.chat.completions.create(...)로 호출
+    return f"[데모] '{message}'에 대한 답변입니다."
+
+gr.ChatInterface(
+    fn=chat,
+    title="AI 상담봇",
+    description="무엇이든 물어보세요",
+).launch()` } },
+          { callout: { type: 'tip', text: 'API 키는 절대 코드에 직접 쓰지 말고 os.environ으로 읽으세요. Colab은 좌측 🔑(보안 비밀), HF Spaces는 Settings → Secrets에 저장합니다.' } },
+
+          { subtitle: 'Hugging Face Spaces 무료 배포' },
+          { items: [
+            'huggingface.co → New Space 생성, SDK는 Gradio 선택',
+            'app.py(코드) + requirements.txt(gradio 등) 업로드',
+            '필요한 키는 Settings → Repository secrets에 등록',
+            '자동 빌드 후 공개 URL 발급 — 누구나 접속 가능',
+          ] },
+
+          { subtitle: '자주 겪는 오류 & 해결' },
+          { table: {
+            headers: ['증상', '원인·해결'],
+            rows: [
+              ['포트 충돌(7860 사용 중)', 'launch(server_port=7861)로 변경'],
+              ['Colab에서 화면이 안 뜸', 'launch(share=True) 또는 출력 셀의 링크 클릭'],
+              ['입력/출력 개수 불일치', 'inputs/outputs 개수 = 함수의 인자/반환 개수'],
+              ['키 노출', '코드 하드코딩 금지 → os.environ / Secrets'],
+            ],
+          } },
+
+          { subtitle: '🎯 미니 실습' },
+          { items: [
+            '섭씨 ↔ 화씨 변환기 (Interface, Number 입력)',
+            '이미지를 흑백으로 바꾸는 데모 (Image 입출력, PIL 사용)',
+            'examples를 3개 넣은 나만의 계산기',
+          ] },
         ],
       },
 
-      // ── 페이지 3: 스트림릿 Tip! ──
-      {
-        id: 'pre-5-streamlit',
-        title: '스트림릿 Tip!',
-        icon: '📊',
-        summary: '파이썬 스크립트를 데이터 대시보드로 — 위젯·레이아웃·캐싱·배포까지 Streamlit 핵심 팁.',
-        content: [
+  // ── 부록 박스 ③ 스트림릿 Tip! ──
+  {
+    id: 'pre-5-streamlit',
+    title: '스트림릿 Tip!',
+    icon: '📊',
+    description: '파이썬 스크립트를 데이터 대시보드로 — 위젯·레이아웃·캐싱·배포까지 Streamlit 핵심 팁.',
+    content: [
           { subtitle: 'Streamlit이란?' },
           { text: 'Streamlit은 평범한 파이썬 스크립트를 위에서 아래로 실행하며 데이터 앱(대시보드)으로 만들어 주는 라이브러리입니다. 위젯을 건드리면 스크립트가 자동으로 다시 실행되어 화면이 갱신됩니다. 데이터 분석 결과·차트를 빠르게 공유할 때 최고입니다.' },
           { code: { lang: 'bash', content: `pip install streamlit` } },
@@ -1018,11 +1277,143 @@ if "count" not in st.session_state:  # 재실행돼도 값 유지
             'share.streamlit.io(Streamlit Community Cloud)에서 레포 연결',
             '몇 분 뒤 공개 URL 발급 — 코드 수정 push 시 자동 재배포',
           ] },
+          { subtitle: '━━ 심화 학습 (전문가가 짚어주는 Streamlit) ━━' },
+
+          { subtitle: '실행 모델 이해 (가장 중요)' },
+          { text: 'Streamlit은 위젯을 건드릴 때마다 스크립트를 처음부터 끝까지 다시 실행합니다. 즉 “위젯의 현재 값 = 변수”이고, 별도 콜백 없이도 최신 값으로 화면이 다시 그려집니다. 이 모델만 이해하면 80%는 끝납니다.' },
+          { callout: { type: 'tip', text: '느린 작업(파일 로딩·DB 조회·모델 로드)은 매 재실행마다 반복되므로 반드시 캐시(@st.cache_data)로 감싸야 합니다.' } },
+
+          { subtitle: '위젯 카탈로그(확장)' },
+          { table: {
+            headers: ['함수', '용도'],
+            rows: [
+              ['st.text_input / st.text_area', '한 줄·여러 줄 텍스트'],
+              ['st.number_input / st.slider', '숫자·범위'],
+              ['st.selectbox / st.multiselect', '드롭다운·다중선택'],
+              ['st.radio / st.checkbox / st.toggle', '단일선택·체크·토글'],
+              ['st.date_input / st.time_input', '날짜·시간'],
+              ['st.file_uploader', '파일 업로드'],
+              ['st.button / st.download_button', '실행·다운로드'],
+            ],
+          } },
+
+          { subtitle: '레이아웃 심화 — 탭·확장·컬럼' },
+          { code: { lang: 'python', content: `import streamlit as st
+
+tab1, tab2 = st.tabs(["요약", "상세"])
+with tab1:
+    st.write("요약 화면")
+with tab2:
+    st.write("상세 화면")
+
+with st.expander("자세히 보기"):     # 접이식 영역
+    st.write("숨겨진 내용")
+
+c1, c2, c3 = st.columns(3)           # 3단 분할
+c1.metric("매출", "1.2억", "+8%")
+c2.metric("주문", "340")
+c3.metric("재고", "57")` } },
+
+          { subtitle: '데이터 표시 & 차트' },
+          { code: { lang: 'python', content: `import streamlit as st, pandas as pd
+
+df = pd.DataFrame({"월": [1, 2, 3], "매출": [100, 150, 130]})
+st.dataframe(df)                 # 인터랙티브 표(정렬·검색)
+st.table(df)                     # 정적 표
+st.line_chart(df, x="월", y="매출")
+st.bar_chart(df, x="월", y="매출")` } },
+
+          { subtitle: '파일 업로드 → 분석 예시' },
+          { code: { lang: 'python', content: `import streamlit as st, pandas as pd
+
+file = st.file_uploader("CSV 업로드", type="csv")
+if file is not None:
+    df = pd.read_csv(file)
+    st.success(f"{len(df)}행을 읽었습니다")
+    st.dataframe(df.head())
+    st.line_chart(df.select_dtypes("number"))` } },
+
+          { subtitle: '캐싱 — data vs resource' },
+          { table: {
+            headers: ['데코레이터', '용도'],
+            rows: [
+              ['@st.cache_data', '데이터(표·계산 결과) 캐시 — 값을 복사해 반환'],
+              ['@st.cache_resource', '연결·모델(DB 커넥션, LLM 클라이언트) 캐시 — 공유'],
+            ],
+          } },
+          { code: { lang: 'python', content: `import streamlit as st, pandas as pd
+
+@st.cache_data
+def load_csv(path):
+    return pd.read_csv(path)      # 같은 path면 다시 읽지 않음
+
+@st.cache_resource
+def get_client():
+    return SomeAPIClient(key=st.secrets["API_KEY"])` } },
+
+          { subtitle: 'session_state — 값 유지 & 콜백' },
+          { code: { lang: 'python', content: `import streamlit as st
+
+if "count" not in st.session_state:
+    st.session_state.count = 0
+
+def increment():
+    st.session_state.count += 1
+
+st.button("증가", on_click=increment)   # 버튼 콜백
+st.write("현재:", st.session_state.count)` } },
+
+          { subtitle: '비밀키 관리 (secrets)' },
+          { code: { lang: 'toml', content: `# .streamlit/secrets.toml   (깃에 커밋 금지)
+API_KEY = "sk-..."
+
+[supabase]
+url = "https://..."
+key = "..."` } },
+          { code: { lang: 'python', content: `import streamlit as st
+key = st.secrets["API_KEY"]
+url = st.secrets["supabase"]["url"]` } },
+
+          { subtitle: '배포 — Streamlit Community Cloud (무료)' },
+          { items: [
+            'app.py + requirements.txt를 GitHub 레포에 push',
+            'share.streamlit.io 접속 → 레포·브랜치·app.py 지정',
+            '비밀키는 Advanced settings → Secrets에 붙여넣기',
+            '배포 후 코드 push마다 자동 재배포',
+          ] },
+
+          { subtitle: '자주 겪는 오류' },
+          { table: {
+            headers: ['증상', '원인·해결'],
+            rows: [
+              ['python app.py 했더니 화면이 안 뜸', 'streamlit run app.py로 실행해야 함'],
+              ['앱이 매번 느림', '느린 작업을 @st.cache_data로 감싸기'],
+              ['버튼 눌러도 값이 초기화됨', 'st.session_state로 상태 유지'],
+              ['배포 시 ModuleNotFound', 'requirements.txt에 라이브러리 명시'],
+            ],
+          } },
+
+          { subtitle: 'Gradio vs Streamlit — 무엇을 쓸까' },
+          { table: {
+            headers: ['상황', '추천'],
+            rows: [
+              ['AI 모델 입출력 데모를 빠르게', 'Gradio'],
+              ['데이터 분석·대시보드·여러 위젯', 'Streamlit'],
+              ['Hugging Face에 모델 올리기', 'Gradio(Spaces)'],
+              ['표·차트 중심 리포트 앱', 'Streamlit'],
+            ],
+          } },
+
+          { subtitle: '🎯 미니 실습' },
+          { items: [
+            '이름·나이 입력받아 인사 + 띠 계산해 보여주기',
+            'CSV 업로드 → 통계 요약(df.describe()) + 차트 표시',
+            'st.session_state로 “할 일 목록(추가/삭제)” 만들기',
+          ] },
+
           { callout: { type: 'info', text: '정리: 빠른 AI 모델 시연은 Gradio, 데이터 대시보드는 Streamlit. 둘 다 파이썬만으로 웹앱을 만들 수 있습니다.' } },
         ],
       },
-    ],
-  },
 ];
 
 /* ═════════════════════════════════════════════════════════
