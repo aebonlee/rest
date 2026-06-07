@@ -1,5 +1,9 @@
 {
-  // 이 프로젝트를 VS Code로 열면 주석을 녹색으로 표시합니다(테마 무관).
+  // ───────────────────────────────────────────────────────────
+  // 이 프로젝트를 VS Code로 열면 "모든 주석"을 녹색(#22c55e)으로 표시합니다.
+  // 테마(다크/라이트)와 무관하게 적용되도록 textMate + semantic 토큰 양쪽을 덮어씁니다.
+  // 변경 후 적용이 안 되면: 명령 팔레트 → "Developer: Reload Window" 한 번 실행하세요.
+  // ───────────────────────────────────────────────────────────
   "editor.tokenColorCustomizations": {
     "comments": "#22c55e",
     "textMateRules": [
@@ -8,9 +12,15 @@
           "comment",
           "comment.line",
           "comment.line.double-slash",
+          "comment.line.number-sign",
           "comment.block",
           "comment.block.documentation",
-          "punctuation.definition.comment"
+          "punctuation.definition.comment",
+          "punctuation.whitespace.comment",
+          "storage.type.class.jsdoc",
+          "entity.name.type.instance.jsdoc",
+          "variable.other.jsdoc",
+          "string.quoted.docstring"
         ],
         "settings": {
           "foreground": "#22c55e"
@@ -18,7 +28,9 @@
       }
     ]
   },
+  // 시맨틱 하이라이트가 textMate 색을 덮어쓰는 테마 대비 — enabled:true 필수.
   "editor.semanticTokenColorCustomizations": {
+    "enabled": true,
     "rules": {
       "comment": "#22c55e"
     }

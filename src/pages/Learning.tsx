@@ -413,7 +413,9 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
       <div className="content-table-wrap" style={{ overflowX: 'auto', margin: '8px 0 16px' }}>
         <table style={{
           width: '100%',
-          minWidth: 'max-content',
+          // minWidth:max-content를 빼서 표가 컨테이너 폭에 맞춰 줄어들고 셀이 줄바꿈되도록 함
+          // (이전엔 내용 너비만큼 강제로 늘어나 가로스크롤이 생겼음)
+          tableLayout: 'auto',
           borderCollapse: 'collapse',
           fontSize: '15.5px',
           border: '1px solid var(--border-color, #e5e7eb)',
@@ -441,6 +443,10 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
                     color: 'var(--text-primary, #1a1a1a)',
                     verticalAlign: 'top',
                     lineHeight: 1.6,
+                    // 긴 셀(예: 단계별 수행 지시)이 가로스크롤 대신 줄바꿈되도록.
+                    // keep-all: 한글 단어는 쪼개지 않고 공백/화살표(→) 위치에서만 줄바꿈.
+                    whiteSpace: 'normal',
+                    wordBreak: 'keep-all',
                   }}>{cell}</td>
                 ))}
               </tr>
