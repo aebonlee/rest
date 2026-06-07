@@ -19,6 +19,7 @@ export interface ContentSection {
   table?: { headers: string[]; rows: string[][] };
   callout?: { type: 'tip' | 'warn' | 'info'; text: string };
   svg?: string;   // 인라인 SVG 다이어그램 (정적 콘텐츠)
+  colorPalette?: boolean;   // 인터랙티브 색상 팔레트(색상환·톤·시멘틱·배색) — 칩 클릭 시 HEX 복사
 }
 
 export interface SubTopic {
@@ -5889,6 +5890,11 @@ function greet(user: User) {
 7. 담당자 검수 항목
    - 사실 / 기술 / 업무 기준 / 보안 / 책임 표현 검수를 포함한다.` } },
       { callout: { type: 'tip', text: '핵심 정리: AI 역할 = 관점, 업무 맥락 = 상황, 입력 자료 = 근거, 수행 지시 = 절차, 출력 형식 = 구조, 제약 조건 = 안전장치, 담당자 검수 = 최종 책임. 건설기계 업무에서 AI는 “최종 판단자”가 아니라 “업무 보조자”로 설정해야 합니다.' } },
+
+      // ── 🎨 색상환 · 컬러 팔레트 (인터랙티브: 칩 클릭 시 HEX 복사) ──
+      { subtitle: '🎨 색상환 · 컬러 팔레트' },
+      { text: '웹페이지에서 색을 고를 때 참고할 수 있는 표입니다. 아래 색상 칩을 클릭하면 HEX 코드가 클립보드에 복사됩니다.' },
+      { colorPalette: true },
     ],
   },
 
