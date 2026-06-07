@@ -6010,6 +6010,72 @@ function greet(user: User) {
         '리스트 렌더링·이벤트 처리·조건부 렌더링을 구현한다',
       ] },
 
+      // ── React 한눈에 이해하기 ──
+      { subtitle: '🧠 React를 한눈에 이해하기' },
+      { text: 'React의 핵심 멘탈 모델은 한 문장입니다 — “UI = f(state)”. 즉 화면은 상태(state)의 함수입니다. 우리는 “어떻게 DOM을 바꿀지(명령형)”가 아니라 “어떤 상태일 때 어떤 화면인지(선언형)”만 적고, 상태가 바뀌면 React가 화면을 알아서 다시 그립니다.' },
+      { callout: { type: 'tip', text: '한 줄 요약: “상태를 바꾸면 React가 화면을 맞춘다.” document.querySelector로 DOM을 직접 만지지 않는 것이 React식 사고의 출발점입니다.' } },
+      { table: {
+        headers: ['바닐라 JS (명령형)', 'React (선언형)'],
+        rows: [
+          ['DOM을 직접 찾아 바꾼다(querySelector)', '상태를 바꾸면 화면이 따라온다'],
+          ['“어떻게” 바꿀지 단계로 지시', '“무엇을” 보여줄지 선언'],
+          ['화면-데이터 동기화를 수동 관리', 'React가 자동 동기화(리렌더)'],
+          ['코드가 길어질수록 추적이 어렵다', '컴포넌트 단위로 분리·재사용'],
+        ],
+      } },
+      { items: [
+        '화면은 작은 부품(컴포넌트)들의 트리다.',
+        '부품은 props(외부 입력)와 state(내부 상태)로 화면을 그린다.',
+        'state가 바뀌면 그 부품만 다시 그려진다(리렌더).',
+      ] },
+
+      // ── 바이브코딩으로 셋업 ──
+      { subtitle: '🚀 바이브코딩으로 React 프로젝트 셋업하기' },
+      { text: '바이브코딩의 시작은 “AI에게 정확히 지시 → 생성 결과를 이해 → 실행·검증”입니다. 아래 순서로 첫 React+TypeScript 프로젝트를 띄워봅니다.' },
+      { code: { lang: 'bash', content: `# 1) Vite + React + TypeScript 프로젝트 생성
+npm create vite@latest my-app -- --template react-ts
+
+# 2) 의존성 설치 후 개발 서버 실행
+cd my-app
+npm install
+npm run dev        # 브라우저에서 http://localhost:5173 열기` } },
+      { text: '도구(Cursor·Claude Code 등)에 아래 프롬프트를 붙여넣어 “스스로 셋업”을 시작해 보세요. 핵심은 결과를 한 줄씩 이해하고 직접 검증하는 것입니다.' },
+      { code: { lang: 'text', content: `[바이브코딩 셋업 프롬프트 예시]
+
+너는 React + TypeScript 프로젝트 셋업을 돕는 페어 프로그래머다.
+방금 'npm create vite@latest -- --template react-ts'로 만든 빈 프로젝트가 있다.
+
+아래를 순서대로 해줘:
+1. src/ 폴더를 components/ pages/ hooks/ 로 정리하는 구조를 제안
+2. App.tsx에 간단한 Hello 컴포넌트를 렌더하는 예제 작성
+3. 각 단계가 왜 필요한지 한 줄씩 설명
+4. 내가 직접 확인할 검증 항목(터미널 명령 포함)을 마지막에 제시
+
+제약:
+- 내가 모르는 라이브러리는 추가하지 말 것
+- 표준 Vite 기본 구성만 사용할 것
+- 생성한 코드에는 핵심만 주석으로 표시할 것` } },
+      { callout: { type: 'warn', text: '주의: 생성된 코드를 그대로 믿지 말고 npm run dev로 실제 화면이 뜨는지, 콘솔에 빨간 에러가 없는지 직접 확인하세요. “동작 확인 전까지는 미완성”입니다.' } },
+      { subtitle: '프로젝트 폴더 구조 한눈에' },
+      { table: {
+        headers: ['경로', '역할'],
+        rows: [
+          ['src/main.tsx', '앱 진입점 — React를 #root에 마운트'],
+          ['src/App.tsx', '최상위 컴포넌트 — 라우트·레이아웃의 뿌리'],
+          ['src/components/', '재사용 UI 부품(Button, Card 등)'],
+          ['src/pages/', '라우트 단위 화면(Home, About 등)'],
+          ['src/hooks/', '커스텀 훅(useXxx) — 로직 재사용'],
+          ['vite.config.ts', '빌드·플러그인·base 경로 설정'],
+        ],
+      } },
+      { subtitle: '셋업 검증 체크리스트' },
+      { items: [
+        'npm run dev로 localhost:5173에 화면이 뜬다.',
+        '브라우저 콘솔에 빨간 에러가 없다.',
+        'App.tsx의 텍스트를 바꾸면 저장 즉시 화면에 반영된다(HMR).',
+        'npm run build가 오류 없이 통과한다.',
+      ] },
+
       { subtitle: 'React의 3대 개념' },
       { table: {
         headers: ['개념', '비유', '특성'],
@@ -8057,6 +8123,96 @@ export default function App() {
         '모든 페이지를 React.lazy로 코드 스플리팅 적용 + Network 탭에서 청크 확인',
         '로그인 후 원래 가려던 페이지로 되돌아가는 로직 구현 (state.from)',
       ] },
+
+      // ── 실무에서 바로 쓰는 React 패턴 ──
+      { subtitle: '🏢 실무에서 바로 쓰는 React 패턴' },
+      { text: '강의 예제를 넘어, 실제 서비스에서 반복적으로 등장하는 패턴들입니다. 이 학습 사이트(rest)도 아래와 동일한 구조로 만들어졌습니다.' },
+
+      { subtitle: '실무 예시 ① 데이터 패칭 커스텀 훅 (로딩·에러·데이터)' },
+      { text: '컴포넌트마다 fetch를 반복하지 말고, 상태 3종(loading·data·error)을 한 훅으로 묶어 어디서나 재사용합니다.' },
+      { code: { lang: 'tsx', content: `// src/hooks/useFetch.ts
+import { useState, useEffect } from 'react';
+
+type State<T> = { loading: boolean; data: T | null; error: string | null };
+
+export function useFetch<T>(url: string): State<T> {
+  const [state, setState] = useState<State<T>>({ loading: true, data: null, error: null });
+
+  useEffect(() => {
+    let alive = true;                                    // 언마운트 후 setState 방지
+    setState({ loading: true, data: null, error: null });
+    fetch(url)
+      .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+      .then(d => { if (alive) setState({ loading: false, data: d, error: null }); })
+      .catch(e => { if (alive) setState({ loading: false, data: null, error: e.message }); });
+    return () => { alive = false; };                     // cleanup
+  }, [url]);
+
+  return state;
+}
+
+// 사용
+const { loading, data, error } = useFetch<User[]>('/api/users');` } },
+
+      { subtitle: '실무 예시 ② 4가지 상태 UI 렌더 패턴' },
+      { code: { lang: 'tsx', content: `function UserList() {
+  const { loading, data, error } = useFetch<User[]>('/api/users');
+
+  if (loading) return <Spinner />;                              // ① 로딩
+  if (error)   return <ErrorBox msg={error} onRetry={reload} />;// ② 에러
+  if (!data || data.length === 0) return <EmptyState />;        // ③ 빈 결과
+  return (                                                      // ④ 정상
+    <ul>{data.map(u => <li key={u.id}>{u.name}</li>)}</ul>
+  );
+}` } },
+      { callout: { type: 'tip', text: '실무 완성도의 80%는 ③ 빈 상태와 ② 에러 화면에서 갈립니다. 정상 화면만 만들면 데모에서 빈 화면·무한 로딩으로 무너집니다.' } },
+
+      { subtitle: '실무 예시 ③ 중첩 라우트 + 공통 레이아웃 (Outlet)' },
+      { text: '헤더·사이드바를 한 번만 만들고, 자식 페이지를 <Outlet/> 자리에 끼워 넣습니다. 레이아웃 중복을 없애는 표준 패턴입니다.' },
+      { code: { lang: 'tsx', content: `import { Outlet, NavLink } from 'react-router-dom';
+
+function DashboardLayout() {
+  return (
+    <div className="layout">
+      <aside>
+        <NavLink to="overview">개요</NavLink>
+        <NavLink to="settings">설정</NavLink>
+      </aside>
+      <main><Outlet /></main>           {/* 자식 라우트가 여기 렌더됨 */}
+    </div>
+  );
+}
+
+// App.tsx — 중첩 라우트
+<Route path="/dashboard" element={<DashboardLayout />}>
+  <Route index           element={<Overview />} />   {/* /dashboard */}
+  <Route path="settings" element={<Settings />} />    {/* /dashboard/settings */}
+</Route>` } },
+
+      { subtitle: '실무 예시 ④ 역할 기반 접근 제어 (RoleGuard)' },
+      { text: '로그인 여부뿐 아니라 권한(admin)까지 확인하는 보호 래퍼. 이 사이트의 /admin 영역도 이렇게 보호됩니다.' },
+      { code: { lang: 'tsx', content: `import { Navigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
+
+function RoleGuard({ role, children }: { role: 'admin' | 'user'; children: React.ReactNode }) {
+  const { user } = useAuth();
+  if (!user)              return <Navigate to="/login" replace />;  // 미로그인
+  if (user.role !== role) return <Navigate to="/403" replace />;   // 권한 부족
+  return <>{children}</>;
+}
+
+// 사용
+<Route path="/admin" element={<RoleGuard role="admin"><Admin /></RoleGuard>} />` } },
+
+      { subtitle: '실무 예시 ⑤ 환경변수로 안전하게 키 다루기' },
+      { code: { lang: 'tsx', content: `// .env (깃에 커밋 금지) — Vite는 VITE_ 접두사만 클라이언트에 노출
+// VITE_SUPABASE_URL=...
+// VITE_SUPABASE_ANON_KEY=...
+
+const url = import.meta.env.VITE_SUPABASE_URL;
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+if (!url || !key) throw new Error('환경변수가 주입되지 않았습니다(.env 확인)');` } },
+      { callout: { type: 'warn', text: '주의: VITE_ 접두사 변수는 빌드 결과에 그대로 박혀 브라우저에 노출됩니다. 진짜 비밀키(service_role 등)는 절대 프론트에 넣지 말고 서버/Edge Function에서만 사용하세요.' } },
 
       { subtitle: '💼 현장 노트 — 실무 팁·흔한 실수·평가 포인트' },
       { callout: { type: 'tip', text: '실무 팁: 라우트는 기능 단위로 lazy import해 초기 번들을 줄이고, 전역 상태는 “정말 여러 페이지가 공유하는 값”만 Context로 올리세요. 로그인 보호는 페이지마다 if문을 쓰지 말고 AuthGuard(보호 래퍼) 한 곳에서 처리합니다.' } },
