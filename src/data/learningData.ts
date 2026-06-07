@@ -6359,6 +6359,17 @@ function greet(user: User) {
     icon: '📝',
     description: 'HTML·CSS·JavaScript 학습 내용을 점검하고, 프로젝트 1차 팀별 회의를 진행하는 날입니다.',
     content: [
+      { subtitle: '📋 1차 기초점검일 개요' },
+      { text: 'HTML·CSS·JavaScript 학습 내용을 점검하고 1차 팀별 회의를 진행하는 날입니다. 왼쪽 하위 메뉴에서 ① 기초 점검 체크리스트 → ② 자가진단·복습·퀴즈 → ③ 1차 팀별 회의 → ④ 참고자료(업무형 프롬프트 7요소) → ⑤ 색상환·컬러 팔레트 순으로 확인하세요.' },
+      { callout: { type: 'tip', text: '점검은 평가가 아니라 복습입니다. 막히는 항목을 표시해 두고 팀 회의에서 함께 해결하세요.' } },
+    ],
+    subSections: [
+      {
+        id: 'reg-check-1-checklist',
+        title: '기초 점검 체크리스트',
+        icon: '🔍',
+        summary: 'HTML·CSS·JavaScript 핵심 항목을 스스로 점검합니다.',
+        content: [
       { subtitle: '🔍 HTML 점검', items: [
         '시맨틱 태그(header·nav·main·section·article·footer)를 적절히 사용했는가',
         '폼 요소와 입력 검증(label·input·required·type)',
@@ -6377,16 +6388,14 @@ function greet(user: User) {
         '비동기(fetch, async/await) 기초',
       ] },
       { callout: { type: 'tip', text: '점검은 평가가 아니라 복습입니다. 막히는 부분은 표시해 두고 팀 회의에서 함께 해결하세요.' } },
-      { subtitle: '👥 프로젝트 1차 팀별 회의', items: [
-        '팀 구성·역할 분담 확정(기획·프론트엔드·백엔드·발표)',
-        '프로젝트 주제 후보 도출 및 1차 선정',
-        '핵심 기능(MVP) 범위 정의',
-        '개발 일정·마일스톤 수립',
-        '협업 도구(GitHub·팀 게시판) 셋업 확인',
-      ] },
-      { callout: { type: 'info', text: '회의 결과(주제·역할·일정)는 팀 게시판에 기록해 주세요. 다음 점검일에 진행 상황을 함께 확인합니다.' } },
-
-      // ── 자가진단표 ──
+        ],
+      },
+      {
+        id: 'reg-check-1-selfcheck',
+        title: '자가진단 · 복습 · 퀴즈',
+        icon: '✅',
+        summary: '스스로 점수를 매기고 핵심 개념을 빠르게 복습합니다.',
+        content: [
       { subtitle: '✅ 자가진단표 (스스로 점수 매기기)' },
       { text: '아래 항목을 0(모름)·1(들어봤다)·2(혼자 만든다)·3(남에게 설명한다)로 평가해 보세요. 1 이하 항목은 오늘 팀 회의나 복습에서 우선 보강합니다.' },
       { table: {
@@ -6402,8 +6411,6 @@ function greet(user: User) {
           ['JS', 'map/filter/reduce·async/await를 쓴다', '2'],
         ],
       } },
-
-      // ── 핵심 개념 빠른 복습 ──
       { subtitle: '⚡ 핵심 개념 30초 복습' },
       { callout: { type: 'tip', text: 'HTML = 구조(뼈대), CSS = 표현(스타일), JS = 동작(상호작용). 이 셋의 역할 분리를 기억하면 “어디를 고쳐야 하는지”가 보입니다.' } },
       { items: [
@@ -6412,8 +6419,6 @@ function greet(user: User) {
         'JS: const 기본 + ===(엄격 비교) + 불변 업데이트(map/filter/spread).',
         '비동기: Promise → async/await로 동기처럼 읽고, 실패는 try/catch.',
       ] },
-
-      // ── 미니 퀴즈 ──
       { subtitle: '📝 미니 퀴즈 (정답은 접고 풀어보기)' },
       { items: [
         'Q1. block과 inline 요소의 차이는? / Q2. flex와 grid를 각각 언제 쓰나?',
@@ -6422,10 +6427,30 @@ function greet(user: User) {
       ] },
       { callout: { type: 'info', text: '정답 요약 — A1: block은 줄 전체·width 지정 가능, inline은 콘텐츠 폭. A2: 2차원 레이아웃=grid, 1차원 정렬=flex. A3: ===는 형변환 없이 타입까지 비교. A4: var는 함수 스코프, let/const는 블록 스코프. A5: map은 새 배열 반환, forEach는 반환 없음. A6: 항상 Promise.' } },
       { callout: { type: 'tip', text: '점검은 평가가 아니라 복습입니다. 1점 이하 항목을 팀원과 짝지어 서로 설명해 보면 가장 빠르게 채워집니다.' } },
-
-      // ──────────────────────────────────────────────────────────────
-      // 📚 참고자료 (halla) · 업무형 프롬프트 7요소 — 수행 지시 → 출력 형식 → 제약 조건 → 검수
-      // ──────────────────────────────────────────────────────────────
+        ],
+      },
+      {
+        id: 'reg-check-1-meeting',
+        title: '1차 팀별 회의',
+        icon: '👥',
+        summary: '팀 구성·주제·MVP 범위·일정을 확정합니다.',
+        content: [
+      { subtitle: '👥 프로젝트 1차 팀별 회의', items: [
+        '팀 구성·역할 분담 확정(기획·프론트엔드·백엔드·발표)',
+        '프로젝트 주제 후보 도출 및 1차 선정',
+        '핵심 기능(MVP) 범위 정의',
+        '개발 일정·마일스톤 수립',
+        '협업 도구(GitHub·팀 게시판) 셋업 확인',
+      ] },
+      { callout: { type: 'info', text: '회의 결과(주제·역할·일정)는 팀 게시판에 기록해 주세요. 다음 점검일에 진행 상황을 함께 확인합니다.' } },
+        ],
+      },
+      {
+        id: 'reg-check-1-prompt',
+        title: '참고자료 · 업무형 프롬프트 7요소',
+        icon: '📚',
+        summary: '수행 지시·출력 형식·제약 조건·검수 등 업무형 프롬프트 7요소 정리',
+        content: [
       { subtitle: '📚 참고자료 · 업무형 프롬프트 7요소' },
       { callout: { type: 'info', text: '업무형 프롬프트는 단순 질문이 아니라 “업무 지시서”입니다. ① AI 역할 ② 업무 맥락 ③ 입력 자료 ④ 수행 지시 ⑤ 출력 형식 ⑥ 제약 조건 ⑦ 담당자 검수 항목 — 이 7요소를 갖춰야 결과물이 체계적이고 안전하게 나옵니다. 아래는 그중 ④~⑦을 정리한 참고 노트입니다.' } },
 
@@ -6622,11 +6647,20 @@ function greet(user: User) {
 7. 담당자 검수 항목
    - 사실 / 기술 / 업무 기준 / 보안 / 책임 표현 검수를 포함한다.` } },
       { callout: { type: 'tip', text: '핵심 정리: AI 역할 = 관점, 업무 맥락 = 상황, 입력 자료 = 근거, 수행 지시 = 절차, 출력 형식 = 구조, 제약 조건 = 안전장치, 담당자 검수 = 최종 책임. 건설기계 업무에서 AI는 “최종 판단자”가 아니라 “업무 보조자”로 설정해야 합니다.' } },
-
+        ],
+      },
+      {
+        id: 'reg-check-1-color',
+        title: '색상환 · 컬러 팔레트',
+        icon: '🎨',
+        summary: '웹 색상 고르기 참고 — 색상 칩 클릭 시 HEX 복사',
+        content: [
       // ── 🎨 색상환 · 컬러 팔레트 (인터랙티브: 칩 클릭 시 HEX 복사) ──
       { subtitle: '🎨 색상환 · 컬러 팔레트' },
       { text: '웹페이지에서 색을 고를 때 참고할 수 있는 표입니다. 아래 색상 칩을 클릭하면 HEX 코드가 클립보드에 복사됩니다.' },
       { colorPalette: true },
+        ],
+      },
     ],
   },
 
@@ -13030,6 +13064,17 @@ Should 합:  16pt
     icon: '🔎',
     description: 'React·Supabase·AI·LLM API 연동 학습 내용을 점검하고, 프로젝트 2차 팀별 회의를 진행하는 날입니다.',
     content: [
+      { subtitle: '📋 2차 학습점검일 개요' },
+      { text: 'React·Supabase·AI·LLM API 연동 학습 내용을 점검하고 2차 팀별 회의를 진행하는 날입니다. 왼쪽 하위 메뉴에서 ① 학습 점검 체크리스트 → ② 자가진단·복습·퀴즈 → ③ 2차 팀별 회의 → ④ 본개발 준비 체크리스트 순으로 확인하세요.' },
+      { callout: { type: 'tip', text: '연동이 막히는 지점(인증·CORS·키 관리)을 미리 점검해 두면 본개발에서 시간을 크게 아낄 수 있습니다.' } },
+    ],
+    subSections: [
+      {
+        id: 'reg-check-2-checklist',
+        title: '학습 점검 체크리스트',
+        icon: '🔎',
+        summary: 'React·Supabase·AI/LLM 연동 핵심 항목을 점검합니다.',
+        content: [
       { subtitle: '⚛️ React 점검', items: [
         '컴포넌트·Props·State·JSX 이해',
         '핵심 Hook(useState·useEffect)과 의존성 배열',
@@ -13049,7 +13094,14 @@ Should 합:  16pt
         '응답 처리·에러 핸들링·스트리밍 기초',
       ] },
       { callout: { type: 'tip', text: '연동이 막히는 지점(인증·CORS·키 관리)을 미리 점검해 두면 실전 프로젝트에서 시간을 크게 아낄 수 있습니다.' } },
-
+        ],
+      },
+      {
+        id: 'reg-check-2-selfcheck',
+        title: '자가진단 · 복습 · 퀴즈',
+        icon: '✅',
+        summary: '스스로 점수를 매기고, 자주 막히는 연동 지점까지 점검합니다.',
+        content: [
       // ── 자가진단표 ──
       { subtitle: '✅ 자가진단표 (스스로 점수 매기기)' },
       { text: '0(모름)·1(들어봤다)·2(혼자 만든다)·3(설명할 수 있다)로 평가하세요. 1 이하 항목은 본개발 전에 반드시 보강합니다.' },
@@ -13098,7 +13150,14 @@ Should 합:  16pt
         'Q4. RLS 정책이 자기 테이블을 참조하면 생기는 문제는?',
       ] },
       { callout: { type: 'info', text: '정답 요약 — A1: 최초 마운트 시 1회. A2: RLS 정책으로 행 단위 접근 제어. A3: 로딩·성공·빈결과·에러. A4: 무한 재귀(policy recursion) 에러.' } },
-
+        ],
+      },
+      {
+        id: 'reg-check-2-meeting',
+        title: '2차 팀별 회의',
+        icon: '👥',
+        summary: '진행 상황·이슈·일정·발표 시나리오를 점검합니다.',
+        content: [
       { subtitle: '👥 프로젝트 2차 팀별 회의', items: [
         '1차 회의 이후 진행 상황 공유',
         '핵심 기능 구현 현황 점검 및 일정 조정',
@@ -13106,7 +13165,14 @@ Should 합:  16pt
         '발표 시나리오·데모 범위 초안 논의',
       ] },
       { callout: { type: 'info', text: '2차 회의 결과와 남은 마일스톤을 팀 게시판에 업데이트하세요.' } },
-
+        ],
+      },
+      {
+        id: 'reg-check-2-prep',
+        title: '본개발 준비 체크리스트',
+        icon: '🚀',
+        summary: 'Day 10 본개발 전에 갖춰야 할 항목을 최종 점검합니다.',
+        content: [
       // ── 본개발 준비 체크리스트 ──
       { subtitle: '🚀 프로젝트 본개발 준비 체크리스트' },
       { text: 'Day 10부터는 실제 팀 프로젝트 본개발입니다. 아래가 모두 ✅면 막힘 없이 출발할 수 있습니다.' },
@@ -13119,6 +13185,8 @@ Should 합:  16pt
         'LLM API 키 발급 + 1회 호출 성공(샘플 프롬프트)',
       ] },
       { callout: { type: 'tip', text: '“동작하는 빈 껍데기”를 먼저 배포해 두세요(로그인만 되는 빈 앱). 배포 파이프라인을 초반에 뚫어두면 마지막에 배포로 고생하지 않습니다.' } },
+        ],
+      },
     ],
   },
 
