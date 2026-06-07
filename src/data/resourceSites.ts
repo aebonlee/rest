@@ -1,23 +1,47 @@
 /* =============================================================================
  * resourceSites.ts — 학습자료 페이지에서 사용하는 "사이트 링크" 정적 데이터 모듈
  *
- * [역할]
- *   - LMS 학습자료(Resources) 화면에 노출할 외부/자체 학습 사이트 목록을
- *     분야별 그룹으로 묶어 제공하는 순수 데이터 파일이다.
- *   - 런타임 로직이나 부수효과(네트워크, 상태 등) 없이 상수 데이터만 export 한다.
+ * [이 파일을 한 줄로 말하면]
+ *   학습자료 화면에 보여줄 "사이트 링크 목록"을 미리 적어둔 데이터 파일이다.
+ *   화면을 그리는 코드(컴포넌트)는 이 파일에서 데이터를 "가져다 쓰기"만 한다.
+ *
+ * [초보자를 위한 배경 설명]
+ *   - 이 파일에는 버튼을 누르면 무언가 실행되는 "로직(동작)"이 전혀 없다.
+ *     오직 "데이터(값)"만 들어 있다. 그래서 '정적(static) 데이터'라고 부른다.
+ *   - '.ts'는 TypeScript 파일이다. TypeScript는 JavaScript에 "타입(type, 자료의
+ *     형태)"을 더한 언어다. 예를 들어 "name은 반드시 문자열이어야 한다"처럼
+ *     값의 모양을 미리 약속해 두면, 실수로 잘못된 값을 넣었을 때 코드를 실행하기
+ *     전에(=편집기에서) 미리 빨간 줄로 알려준다.
+ *   - 'export'는 "이 파일 밖(다른 파일)에서도 가져다 쓸 수 있게 공개한다"는 뜻이다.
+ *     export가 없으면 이 파일 안에서만 쓰는 비공개 값이 된다.
  *
  * [핵심 책임]
- *   - 각 사이트 링크의 메타데이터(이름, 설명, URL, 강조 여부 등) 타입 정의.
+ *   - 각 사이트 링크의 메타데이터(이름, 설명, URL, 강조 여부 등)의 "형태(타입)" 정의.
  *   - DreamIT 자체 제작 사이트(owner: 'mine')와 외부 사이트(owner: 'external')를
  *     하나의 그룹 배열(SITE_GROUPS)로 통합 관리.
  *
- * [주요 export]
- *   - interface SiteLink  : 개별 사이트 링크 1건의 형태.
- *   - interface SiteGroup : 분야별 사이트 묶음(그룹)의 형태.
- *   - const SITE_GROUPS   : 화면에 렌더링할 전체 그룹 데이터(단일 진실 공급원).
+ * [이 파일이 공개(export)하는 것 3가지]
+ *   - interface SiteLink  : 개별 사이트 링크 1건의 "형태(설계도)".
+ *   - interface SiteGroup : 분야별 사이트 묶음(그룹)의 "형태(설계도)".
+ *   - const SITE_GROUPS   : 화면에 실제로 렌더링할 전체 그룹 데이터.
+ *                           (이 데이터가 '단일 진실 공급원' — 즉 목록을 고치려면
+ *                            여기 한 곳만 고치면 모든 화면에 반영된다는 뜻)
  * ========================================================================== */
 
 /** 학습자료 페이지 데이터 — DreamIT 사에서 만든 사이트(분야별) + 외부 사이트 */
+
+// ─────────────────────────────────────────────────────────────────────────
+// interface(인터페이스)란?
+//   - "이 데이터는 이런 속성들을 가져야 한다"고 미리 정해두는 TypeScript의 설계도다.
+//   - 객체(중괄호 {}로 묶인 값)의 모양을 약속하는 용도로 가장 많이 쓴다.
+//   - 실제 값이 아니라 "형태"만 정의하므로, 빌드 후 실행 코드에는 남지 않는다.
+//
+// 속성 이름 뒤의 물음표(?)는 "선택(optional) 속성"이라는 뜻이다.
+//   - 물음표가 없으면(name, desc, url) → 반드시 있어야 하는 '필수' 값.
+//   - 물음표가 있으면(featured?, accent?, badge?) → 없어도 되는 '선택' 값.
+//   - 주의: 선택 속성을 코드에서 꺼내 쓸 때는 값이 없을(undefined) 수도 있음을
+//           늘 염두에 둬야 한다. (예: site.badge가 비어 있을 수 있음)
+// ─────────────────────────────────────────────────────────────────────────
 // SiteLink: 화면에 표시되는 개별 링크 카드 1건의 데이터 형태.
 //   - name     : 사이트 표시 이름
 //   - desc     : 사이트 설명(카드 본문)
@@ -27,18 +51,34 @@
 //   - badge?   : (선택) 카드에 붙일 배지 텍스트(예: '학습추천')
 export interface SiteLink { name: string; desc: string; url: string; featured?: boolean; accent?: string; badge?: string; }
 // SiteGroup: 동일 분야의 SiteLink들을 묶는 그룹 단위.
-//   - id    : 그룹 고유 식별자(렌더링 시 key 등으로 사용)
+//   - id    : 그룹 고유 식별자(렌더링 시 React의 key 등으로 사용 — 항목을 구별하는 이름표)
 //   - label : 그룹 표시 이름(예: 'AI 활용')
 //   - icon  : 그룹 아이콘(이모지)
 //   - owner : 'mine'(자체 제작) | 'external'(외부 도구) — 출처 구분/필터링용
+//             ↑ 세로 막대(|)는 "또는(union, 유니언 타입)"을 뜻한다. 즉 owner에는
+//               'mine' 또는 'external' 두 글자값 중 하나만 넣을 수 있고, 다른
+//               아무 문자열이나 넣으면 TypeScript가 오류로 잡아준다.
 //   - sites : 해당 그룹에 속한 사이트 링크 배열
+//             ↑ 'SiteLink[]'에서 대괄호([])는 "그 타입의 배열(여러 개 목록)"을 뜻한다.
 export interface SiteGroup { id: string; label: string; icon: string; owner: 'mine' | 'external'; sites: SiteLink[]; }
 
+// ─────────────────────────────────────────────────────────────────────────
 // SITE_GROUPS: 학습자료 화면이 렌더링하는 전체 데이터(단일 진실 공급원).
 //   - 분야별 그룹(AI / 코딩·웹 / CS 전공 / IT 자격증 / 외부 도구)을 순서대로 나열.
-//   - 부수효과 없는 불변 상수이므로, 항목 추가/수정 시 이 배열만 편집하면 된다.
+//   - ': SiteGroup[]'는 "이 값은 SiteGroup 객체들의 배열이어야 한다"는 타입 표시다.
+//     덕분에 각 그룹에 빠진 속성이나 오타가 있으면 즉시 오류로 알려준다.
+//   - 'const'로 선언했으므로 SITE_GROUPS라는 이름에 다른 값을 다시 대입할 수 없다.
+//     (불변에 가깝게 다뤄, 데이터가 실수로 바뀌는 것을 막는다.)
+//   - 부수효과(네트워크 호출, 상태 변경 등)가 전혀 없는 순수 데이터이므로,
+//     항목을 추가/수정/삭제하려면 아래 배열만 편집하면 된다.
+//
+// [데이터 구조 한눈에]
+//   SITE_GROUPS(배열) → 각 칸이 그룹(SiteGroup) → 그룹 안의 sites(배열) → 각 칸이 링크(SiteLink)
+//   즉 "배열 안에 객체, 그 객체 안에 또 배열" 형태의 2단 중첩 구조다.
+// ─────────────────────────────────────────────────────────────────────────
 export const SITE_GROUPS: SiteGroup[] = [
   // [그룹 1] AI 활용 — DreamIT 자체 제작(owner: 'mine'). 생성형 AI 도구·실무 학습 사이트 모음.
+  // (아래 한 줄 한 줄이 SiteLink 한 건이다. 필수 속성 name/desc/url을 모두 갖춘다.)
   { id: 'ai', label: 'AI 활용', icon: '🤖', owner: 'mine', sites: [
     { name: 'AI 프롬프트 학습', desc: '효과적인 프롬프트 작성법, 프롬프트 엔지니어링 가이드', url: 'https://ai-prompt.dreamitbiz.com' },
     { name: 'ChatGPT 활용', desc: 'ChatGPT 사용법, GPTs, API 활용, 업무 자동화', url: 'https://chatgpt.dreamitbiz.com' },
@@ -68,9 +108,13 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'Java 학습', desc: 'Java 기초, OOP, 컬렉션, 스레드, 프로젝트 실습', url: 'https://java-study.dreamitbiz.com' },
     { name: 'Python 학습', desc: 'Python 기초, 데이터 분석, 자동화, 웹 스크래핑', url: 'https://python-study.dreamitbiz.com' },
     { name: '코딩 학습', desc: 'C, Java, Python 코딩 문제 풀기, 플레이그라운드', url: 'https://coding.dreamitbiz.com' },
-    // featured: true, accent, badge가 모두 지정된 "강조 카드" — 입문자 추천 사이트로 우대 표시.
+    // 아래 항목은 featured: true, accent, badge가 모두 지정된 "강조 카드"다.
+    //   - 선택 속성을 채우면, 화면 쪽 코드가 이 값들을 읽어 빨간색(accent) 강조 + '학습추천'
+    //     배지(badge)를 붙여 입문자 추천 사이트로 눈에 띄게 보여준다.
+    //   - 즉 선택 속성은 "특별한 카드만 추가로 가지는 옵션"이라고 이해하면 된다.
     { name: '웹 프론트엔드 기초', desc: '웹 개발의 첫걸음을 정성껏 담은 기초 학습 사이트 — HTML5 시맨틱 구조, CSS3 레이아웃(Flexbox·Grid)과 디자인, JavaScript 기본 문법·DOM 제어·이벤트, 반응형 웹까지 예제와 실습 중심으로 차근차근 익힙니다. 입문자가 웹을 처음 배우기에 가장 좋은 출발점입니다.', url: 'https://web.dreamitbiz.com', featured: true, accent: '#dc2626', badge: '학습추천' },
-    // featured: true만 지정된 강조 카드(별도 accent/badge 없음).
+    // 아래 항목은 featured: true만 지정된 강조 카드다(별도 accent/badge 없음).
+    //   → 같은 '강조'라도 어떤 선택 속성을 채우느냐에 따라 표현이 달라질 수 있음을 보여준다.
     { name: 'Sample Gallery — 웹 디자인 샘플', desc: '개인·회사·학습·블로그 등 다양한 정적 사이트 샘플과 소스코드 제공', url: 'https://sample.dreamitbiz.com', featured: true },
   ] },
   // [그룹 3] CS 전공 — DreamIT 자체 제작. 컴퓨터과학 전공 기초 과목 학습 사이트 모음.
@@ -91,7 +135,9 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'AICE Associate 학습', desc: 'AICE Associate 자격증 시험 대비 학습 플랫폼', url: 'https://aice.dreamitbiz.com' },
   ] },
   // [그룹 5] 외부 AI·개발 도구 — owner: 'external'. DreamIT 외부의 공식 서비스/문서 링크 모음.
-  //   자체 사이트(mine)와 구분되어 별도 섹션/스타일로 노출될 수 있다.
+  //   - owner 값이 'external'이라는 점만 다르고, 데이터 형태(SiteLink)는 위 그룹들과 똑같다.
+  //   - 화면 코드는 owner 값을 보고 자체 사이트(mine)와 외부 도구(external)를
+  //     서로 다른 섹션이나 스타일로 구분해 보여줄 수 있다.
   { id: 'external', label: '외부 AI·개발 도구', icon: '🌐', owner: 'external', sites: [
     { name: 'ChatGPT', desc: 'OpenAI ChatGPT', url: 'https://chat.openai.com/' },
     { name: 'Claude', desc: 'Anthropic Claude', url: 'https://claude.ai/' },
