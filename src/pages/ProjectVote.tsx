@@ -157,15 +157,8 @@ const ProjectVote = (): ReactElement => {
     return [...presetRows, ...customRows].sort((a, b) => (votersByKey[b.key]?.length || 0) - (votersByKey[a.key]?.length || 0));
   }, [custom, votersByKey]);
 
-  // padletNumByKey: 주제 key → 패들렛 번호(고정). 프리셋(p1~p7)은 1~7, 학생 제안은 그 뒤로(생성 순) 이어붙임.
-  //   - 득표순 정렬(rows의 순위)과 무관하게 "주제마다 고정 번호"를 부여해 패들렛 링크가 흔들리지 않게 한다.
-  const padletNumByKey = useMemo(() => {
-    const m: Record<string, number> = {};
-    PRESET_TOPICS.forEach((t, i) => { m[t.key] = i + 1; });               // p1→1 … p7→7
-    custom.forEach((c, i) => { m[c.id] = PRESET_TOPICS.length + i + 1; }); // 학생 제안은 8,9,…
-    return m;
-  }, [custom]);
   // padletUrl(n): 번호를 2자리(0패딩)로 맞춰 패들렛 보드 주소 생성. 예) 1 → .../project01
+  //   - 패들렛 번호는 카드에 표시되는 '팀 번호'(rows의 idx+1, 득표순)와 1:1로 매칭한다.
   const padletUrl = (n: number) => `https://padlet.com/aebon/project${String(n).padStart(2, '0')}`;
 
   // members(t): 팀 t의 팀원 배열을 안전하게 꺼낸다(배열이 아니면 빈 배열로). 곳곳에서 반복되어 함수로 묶음.
@@ -437,19 +430,18 @@ const ProjectVote = (): ReactElement => {
                         {mineVote ? '✓ 내 투표 (취소)' : '이 주제에 투표'}
                       </button>
 
-                      {/* 패들렛 버튼: 이 주제의 고정 번호에 해당하는 패들렛 보드를 새 탭으로 연다. */}
-                      {padletNumByKey[r.key] && (
-                        <a
-                          href={padletUrl(padletNumByKey[r.key])}
-                          target="_blank"
-                          rel="noopener noreferrer"   /* 새 탭 보안(opener 탈취 방지) */
-                          className="btn btn-secondary"
-                          style={{ padding: '8px 18px', fontSize: '14px' }}
-                          title={`패들렛 project${String(padletNumByKey[r.key]).padStart(2, '0')} 열기`}
-                        >
-                          📌 패들렛
-                        </a>
-                      )}
+                      {/* 패들렛 버튼: 카드에 표시된 '팀 번호'(idx+1)에 맞춰 패들렛 보드를 새 탭으로 연다.
+                          예) 1팀 → project01, 2팀 → project02 … (화면의 N팀 번호와 항상 일치) */}
+                      <a
+                        href={padletUrl(idx + 1)}
+                        target="_blank"
+                        rel="noopener noreferrer"   /* 새 탭 보안(opener 탈취 방지) */
+                        className="btn btn-secondary"
+                        style={{ padding: '8px 18px', fontSize: '14px' }}
+                        title={`${idx + 1}팀 패들렛 project${String(idx + 1).padStart(2, '0')} 열기`}
+                      >
+                        📌 패들렛
+                      </a>
 
                       {/* 팀이 아직 없고 + 강사가 아니면 '팀 만들기' 버튼 */}
                       {!team && !isAdmin && (
