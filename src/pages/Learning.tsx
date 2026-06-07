@@ -384,19 +384,23 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
   </div>
 );
 
+// 정규과정: 오늘 날짜에 해당하는 Day를 기본 선택(없으면 지난 마지막 Day)
+const computeInitialIndex = (phase?: string): number => {
+  if (phase !== 'regular') return 0;
+  const today = todayISO();
+  let idx = 0;
+  REGULAR_DATES.forEach((d, i) => { if (d && d <= today) idx = i; });
+  return idx;
+};
+
 const Learning = (): ReactElement => {
   const { phase } = useParams<{ phase: string }>();
   const { t } = useLanguage();
-  // 정규과정: 오늘 날짜에 해당하는 Day를 기본 선택(없으면 지난 마지막 Day)
-  const [selectedIndex, setSelectedIndex] = useState<number>(() => {
-    if (phase !== 'regular') return 0;
-    const today = todayISO();
-    let idx = 0;
-    REGULAR_DATES.forEach((d, i) => { if (d && d <= today) idx = i; });
-    return idx;
-  });
+  const [selectedIndex, setSelectedIndex] = useState<number>(() => computeInitialIndex(phase));
   // subIndex: null = 일자 개요(2차 메뉴 콘텐츠), 0~N = 3차 메뉴 상세
   const [selectedSubIndex, setSelectedSubIndex] = useState<number | null>(null);
+  // openIndex: 드롭다운(3차 메뉴)이 펼쳐진 일자 — 아코디언(한 번에 하나만 열림)
+  const [openIndex, setOpenIndex] = useState<number | null>(() => computeInitialIndex(phase));
 
   const config = phase ? phaseMap[phase] : undefined;
   if (!config) return <Navigate to="/" replace />;
@@ -410,14 +414,18 @@ const Learning = (): ReactElement => {
     ? topic.subSections![selectedSubIndex]
     : null;
 
-  // 일자 클릭 — 다른 일자면 드롭다운 교체, 같은 일자면 토글 (3차 메뉴가 있는 경우)
+  // 일자 클릭 — 아코디언: 다른 일자면 그 일자를 열고 나머지는 닫힘, 같은 일자 다시 클릭이면 닫힘
   const handleDayClick = (i: number) => {
+    const tp = topics[i];
+    const hasSubs = !!(tp.subSections && tp.subSections.length > 0);
     if (i !== selectedIndex) {
       setSelectedIndex(i);
-      setSelectedSubIndex(null);   // 개요부터 보여줌
-    } else if (hasSubSections) {
-      // 같은 일자 다시 클릭 — 개요로 토글
+      setSelectedSubIndex(null);          // 개요부터 보여줌
+      setOpenIndex(hasSubs ? i : null);   // 새 일자 펼침(나머지는 단일 상태라 자동 닫힘)
+    } else {
+      // 같은 일자 다시 클릭 — 펼침 토글(닫혀 있으면 열고, 열려 있으면 닫음)
       setSelectedSubIndex(null);
+      setOpenIndex((prev) => (prev === i ? null : (hasSubs ? i : null)));
     }
   };
 
@@ -439,7 +447,7 @@ const Learning = (): ReactElement => {
               const isActive = selectedIndex === i;
               const isToday = isRegular && REGULAR_DATES[i] === today;
               const isCheckpoint = tp.id.startsWith('reg-check');   // 점검일 — 호버 배경 상시 유지
-              const expanded = isActive && !!tp.subSections && tp.subSections.length > 0;
+              const expanded = openIndex === i && !!tp.subSections && tp.subSections.length > 0;
               const dateLabel = isRegular && REGULAR_DATES[i] ? fmtKDate(REGULAR_DATES[i]) : '';
               return (
                 <div key={tp.id}>
