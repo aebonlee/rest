@@ -1,0 +1,26 @@
+{
+  // 이 프로젝트를 VS Code로 열면 주석을 녹색으로 표시합니다(테마 무관).
+  "editor.tokenColorCustomizations": {
+    "comments": "#22c55e",
+    "textMateRules": [
+      {
+        "scope": [
+          "comment",
+          "comment.line",
+          "comment.line.double-slash",
+          "comment.block",
+          "comment.block.documentation",
+          "punctuation.definition.comment"
+        ],
+        "settings": {
+          "foreground": "#22c55e"
+        }
+      }
+    ]
+  },
+  "editor.semanticTokenColorCustomizations": {
+    "rules": {
+      "comment": "#22c55e"
+    }
+  }
+}

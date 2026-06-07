@@ -1,3 +1,16 @@
+/**
+ * Home.tsx — 메인(홈) 페이지
+ *
+ * 역할:
+ *  - 사이트 첫 화면. 히어로/과정 개요/프로젝트 산출물/경진대회/교육 대상 섹션을 보여준다.
+ *
+ * 핵심 책임:
+ *  - i18n(t)로 문구 출력, 설정 데이터(coursePhases·projectExamples)를 카드/타임라인으로 렌더.
+ *  - 히어로 배경에 떠다니는 파티클(랜덤 위치·크기·애니메이션) 장식.
+ *
+ * 주요 export:
+ *  - default: Home (React 페이지 컴포넌트)
+ */
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEOHead from '../components/SEOHead';
@@ -5,16 +18,18 @@ import site from '../config/site';
 import { coursePhases, projectExamples } from '../config/curriculum';
 import type { ReactElement } from 'react';
 
+// Home — 홈 화면 전체를 렌더하는 표시용 컴포넌트.
 const Home = (): ReactElement => {
-  const { t } = useLanguage();
+  const { t } = useLanguage();   // i18n 번역 함수
 
   return (
     <>
       <SEOHead title={`${site.name} | ${site.nameKo}`} description={site.description} />
 
-      {/* Hero */}
+      {/* Hero — 타이틀/설명/핵심 정보 카드/CTA 버튼 */}
       <section className="hero">
         <div className="hero-bg-effect">
+          {/* 장식용 파티클 20개 — 위치/크기/애니메이션 타이밍을 랜덤으로 부여(순수 시각 효과) */}
           <div className="particles">
             {Array.from({ length: 20 }, (_, i) => (
               <div key={i} className="particle" style={{
@@ -35,6 +50,7 @@ const Home = (): ReactElement => {
               <span className="title-line"><span className="highlight">{t('site.home.subtitle')}</span></span>
             </h1>
             <p className="hero-description">{t('site.home.description')}</p>
+            {/* 핵심 정보 카드: 기간/시간/방식/목표 */}
             <div className="hero-info-cards">
               <div className="hero-info-card">
                 <span className="hero-info-icon">📅</span>
@@ -61,7 +77,7 @@ const Home = (): ReactElement => {
         </div>
       </section>
 
-      {/* 과정 개요 */}
+      {/* 과정 개요 — coursePhases를 카드로(단계 색을 상단 보더로) */}
       <section className="section">
         <div className="container">
           <div className="section-header">
@@ -82,7 +98,7 @@ const Home = (): ReactElement => {
         </div>
       </section>
 
-      {/* 프로젝트 산출물 */}
+      {/* 프로젝트 산출물 — 3단계 타임라인 + 프로젝트 예시 카드 */}
       <section className="section section-alt">
         <div className="container">
           <div className="section-header">
@@ -112,6 +128,7 @@ const Home = (): ReactElement => {
               </div>
             </div>
           </div>
+          {/* 프로젝트 예시 — 설정 데이터(projectExamples) 매핑 */}
           <div className="project-examples">
             <h3>프로젝트 예시</h3>
             <div className="example-cards">
@@ -127,7 +144,7 @@ const Home = (): ReactElement => {
         </div>
       </section>
 
-      {/* AI 리부트 대회 */}
+      {/* AI 리부트 대회 안내 */}
       <section className="section">
         <div className="container">
           <div className="section-header">
@@ -149,7 +166,7 @@ const Home = (): ReactElement => {
         </div>
       </section>
 
-      {/* 특이사항 */}
+      {/* 특이사항 — 교육 대상/지원/혜택 */}
       <section className="section section-alt">
         <div className="container">
           <div className="section-header">

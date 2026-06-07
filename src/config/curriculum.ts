@@ -1,40 +1,69 @@
 /**
  * 커리큘럼 데이터 — 쉬었음청년 AI교육
+ *
+ * [파일 역할]
+ *   AI Reboot Academy LMS(rest.dreamitbiz.com)의 교육 커리큘럼 정적 데이터를 정의하는 설정 파일.
+ *   화면(커리큘럼 페이지/일정표/단계 카드 등)에서 import 하여 렌더링에 사용하는 단일 데이터 소스(Single Source of Truth)다.
+ *
+ * [핵심 책임]
+ *   - 과정 단계(선수과정/정규과정 DT/기술코칭)별 메타정보와 일자별 학습 내용을 구조화한다.
+ *   - 일자(day) 단위로 날짜·제목·세부 토픽·교육시간·유형·프로젝트 마일스톤을 보관한다.
+ *   - 수강생에게 보여줄 프로젝트 예시 목록을 제공한다.
+ *
+ * [주요 export]
+ *   - CurriculumDay : 하루 단위 커리큘럼 항목의 타입
+ *   - CoursePhase   : 과정 단계(여러 day를 묶는 단위)의 타입
+ *   - coursePhases  : 전체 과정 단계 데이터 배열 (선수/정규/코칭)
+ *   - projectExamples : 수강생용 프로젝트 예시 목록
+ *
+ *   주의: 이 파일은 순수 데이터/타입 정의만 포함하며 부수효과(side effect)가 없는 상수 모듈이다.
  */
 
+// 하루(1일) 단위 커리큘럼 항목을 표현하는 타입.
 export interface CurriculumDay {
-  day: number;
-  date: string;
-  title: string;
-  topics: string[];
-  hours: number;
-  type: 'prerequisite' | 'regular' | 'coaching';
-  project?: string;
+  day: number;        // 해당 단계 내에서의 일자 순번(1부터 시작)
+  date: string;       // 표시용 날짜 문자열(예: '6/1(월)' 또는 '사전학습' 같은 라벨)
+  title: string;      // 그날의 학습 주제 제목
+  topics: string[];   // 세부 학습 토픽 목록
+  hours: number;      // 해당 일자의 교육 시간(시간 단위)
+  type: 'prerequisite' | 'regular' | 'coaching'; // 일자 유형(선수/정규/코칭) — UI 색상·필터링에 사용
+  project?: string;   // (선택) 그날과 연결된 프로젝트 마일스톤(시작/발표/제출 등). 없으면 표시 생략
 }
 
+// 하나의 과정 단계(여러 CurriculumDay를 묶는 상위 단위)를 표현하는 타입.
 export interface CoursePhase {
-  id: string;
-  name: string;
-  nameEn: string;
-  hours: number;
-  description: string;
-  descriptionEn: string;
-  color: string;
-  icon: string;
-  days: CurriculumDay[];
+  id: string;             // 단계 식별자(예: 'prerequisite') — key/필터링용 고유값
+  name: string;           // 단계 한글 이름
+  nameEn: string;         // 단계 영문 이름
+  hours: number;          // 단계 전체 교육 시간(소속 day들의 합과 일치하도록 관리)
+  description: string;    // 단계 한글 설명
+  descriptionEn: string;  // 단계 영문 설명
+  color: string;          // UI 강조 색상(HEX) — 단계별 테마 컬러
+  icon: string;           // 단계 대표 이모지 아이콘
+  days: CurriculumDay[];  // 단계에 속한 일자별 커리큘럼 항목 배열
 }
 
+/**
+ * coursePhases
+ *   전체 교육 과정을 단계별로 정의한 상수 데이터 배열.
+ *   - 구성: 선수과정(prerequisite) → 정규과정 DT(regular) → 기술코칭(coaching)
+ *   - 매개변수: 없음(상수)
+ *   - 반환값: CoursePhase[] (불변 데이터로 취급, 화면 렌더링의 데이터 소스)
+ *   - 부수효과: 없음
+ */
 export const coursePhases: CoursePhase[] = [
   {
+    // [단계 1] 선수과정 — 본 과정 전 AI·바이브코딩 기초 역량을 쌓는 사전 학습(총 20시간)
     id: 'prerequisite',
     name: '선수과정',
     nameEn: 'Prerequisite',
     hours: 20,
     description: 'AI·바이브코딩 기초 역량을 갖추기 위한 사전 학습',
     descriptionEn: 'Pre-learning for AI and vibe coding fundamentals',
-    color: '#10B981',
+    color: '#10B981', // 초록 계열 — 선수과정 테마 컬러
     icon: '📚',
     days: [
+      // 사전학습은 고정 날짜 없이 'date'를 라벨('사전학습')로 사용하며, 각 5시간씩 4일 구성
       { day: 1, date: '사전학습', title: 'AI 개론 및 프롬프트 기초', topics: ['AI 개념 이해', '생성AI 도구 소개', '프롬프트 기본 구조'], hours: 5, type: 'prerequisite' },
       { day: 2, date: '사전학습', title: 'ChatGPT / Gemini 실습', topics: ['ChatGPT 활용법', 'Gemini 비교 실습', '프롬프트 패턴'], hours: 5, type: 'prerequisite' },
       { day: 3, date: '사전학습', title: '국내 LLM(Solar 등) 탐색', topics: ['Solar API 소개', 'Solar vs ChatGPT 비교', '국내 LLM 생태계'], hours: 5, type: 'prerequisite' },
@@ -42,18 +71,21 @@ export const coursePhases: CoursePhase[] = [
     ]
   },
   {
+    // [단계 2] 정규과정 DT — 디지털 전환 핵심 역량 + 바이브코딩 프로젝트 실습(총 60시간, 15일 × 4시간)
     id: 'regular',
     name: '정규과정 DT',
     nameEn: 'Regular DT Course',
     hours: 60,
     description: '디지털 전환(DT) 핵심 역량 + AI 바이브코딩 프로젝트 실습',
     descriptionEn: 'Digital Transformation core competencies + AI vibe coding project practice',
-    color: '#0D2B5E',
+    color: '#0D2B5E', // 진한 남색 — 정규과정 테마 컬러(브랜드 메인 컬러)
     icon: '🎓',
     days: [
+      // 정규과정은 실제 운영 날짜(6월)를 'date'에 표기. project 필드로 미니/팀/실전 프로젝트 마일스톤을 표시
       { day: 1, date: '6/1(월)', title: 'AI 기반 자동화 입문', topics: ['AI 자동화 개념', 'No-Code/Low-Code 도구', 'Make/Zapier 실습'], hours: 4, type: 'regular', project: '개인 미니프로젝트 시작' },
       { day: 2, date: '6/2(화)', title: '프롬프트 엔지니어링 심화', topics: ['고급 프롬프트 기법', 'Chain-of-Thought', 'Few-shot Learning'], hours: 4, type: 'regular' },
       { day: 3, date: '6/4(목)', title: '바이브코딩 기획 & 설계', topics: ['프로젝트 기획서 작성', 'UI/UX 설계', 'AI 기반 와이어프레임'], hours: 4, type: 'regular', project: '개인 미니프로젝트 발표' },
+      // 일부 day의 date에는 '· 1차 기초점검'처럼 점검 일정이 함께 표기됨(별도 필드 아님, 라벨로 통합)
       { day: 4, date: '6/5(금) · 1차 기초점검', title: '웹·React 기초 점검 & 바이브코딩 구현 I', topics: ['1차 기초점검', 'React 기초', 'Cursor/Copilot 활용'], hours: 4, type: 'regular', project: '팀 미니프로젝트 시작' },
       { day: 5, date: '6/8(월)', title: '바이브코딩 구현 II', topics: ['Supabase 연동', 'CRUD 구현', 'API 설계'], hours: 4, type: 'regular', project: '팀 미니프로젝트 발표' },
       { day: 6, date: '6/9(화)', title: '데이터 수집 & 전처리', topics: ['데이터 수집 기법', '전처리 파이프라인', 'Solar API 연동'], hours: 4, type: 'regular' },
@@ -65,19 +97,22 @@ export const coursePhases: CoursePhase[] = [
       { day: 12, date: '6/17(수)', title: '테스트 & 디버깅', topics: ['QA 전략', 'AI 디버깅 기법', '성능 최적화'], hours: 4, type: 'regular' },
       { day: 13, date: '6/18(목)', title: '발표 자료 제작', topics: ['프레젠테이션 구성', '데모 준비', '스토리텔링'], hours: 4, type: 'regular' },
       { day: 14, date: '6/19(금)', title: '발표 리허설 & 피드백', topics: ['발표 리허설', '상호 피드백', '최종 보완'], hours: 4, type: 'regular', project: '실전 프로젝트 제출' },
+      // 마지막 날: '· 마지막날' 라벨로 종료 일자 강조, 최종 발표/수료식 진행
       { day: 15, date: '6/22(월) · 마지막날', title: '최종 발표 & 수료식', topics: ['프로젝트 최종 발표', '상호 평가', '수료식'], hours: 4, type: 'regular', project: '실전 프로젝트 최종 발표' },
     ]
   },
   {
+    // [단계 3] 기술코칭 — 프로젝트 진행 중 진행되는 1:1/팀별 코칭 세션(총 8시간, 4회 × 2시간)
     id: 'coaching',
     name: '기술코칭',
     nameEn: 'Tech Coaching',
     hours: 8,
     description: '프로젝트 진행 중 1:1/팀별 기술 코칭 세션',
     descriptionEn: 'One-on-one and team-based technical coaching during project phase',
-    color: '#F59E0B',
+    color: '#F59E0B', // 주황 계열 — 기술코칭 테마 컬러
     icon: '🔧',
     days: [
+      // 코칭 회차는 정규과정 일정 사이에 끼워 진행되므로 date(6/12~6/20)가 정규과정과 겹칠 수 있음
       { day: 1, date: '6/12(목)', title: '기술코칭 1회차', topics: ['프로젝트 진행 점검', '기술 이슈 해결', '아키텍처 리뷰'], hours: 2, type: 'coaching' },
       { day: 2, date: '6/13(금)', title: '기술코칭 2회차', topics: ['코드 리뷰', 'UI/UX 개선', '성능 최적화'], hours: 2, type: 'coaching' },
       { day: 3, date: '6/19(목)', title: '기술코칭 3회차', topics: ['배포 지원', 'Solar API 최적화', '발표 준비'], hours: 2, type: 'coaching' },
@@ -86,6 +121,14 @@ export const coursePhases: CoursePhase[] = [
   }
 ];
 
+/**
+ * projectExamples
+ *   수강생에게 영감을 주기 위한 실전 프로젝트 예시 목록.
+ *   - 각 항목: 프로젝트 제목(title), 설명(description), 추천 활용 LLM(llm)
+ *   - 매개변수: 없음(상수)
+ *   - 반환값: 프로젝트 예시 객체 배열
+ *   - 부수효과: 없음
+ */
 export const projectExamples = [
   { title: 'AI 취업 코칭 챗봇', description: '구직자 맞춤형 이력서/면접 코칭 AI', llm: 'Solar + ChatGPT' },
   { title: '지역 문화 추천 서비스', description: '위치 기반 문화행사·맛집 추천 AI', llm: 'Solar' },

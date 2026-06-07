@@ -1,3 +1,21 @@
+/**
+ * ProjectVote.tsx — 프로젝트 주제 투표 및 팀 구성 페이지
+ *
+ * [역할]
+ *  - 수강생이 프로젝트 주제(프리셋 + 학생 제안)에 투표하고, 관심사가 같은 사람끼리
+ *    바로 팀을 만들거나 합류할 수 있게 해주는 화면이다.
+ *  - 각 주제 카드에서 투표 현황(득표수/투표자), 팀 결성 현황(팀원/팀장)을 보여주고
+ *    투표·팀 생성·합류·탈퇴·팀장 신청/초기화·주제 추가/삭제 액션을 처리한다.
+ *
+ * [핵심 책임]
+ *  - 투표는 1인 1표(같은 주제를 다시 누르면 취소). 팀 신청은 중복 허용(여러 주제 참여 가능).
+ *  - 팀장은 선착순: 가장 먼저 '팀장 신청'을 누른 한 명이 팀장이 되고, 이후 변경은 강사만 가능.
+ *  - 강사(isAdmin) 계정은 팀에 포함되지 않으며, 팀장 확정/초기화 등 관리 권한만 가진다.
+ *  - 데이터 영속화는 utils/projectVote, utils/projectTeams를 통해 Supabase에 위임.
+ *
+ * [주요 export]
+ *  - default ProjectVote: 이 페이지 컴포넌트.
+ */
 import { useState, useEffect, useCallback, useMemo, type ReactElement } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';

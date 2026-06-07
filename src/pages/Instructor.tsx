@@ -1,16 +1,30 @@
+/**
+ * Instructor.tsx — 강사 소개 페이지
+ *
+ * 역할:
+ *  - 과정 강사진의 이름·역할·소속·전문분야·이메일을 카드로 소개.
+ *
+ * 핵심 책임:
+ *  - 정적 강사 데이터(instructors)를 카드 그리드로 렌더(메일 링크 포함).
+ *
+ * 주요 export:
+ *  - default: Instructor (React 페이지 컴포넌트)
+ */
 import type { ReactElement } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEOHead from '../components/SEOHead';
 
+// 강사 한 명의 정보 형태.
 interface InstructorInfo {
   name: string;
   role: string;
   affiliation: string;
-  specialties: string[];
+  specialties: string[];   // 전문분야 태그 목록
   email: string;
-  icon: string;
+  icon: string;            // 카드 상단 이모지
 }
 
+// 강사진 정적 데이터(표시 순서 = 배열 순서).
 const instructors: InstructorInfo[] = [
   {
     name: '이애본',
@@ -30,8 +44,9 @@ const instructors: InstructorInfo[] = [
   },
 ];
 
+// Instructor — 강사 카드 목록을 렌더하는 표시용 컴포넌트(상태/부수효과 없음).
 const Instructor = (): ReactElement => {
-  const { t } = useLanguage();
+  const { t } = useLanguage();   // i18n 번역 함수
 
   return (
     <>
@@ -46,6 +61,7 @@ const Instructor = (): ReactElement => {
 
       <section className="section">
         <div className="container">
+          {/* 강사 카드 그리드 */}
           <div className="instructor-grid">
             {instructors.map((inst) => (
               <div key={inst.name} className="instructor-card">
@@ -54,11 +70,13 @@ const Instructor = (): ReactElement => {
                   <h3 className="instructor-name">{inst.name}</h3>
                   <p className="instructor-role">{inst.role}</p>
                   <p className="instructor-affiliation">{inst.affiliation}</p>
+                  {/* 전문분야 태그 나열 */}
                   <div className="instructor-specialties">
                     {inst.specialties.map((s) => (
                       <span key={s} className="specialty-tag">{s}</span>
                     ))}
                   </div>
+                  {/* 클릭 시 메일 작성 — mailto 링크 */}
                   <a href={`mailto:${inst.email}`} className="instructor-email">
                     {inst.email}
                   </a>

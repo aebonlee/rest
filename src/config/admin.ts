@@ -1,5 +1,23 @@
+/*
+ * ============================================================================
+ * admin.ts — rest(쉬었음) 사이트 관리자/동일인 통합 설정 파일
+ * ============================================================================
+ * 역할:
+ *   1) ADMIN_EMAILS          : rest 사이트에서 관리자 권한을 갖는 이메일 화이트리스트
+ *   2) SamePersonGroup       : "동일인이지만 계정이 여러 개"인 경우를 묶는 타입 정의
+ *   3) SAME_PERSON_EMAIL_GROUPS : 위 타입을 사용한 실제 통합 그룹 목록
+ *
+ * 특징:
+ *   - 이 파일은 순수한 정적 설정(상수)만 모아 둔 곳으로, 실행 로직은 없습니다.
+ *   - rest 사이트 전용 설정이며, 다른 DreamIT 계열 사이트와는 서로 독립적입니다.
+ *   - 권한 판정/사람 묶기 로직(groupByPerson 등)은 다른 모듈에서 이 상수를
+ *     import 하여 사용합니다.
+ * ============================================================================
+ */
+
 // 이 목록은 rest(쉬었음) 사이트 배포 전용 — 여기 등록된 이메일만 rest 관리자 권한(대시보드 등)을 가집니다.
 // 다른 DreamIT 사이트는 각자의 ADMIN_EMAILS를 쓰므로, 여기 추가해도 권한은 rest 사이트에만 한정됩니다.
+// (string[] 타입의 단순 화이트리스트 — 로그인 사용자의 이메일이 이 배열에 포함되면 관리자로 간주)
 export const ADMIN_EMAILS: string[] = [
   'aebon@kakao.com',
   'radical8566@gmail.com',
@@ -13,17 +31,26 @@ export const ADMIN_EMAILS: string[] = [
 // 동일인이지만 계정(이메일)을 2개 이상 만든 사람 — 화면에서 한 명으로 묶어 표시.
 // groupByPerson 이 전화/이름으로 못 묶는 경우(전화·이름이 다른 계정)를 명시적으로 통합한다.
 // name 을 주면 묶인 사람의 표시 이름으로 사용한다.
+// ── 타입 정의 ──
+//   name?  : 선택값. 묶인 사람을 화면에 표시할 대표 이름(없으면 자동 추론에 맡김).
+//   emails : 같은 사람으로 간주할 이메일 목록(2개 이상). 이 목록의 계정들은 하나로 합산/표시됨.
 export interface SamePersonGroup {
   name?: string;
   emails: string[];
 }
 
+// SAME_PERSON_EMAIL_GROUPS — 실제 통합 대상 목록.
+// 각 항목은 "이 이메일들은 동일 인물"이라고 시스템에 명시적으로 알려 주는 매핑이다.
+// (전화번호/이름이 달라 자동 병합으로는 못 묶이는 케이스를 수동으로 보정하는 용도)
 export const SAME_PERSON_EMAIL_GROUPS: SamePersonGroup[] = [
   { name: '주윤미', emails: ['jooym6016@kidico.or.kr', 'tlskaksmf@naver.com'] },
   // 이유민: 프로필 실명이 비어 자동 닉네임('행복한흰이마기러기')으로 저장됨 → 실명 표시 고정
+  // (이메일은 1개뿐이지만, name 을 지정해 자동 닉네임 대신 실명이 보이도록 강제하는 케이스)
   { name: '이유민', emails: ['yoominggg2164@gmail.com'] },
   // 임종권: 계정 2개로 응시 — 본 계정 ssujklim 으로 통합(성적은 최고점 채택)
+  // (서로 다른 두 이메일을 한 사람으로 합치며, 점수 산정 시 더 높은 쪽을 사용)
   { name: '임종권', emails: ['ssujklim@gmail.com', 'deathbed0104@gmail.com'] },
   // 최재영: 계정 2개 통합 (istp0109318 + fghjkkzxvvbn)
+  // (지메일/네이버 두 계정을 동일 인물로 병합)
   { name: '최재영', emails: ['istp0109318@gmail.com', 'fghjkkzxvvbn@naver.com'] },
 ];

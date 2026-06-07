@@ -1,18 +1,43 @@
 /**
  * AI 리부트 — 14개 팀 프로젝트 레지스트리 (투표 순위 = 팀 순서)
  * 각 팀의 실제 주제에 맞춰 /projects/app/:id 로 동작하는 앱을 스캐폴딩한다.
+ *
+ * ──────────────────────────────────────────────────────────────────────────
+ * [파일 역할]
+ *   AI 리부트 부트캠프의 팀 프로젝트 메타데이터를 한곳에 모아 두는 정적 데이터 모듈.
+ *   라우팅(/projects/app/:id), 목록 카드 렌더링, 색상/아이콘 테마 등에서 공통으로
+ *   참조하는 "단일 진실 공급원(single source of truth)" 역할을 한다.
+ *
+ * [핵심 책임]
+ *   - TeamProject 인터페이스로 각 팀 프로젝트의 데이터 형태(타입)를 정의.
+ *   - TEAM_PROJECTS 배열로 실제 팀별 데이터를 보관(id, 제목, 소개, 아이콘, 색상, 팀원 등).
+ *   - id 기반 단건 조회 헬퍼(getTeamProject)를 제공.
+ *
+ * [주요 export]
+ *   - interface TeamProject : 팀 프로젝트 데이터 스키마.
+ *   - const TEAM_PROJECTS   : 전체 팀 프로젝트 목록 배열.
+ *   - const getTeamProject  : id로 단건 조회하는 헬퍼 함수.
+ *
+ * [주의] 부수효과(네트워크/상태 변경)가 없는 순수 데이터/조회 모듈이다.
+ * ──────────────────────────────────────────────────────────────────────────
  */
+
+// 팀 프로젝트 한 건의 데이터 형태를 정의하는 인터페이스.
+// 목록/상세/라우팅 등 여러 화면에서 동일한 구조로 사용된다.
 export interface TeamProject {
-  id: number;          // 1~14 (투표 순위/팀 순서)
-  slug: string;
-  title: string;
+  id: number;          // 1~14 (투표 순위/팀 순서) — 라우팅 키이자 정렬 기준
+  slug: string;        // URL/식별용 영문 슬러그(고유)
+  title: string;       // 화면에 노출되는 프로젝트 제목
   tagline: string;     // 한 줄 소개
-  icon: string;
-  color: string;
+  icon: string;        // 카드/헤더에 표시할 이모지 아이콘
+  color: string;       // 테마 색상(HEX) — 카드 강조색 등에 사용
   members: string[];   // 팀원(확정 기준)
-  note?: string;       // 동일 주제 2팀 등 비고
+  note?: string;       // 동일 주제 2팀 등 비고 (선택 항목)
 }
 
+// 전체 팀 프로젝트 목록.
+// 배열 순서 자체가 투표 순위/팀 순서를 의미하므로, 표시 순서는 이 배열 순서를 따른다.
+// 참고: id가 14를 넘는 항목(15~17)은 "학생 제안" 프로젝트로 note에 명시되어 있다.
 export const TEAM_PROJECTS: TeamProject[] = [
   {
     id: 1, slug: 'ai-fairytale', title: '한국형 AI 동화책 제작 앱',
@@ -30,6 +55,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '🌱', color: '#10b981', members: ['김건희', '이초월', '김서우'],
   },
   {
+    // id 3과 동일 주제(회복탄력성 루틴 코치)를 다루는 2번째 팀. note로 구분.
     id: 4, slug: 'resilience-coach-2', title: '회복탄력성 루틴 코치 (2팀)',
     tagline: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱',
     icon: '🧘', color: '#14b8a6', members: ['전유미', '오지원', '윤혜수'], note: '동일 주제 2팀',
@@ -40,6 +66,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '🚀', color: '#f59e0b', members: ['이시민', '조윤서'],
   },
   {
+    // id 2와 동일 주제(청년지원정책 안내 챗봇)를 다루는 2번째 팀. note로 구분.
     id: 6, slug: 'youth-policy-bot-2', title: '청년지원정책 안내 챗봇 (2팀)',
     tagline: '조건을 입력하면 맞춤 청년지원정책을 안내하는 챗봇',
     icon: '🗂️', color: '#3b82f6', members: ['한승우', '박정우'], note: '동일 주제 2팀',
@@ -85,6 +112,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '🍜', color: '#ef4444', members: ['하소희'],
   },
   {
+    // 이하 id 15~17은 정식 14개 팀 외 "학생 제안" 프로젝트(note에 명시).
     id: 15, slug: 'cat-life-diary', title: '육묘(猫)일기 — 고양이 생애주기 앱',
     tagline: '병원 방문·모래 교체·예방접종 주기 알람과 체중·건강 수치(BUN·CREA 등) 기록을 한곳에서',
     icon: '🐱', color: '#8B5CF6', members: ['이유민'], note: '학생 제안',
@@ -101,5 +129,12 @@ export const TEAM_PROJECTS: TeamProject[] = [
   },
 ];
 
+/**
+ * id로 팀 프로젝트 한 건을 조회하는 헬퍼.
+ * @param id 조회할 팀 프로젝트의 고유 id (TeamProject.id)
+ * @returns 일치하는 TeamProject 객체, 없으면 undefined
+ * @remarks Array.find는 첫 번째 일치 항목을 반환하며, 부수효과 없는 순수 함수다.
+ *          (id는 고유하다는 전제이므로 중복 시 배열 앞쪽 항목이 우선된다.)
+ */
 export const getTeamProject = (id: number): TeamProject | undefined =>
   TEAM_PROJECTS.find((p) => p.id === id);

@@ -1,20 +1,43 @@
+/**
+ * About.tsx — 회사소개 페이지 컴포넌트
+ *
+ * [역할]
+ *   AI Reboot Academy 사이트의 "회사소개(/about)" 라우트 화면을 렌더링한다.
+ *   본 사이트의 운영 주체(드림아이티비즈, DreamIT Biz)와 강사(총괄 책임교수)의
+ *   배경, 사이트를 직접 만든 이유, 회사 사업 영역, 회사 정보/연락처,
+ *   회사가 운영하는 다른 사이트, 저작권 정보를 한 페이지에 정적으로 보여준다.
+ *
+ * [핵심 책임]
+ *   - SEOHead 로 페이지 메타데이터(title/description/path) 설정
+ *   - site.config(site) 에서 회사 정보(company)·패밀리 사이트 등 데이터를 읽어 출력
+ *   - 상수 배열(REASONS, BIZ_AREAS)을 카드 그리드로 매핑 렌더링
+ *
+ * [주요 export]
+ *   - default export: About() — 회사소개 페이지를 그리는 React 함수형 컴포넌트
+ *
+ * [부수효과]
+ *   - 없음(순수 표현 컴포넌트). 상태/네트워크/인증 로직 없이 정적 데이터만 렌더링.
+ */
 import SEOHead from '../components/SEOHead';
 import { Link } from 'react-router-dom';
 import type { ReactElement } from 'react';
-import site from '../config/site';
+import site from '../config/site'; // 사이트 전역 설정(회사 정보·패밀리 사이트 등)
 
+// "왜 강사가 직접 사이트를 만들었나" 카드 한 장의 데이터 형태
 interface ReasonItem {
-  emoji: string;
-  title: string;
-  desc: string;
+  emoji: string; // 카드 상단 아이콘(이모지)
+  title: string; // 카드 제목
+  desc: string;  // 카드 본문 설명
 }
 
+// 회사 사업 영역 카드 한 장의 데이터 형태
 interface BizArea {
-  emoji: string;
-  title: string;
-  desc: string;
+  emoji: string; // 카드 상단 아이콘(이모지)
+  title: string; // 사업 영역 제목
+  desc: string;  // 사업 영역 설명
 }
 
+// "왜 강사가 직접 사이트를 만들었나" 섹션에 표시할 이유 카드 목록(정적 상수)
 const REASONS: ReasonItem[] = [
   {
     emoji: '🧑‍🏫',
@@ -33,6 +56,7 @@ const REASONS: ReasonItem[] = [
   },
 ];
 
+// 회사 사업 영역 섹션에 표시할 카드 목록(정적 상수)
 const BIZ_AREAS: BizArea[] = [
   {
     emoji: '🎓',
@@ -56,6 +80,7 @@ const BIZ_AREAS: BizArea[] = [
   },
 ];
 
+// 회사 정보 표의 "라벨(좌측 항목명)" 칸 공통 인라인 스타일
 const ROW_LABEL: React.CSSProperties = {
   width: '120px',
   fontWeight: 600,
@@ -63,23 +88,32 @@ const ROW_LABEL: React.CSSProperties = {
   fontSize: '15px',
   flexShrink: 0,
 };
+// 회사 정보 표의 "값(우측 내용)" 칸 공통 인라인 스타일
 const ROW_VALUE: React.CSSProperties = {
   color: 'var(--text-primary, #1a1a1a)',
   fontSize: '16px',
   lineHeight: 1.6,
 };
 
+/**
+ * About — 회사소개 페이지 컴포넌트
+ *
+ * @returns {ReactElement} 회사소개 페이지 전체 JSX 트리
+ * @사이드이펙트 없음. site 설정에서 데이터를 읽어 정적으로 렌더링만 한다.
+ */
 export default function About(): ReactElement {
-  const c = site.company;
+  const c = site.company; // 회사 기본 정보 묶음(상호·대표·연락처 등)을 짧은 별칭으로 사용
 
   return (
     <>
+      {/* 페이지 SEO 메타데이터(브라우저 탭 제목·검색엔진 설명·canonical 경로) 설정 */}
       <SEOHead
         title="회사소개 | AI Reboot Academy"
         description="본 사이트는 강사의 소속 회사 드림아이티비즈(DreamIT Biz)가 운영합니다. 회사 대표인 이애본 박사가 본 과정의 총괄 책임교수로 참여하며, 강의 운영을 위해 직접 사이트를 설계·개발했습니다."
         path="/about"
       />
 
+      {/* 페이지 상단 헤더(제목 + 한 줄 소개) */}
       <section className="page-header">
         <div className="container">
           <h1>회사소개</h1>
@@ -91,6 +125,7 @@ export default function About(): ReactElement {
         <div className="container">
 
           {/* ───── 이 사이트에 대해 (운영 주체 명시) ───── */}
+          {/* 운영 주체(회사)와 사이트의 성격(LMS)을 강조하는 안내 박스 */}
           <div style={{
             background: 'var(--bg-secondary, #f8f9fa)',
             borderLeft: '4px solid var(--primary-blue, #0046C8)',
@@ -111,6 +146,7 @@ export default function About(): ReactElement {
               본 사이트는 강사의 회사가 직접 운영합니다.
             </h2>
             <p style={{ margin: 0, fontSize: '16px' }}>
+              {/* {' '} 는 줄바꿈된 텍스트 사이의 공백을 보존하기 위한 명시적 공백 표현 */}
               <strong>AI Reboot Academy</strong>는 본 과정의 총괄 책임교수인 <strong>이애본 박사</strong>가 대표로 있는{' '}
               <strong>드림아이티비즈(DreamIT Biz)</strong>가 운영합니다. 강사가 본 과정을 진행하기 위해
               직접 기획·설계·개발한 사이트로, 강의 자료·과제·평가·팀 프로젝트가 하나의 LMS로 통합되어 있습니다.
@@ -119,6 +155,7 @@ export default function About(): ReactElement {
           </div>
 
           {/* ───── 강사 프로필 카드 ───── */}
+          {/* 총괄 책임교수 겸 운영사 대표(이애본 박사)의 프로필 카드 */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
             <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>총괄 책임교수 / 운영사 대표</span>
           </h3>
@@ -132,6 +169,7 @@ export default function About(): ReactElement {
             marginBottom: '56px',
             flexWrap: 'wrap',
           }}>
+            {/* 프로필 아바타(이모지로 대체한 원형 자리표시자) */}
             <div style={{
               width: '120px',
               height: '120px',
@@ -146,6 +184,7 @@ export default function About(): ReactElement {
             }}>
               <span role="img" aria-label="이애본 박사">👩‍🏫</span>
             </div>
+            {/* 프로필 텍스트 영역(이름·직함·소개·태그·상세 링크) */}
             <div style={{ flex: 1, minWidth: '280px' }}>
               <h4 style={{ fontSize: '22px', fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary, #1a1a1a)' }}>
                 이애본 (Ph.D Aebon Lee)
@@ -158,6 +197,7 @@ export default function About(): ReactElement {
                 대학 강의와 기업 교육 현장에서 AI·SW·경영정보 분야를 가르치며, 본 과정은 회사 대표인 강사가 직접 설계하고
                 운영하는 단기 집중 트랙입니다.
               </p>
+              {/* 강사 전문 분야 태그 목록을 pill 형태로 반복 렌더링 (key 는 태그 문자열) */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginBottom: '14px' }}>
                 {['AI·SW 교육', '바이브코딩', '경영정보학', '인적자원관리', '에듀테크 운영'].map((tag) => (
                   <span key={tag} style={{
@@ -170,6 +210,7 @@ export default function About(): ReactElement {
                   }}>{tag}</span>
                 ))}
               </div>
+              {/* 강사진 상세 페이지(/instructor)로 이동하는 내부 라우터 링크 */}
               <Link to="/instructor" style={{
                 display: 'inline-flex',
                 alignItems: 'center',
@@ -190,12 +231,14 @@ export default function About(): ReactElement {
               왜 강사가 직접 사이트를 만들었나
             </span>
           </h3>
+          {/* REASONS 상수를 반응형 그리드 카드로 매핑 렌더링 */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
             gap: '20px',
             marginBottom: '56px',
           }}>
+            {/* key 로 배열 인덱스 i 사용 — 정적·불변 목록이라 재정렬 우려 없음 */}
             {REASONS.map((r, i) => (
               <div key={i} style={{
                 padding: '24px',
@@ -203,6 +246,7 @@ export default function About(): ReactElement {
                 border: '1px solid var(--border-color, #e5e7eb)',
                 borderRadius: '12px',
               }}>
+                {/* 카드 아이콘(이모지) 영역 */}
                 <div style={{
                   width: '56px',
                   height: '56px',
@@ -229,6 +273,7 @@ export default function About(): ReactElement {
           </div>
 
           {/* ───── 소속 회사 소개 ───── */}
+          {/* 강사가 대표로 있는 회사(드림아이티비즈) 소개 박스 */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
             <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>강사의 소속 회사</span>
           </h3>
@@ -256,12 +301,14 @@ export default function About(): ReactElement {
           </div>
 
           {/* 회사 사업 영역 */}
+          {/* BIZ_AREAS 상수를 반응형 그리드 카드로 매핑 렌더링 (상단 보더로 강조) */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
             gap: '16px',
             marginBottom: '56px',
           }}>
+            {/* key 로 배열 인덱스 i 사용 — 정적·불변 목록 */}
             {BIZ_AREAS.map((b, i) => (
               <div key={i} style={{
                 padding: '20px 22px',
@@ -284,6 +331,7 @@ export default function About(): ReactElement {
           </div>
 
           {/* ───── 회사 상세 정보 + 연락처 ───── */}
+          {/* 좌: 회사 기본 정보 표 / 우: 연락처 카드 (2열 반응형 그리드) */}
           <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '24px', color: 'var(--text-primary, #1a1a1a)' }}>
             <span style={{ borderLeft: '4px solid var(--primary-blue, #0046C8)', paddingLeft: '12px' }}>회사 정보 / 문의</span>
           </h3>
@@ -293,6 +341,7 @@ export default function About(): ReactElement {
             gap: '20px',
             marginBottom: '56px',
           }}>
+            {/* 회사 기본 정보 표 카드 (라벨/값 행 구조, ROW_LABEL·ROW_VALUE 스타일 재사용) */}
             <div style={{
               padding: '28px 32px',
               background: 'var(--bg-card, #fff)',
@@ -316,6 +365,7 @@ export default function About(): ReactElement {
                   <span style={ROW_LABEL}>사업자번호</span>
                   <span style={ROW_VALUE}>{c.bizNumber}</span>
                 </div>
+                {/* 통신판매번호는 설정에 값이 있을 때만 행을 표시(엣지케이스: 값 없음) */}
                 {c.salesNumber && (
                   <div style={{ display: 'flex' }}>
                     <span style={ROW_LABEL}>통신판매번호</span>
@@ -326,6 +376,7 @@ export default function About(): ReactElement {
                   <span style={ROW_LABEL}>주소</span>
                   <span style={ROW_VALUE}>{c.address}</span>
                 </div>
+                {/* 운영시간도 설정에 값이 있을 때만 조건부 렌더링 */}
                 {c.businessHours && (
                   <div style={{ display: 'flex' }}>
                     <span style={ROW_LABEL}>운영시간</span>
@@ -335,6 +386,7 @@ export default function About(): ReactElement {
               </div>
             </div>
 
+            {/* 연락처 카드(이메일·전화·카카오·회사 본 사이트) */}
             <div style={{
               padding: '28px 32px',
               background: 'var(--bg-card, #fff)',
@@ -346,6 +398,7 @@ export default function About(): ReactElement {
                 color: 'var(--primary-blue, #0046C8)', margin: '0 0 16px',
               }}>연락처</p>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', fontSize: '16px' }}>
+                {/* 이메일: mailto: 링크로 메일 클라이언트 실행 */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="이메일">📧</span>
                   <div>
@@ -356,6 +409,7 @@ export default function About(): ReactElement {
                   </div>
                 </div>
 
+                {/* 전화: tel: 링크. 정규식 /-/g 로 하이픈을 모두 제거해 다이얼 가능한 숫자열로 변환 */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="전화">📞</span>
                   <div>
@@ -366,6 +420,7 @@ export default function About(): ReactElement {
                   </div>
                 </div>
 
+                {/* 카카오톡 ID: 설정에 값이 있을 때만 조건부 표시 */}
                 {c.kakao && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                     <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="카카오톡">💬</span>
@@ -376,6 +431,7 @@ export default function About(): ReactElement {
                   </div>
                 )}
 
+                {/* 회사 본 사이트: 새 탭으로 열고 rel="noopener noreferrer" 로 보안(탭 탈취 방지) */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
                   <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="본 사이트">🌐</span>
                   <div>
@@ -391,6 +447,7 @@ export default function About(): ReactElement {
           </div>
 
           {/* ───── 회사가 운영하는 다른 사이트 ───── */}
+          {/* familySites 가 존재하고 1개 이상일 때만 섹션 전체를 렌더링(엣지케이스: 없음/빈 배열) */}
           {site.familySites && site.familySites.length > 0 && (
             <>
               <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '12px', color: 'var(--text-primary, #1a1a1a)' }}>
@@ -401,12 +458,14 @@ export default function About(): ReactElement {
               <p style={{ fontSize: '15.5px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 20px', lineHeight: 1.7 }}>
                 강사의 회사가 동일한 인프라로 운영 중인 사이트 예시입니다. 본 과정도 이 운영 체계 위에서 안정적으로 진행됩니다.
               </p>
+              {/* 패밀리 사이트 목록을 외부 링크 카드로 그리드 렌더링 */}
               <div style={{
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
                 gap: '12px',
                 marginBottom: '32px',
               }}>
+                {/* 각 패밀리 사이트는 새 탭 외부 링크. noopener noreferrer 로 보안 처리 */}
                 {site.familySites.map((fs, i) => (
                   <a key={i} href={fs.url} target="_blank" rel="noopener noreferrer" style={{
                     display: 'flex',
@@ -430,6 +489,7 @@ export default function About(): ReactElement {
           )}
 
           {/* ───── 저작권 ───── */}
+          {/* 페이지 하단 저작권/운영 주체 명시 영역 */}
           <div style={{
             marginTop: '40px',
             padding: '20px',

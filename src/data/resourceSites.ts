@@ -1,8 +1,44 @@
+/* =============================================================================
+ * resourceSites.ts — 학습자료 페이지에서 사용하는 "사이트 링크" 정적 데이터 모듈
+ *
+ * [역할]
+ *   - LMS 학습자료(Resources) 화면에 노출할 외부/자체 학습 사이트 목록을
+ *     분야별 그룹으로 묶어 제공하는 순수 데이터 파일이다.
+ *   - 런타임 로직이나 부수효과(네트워크, 상태 등) 없이 상수 데이터만 export 한다.
+ *
+ * [핵심 책임]
+ *   - 각 사이트 링크의 메타데이터(이름, 설명, URL, 강조 여부 등) 타입 정의.
+ *   - DreamIT 자체 제작 사이트(owner: 'mine')와 외부 사이트(owner: 'external')를
+ *     하나의 그룹 배열(SITE_GROUPS)로 통합 관리.
+ *
+ * [주요 export]
+ *   - interface SiteLink  : 개별 사이트 링크 1건의 형태.
+ *   - interface SiteGroup : 분야별 사이트 묶음(그룹)의 형태.
+ *   - const SITE_GROUPS   : 화면에 렌더링할 전체 그룹 데이터(단일 진실 공급원).
+ * ========================================================================== */
+
 /** 학습자료 페이지 데이터 — DreamIT 사에서 만든 사이트(분야별) + 외부 사이트 */
+// SiteLink: 화면에 표시되는 개별 링크 카드 1건의 데이터 형태.
+//   - name     : 사이트 표시 이름
+//   - desc     : 사이트 설명(카드 본문)
+//   - url       : 이동할 외부 링크 주소
+//   - featured?: (선택) 강조 카드 여부 — 레이아웃/스타일에서 우대 표시
+//   - accent?  : (선택) 강조 색상(예: '#dc2626') — featured 카드 강조용
+//   - badge?   : (선택) 카드에 붙일 배지 텍스트(예: '학습추천')
 export interface SiteLink { name: string; desc: string; url: string; featured?: boolean; accent?: string; badge?: string; }
+// SiteGroup: 동일 분야의 SiteLink들을 묶는 그룹 단위.
+//   - id    : 그룹 고유 식별자(렌더링 시 key 등으로 사용)
+//   - label : 그룹 표시 이름(예: 'AI 활용')
+//   - icon  : 그룹 아이콘(이모지)
+//   - owner : 'mine'(자체 제작) | 'external'(외부 도구) — 출처 구분/필터링용
+//   - sites : 해당 그룹에 속한 사이트 링크 배열
 export interface SiteGroup { id: string; label: string; icon: string; owner: 'mine' | 'external'; sites: SiteLink[]; }
 
+// SITE_GROUPS: 학습자료 화면이 렌더링하는 전체 데이터(단일 진실 공급원).
+//   - 분야별 그룹(AI / 코딩·웹 / CS 전공 / IT 자격증 / 외부 도구)을 순서대로 나열.
+//   - 부수효과 없는 불변 상수이므로, 항목 추가/수정 시 이 배열만 편집하면 된다.
 export const SITE_GROUPS: SiteGroup[] = [
+  // [그룹 1] AI 활용 — DreamIT 자체 제작(owner: 'mine'). 생성형 AI 도구·실무 학습 사이트 모음.
   { id: 'ai', label: 'AI 활용', icon: '🤖', owner: 'mine', sites: [
     { name: 'AI 프롬프트 학습', desc: '효과적인 프롬프트 작성법, 프롬프트 엔지니어링 가이드', url: 'https://ai-prompt.dreamitbiz.com' },
     { name: 'ChatGPT 활용', desc: 'ChatGPT 사용법, GPTs, API 활용, 업무 자동화', url: 'https://chatgpt.dreamitbiz.com' },
@@ -23,6 +59,7 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: '생성형 AI 창업 교육', desc: '생성형 AI를 활용한 비즈니스 기획 및 성장 전략 교육', url: 'https://startup.dreamitbiz.com' },
     { name: 'Manus AI 학습 플랫폼', desc: 'Manus AI — 세계 최초 자율형 AI 에이전트 플랫폼 종합 학습', url: 'https://manus.dreamitbiz.com' },
   ] },
+  // [그룹 2] 코딩·웹 개발 — DreamIT 자체 제작. 언어·프레임워크·웹 개발 학습 사이트 모음.
   { id: 'coding', label: '코딩·웹 개발', icon: '💻', owner: 'mine', sites: [
     { name: 'UI/UX 용어 사전', desc: 'Vibe Coding으로 배우는 인터랙티브 UI/UX 용어집', url: 'https://html.dreamitbiz.com' },
     { name: '바이브코딩 백엔드', desc: '바이브코딩으로 배우는 백엔드 완전정복', url: 'https://webstudy.dreamitbiz.com' },
@@ -31,9 +68,12 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'Java 학습', desc: 'Java 기초, OOP, 컬렉션, 스레드, 프로젝트 실습', url: 'https://java-study.dreamitbiz.com' },
     { name: 'Python 학습', desc: 'Python 기초, 데이터 분석, 자동화, 웹 스크래핑', url: 'https://python-study.dreamitbiz.com' },
     { name: '코딩 학습', desc: 'C, Java, Python 코딩 문제 풀기, 플레이그라운드', url: 'https://coding.dreamitbiz.com' },
+    // featured: true, accent, badge가 모두 지정된 "강조 카드" — 입문자 추천 사이트로 우대 표시.
     { name: '웹 프론트엔드 기초', desc: '웹 개발의 첫걸음을 정성껏 담은 기초 학습 사이트 — HTML5 시맨틱 구조, CSS3 레이아웃(Flexbox·Grid)과 디자인, JavaScript 기본 문법·DOM 제어·이벤트, 반응형 웹까지 예제와 실습 중심으로 차근차근 익힙니다. 입문자가 웹을 처음 배우기에 가장 좋은 출발점입니다.', url: 'https://web.dreamitbiz.com', featured: true, accent: '#dc2626', badge: '학습추천' },
+    // featured: true만 지정된 강조 카드(별도 accent/badge 없음).
     { name: 'Sample Gallery — 웹 디자인 샘플', desc: '개인·회사·학습·블로그 등 다양한 정적 사이트 샘플과 소스코드 제공', url: 'https://sample.dreamitbiz.com', featured: true },
   ] },
+  // [그룹 3] CS 전공 — DreamIT 자체 제작. 컴퓨터과학 전공 기초 과목 학습 사이트 모음.
   { id: 'cs', label: 'CS 전공', icon: '🧮', owner: 'mine', sites: [
     { name: 'AI·SW 개론', desc: 'SW·DS·AIoT·AI·XR·HMI 분야 탐색, 한신대학교 교과목', url: 'https://aisw.dreamitbiz.com' },
     { name: '자료구조 학습', desc: '선형/비선형 자료구조, 해시, 정렬, 고급 자료구조', url: 'https://data-structure.dreamitbiz.com' },
@@ -41,6 +81,7 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: '알고리즘 학습', desc: '정렬, 탐색, 그래프, DP, 그리디, 코딩 테스트 대비', url: 'https://algorithm.dreamitbiz.com' },
     { name: '소프트웨어 설계 & 구현', desc: '설계 원칙, UML, 디자인 패턴, OOP, TDD, 실습', url: 'https://software.dreamitbiz.com' },
   ] },
+  // [그룹 4] IT 자격증 — DreamIT 자체 제작. 각종 IT/직무 자격증 시험 대비 학습 사이트 모음.
   { id: 'cert', label: 'IT 자격증', icon: '📜', owner: 'mine', sites: [
     { name: '직업상담사 시험 준비', desc: '직업상담사 1급·2급 필기·실기 CBT 학습 플랫폼', url: 'https://jobpath.dreamitbiz.com' },
     { name: '정보처리기사', desc: '정보처리기사 시험 대비 학습 플랫폼', url: 'https://eip.dreamitbiz.com' },
@@ -49,6 +90,8 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'AWS 자격증', desc: 'AWS 클라우드 자격증 시험 대비 학습 플랫폼', url: 'https://aws.dreamitbiz.com' },
     { name: 'AICE Associate 학습', desc: 'AICE Associate 자격증 시험 대비 학습 플랫폼', url: 'https://aice.dreamitbiz.com' },
   ] },
+  // [그룹 5] 외부 AI·개발 도구 — owner: 'external'. DreamIT 외부의 공식 서비스/문서 링크 모음.
+  //   자체 사이트(mine)와 구분되어 별도 섹션/스타일로 노출될 수 있다.
   { id: 'external', label: '외부 AI·개발 도구', icon: '🌐', owner: 'external', sites: [
     { name: 'ChatGPT', desc: 'OpenAI ChatGPT', url: 'https://chat.openai.com/' },
     { name: 'Claude', desc: 'Anthropic Claude', url: 'https://claude.ai/' },

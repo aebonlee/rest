@@ -17,9 +17,10 @@ const normEmail = (s?: string | null): string => (s || '').toLowerCase().trim();
 
 /** 명시적 동일인 묶음: 이메일(소문자) → { 묶음 키, 표시 이름 } */
 const EMAIL_ALIAS = new Map<string, { key: string; name?: string }>();
+// 설정에 등록된 수동 동일인 그룹을 펼쳐 이메일→묶음키 맵을 구성.
 for (const g of SAME_PERSON_EMAIL_GROUPS) {
   const emails = g.emails.map(normEmail).filter(Boolean);
-  const canon = [...emails].sort()[0];
+  const canon = [...emails].sort()[0];   // 정렬 후 첫 이메일을 대표(canonical)로 — 그룹 키를 안정적으로 고정
   const key = `same:${canon}`;
   for (const e of emails) EMAIL_ALIAS.set(e, { key, name: g.name });
 }
@@ -59,8 +60,9 @@ const recency = (p: UserProfile): number => {
 
 /** user_profiles 배열을 동일인 기준으로 그룹화 (입력 순서 유지) */
 export function groupByPerson(profiles: UserProfile[]): PersonGroup[] {
-  const map = new Map<string, UserProfile[]>();
-  const order: string[] = [];
+  const map = new Map<string, UserProfile[]>();   // 묶음키 → 계정들
+  const order: string[] = [];                      // 최초 등장 순서 보존용
+  // 1패스: personKey로 같은 사람끼리 묶고, 키의 첫 등장 순서를 기록.
   for (const p of profiles) {
     const k = personKey(p);
     const arr = map.get(k);
@@ -71,8 +73,9 @@ export function groupByPerson(profiles: UserProfile[]): PersonGroup[] {
       order.push(k);
     }
   }
+  // 2패스: 각 묶음을 최근 로그인순 정렬 후 대표(primary) 선정해 PersonGroup으로 변환.
   return order.map((key) => {
-    const accounts = [...map.get(key)!].sort((a, b) => recency(b) - recency(a));
+    const accounts = [...map.get(key)!].sort((a, b) => recency(b) - recency(a));   // 최신 활동 계정이 0번(대표)
     const primary = accounts[0];
     // 명시적 동일인 묶음에 지정한 이름이 있으면 표시 이름으로 우선 사용
     const aliasName = accounts.map(aliasOf).find((a) => a?.name)?.name;
