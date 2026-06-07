@@ -327,7 +327,7 @@ const ProjectVote = (): ReactElement => {
 
               {/* 주제 카드 목록: rows를 하나씩 돌며 카드를 그린다. idx는 0부터 시작하는 순번 */}
               {/* 2열 그리드 — 화면이 좁으면(모바일) auto-fit으로 자동 1열. alignItems:start로 카드 높이가 달라도 윗줄 정렬 */}
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px', alignItems: 'start' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px', alignItems: 'stretch' }}>
               {rows.map((r, idx) => {
                 // 이 카드 한 장을 그리기 위해 미리 계산하는 값들:
                 const voters = votersByKey[r.key] || [];                 // 이 주제 투표자 이름 목록(없으면 빈 배열)
@@ -339,12 +339,12 @@ const ProjectVote = (): ReactElement => {
                 return (
                   // key={r.key}: 리스트의 각 항목에 고유 key를 주면 리액트가 효율적으로 갱신한다(필수).
                   // 내가 투표한 카드는 왼쪽에 파란 줄로 강조한다(삼항 연산자로 스타일 분기).
-                  <div key={r.key} style={{ ...card, borderLeft: mineVote ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)' }}>
+                  <div key={r.key} style={{ ...card, borderLeft: mineVote ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
                           {/* 순위 표시: idx는 0부터라 +1 해서 1위부터 보이게 한다 */}
-                          <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-blue)' }}>{idx + 1}위</span>
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-blue)' }}>{idx + 1}팀</span>
                           <h3 style={{ margin: 0, fontSize: '17px' }}>{r.title}</h3>
                           {/* 학생 제안 주제에만 '학생 제안' 칩 */}
                           {!r.isPreset && <span style={chip('var(--bg-light-gray)', 'var(--text-secondary)')}>학생 제안</span>}
@@ -425,7 +425,8 @@ const ProjectVote = (): ReactElement => {
 
                     {/* 액션 */}
                     {/* 카드 하단의 버튼들(투표/팀 만들기/합류/나가기/삭제) */}
-                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center' }}>
+                    {/* marginTop:auto — 카드가 그리드로 늘어나 빈 공간이 생겨도 버튼 줄을 항상 맨 아래에 정렬 */}
+                    <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: 'auto', paddingTop: '4px' }}>
                       {/* 투표 버튼: 내가 이미 투표했으면 강조 스타일 + "취소" 안내, 아니면 일반 스타일 */}
                       <button
                         className={mineVote ? 'btn btn-primary' : 'btn btn-secondary'}
