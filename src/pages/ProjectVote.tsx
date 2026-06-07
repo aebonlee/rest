@@ -306,7 +306,7 @@ const ProjectVote = (): ReactElement => {
       </section>
 
       <section className="section">
-        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '22px', maxWidth: '880px' }}>
+        <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '22px', maxWidth: '1080px' }}>
           {/* 조건부 렌더링: loading이 true면 로딩 스피너를, 아니면( : ) 실제 내용을 보여준다 */}
           {loading ? (
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
@@ -326,6 +326,8 @@ const ProjectVote = (): ReactElement => {
               )}
 
               {/* 주제 카드 목록: rows를 하나씩 돌며 카드를 그린다. idx는 0부터 시작하는 순번 */}
+              {/* 2열 그리드 — 화면이 좁으면(모바일) auto-fit으로 자동 1열. alignItems:start로 카드 높이가 달라도 윗줄 정렬 */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px', alignItems: 'start' }}>
               {rows.map((r, idx) => {
                 // 이 카드 한 장을 그리기 위해 미리 계산하는 값들:
                 const voters = votersByKey[r.key] || [];                 // 이 주제 투표자 이름 목록(없으면 빈 배열)
@@ -476,8 +478,9 @@ const ProjectVote = (): ReactElement => {
                   </div>
                 );
               })}
+              </div>
 
-              {/* 새 주제 추가 */}
+              {/* 새 주제 추가 (그리드 바깥 — 전체 폭으로 크게 표시해 가독성↑) */}
               {/* 입력칸 2개(제목/설명) + 추가 버튼. value와 onChange가 한 쌍으로 묶인 "제어 컴포넌트" 방식 */}
               <div style={card}>
                 <h3 style={{ margin: '0 0 12px', fontSize: '17px' }}>새 주제 제안</h3>
