@@ -451,6 +451,22 @@ const Learning = (): ReactElement => {
               const dateLabel = isRegular && REGULAR_DATES[i] ? fmtKDate(REGULAR_DATES[i]) : '';
               return (
                 <div key={tp.id}>
+                  {tp.dividerBefore && (
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      margin: '14px 4px 8px',
+                      fontSize: '11.5px',
+                      fontWeight: 700,
+                      letterSpacing: '0.04em',
+                      color: 'var(--text-secondary, #9ca3af)',
+                    }}>
+                      <span style={{ flex: 1, height: '1px', background: 'var(--border-light, #e5e7eb)' }} />
+                      부록
+                      <span style={{ flex: 1, height: '1px', background: 'var(--border-light, #e5e7eb)' }} />
+                    </div>
+                  )}
                   <button
                     className={`sidebar-item${isActive ? ' active' : ''}`}
                     onClick={() => handleDayClick(i)}

@@ -37,6 +37,7 @@ export interface Topic {
   description: string;
   content: ContentSection[];
   subSections?: SubTopic[];   // 3차 메뉴 — 정규과정 일자별 상세 학습
+  dividerBefore?: boolean;    // 사이드바에서 이 박스 앞에 그룹 구분선 표시
 }
 
 /* ═════════════════════════════════════════════════════════
@@ -773,12 +774,13 @@ npm run deploy
     ],
   },
 
-  // ── 부록 박스 ① 파이썬 A to Z ──
+  // ── 부록 박스 ① 파이썬 A to Z (앞에 그룹 구분선) ──
   {
     id: 'pre-5-python',
     title: '파이썬 A to Z',
     icon: '🐍',
     description: '설치부터 변수·자료구조·함수·클래스·라이브러리까지 핵심만 한 페이지로.',
+    dividerBefore: true,
     content: [
           { subtitle: '파이썬을 배우는 이유' },
           { text: '파이썬은 문법이 영어 문장에 가깝고, AI·데이터·자동화 생태계가 가장 넓은 언어입니다. 코드를 처음 접해도 “읽고 고치는” 진입장벽이 낮아 바이브코딩과 특히 잘 맞습니다.' },
