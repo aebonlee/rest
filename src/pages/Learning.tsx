@@ -718,10 +718,12 @@ const Learning = (): ReactElement => {
                       justifyContent: 'space-between',
                       alignItems: 'center',
                       width: '100%',
-                      // 점검일은 호버 배경색을 상시 유지 (선택 시엔 active 그라데이션 우선)
+                      // 점검일(1차/2차)은 배경을 '다크 그린'으로 상시 표시해 일반 일자와 구분.
+                      //  - 선택 중(active)이면 더 진한 그린, 평상시엔 다크 그린. 글자는 흰색.
+                      //  - 인라인 스타일이 CSS의 active/hover보다 우선하므로 상태와 무관하게 그린이 유지됨.
                       // [개념] ...(조건 ? {객체} : {}) — 스프레드(...)로 '조건이 참일 때만' 스타일 속성을 펼쳐 넣음.
-                      ...(isCheckpoint && !isActive
-                        ? { background: 'rgba(13, 43, 94, 0.06)', color: 'var(--primary-blue)' }
+                      ...(isCheckpoint
+                        ? { background: isActive ? '#14532d' : '#166534', color: '#ffffff' }
                         : {}),
                     }}
                   >
