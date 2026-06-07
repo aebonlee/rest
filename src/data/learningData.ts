@@ -772,6 +772,257 @@ npm run deploy
       ] },
     ],
   },
+
+  // ── 부록 박스(선수과정 5번째) · 파이썬 & 데모앱 ──
+  {
+    id: 'pre-5',
+    title: '🐍 파이썬 & 데모앱 (Gradio·Streamlit)',
+    icon: '🐍',
+    description: '선수과정 보너스 모듈 — 파이썬 핵심 문법을 빠르게 훑고, Gradio·Streamlit으로 코드 몇 줄로 AI 데모 웹앱을 띄웁니다.',
+    content: [
+      { subtitle: '📦 이 부록에서 배우는 것' },
+      { text: '선수과정 Day 1~4를 마친 뒤, 코드로 직접 “움직이는 결과물”을 만들어 보는 보너스 모듈입니다. 파이썬 기초를 빠르게 정리하고, Gradio·Streamlit으로 AI 데모 웹앱을 코드 몇 줄로 만들어 공유까지 해봅니다.' },
+      { table: {
+        headers: ['페이지', '내용'],
+        rows: [
+          ['🐍 파이썬 A to Z', '변수·자료구조·함수·클래스 + AI/데이터 라이브러리'],
+          ['🎛️ 그라이디오 Tip!', '파이썬 함수를 즉시 웹 데모로 (AI 모델 시연용)'],
+          ['📊 스트림릿 Tip!', '파이썬 스크립트를 데이터 대시보드로'],
+        ],
+      } },
+      { callout: { type: 'tip', text: '왼쪽 메뉴에서 이 박스를 펼치면 세 페이지로 이동할 수 있습니다. 설치가 번거로우면 Google Colab(colab.research.google.com)에서 브라우저로 바로 실행해도 됩니다.' } },
+      { callout: { type: 'info', text: 'Gradio = 함수 단위 빠른 AI 데모, Streamlit = 스크립트 단위 데이터 대시보드. 목적에 맞게 골라 쓰면 됩니다.' } },
+    ],
+    subSections: [
+      // ── 페이지 1: 파이썬 A to Z ──
+      {
+        id: 'pre-5-python',
+        title: '파이썬 A to Z',
+        icon: '🐍',
+        summary: '설치부터 변수·자료구조·함수·클래스·라이브러리까지 핵심만 한 페이지로.',
+        content: [
+          { subtitle: '파이썬을 배우는 이유' },
+          { text: '파이썬은 문법이 영어 문장에 가깝고, AI·데이터·자동화 생태계가 가장 넓은 언어입니다. 코드를 처음 접해도 “읽고 고치는” 진입장벽이 낮아 바이브코딩과 특히 잘 맞습니다.' },
+          { callout: { type: 'tip', text: '설치 없이 시작하려면 Google Colab에서 브라우저로 바로 실행할 수 있습니다. 로컬 설치는 python.org 또는 Anaconda를 권장합니다.' } },
+
+          { subtitle: '1) 변수와 기본 자료형' },
+          { code: { lang: 'python', content: `name = "홍길동"      # 문자열(str)
+age = 25              # 정수(int)
+height = 175.5        # 실수(float)
+is_student = True     # 불리언(bool)
+
+print(name, age)
+print(f"{name}님은 {age}살입니다")   # f-string 포매팅
+print(type(age))                      # <class 'int'>` } },
+
+          { subtitle: '2) 자료구조 4종' },
+          { table: {
+            headers: ['종류', '표기', '특징', '예시'],
+            rows: [
+              ['리스트 list', '[ ]', '순서 O · 변경 O', 'nums = [1, 2, 3]'],
+              ['튜플 tuple', '( )', '순서 O · 변경 X', 'point = (10, 20)'],
+              ['딕셔너리 dict', '{키: 값}', '키-값 쌍', 'user = {"name": "길동"}'],
+              ['집합 set', '{ }', '중복 X · 순서 X', 'tags = {"a", "b"}'],
+            ],
+          } },
+          { code: { lang: 'python', content: `nums = [3, 1, 2]
+nums.append(4)        # [3, 1, 2, 4]
+nums.sort()           # [1, 2, 3, 4]
+print(nums[0], nums[-1])     # 첫/마지막 → 1 4
+
+user = {"name": "길동", "age": 25}
+print(user["name"])          # 길동
+user["email"] = "a@b.com"    # 키 추가` } },
+
+          { subtitle: '3) 제어문 — 조건과 반복' },
+          { code: { lang: 'python', content: `score = 85
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+else:
+    grade = "C"
+print(grade)                 # B
+
+for i in range(3):           # 0, 1, 2
+    print(i)
+
+for fruit in ["사과", "배"]:
+    print(fruit)` } },
+          { callout: { type: 'warn', text: '파이썬은 중괄호 대신 들여쓰기(보통 공백 4칸)로 코드 블록을 구분합니다. 들여쓰기가 어긋나면 IndentationError가 납니다.' } },
+
+          { subtitle: '4) 함수' },
+          { code: { lang: 'python', content: `def greet(name, times=1):        # times: 기본값
+    return ("안녕, " + name + "! ") * times
+
+print(greet("길동"))            # 안녕, 길동!
+print(greet("철수", times=2))    # 안녕, 철수! 안녕, 철수!` } },
+
+          { subtitle: '5) 모듈과 패키지 (pip)' },
+          { code: { lang: 'python', content: `# 터미널에서 외부 라이브러리 설치
+# pip install requests
+
+import requests
+res = requests.get("https://api.github.com")
+print(res.status_code)       # 200` } },
+
+          { subtitle: '6) 파일과 예외 처리' },
+          { code: { lang: 'python', content: `try:
+    with open("data.txt", "r", encoding="utf-8") as f:
+        text = f.read()
+except FileNotFoundError:
+    print("파일이 없습니다")` } },
+
+          { subtitle: '7) 클래스(객체지향) 맛보기' },
+          { code: { lang: 'python', content: `class Dog:
+    def __init__(self, name):
+        self.name = name
+    def bark(self):
+        return self.name + ": 멍멍"
+
+d = Dog("바둑이")
+print(d.bark())              # 바둑이: 멍멍` } },
+
+          { subtitle: 'AI·데이터에서 자주 쓰는 라이브러리' },
+          { table: {
+            headers: ['라이브러리', '용도'],
+            rows: [
+              ['requests', 'HTTP 요청(API 호출)'],
+              ['pandas', '표 데이터 분석(엑셀·CSV)'],
+              ['numpy', '수치 계산·배열'],
+              ['openai / anthropic', 'LLM API 클라이언트'],
+              ['gradio / streamlit', '데모 웹앱 만들기'],
+            ],
+          } },
+          { callout: { type: 'info', text: '다음 페이지에서 이 파이썬으로 Gradio·Streamlit을 써서 코드 몇 줄로 AI 데모 웹앱을 띄워봅니다.' } },
+        ],
+      },
+
+      // ── 페이지 2: 그라이디오 Tip! ──
+      {
+        id: 'pre-5-gradio',
+        title: '그라이디오 Tip!',
+        icon: '🎛️',
+        summary: '파이썬 함수를 그대로 웹 UI로 — 코드 몇 줄로 AI 데모를 띄우는 Gradio 핵심 팁.',
+        content: [
+          { subtitle: 'Gradio란?' },
+          { text: 'Gradio는 파이썬 함수에 입력창·출력창을 자동으로 붙여 “웹 데모”로 만들어 주는 라이브러리입니다. HTML/CSS를 몰라도 함수 하나면 공유 가능한 AI 데모가 완성됩니다. (Hugging Face Spaces 배포의 표준 도구)' },
+          { code: { lang: 'bash', content: `pip install gradio` } },
+
+          { subtitle: '최소 예제 — 함수 → 웹 UI' },
+          { code: { lang: 'python', content: `import gradio as gr
+
+def greet(name):
+    return "안녕, " + name + "!"
+
+demo = gr.Interface(fn=greet, inputs="text", outputs="text")
+demo.launch()                # 로컬 http://127.0.0.1:7860` } },
+          { callout: { type: 'tip', text: 'launch(share=True)를 주면 임시 공개 URL이 생성돼 휴대폰·동료에게 바로 보여줄 수 있습니다.' } },
+
+          { subtitle: 'Interface vs Blocks' },
+          { table: {
+            headers: ['방식', '쓸 때'],
+            rows: [
+              ['gr.Interface', '입력 → 함수 → 출력이 단순할 때(가장 빠름)'],
+              ['gr.Blocks', '여러 컴포넌트·레이아웃·이벤트를 자유 배치할 때'],
+            ],
+          } },
+
+          { subtitle: '자주 쓰는 입력/출력 컴포넌트' },
+          { items: [
+            'gr.Textbox — 텍스트 입력/출력',
+            'gr.Slider — 숫자 범위',
+            'gr.Image — 이미지 업로드/표시',
+            'gr.Audio — 음성',
+            'gr.Chatbot — 대화형 UI',
+            'gr.File — 파일 업로드',
+          ] },
+
+          { subtitle: 'LLM 챗봇 예시' },
+          { code: { lang: 'python', content: `import gradio as gr
+
+def chat(message, history):
+    # 실제로는 여기서 LLM API를 호출
+    return "당신이 말한 것: " + message
+
+gr.ChatInterface(fn=chat).launch()` } },
+
+          { subtitle: 'Tip 모음' },
+          { items: [
+            'inputs/outputs에 여러 개를 리스트로 줄 수 있다 — inputs=["text", "slider"].',
+            'examples=[...]로 예시 입력 버튼을 제공하면 데모 이해가 쉬워진다.',
+            'gr.Interface(..., title=, description=)로 제목·설명을 붙인다.',
+            'API 키는 코드에 직접 쓰지 말고 os.environ으로 불러온다.',
+          ] },
+          { callout: { type: 'warn', text: 'share=True 링크는 누구나 접속할 수 있습니다. 민감한 데이터나 API 키가 노출되지 않도록 주의하세요.' } },
+        ],
+      },
+
+      // ── 페이지 3: 스트림릿 Tip! ──
+      {
+        id: 'pre-5-streamlit',
+        title: '스트림릿 Tip!',
+        icon: '📊',
+        summary: '파이썬 스크립트를 데이터 대시보드로 — 위젯·레이아웃·캐싱·배포까지 Streamlit 핵심 팁.',
+        content: [
+          { subtitle: 'Streamlit이란?' },
+          { text: 'Streamlit은 평범한 파이썬 스크립트를 위에서 아래로 실행하며 데이터 앱(대시보드)으로 만들어 주는 라이브러리입니다. 위젯을 건드리면 스크립트가 자동으로 다시 실행되어 화면이 갱신됩니다. 데이터 분석 결과·차트를 빠르게 공유할 때 최고입니다.' },
+          { code: { lang: 'bash', content: `pip install streamlit` } },
+
+          { subtitle: '최소 예제 + 실행' },
+          { code: { lang: 'python', content: `# app.py
+import streamlit as st
+
+st.title("나의 첫 앱")
+name = st.text_input("이름을 입력하세요")
+if st.button("인사"):
+    st.write("안녕, " + name + "!")` } },
+          { code: { lang: 'bash', content: `streamlit run app.py     # 브라우저 http://localhost:8501` } },
+          { callout: { type: 'warn', text: 'Gradio와 달리 python app.py가 아니라 반드시 streamlit run app.py로 실행합니다.' } },
+
+          { subtitle: '자주 쓰는 위젯' },
+          { table: {
+            headers: ['함수', '용도'],
+            rows: [
+              ['st.title / st.header / st.write', '제목·텍스트·만능 출력'],
+              ['st.text_input / st.number_input', '텍스트·숫자 입력'],
+              ['st.button / st.checkbox', '버튼·체크박스'],
+              ['st.slider / st.selectbox', '슬라이더·드롭다운'],
+              ['st.file_uploader', '파일 업로드'],
+              ['st.dataframe / st.line_chart', '표·차트'],
+            ],
+          } },
+
+          { subtitle: '레이아웃 — 사이드바와 컬럼' },
+          { code: { lang: 'python', content: `import streamlit as st
+
+st.sidebar.title("메뉴")             # 왼쪽 사이드바
+col1, col2 = st.columns(2)           # 2단 분할
+col1.metric("매출", "1,200만원")
+col2.metric("주문", "340건")` } },
+
+          { subtitle: '캐싱 & 상태 유지' },
+          { code: { lang: 'python', content: `import streamlit as st
+
+@st.cache_data                       # 느린 작업 결과를 캐시
+def load_data():
+    return expensive_query()
+
+if "count" not in st.session_state:  # 재실행돼도 값 유지
+    st.session_state.count = 0` } },
+          { callout: { type: 'tip', text: '스크립트가 위젯 조작마다 통째로 다시 실행되므로, 느린 로딩은 @st.cache_data로 감싸고 유지할 값은 st.session_state에 둡니다.' } },
+
+          { subtitle: '배포 (무료)' },
+          { items: [
+            'GitHub에 app.py + requirements.txt를 푸시',
+            'share.streamlit.io(Streamlit Community Cloud)에서 레포 연결',
+            '몇 분 뒤 공개 URL 발급 — 코드 수정 push 시 자동 재배포',
+          ] },
+          { callout: { type: 'info', text: '정리: 빠른 AI 모델 시연은 Gradio, 데이터 대시보드는 Streamlit. 둘 다 파이썬만으로 웹앱을 만들 수 있습니다.' } },
+        ],
+      },
+    ],
+  },
 ];
 
 /* ═════════════════════════════════════════════════════════
