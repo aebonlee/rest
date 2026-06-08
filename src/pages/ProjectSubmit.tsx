@@ -69,7 +69,7 @@ const ProjectSubmit = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>산출물 제출</h2>
-          <p>팀의 최종 산출물(데모·발표자료·소스)을 제출하세요. 제출 내용은 <Link to="/project-results" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>프로젝트 결과</Link>에 모여 공개됩니다.</p>
+          <p>팀의 최종 산출물(데모·발표자료·소스)을 제출하세요. 제출 내용은 강사가 확인합니다.</p>
         </div>
       </section>
 

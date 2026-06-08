@@ -25,7 +25,6 @@ const groups: { title: string | null; items: { path: string; label: string; icon
       { path: '/project-board', label: '프로젝트 관리(게시판)', icon: '💬' },
       { path: '/project-padlets', label: '팀별 패들렛', icon: '📌' },
       { path: '/project-submit', label: '산출물 제출', icon: '📤' },
-      { path: '/project-results', label: '프로젝트 결과', icon: '🏆' },
     ],
   },
 ];

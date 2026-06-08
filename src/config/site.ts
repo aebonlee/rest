@@ -158,7 +158,6 @@ const site: SiteConfig = {
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
         { path: '/project-padlets', labelKey: 'site.nav.projectPadlets' },
         { path: '/project-submit', labelKey: 'site.nav.projectSubmit' },
-        { path: '/project-results', labelKey: 'site.nav.projectResults' },
       ]
     },
     { path: '/resources', labelKey: 'site.nav.resources' },
