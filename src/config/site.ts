@@ -148,7 +148,10 @@ const site: SiteConfig = {
       //           '/project-board', '/projects/apps' 처럼 /project로 시작하는 주소 모두에서 부모가 활성화됩니다.
       dropdown: [
         { path: '/project-guide', labelKey: 'site.nav.projectIntro' },
+        // 아래는 "팀 활동" 흐름(팀 구성 → 수행 점검 → 협업 → 결과물). divider는 클릭 불가 구분선.
+        { divider: true, labelKey: 'site.nav.teamActivities' },
         { path: '/project-vote', labelKey: 'site.nav.projectVote' },
+        { path: '/project-checklist', labelKey: 'site.nav.projectChecklist' },
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
         { path: '/projects/apps', labelKey: 'site.nav.projectApps' },
       ]

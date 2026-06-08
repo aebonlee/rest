@@ -71,6 +71,7 @@ const Assessment = lazy(() => import('../pages/Assessment'));
 const ProjectGuide = lazy(() => import('../pages/ProjectGuide'));
 const ProjectBoard = lazy(() => import('../pages/ProjectBoard'));
 const ProjectVote = lazy(() => import('../pages/ProjectVote'));
+const ProjectChecklist = lazy(() => import('../pages/ProjectChecklist'));
 const NotFound = lazy(() => import('../pages/NotFound')); // 어떤 경로에도 안 맞을 때 보여줄 404 페이지
 
 // Auth 페이지 — 로그인/회원가입/비밀번호 찾기/마이페이지 등 "인증" 관련 화면
@@ -162,6 +163,7 @@ const PublicLayout = (): ReactElement => {
                 replace 옵션: 브라우저 "뒤로 가기" 기록에서 옛 주소를 남기지 않고 덮어씁니다.
                 → 뒤로 가기를 눌렀을 때 다시 /project-teams 로 돌아와 무한 반복되는 일을 막아줍니다. */}
             <Route path="/project-teams" element={<Navigate to="/project-vote" replace />} />
+            <Route path="/project-checklist" element={<AuthGuard><ProjectChecklist /></AuthGuard>} />
             <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
 
             {/* Auth — site.features.auth가 켜진 경우에만 등록.

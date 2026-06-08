@@ -264,8 +264,9 @@ export interface MenuItem {
 
 // 드롭다운 하위 메뉴 항목.
 export interface SubMenuItem {
-  path: string;     // 이동 경로.
-  labelKey: string; // 번역 키.
+  path?: string;     // 이동 경로(divider면 생략).
+  labelKey: string;  // 번역 키.
+  divider?: boolean; // true면 클릭 불가한 섹션 구분선(라벨만 표시).
 }
 
 // 패밀리 사이트(관련 사이트) 링크 정보.
