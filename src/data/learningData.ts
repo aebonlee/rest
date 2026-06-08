@@ -2838,6 +2838,31 @@ AI 답변 받음
   </footer>
 </body>
 </html>` } },
+      { svg: `<svg viewBox="0 0 600 392" role="img" aria-label="위 시맨틱 HTML 예시 코드를 시각화한 페이지 구조" style="width:100%;max-width:620px;height:auto;font-family:system-ui,-apple-system,sans-serif">
+  <rect x="4" y="4" width="592" height="384" rx="10" fill="#f8fafc" stroke="#cbd5e1"/>
+  <text x="14" y="20" font-family="ui-monospace,monospace" font-size="11" font-weight="700" fill="#94a3b8">&lt;body&gt;</text>
+  <rect x="16" y="28" width="568" height="100" rx="6" fill="#dbeafe" stroke="#3b82f6"/>
+  <text x="28" y="49" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#1e3a8a">&lt;header&gt;</text>
+  <text x="120" y="49" font-size="12" fill="#1e40af">&lt;h1&gt; AI Reboot Academy</text>
+  <rect x="28" y="60" width="544" height="56" rx="6" fill="#e0e7ff" stroke="#6366f1"/>
+  <text x="40" y="81" font-family="ui-monospace,monospace" font-size="14" font-weight="700" fill="#3730a3">&lt;nav&gt;</text>
+  <rect x="100" y="84" width="74" height="24" rx="12" fill="#c7d2fe" stroke="#6366f1"/>
+  <text x="137" y="100" font-size="12" fill="#3730a3" text-anchor="middle">소개</text>
+  <rect x="184" y="84" width="92" height="24" rx="12" fill="#c7d2fe" stroke="#6366f1"/>
+  <text x="230" y="100" font-size="12" fill="#3730a3" text-anchor="middle">커리큘럼</text>
+  <rect x="16" y="138" width="568" height="158" rx="6" fill="#ecfdf5" stroke="#10b981"/>
+  <text x="28" y="159" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#065f46">&lt;main&gt;</text>
+  <rect x="30" y="170" width="540" height="116" rx="6" fill="#d1fae5" stroke="#059669"/>
+  <text x="42" y="191" font-family="ui-monospace,monospace" font-size="14" font-weight="700" fill="#047857">&lt;article&gt;</text>
+  <rect x="44" y="202" width="512" height="34" rx="5" fill="#a7f3d0" stroke="#10b981"/>
+  <text x="56" y="224" font-size="13" font-weight="700" fill="#065f46">&lt;h2&gt; 국내 LLM 활용 가이드</text>
+  <rect x="44" y="242" width="512" height="34" rx="5" fill="#a7f3d0" stroke="#10b981"/>
+  <text x="56" y="264" font-size="12" fill="#065f46">&lt;p&gt; Solar API로 시작하는 한국어 챗봇…</text>
+  <rect x="16" y="306" width="568" height="66" rx="6" fill="#ede9fe" stroke="#8b5cf6"/>
+  <text x="28" y="334" font-family="ui-monospace,monospace" font-size="15" font-weight="700" fill="#5b21b6">&lt;footer&gt;</text>
+  <text x="130" y="334" font-size="12" fill="#6d28d9">&lt;p&gt; © 2026 DreamIT Biz</text>
+</svg>` },
+      { callout: { type: 'tip', text: '위 코드의 중첩 구조를 그대로 그림으로 옮긴 것입니다. header(파랑) 안에 h1과 nav, main(초록) 안에 article > h2·p, 그리고 footer(보라)가 형제로 나란히 배치됩니다.' } },
 
       { subtitle: 'CSS 박스 모델' },
       { text: '모든 요소는 4겹 박스(content · padding · border · margin)로 구성됩니다. 기본적으로 width/height는 content만 의미하므로 padding+border를 더하면 실제 폭이 늘어납니다. 직관과 다른 동작 때문에 box-sizing: border-box를 전역 적용하는 것이 표준입니다.' },
