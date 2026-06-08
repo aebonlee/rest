@@ -104,7 +104,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
   {
     id: 5, slug: 'youth-policy-bot', title: '청년지원정책 안내 챗봇',
     tagline: '조건을 입력하면 맞춤 청년지원정책을 안내하는 챗봇',
-    icon: '🏛️', color: '#0046C8', members: ['권규빈', '임종권', '이수현'],
+    icon: '🏛️', color: '#0046C8', members: ['임종권', '최윤경', '박수아', '권규빈'],
   },
   {
     id: 6, slug: 'resume-coach', title: 'AI 자기소개서·면접 코치',
@@ -114,7 +114,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
   {
     id: 7, slug: 'resilience-coach', title: '회복탄력성 루틴 코치',
     tagline: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱',
-    icon: '🌱', color: '#10b981', members: ['이초월', '김서우'],
+    icon: '🌱', color: '#10b981', members: ['이초월', '김서우', '최윤정'],
   },
   {
     id: 8, slug: 'myopia-care', title: '내 아이 근시 관리용 플랫폼',
@@ -166,27 +166,27 @@ export const TEAM_PROJECTS: TeamProject[] = [
     // 17~21: 갤러리 신규 등록. 팀 결성/배포 전이라 members는 '모집 중'(빈 배열)로 둔다.
     id: 17, slug: 'supplement-reminder', title: '💊영양제 알리미💊',
     tagline: '영양제별 복용 주기·시간을 카카오톡으로 알려 주는 복용 알림 서비스',
-    icon: '💊', color: '#22c55e', members: [], note: '학생 제안',
+    icon: '💊', color: '#22c55e', members: ['모집 중'], note: '학생 제안',
   },
   {
     id: 18, slug: 'news-vocab', title: '뉴스 기반 용어·어휘 학습 서비스',
     tagline: '관심 분야·난이도를 고르면 엄선된 뉴스로 핵심 용어·어휘를 익히고 나만의 용어사전을 만드는 서비스',
-    icon: '📰', color: '#3b82f6', members: [], note: '학생 제안',
+    icon: '📰', color: '#3b82f6', members: ['모집 중'], note: '학생 제안',
   },
   {
     id: 19, slug: 'praise-community', title: '매일 서로에게 힘이 되는 칭찬 커뮤니티',
     tagline: '스스로와 서로를 칭찬하고, 매일 AI가 맞춤 칭찬을 건네는 커뮤니티',
-    icon: '👏', color: '#eab308', members: [], note: '학생 제안',
+    icon: '👏', color: '#eab308', members: ['모집 중'], note: '학생 제안',
   },
   {
     id: 20, slug: 'art-patron', title: '팬의 응원을 작가의 창작 자원으로 전환하는 예술 현물 후원 어플',
     tagline: '팬이 작가에게 필요한 화구·재료를 직접 후원해 창작을 잇는 예술 현물 후원 앱',
-    icon: '🖼️', color: '#a855f7', members: [], note: '학생 제안',
+    icon: '🖼️', color: '#a855f7', members: ['모집 중'], note: '학생 제안',
   },
   {
     id: 21, slug: 'mental-care', title: '진료실 밖에서도 이어지는 정신과 케어 — AI 증상 기록·임상 리포트 플랫폼',
     tagline: '정신과 외래 환자의 일상·증상을 AI가 임상 언어로 정리해 진료 공백을 잇는 플랫폼',
-    icon: '🧠', color: '#6366f1', members: [], note: '학생 제안',
+    icon: '🧠', color: '#6366f1', members: ['모집 중'], note: '학생 제안',
   },
 ];
 
