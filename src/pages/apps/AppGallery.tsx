@@ -140,7 +140,7 @@ const AppGallery = (): ReactElement => {
           </div>
 
           <p style={{ marginTop: '20px', fontSize: '12.5px', color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
-            각 앱은 팀별 GitHub 저장소(project01~17)에서 자동 배포됩니다.
+            각 앱은 팀별 GitHub 저장소(project01~21)에서 자동 배포됩니다.
           </p>
         </div>
       </section>
