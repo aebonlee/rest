@@ -48,9 +48,9 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 // PRESET_TOPICS: 미리 정해 둔 기본 주제 목록(상수 데이터).
 import { PRESET_TOPICS } from '../data/projectTopics';
-// getTeamNoByTitle: 주제 제목 → 고정 팀 번호(= 패들렛 번호) 매핑. MAX_TEAM_NO: 정식/학생제안 중 최대 번호.
-//   팀 번호의 단일 진실 공급원(TEAM_PROJECTS)에서 가져와, 득표 순위가 아닌 "고정 번호"로 표시·링크한다.
-import { getTeamNoByTitle, MAX_TEAM_NO } from '../data/teamProjects';
+// getBoardNo: 주제 제목 → 고정 보드 번호(1~21, = 패들렛 번호). BOARD_SIZE: 등록 주제 수(21).
+//   득표 순위가 아니라 운영자 확정 순서(boardOrder.ts)를 단일 진실 공급원으로 써서 표시·정렬·링크한다.
+import { getBoardNo, BOARD_SIZE } from '../data/boardOrder';
 // 투표/주제 관련 DB 작업 함수들과, 그 데이터 모양을 나타내는 타입들을 가져온다.
 import {
   listCustomTopics, listVotes, addTopic, deleteTopic, castVote, retractVote,
@@ -154,32 +154,38 @@ const ProjectVote = (): ReactElement => {
     const presetRows: Row[] = PRESET_TOPICS.map((t) => ({ key: t.key, title: t.title, description: t.description, isPreset: true }));
     // 학생 제안 주제들도 Row 모양으로 변환. id를 key로, 만든 사람을 ownerId로 넣고 isPreset: false 표시.
     const customRows: Row[] = custom.map((c) => ({ key: c.id, title: c.title, description: c.description, isPreset: false, ownerId: c.created_by }));
+    // 미등록(신규) 학생 주제에 줄 임시 번호: BOARD_SIZE(21) 다음부터 생성순으로 부여.
+    let extra = BOARD_SIZE;
+    const extraNo = new Map<string, number>();
+    customRows.forEach((r) => { if (getBoardNo(r.title) === undefined) extraNo.set(r.key, ++extra); });
+    // 이 카드의 고정 보드 번호(없으면 임시 번호).
+    const noOf = (r: Row) => getBoardNo(r.title) ?? extraNo.get(r.key) ?? (BOARD_SIZE + 1);
     // [...A, ...B]: 두 배열을 펼쳐 하나로 합친다(스프레드 문법).
-    // .sort((a,b) => 표차이): 득표 많은 순(내림차순)으로 정렬. b의 표수에서 a의 표수를 빼서 양수면 b가 앞으로 간다.
-    // 주의: sort는 원본 배열을 바꾸지만, 여기서는 새로 합친 배열에 적용하므로 원본 상태(custom 등)는 안전하다(불변성 유지).
-    return [...presetRows, ...customRows].sort((a, b) => (votersByKey[b.key]?.length || 0) - (votersByKey[a.key]?.length || 0));
-  }, [custom, votersByKey]);
+    // 정렬 기준을 '득표순'에서 '고정 번호순(1→21→신규)'으로 변경 — 번호가 1,2,3… 순서로 보이게 한다.
+    // 주의: sort는 원본 배열을 바꾸지만, 새로 합친 배열에 적용하므로 원본 상태(custom 등)는 안전하다.
+    return [...presetRows, ...customRows].sort((a, b) => noOf(a) - noOf(b));
+  }, [custom]);
 
-  // rowExtraNo: TEAM_PROJECTS에 등록되지 않은 "새 학생 제안 주제"에 줄 임시 번호 맵(주제 id → 번호).
-  //   - 정식/등록 주제는 getTeamNoByTitle로 고정 번호가 정해지므로 여기서 제외한다.
-  //   - 미등록 주제는 MAX_TEAM_NO(현재 17) 다음부터 custom 생성 순서대로 안정적으로 번호를 매긴다.
+  // rowExtraNo: boardOrder.ts에 등록되지 않은 "새 학생 제안 주제"에 줄 임시 번호 맵(주제 id → 번호).
+  //   - 등록된 주제(1~21)는 getBoardNo로 고정 번호가 정해지므로 여기서 제외한다.
+  //   - 미등록 주제는 BOARD_SIZE(21) 다음부터 custom 생성 순서대로 안정적으로 번호를 매긴다.
   //     (득표순으로 바뀌는 idx가 아니라 생성 순서를 쓰므로, 투표가 바뀌어도 번호가 흔들리지 않는다.)
   const rowExtraNo = useMemo(() => {
     const m = new Map<string, number>();
-    let n = MAX_TEAM_NO;
-    custom.forEach((c) => { if (getTeamNoByTitle(c.title) === undefined) m.set(c.id, ++n); });
+    let n = BOARD_SIZE;
+    custom.forEach((c) => { if (getBoardNo(c.title) === undefined) m.set(c.id, ++n); });
     return m;
   }, [custom]);
 
-  // teamNoForRow(r): 이 주제 카드의 "고정 팀 번호"를 돌려준다(= 패들렛 번호와 동일).
-  //   1순위: 제목으로 찾은 고정 번호(정식 팀 1~14, 등록된 학생 제안 15~17)
-  //   2순위: 미등록 새 주제에 부여한 임시 번호(18 이상)
-  //   득표 순위(idx+1)는 더 이상 번호로 쓰지 않는다 → 팀 번호·패들렛 번호가 항상 일치한다.
+  // teamNoForRow(r): 이 주제 카드의 "고정 보드 번호"를 돌려준다(= 패들렛 번호와 동일).
+  //   1순위: 제목으로 찾은 고정 번호(1~21)
+  //   2순위: 미등록 새 주제에 부여한 임시 번호(22 이상)
+  //   득표 순위는 더 이상 번호로 쓰지 않는다 → 팀 번호·패들렛 번호가 항상 일치한다.
   const teamNoForRow = (r: Row): number =>
-    getTeamNoByTitle(r.title) ?? rowExtraNo.get(r.key) ?? (MAX_TEAM_NO + 1);
+    getBoardNo(r.title) ?? rowExtraNo.get(r.key) ?? (BOARD_SIZE + 1);
 
   // padletUrl(n): 번호를 2자리(0패딩)로 맞춰 패들렛 보드 주소 생성. 예) 1 → .../project01
-  //   - 패들렛 번호는 카드의 '고정 팀 번호'(teamNoForRow)와 1:1로 매칭한다(득표순과 무관).
+  //   - 패들렛 번호는 카드의 '고정 보드 번호'(teamNoForRow)와 1:1로 매칭한다(득표순과 무관).
   const padletUrl = (n: number) => `https://padlet.com/aebon/project${String(n).padStart(2, '0')}`;
 
   // members(t): 팀 t의 팀원 배열을 안전하게 꺼낸다(배열이 아니면 빈 배열로). 곳곳에서 반복되어 함수로 묶음.
