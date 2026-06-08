@@ -75,6 +75,8 @@ const ProjectChecklist = lazy(() => import('../pages/ProjectChecklist'));
 const ProjectTimeline = lazy(() => import('../pages/ProjectTimeline'));
 const ProjectRubric = lazy(() => import('../pages/ProjectRubric'));
 const ProjectPadlets = lazy(() => import('../pages/ProjectPadlets'));
+const ProjectSubmit = lazy(() => import('../pages/ProjectSubmit'));
+const ProjectResults = lazy(() => import('../pages/ProjectResults'));
 const NotFound = lazy(() => import('../pages/NotFound')); // 어떤 경로에도 안 맞을 때 보여줄 404 페이지
 
 // Auth 페이지 — 로그인/회원가입/비밀번호 찾기/마이페이지 등 "인증" 관련 화면
@@ -170,6 +172,8 @@ const PublicLayout = (): ReactElement => {
             <Route path="/project-schedule" element={<AuthGuard><ProjectTimeline /></AuthGuard>} />
             <Route path="/project-rubric" element={<AuthGuard><ProjectRubric /></AuthGuard>} />
             <Route path="/project-padlets" element={<AuthGuard><ProjectPadlets /></AuthGuard>} />
+            <Route path="/project-submit" element={<AuthGuard><ProjectSubmit /></AuthGuard>} />
+            <Route path="/project-results" element={<AuthGuard><ProjectResults /></AuthGuard>} />
             <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
 
             {/* Auth — site.features.auth가 켜진 경우에만 등록.
