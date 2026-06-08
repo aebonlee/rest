@@ -73,6 +73,26 @@
     overflow-x: hidden;
 }
 
+/* ── 프로젝트 섹션 레이아웃 (좌측 사이드바 + 본문) ──
+   프로젝트 페이지들은 원래 풀폭 그라데이션 배너(.page-header)를 쓰는데,
+   사이드바 컬럼 안에서는 콤팩트한 좌측 정렬 헤더로 바꿔 어울리게 한다.
+   스코프(.project-content)를 둬서 일반 페이지/관리자 페이지에는 영향이 없다. */
+.project-content .page-header {
+    background: none;
+    color: var(--text-primary);
+    text-align: left;
+    padding: 4px 0 14px;
+    overflow: visible;
+    border-bottom: 1px solid var(--border-light);
+    margin-bottom: 18px;
+}
+.project-content .page-header::before,
+.project-content .page-header::after { display: none; } /* 배너 장식 제거 */
+.project-content .page-header h2 { font-size: 22px; color: var(--text-primary); margin-bottom: 6px; letter-spacing: -0.01em; }
+.project-content .page-header p { color: var(--text-secondary); max-width: none; margin: 0; font-size: 14.5px; line-height: 1.6; }
+.project-content .section { padding: 0 0 36px; }
+.project-content .container { max-width: 100%; padding-left: 0; padding-right: 0; }
+
 .admin-content h2 {
     font-size: 22px;
     font-weight: 700;

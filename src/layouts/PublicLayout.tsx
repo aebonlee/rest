@@ -48,6 +48,8 @@ import AdminGuard from '../components/AdminGuard';
 // Navbar/Footer: 모든 페이지에 공통으로 보이는 상단 메뉴/하단 바닥글.
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
+// ProjectLayout: '프로젝트' 섹션 좌측 사이드바 공통 레이아웃(하위 라우트를 Outlet에 렌더).
+import ProjectLayout from './ProjectLayout';
 // site: 사이트 전반의 설정값(기능 on/off 플래그 등)이 담긴 설정 객체.
 import site from '../config/site';
 
@@ -73,7 +75,6 @@ const ProjectBoard = lazy(() => import('../pages/ProjectBoard'));
 const ProjectVote = lazy(() => import('../pages/ProjectVote'));
 const ProjectChecklist = lazy(() => import('../pages/ProjectChecklist'));
 const ProjectTimeline = lazy(() => import('../pages/ProjectTimeline'));
-const ProjectRubric = lazy(() => import('../pages/ProjectRubric'));
 const ProjectPadlets = lazy(() => import('../pages/ProjectPadlets'));
 const ProjectSubmit = lazy(() => import('../pages/ProjectSubmit'));
 const ProjectResults = lazy(() => import('../pages/ProjectResults'));
@@ -156,25 +157,23 @@ const PublicLayout = (): ReactElement => {
                 /assessment (파라미터 없음) 과 /assessment/특정타입 모두 같은 페이지에서 처리합니다. */}
             <Route path="/assessment" element={<Assessment />} />
             <Route path="/assessment/:type" element={<Assessment />} />
-            <Route path="/project-guide" element={<ProjectGuide />} />
-            <Route path="/project-guide/:id" element={<ProjectGuide />} />
-            {/* 로그인 필요한 공개성 기능들은 AuthGuard로 감쌈.
-                element에 <ProjectVote /> 를 바로 넣지 않고 <AuthGuard>...</AuthGuard> 로 한 번 더 감쌌습니다.
-                → AuthGuard가 먼저 "로그인 했는지" 확인하고, 통과한 경우에만 자식(ProjectVote)을 보여줍니다.
-                  (children 패턴: AuthGuard 안에 넣은 자식 요소가 "보호 대상"이 됩니다.) */}
-            <Route path="/project-vote" element={<AuthGuard><ProjectVote /></AuthGuard>} />
-            {/* 구 경로 → 신 경로 리다이렉트(히스토리 대체).
-                옛 주소 /project-teams 로 들어오면 새 주소 /project-vote 로 자동 이동시킵니다.
-                replace 옵션: 브라우저 "뒤로 가기" 기록에서 옛 주소를 남기지 않고 덮어씁니다.
-                → 뒤로 가기를 눌렀을 때 다시 /project-teams 로 돌아와 무한 반복되는 일을 막아줍니다. */}
+            {/* 프로젝트 섹션 — 좌측 사이드바(ProjectLayout)를 공통 적용.
+                path 없는 레이아웃 라우트로, 하위 라우트가 ProjectLayout의 <Outlet/> 자리에 렌더된다.
+                각 하위는 기존처럼 AuthGuard로 개별 보호한다(project-guide는 공개). */}
+            <Route element={<ProjectLayout />}>
+              <Route path="/project-guide" element={<ProjectGuide />} />
+              <Route path="/project-guide/:id" element={<ProjectGuide />} />
+              <Route path="/projects/apps" element={<AuthGuard><AppGallery /></AuthGuard>} />
+              <Route path="/project-vote" element={<AuthGuard><ProjectVote /></AuthGuard>} />
+              <Route path="/project-schedule" element={<AuthGuard><ProjectTimeline /></AuthGuard>} />
+              <Route path="/project-checklist" element={<AuthGuard><ProjectChecklist /></AuthGuard>} />
+              <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
+              <Route path="/project-padlets" element={<AuthGuard><ProjectPadlets /></AuthGuard>} />
+              <Route path="/project-submit" element={<AuthGuard><ProjectSubmit /></AuthGuard>} />
+              <Route path="/project-results" element={<AuthGuard><ProjectResults /></AuthGuard>} />
+            </Route>
+            {/* 구 경로 → 신 경로 리다이렉트(/project-teams → /project-vote) */}
             <Route path="/project-teams" element={<Navigate to="/project-vote" replace />} />
-            <Route path="/project-checklist" element={<AuthGuard><ProjectChecklist /></AuthGuard>} />
-            <Route path="/project-schedule" element={<AuthGuard><ProjectTimeline /></AuthGuard>} />
-            <Route path="/project-rubric" element={<AuthGuard><ProjectRubric /></AuthGuard>} />
-            <Route path="/project-padlets" element={<AuthGuard><ProjectPadlets /></AuthGuard>} />
-            <Route path="/project-submit" element={<AuthGuard><ProjectSubmit /></AuthGuard>} />
-            <Route path="/project-results" element={<AuthGuard><ProjectResults /></AuthGuard>} />
-            <Route path="/project-board" element={<AuthGuard><ProjectBoard /></AuthGuard>} />
 
             {/* Auth — site.features.auth가 켜진 경우에만 등록.
                 {조건 && <JSX />} 패턴: 조건이 true일 때만 뒤의 JSX를 렌더하고, false면 아무것도 안 그립니다.
@@ -200,11 +199,8 @@ const PublicLayout = (): ReactElement => {
             <Route path="/assignments/:id" element={<AuthGuard><AssignmentDetail /></AuthGuard>} />
             <Route path="/teams" element={<AuthGuard><Teams /></AuthGuard>} />
             <Route path="/projects" element={<AuthGuard><Projects /></AuthGuard>} />
-            {/* 주의: /projects/apps 를 /projects/:id 보다 먼저 둬야 'apps'가 id로 잡히지 않음.
-                만약 /projects/:id 가 먼저 있으면, /projects/apps 로 들어왔을 때 라우터가
-                apps 를 id 값("apps")으로 오해해 엉뚱한 상세 페이지를 보여줄 수 있습니다.
-                → 구체적인(고정 단어) 경로를 항상 일반적인(파라미터) 경로보다 위에 두세요. */}
-            <Route path="/projects/apps" element={<AuthGuard><AppGallery /></AuthGuard>} />
+            {/* /projects/apps(팀 앱 갤러리)는 위 ProjectLayout 그룹에서 처리한다.
+                React Router v6는 정적 경로를 동적(:id)보다 우선 매칭하므로 'apps'가 :id로 잡히지 않는다. */}
             <Route path="/projects/:id" element={<AuthGuard><ProjectDetail /></AuthGuard>} />
             <Route path="/qna" element={<AuthGuard><QnA /></AuthGuard>} />
             <Route path="/announcements" element={<AuthGuard><Announcements /></AuthGuard>} />

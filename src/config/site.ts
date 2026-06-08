@@ -155,7 +155,6 @@ const site: SiteConfig = {
         { path: '/project-vote', labelKey: 'site.nav.projectVote' },
         { path: '/project-schedule', labelKey: 'site.nav.projectTimeline' },
         { path: '/project-checklist', labelKey: 'site.nav.projectChecklist' },
-        { path: '/project-rubric', labelKey: 'site.nav.projectRubric' },
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
         { path: '/project-padlets', labelKey: 'site.nav.projectPadlets' },
         { path: '/project-submit', labelKey: 'site.nav.projectSubmit' },
