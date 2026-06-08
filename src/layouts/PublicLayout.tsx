@@ -156,13 +156,14 @@ const PublicLayout = (): ReactElement => {
                 /assessment (파라미터 없음) 과 /assessment/특정타입 모두 같은 페이지에서 처리합니다. */}
             <Route path="/assessment" element={<Assessment />} />
             <Route path="/assessment/:type" element={<Assessment />} />
-            {/* 프로젝트 섹션 — 좌측 사이드바(ProjectLayout)를 공통 적용.
+            {/* 참고·예시(아이디어 예시·구현 예시) — 좌측 사이드바 없이 일반 페이지로 둔다. */}
+            <Route path="/project-guide" element={<ProjectGuide />} />
+            <Route path="/project-guide/:id" element={<ProjectGuide />} />
+            <Route path="/projects/apps" element={<AuthGuard><AppGallery /></AuthGuard>} />
+            {/* 팀 활동 — 좌측 사이드바(ProjectLayout)를 공통 적용.
                 path 없는 레이아웃 라우트로, 하위 라우트가 ProjectLayout의 <Outlet/> 자리에 렌더된다.
-                각 하위는 기존처럼 AuthGuard로 개별 보호한다(project-guide는 공개). */}
+                각 하위는 기존처럼 AuthGuard로 개별 보호한다. */}
             <Route element={<ProjectLayout />}>
-              <Route path="/project-guide" element={<ProjectGuide />} />
-              <Route path="/project-guide/:id" element={<ProjectGuide />} />
-              <Route path="/projects/apps" element={<AuthGuard><AppGallery /></AuthGuard>} />
               <Route path="/project-vote" element={<AuthGuard><ProjectVote /></AuthGuard>} />
               <Route path="/project-schedule" element={<AuthGuard><ProjectTimeline /></AuthGuard>} />
               <Route path="/project-checklist" element={<AuthGuard><ProjectChecklist /></AuthGuard>} />
