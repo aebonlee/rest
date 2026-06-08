@@ -147,13 +147,17 @@ const site: SiteConfig = {
       // 풀어 설명: activePath가 '/project'이므로 '/project-guide', '/project-vote',
       //           '/project-board', '/projects/apps' 처럼 /project로 시작하는 주소 모두에서 부모가 활성화됩니다.
       dropdown: [
+        // [참고·예시] 그룹
         { path: '/project-guide', labelKey: 'site.nav.projectIntro' },
-        // 아래는 "팀 활동" 흐름(팀 구성 → 수행 점검 → 협업 → 결과물). divider는 클릭 불가 구분선.
+        { path: '/projects/apps', labelKey: 'site.nav.projectApps' },
+        // [팀 활동] 그룹 — 라이프사이클 순서(팀구성 → 일정 → 점검 → 평가 → 협업 → 패들렛 → 제출 → 결과)
         { divider: true, labelKey: 'site.nav.teamActivities' },
         { path: '/project-vote', labelKey: 'site.nav.projectVote' },
+        { path: '/project-schedule', labelKey: 'site.nav.projectTimeline' },
         { path: '/project-checklist', labelKey: 'site.nav.projectChecklist' },
+        { path: '/project-rubric', labelKey: 'site.nav.projectRubric' },
         { path: '/project-board', labelKey: 'site.nav.projectBoard' },
-        { path: '/projects/apps', labelKey: 'site.nav.projectApps' },
+        { path: '/project-padlets', labelKey: 'site.nav.projectPadlets' },
       ]
     },
     { path: '/resources', labelKey: 'site.nav.resources' },
