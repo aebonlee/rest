@@ -48,6 +48,9 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 // PRESET_TOPICS: 미리 정해 둔 기본 주제 목록(상수 데이터).
 import { PRESET_TOPICS } from '../data/projectTopics';
+// getTeamNoByTitle: 주제 제목 → 고정 팀 번호(= 패들렛 번호) 매핑. MAX_TEAM_NO: 정식/학생제안 중 최대 번호.
+//   팀 번호의 단일 진실 공급원(TEAM_PROJECTS)에서 가져와, 득표 순위가 아닌 "고정 번호"로 표시·링크한다.
+import { getTeamNoByTitle, MAX_TEAM_NO } from '../data/teamProjects';
 // 투표/주제 관련 DB 작업 함수들과, 그 데이터 모양을 나타내는 타입들을 가져온다.
 import {
   listCustomTopics, listVotes, addTopic, deleteTopic, castVote, retractVote,
@@ -157,8 +160,26 @@ const ProjectVote = (): ReactElement => {
     return [...presetRows, ...customRows].sort((a, b) => (votersByKey[b.key]?.length || 0) - (votersByKey[a.key]?.length || 0));
   }, [custom, votersByKey]);
 
+  // rowExtraNo: TEAM_PROJECTS에 등록되지 않은 "새 학생 제안 주제"에 줄 임시 번호 맵(주제 id → 번호).
+  //   - 정식/등록 주제는 getTeamNoByTitle로 고정 번호가 정해지므로 여기서 제외한다.
+  //   - 미등록 주제는 MAX_TEAM_NO(현재 17) 다음부터 custom 생성 순서대로 안정적으로 번호를 매긴다.
+  //     (득표순으로 바뀌는 idx가 아니라 생성 순서를 쓰므로, 투표가 바뀌어도 번호가 흔들리지 않는다.)
+  const rowExtraNo = useMemo(() => {
+    const m = new Map<string, number>();
+    let n = MAX_TEAM_NO;
+    custom.forEach((c) => { if (getTeamNoByTitle(c.title) === undefined) m.set(c.id, ++n); });
+    return m;
+  }, [custom]);
+
+  // teamNoForRow(r): 이 주제 카드의 "고정 팀 번호"를 돌려준다(= 패들렛 번호와 동일).
+  //   1순위: 제목으로 찾은 고정 번호(정식 팀 1~14, 등록된 학생 제안 15~17)
+  //   2순위: 미등록 새 주제에 부여한 임시 번호(18 이상)
+  //   득표 순위(idx+1)는 더 이상 번호로 쓰지 않는다 → 팀 번호·패들렛 번호가 항상 일치한다.
+  const teamNoForRow = (r: Row): number =>
+    getTeamNoByTitle(r.title) ?? rowExtraNo.get(r.key) ?? (MAX_TEAM_NO + 1);
+
   // padletUrl(n): 번호를 2자리(0패딩)로 맞춰 패들렛 보드 주소 생성. 예) 1 → .../project01
-  //   - 패들렛 번호는 카드에 표시되는 '팀 번호'(rows의 idx+1, 득표순)와 1:1로 매칭한다.
+  //   - 패들렛 번호는 카드의 '고정 팀 번호'(teamNoForRow)와 1:1로 매칭한다(득표순과 무관).
   const padletUrl = (n: number) => `https://padlet.com/aebon/project${String(n).padStart(2, '0')}`;
 
   // members(t): 팀 t의 팀원 배열을 안전하게 꺼낸다(배열이 아니면 빈 배열로). 곳곳에서 반복되어 함수로 묶음.
@@ -321,8 +342,9 @@ const ProjectVote = (): ReactElement => {
               {/* 주제 카드 목록: rows를 하나씩 돌며 카드를 그린다. idx는 0부터 시작하는 순번 */}
               {/* 2열 그리드 — 화면이 좁으면(모바일) auto-fit으로 자동 1열. alignItems:start로 카드 높이가 달라도 윗줄 정렬 */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px', alignItems: 'stretch' }}>
-              {rows.map((r, idx) => {
+              {rows.map((r) => {
                 // 이 카드 한 장을 그리기 위해 미리 계산하는 값들:
+                const teamNo = teamNoForRow(r);                          // 이 주제의 고정 팀 번호(= 패들렛 번호). 득표 순위와 무관.
                 const voters = votersByKey[r.key] || [];                 // 이 주제 투표자 이름 목록(없으면 빈 배열)
                 const mineVote = myVoteKey === r.key;                    // 내가 이 주제에 투표했나?
                 const team = teamForTitle(r.title);                      // 이 주제로 만들어진 팀(없으면 undefined)
@@ -336,8 +358,8 @@ const ProjectVote = (): ReactElement => {
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                          {/* 순위 표시: idx는 0부터라 +1 해서 1위부터 보이게 한다 */}
-                          <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-blue)' }}>{idx + 1}팀</span>
+                          {/* 고정 팀 번호 표시: 득표 순위가 아니라 주제별 고정 번호(= 패들렛 번호)를 쓴다 */}
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-blue)' }}>{teamNo}팀</span>
                           <h3 style={{ margin: 0, fontSize: '17px' }}>{r.title}</h3>
                           {/* 학생 제안 주제에만 '학생 제안' 칩 */}
                           {!r.isPreset && <span style={chip('var(--bg-light-gray)', 'var(--text-secondary)')}>학생 제안</span>}
@@ -430,15 +452,15 @@ const ProjectVote = (): ReactElement => {
                         {mineVote ? '✓ 내 투표 (취소)' : '이 주제에 투표'}
                       </button>
 
-                      {/* 패들렛 버튼: 카드에 표시된 '팀 번호'(idx+1)에 맞춰 패들렛 보드를 새 탭으로 연다.
-                          예) 1팀 → project01, 2팀 → project02 … (화면의 N팀 번호와 항상 일치) */}
+                      {/* 패들렛 버튼: 카드의 '고정 팀 번호'(teamNo)에 맞춰 패들렛 보드를 새 탭으로 연다.
+                          예) 3팀 → project03, 8팀 → project08 … (화면의 N팀 번호와 항상 일치) */}
                       <a
-                        href={padletUrl(idx + 1)}
+                        href={padletUrl(teamNo)}
                         target="_blank"
                         rel="noopener noreferrer"   /* 새 탭 보안(opener 탈취 방지) */
                         className="btn btn-secondary"
                         style={{ padding: '8px 18px', fontSize: '14px' }}
-                        title={`${idx + 1}팀 패들렛 project${String(idx + 1).padStart(2, '0')} 열기`}
+                        title={`${teamNo}팀 패들렛 project${String(teamNo).padStart(2, '0')} 열기`}
                       >
                         📌 패들렛
                       </a>

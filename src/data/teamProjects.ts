@@ -90,7 +90,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
   {
     id: 3, slug: 'resilience-coach', title: '회복탄력성 루틴 코치',
     tagline: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱',
-    icon: '🌱', color: '#10b981', members: ['김건희', '이초월', '김서우'],
+    icon: '🌱', color: '#10b981', members: ['이초월', '김서우'],
   },
   {
     // id 3과 동일 주제(회복탄력성 루틴 코치)를 다루는 2번째 팀. note로 구분.
@@ -176,3 +176,26 @@ export const TEAM_PROJECTS: TeamProject[] = [
  */
 export const getTeamProject = (id: number): TeamProject | undefined =>
   TEAM_PROJECTS.find((p) => p.id === id);
+
+// 제목 비교용 정규화: 소문자화 + 모든 공백 제거 + 트림.
+// 표기 차이(대소문자/공백/가운뎃점 주변 띄어쓰기 등)를 무시하고 같은 주제로 인식하기 위함.
+const normalizeTitle = (s: string): string => (s || '').toLowerCase().replace(/\s+/g, '').trim();
+
+/**
+ * 주제 제목으로 "고정 팀/프로젝트 번호(id)"를 찾는 헬퍼.
+ *
+ * TEAM_PROJECTS(id 1~14 정식 팀, 15~17 학생 제안)를 팀 번호의 단일 진실 공급원으로 사용한다.
+ * 이 id는 곧 DB 팀 이름('N팀'), 패들렛 보드 번호(project01~17)와 1:1로 일치한다.
+ * 따라서 투표 화면 등에서 "득표 순위(idx+1)"가 아니라 이 함수가 돌려주는 고정 번호를 써야
+ * 팀 번호·패들렛 번호가 항상 일관되게 유지된다.
+ *
+ * @param title 주제 제목(프리셋/학생 제안 모두 가능)
+ * @returns 일치하는 고정 팀 번호(id), 없으면 undefined
+ * @remarks 제목을 normalizeTitle로 정규화해 비교하므로 공백/대소문자 차이를 무시한다.
+ */
+export const getTeamNoByTitle = (title: string): number | undefined =>
+  TEAM_PROJECTS.find((p) => normalizeTitle(p.title) === normalizeTitle(title))?.id;
+
+// 정식 팀 + 학생 제안 주제 중 가장 큰 번호(현재 17). 미등록 학생 주제에 이어서
+// 번호를 부여할 때의 시작 기준점으로 사용한다(예: 18, 19 …).
+export const MAX_TEAM_NO = Math.max(...TEAM_PROJECTS.map((p) => p.id));
