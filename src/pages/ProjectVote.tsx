@@ -137,18 +137,10 @@ const ProjectVote = (): ReactElement => {
     [teams, user],
   );
 
-  // votersByKey: "주제 key → 그 주제에 투표한 사람 이름 배열"로 정리한 객체(빠른 조회용).
-  // Record<string, string[]> = 키가 문자열이고 값이 "문자열 배열"인 객체 타입.
-  const votersByKey = useMemo(() => {
-    const m: Record<string, string[]> = {};
-    // forEach로 모든 투표를 돌면서 해당 주제의 이름 목록에 투표자 이름을 추가한다.
-    // (m[v.topic_key] ||= []) : 그 key의 배열이 아직 없으면 빈 배열을 먼저 만들고, 그 배열에 push한다.
-    // user_name이 비어 있으면 '익명'으로 표시.
-    votes.forEach((v) => { (m[v.topic_key] ||= []).push(v.user_name || '익명'); });
-    return m;
-  }, [votes]);
+  // (득표수 표시는 화면에서 숨김 처리됨 — votersByKey/maxCount 등 집계는 더 이상 사용하지 않는다.
+  //  투표 데이터/기능 자체는 유지되며, 내 투표 여부(myVoteKey)만 카드 강조·버튼에 쓰인다.)
 
-  // rows: 화면에 그릴 주제 카드 목록. 프리셋 주제 + 학생 제안 주제를 하나로 합치고, 득표순으로 정렬한다.
+  // rows: 화면에 그릴 주제 카드 목록. 프리셋 주제 + 학생 제안 주제를 하나로 합치고, 고정 번호순으로 정렬한다.
   const rows: Row[] = useMemo(() => {
     // 프리셋 주제들을 Row 모양으로 변환(.map: 각 항목을 새 모양으로 1:1 변환). isPreset: true 표시.
     const presetRows: Row[] = PRESET_TOPICS.map((t) => ({ key: t.key, title: t.title, description: t.description, isPreset: true }));
@@ -308,10 +300,6 @@ const ProjectVote = (): ReactElement => {
   const chip = (bg: string, color: string): React.CSSProperties => ({
     fontSize: '13px', padding: '3px 10px', borderRadius: '999px', background: bg, color,
   });
-  // maxCount: 가장 많은 득표수(아래 막대그래프 길이의 기준값). 최소 1을 보장해 0으로 나누는 오류를 막는다.
-  // Math.max(1, ...배열): 1과 모든 득표수 중 최댓값. ...는 배열을 인자들로 펼치는 스프레드.
-  const maxCount = Math.max(1, ...rows.map((r) => votersByKey[r.key]?.length || 0));
-
   // ── 화면 그리기(JSX 반환) ──
   // <>...</>는 Fragment로, 의미 없는 div를 추가하지 않고 여러 요소를 묶을 때 쓴다.
   return (
@@ -332,9 +320,9 @@ const ProjectVote = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : (
             <>
-              {/* 상단 요약: 총 투표 수, 주제 개수, (있으면) 내 팀 목록과 게시판 링크 */}
+              {/* 상단 요약: 주제 개수, (있으면) 내 팀 목록과 게시판 링크 (득표 수 표시는 숨김) */}
               <div style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>
-                총 <strong style={{ color: 'var(--primary-blue)' }}>{votes.length}</strong>표 · 주제 {rows.length}개
+                주제 {rows.length}개
                 {/* &&: 왼쪽 조건이 참일 때만 오른쪽 JSX를 그린다(거짓이면 아무것도 안 그림). 내 팀이 1개 이상일 때만 표시 */}
                 {myTeams.length > 0 && <span> · 내 팀: <strong style={{ color: 'var(--primary-blue)' }}>{myTeams.map((t) => t.name).join(', ')}</strong> <Link to="/project-board" style={{ color: 'var(--primary-blue)' }}>(게시판)</Link></span>}
               </div>
@@ -351,7 +339,6 @@ const ProjectVote = (): ReactElement => {
               {rows.map((r) => {
                 // 이 카드 한 장을 그리기 위해 미리 계산하는 값들:
                 const teamNo = teamNoForRow(r);                          // 이 주제의 고정 팀 번호(= 패들렛 번호). 득표 순위와 무관.
-                const voters = votersByKey[r.key] || [];                 // 이 주제 투표자 이름 목록(없으면 빈 배열)
                 const mineVote = myVoteKey === r.key;                    // 내가 이 주제에 투표했나?
                 const team = teamForTitle(r.title);                      // 이 주제로 만들어진 팀(없으면 undefined)
                 const inThisTeam = !!team && !!user && members(team).some((m) => m.id === user.id); // 내가 이 팀 소속인가? (!!는 값을 true/false로 변환)
@@ -374,27 +361,9 @@ const ProjectVote = (): ReactElement => {
                         </div>
                         <p style={{ margin: '6px 0 0', fontSize: '14px', color: 'var(--text-secondary)' }}>{r.description}</p>
                       </div>
-                      {/* 오른쪽 큰 숫자: 득표수 */}
-                      <div style={{ textAlign: 'center', flexShrink: 0 }}>
-                        <div style={{ fontSize: '24px', fontWeight: 800, color: mineVote ? 'var(--primary-blue)' : 'var(--text-primary)' }}>{voters.length}</div>
-                        <div style={{ fontSize: '11px', color: 'var(--text-secondary)' }}>표</div>
-                      </div>
                     </div>
-
-                    {/* 득표 막대그래프: 이 주제 득표수 / 최다 득표수 비율만큼 막대 너비를 채운다 */}
-                    <div style={{ height: '6px', borderRadius: '3px', background: 'var(--bg-light-gray)', overflow: 'hidden', margin: '12px 0' }}>
-                      <div style={{ width: `${(voters.length / maxCount) * 100}%`, height: '100%', background: 'var(--primary-blue)', transition: 'width 0.3s' }} />
-                    </div>
-
-                    {/* 투표한 사람 */}
-                    {/* 투표자가 있을 때만 이름 칩들을 나열 */}
-                    {voters.length > 0 && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap', marginBottom: '10px' }}>
-                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)', fontWeight: 600 }}>투표:</span>
-                        {/* key={i}: 이름은 중복될 수 있어 여기서는 순번(i)을 key로 쓴다 */}
-                        {voters.map((n, i) => <span key={i} style={chip('var(--bg-light-gray)', 'var(--text-primary)')}>{n}</span>)}
-                      </div>
-                    )}
+                    {/* (득표수·막대그래프·투표자 칩 표시는 제거됨 — 보드를 고정 번호순 팀 목록으로 사용) */}
+                    <div style={{ marginBottom: '12px' }} />
 
                     {/* 팀 결성 현황 + 팀장(선착순) */}
                     {/* team이 있을 때만, 즉시 실행 함수((() => { ... })())로 팀장 관련 값을 계산해 JSX를 만든다 */}
