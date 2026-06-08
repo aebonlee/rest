@@ -104,10 +104,10 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '🚀', color: '#f59e0b', members: ['이시민', '조윤서'],
   },
   {
-    // id 2와 동일 주제(청년지원정책 안내 챗봇)를 다루는 2번째 팀. note로 구분.
-    id: 6, slug: 'youth-policy-bot-2', title: '청년지원정책 안내 챗봇 (2팀)',
-    tagline: '조건을 입력하면 맞춤 청년지원정책을 안내하는 챗봇',
-    icon: '🗂️', color: '#3b82f6', members: ['한승우', '박정우'], note: '동일 주제 2팀',
+    // 6팀: '청년지원정책 안내 챗봇 (2팀)'에서 'AI 동화책 제작 앱 개발'로 주제 변경(구성원 유지).
+    id: 6, slug: 'ai-picturebook', title: 'AI 동화책 제작 앱 개발',
+    tagline: '한국형 창작 그림 동화책을 AI로 생성하는 웹/앱 개발',
+    icon: '🎨', color: '#f472b6', members: ['박정우', '한승우', '이수현'],
   },
   {
     id: 7, slug: 'heritage-guide', title: '문화재 AI 해설 앱',

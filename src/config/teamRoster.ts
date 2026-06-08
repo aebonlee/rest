@@ -70,7 +70,7 @@ export const CONFIRMED_TEAMS: RosterTeam[] = [
   { no: 3, topic: '회복탄력성 루틴 코치', members: ['이초월', '김서우', '최윤정'] },
   { no: 4, topic: '회복탄력성 루틴 코치 (2팀)', members: ['전유미', '오지원', '윤혜수'] },
   { no: 5, topic: 'AI 창업 아이템 코치', members: ['이시민', '조윤서'] },
-  { no: 6, topic: '청년지원정책 안내 챗봇 (2팀)', members: ['박정우', '한승우', '이수현'] },
+  { no: 6, topic: 'AI 동화책 제작 앱 개발', members: ['박정우', '한승우', '이수현'] },
   { no: 7, topic: '문화재 AI 해설 앱', members: ['박남영'] },              // 1인 팀도 허용됨(members 길이 1)
   { no: 8, topic: '나이대별 한국사 학습·시험 앱', members: ['이유민'] },
   { no: 9, topic: '자격증 취약점 분석 학습 앱', members: ['장호준'] },
