@@ -77,6 +77,22 @@
    프로젝트 페이지들은 원래 풀폭 그라데이션 배너(.page-header)를 쓰는데,
    사이드바 컬럼 안에서는 콤팩트한 좌측 정렬 헤더로 바꿔 어울리게 한다.
    스코프(.project-content)를 둬서 일반 페이지/관리자 페이지에는 영향이 없다. */
+
+/* 레이아웃 가로 폭을 상단 메뉴(.container)와 동일하게: 최대 1280px·가운데 정렬·좌우 40px.
+   admin-layout의 padding-top(--nav-height)은 유지(longhand 좌우만 지정). */
+.project-layout {
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 40px;
+    padding-right: 40px;
+}
+/* 본문 컬럼은 좌우 패딩을 제거(레이아웃이 좌우 여백을 책임) → 사이드바/본문이 상단 메뉴와 정렬 */
+.project-content { padding-left: 0; padding-right: 0; }
+@media (max-width: 768px) {
+    .project-layout { padding-left: 16px; padding-right: 16px; }
+}
+
 .project-content .page-header {
     background: none;
     color: var(--text-primary);
