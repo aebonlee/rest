@@ -62,7 +62,7 @@ const ProjectSubmit = (): ReactElement => {
 
   const fields: { key: keyof SubmissionData; label: string; placeholder: string; area?: boolean }[] = [
     { key: 'summary',    label: '한 줄 소개 · 회고', placeholder: '우리 팀이 만든 것과 배운 점을 간단히', area: true },
-    { key: 'demo_url',   label: '데모/배포 URL',   placeholder: 'https://... (자체 배포가 있다면)' },
+    { key: 'demo_url',   label: '배포 앱 주소(실행 URL)', placeholder: 'https://aebonlee.github.io/projectXX/ 또는 자체 배포 주소 — 구현 예시 갤러리에 연결됩니다' },
     { key: 'slides_url', label: '발표자료 URL',     placeholder: 'https://... (구글 슬라이드 등)' },
     { key: 'repo_url',   label: '소스 저장소 URL',  placeholder: 'https://github.com/...' },
   ];
