@@ -18,6 +18,7 @@ import SEOHead from '../components/SEOHead';
 import { listTeams } from '../utils/projectTeams';
 import { listChecklists, setChecklistItem } from '../utils/projectChecklist';
 import { CHECKLIST_ITEMS, CHECKLIST_PHASES, checklistProgress } from '../data/projectChecklist';
+import { buildTeamNumbers } from '../utils/teamNumber';
 import type { Team } from '../types';
 
 const ProjectChecklist = (): ReactElement => {
@@ -43,6 +44,8 @@ const ProjectChecklist = (): ReactElement => {
   const members = (t: Team) => (Array.isArray(t.members) ? t.members : []);
   // 내가 속한 팀들(강사는 팀에 포함되지 않으므로 빈 배열).
   const myTeams = user ? teams.filter((t) => members(t).some((m) => m.id === user.id)) : [];
+  // 주제 → 고정 보드 번호(미등록 새 주제는 22+ 자동 부여). 모든 팀에 번호가 붙는다.
+  const teamNos = buildTeamNumbers(teams);
 
   // 항목 토글: 낙관적으로 화면을 먼저 갱신하고, 실패 시 되돌린다.
   const toggle = async (teamId: string, itemKey: string, done: boolean) => {
@@ -81,7 +84,7 @@ const ProjectChecklist = (): ReactElement => {
       <div style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '17px' }}>{team.name}{team.project_topic && team.project_topic.trim() !== team.name.trim() ? ` · ${team.project_topic}` : ''}</h3>
+            <h3 style={{ margin: 0, fontSize: '17px' }}>{teamNos[team.id]}팀 · {team.project_topic}</h3>
             <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
               팀원 {members(team).length}명{leader ? ` · 팀장 ${leader.name}` : ' · 팀장 미정'} · 완료 {done}/{total}
             </p>
@@ -150,7 +153,7 @@ const ProjectChecklist = (): ReactElement => {
                     return (
                       <div key={team.id} style={card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                          <h3 style={{ margin: 0, fontSize: '15.5px' }}>{team.name}{team.project_topic && team.project_topic.trim() !== team.name.trim() ? ` · ${team.project_topic}` : ''}</h3>
+                          <h3 style={{ margin: 0, fontSize: '15.5px' }}>{teamNos[team.id]}팀 · {team.project_topic}</h3>
                           <span style={chip(percent === 100 ? '#d1fae5' : '#dbeafe', percent === 100 ? '#065f46' : '#1e3a8a')}>{done}/{total} 완료</span>
                         </div>
                         <ProgressBar percent={percent} />

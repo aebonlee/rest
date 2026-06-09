@@ -11,6 +11,7 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import { listTeams } from '../utils/projectTeams';
 import { listSubmissions, saveSubmission, EMPTY_SUBMISSION, type SubmissionData } from '../utils/projectSubmission';
+import { buildTeamNumbers } from '../utils/teamNumber';
 import type { Team } from '../types';
 
 const ProjectSubmit = (): ReactElement => {
@@ -37,6 +38,7 @@ const ProjectSubmit = (): ReactElement => {
 
   const members = (t: Team) => (Array.isArray(t.members) ? t.members : []);
   const myTeams = user ? teams.filter((t) => members(t).some((m) => m.id === user.id)) : [];
+  const teamNos = buildTeamNumbers(teams); // 주제 → 고정 보드 번호(새 주제는 22+ 자동)
 
   // 초안 한 필드 갱신.
   const setField = (teamId: string, key: keyof SubmissionData, value: string) => {
@@ -86,7 +88,7 @@ const ProjectSubmit = (): ReactElement => {
                 const has = s.summary || s.demo_url || s.slides_url || s.repo_url;
                 return (
                   <div key={t.id} style={card}>
-                    <h3 style={{ margin: '0 0 6px', fontSize: '16px' }}>{t.name}{t.project_topic && t.project_topic.trim() !== t.name.trim() ? ` · ${t.project_topic}` : ''}</h3>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '16px' }}>{teamNos[t.id]}팀 · {t.project_topic}</h3>
                     {has ? (
                       <div style={{ fontSize: '13.5px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                         {s.summary && <span>📝 {s.summary}</span>}
@@ -107,7 +109,7 @@ const ProjectSubmit = (): ReactElement => {
               const d = drafts[t.id] || EMPTY_SUBMISSION;
               return (
                 <div key={t.id} style={card}>
-                  <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}>{t.name}{t.project_topic && t.project_topic.trim() !== t.name.trim() ? ` · ${t.project_topic}` : ''}</h3>
+                  <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}>{teamNos[t.id]}팀 · {t.project_topic}</h3>
                   {fields.map((f) => (
                     <div key={f.key}>
                       <label style={labelStyle}>{f.label}</label>

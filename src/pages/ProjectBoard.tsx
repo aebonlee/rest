@@ -58,6 +58,8 @@ import {
 } from '../utils/projectTeams';
 // 팀/팀멤버의 데이터 모양(타입)을 가져온다. import type 은 "타입만" 가져온다는 뜻(실행 코드에는 영향 없음).
 import type { Team, TeamMember } from '../types';
+// buildTeamNumbers — 주제 → 고정 보드 번호 맵(새 주제는 22+ 자동). 관리자 팀 선택 라벨에 사용.
+import { buildTeamNumbers } from '../utils/teamNumber';
 
 // catMeta — 카테고리 키(k)에 해당하는 메타데이터(emoji/label 등)를 반환하는 도우미 함수.
 //   .find(...): 배열에서 조건(c.key === k)을 만족하는 "첫 항목"을 찾아 반환. 없으면 undefined.
@@ -329,9 +331,15 @@ const ProjectBoard = (): ReactElement => {
                 <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                   <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)' }}>👑 관리자 — 팀 선택</span>
                   {/* select의 value를 현재 팀 id로 묶고(=제어 컴포넌트), 바뀌면 selectTeam으로 해당 팀 게시판 전환. */}
-                  <select value={team.id} onChange={(e) => selectTeam(e.target.value)} style={{ ...input, width: 'auto', flex: 1, minWidth: '200px' }}>
-                    {/* .map: 배열의 각 팀을 <option> 요소로 변환해 목록을 만든다. key는 React가 항목을 구분하는 고유값(필수). */}
-                    {allTeams.map((t) => <option key={t.id} value={t.id}>{t.name} · {t.project_topic || '주제 미정'}</option>)}
+                  <select value={team.id} onChange={(e) => selectTeam(e.target.value)} style={{ ...input, flex: 1, minWidth: '220px', maxWidth: '440px', textOverflow: 'ellipsis' }}>
+                    {/* 라벨: '번호팀 · 주제'(긴 주제는 26자에서 말줄임). 번호는 주제 기준 고정값(새 주제는 22+ 자동). */}
+                    {(() => {
+                      const teamNos = buildTeamNumbers(allTeams);
+                      const trunc = (s: string) => (s.length > 26 ? s.slice(0, 26) + '…' : s);
+                      return allTeams.map((t) => (
+                        <option key={t.id} value={t.id}>{teamNos[t.id]}팀 · {trunc(t.project_topic || '주제 미정')}</option>
+                      ));
+                    })()}
                   </select>
                   <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>전체 {allTeams.length}팀 · 열람·삭제 가능</span>
                 </div>
