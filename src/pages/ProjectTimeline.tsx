@@ -1,7 +1,7 @@
 /**
  * ProjectTimeline.tsx — 프로젝트 일정 · 마일스톤
- *  - PROJECT_MILESTONES(주차별 단계·목표·할 일)를 타임라인 카드로 안내한다.
- *  - 수행 점검(체크리스트)·평가 루브릭과 연결되는 진행 흐름을 한눈에 보여준다.
+ *  - PROJECT_MILESTONES(주차별 4단계)를 실제 날짜와 항목별 상세 설명으로 안내한다.
+ *  - 날짜를 크게 강조하고, 각 할 일에 상세 설명을 붙여 한눈에 이해하도록 한다.
  */
 import { type ReactElement } from 'react';
 import { Link } from 'react-router-dom';
@@ -18,26 +18,45 @@ const ProjectTimeline = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>프로젝트 일정 · 마일스톤</h2>
-          <p>팀구성 확정(6/9) ~ <strong>종강 6/22(월) 최종 발표</strong>까지 4단계로 진행합니다. 각 단계의 날짜·목표·할 일을 확인하고 <Link to="/project-checklist" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>수행 점검</Link>으로 진행 상황을 체크하세요.</p>
+          <p>팀구성 확정(6/9) ~ <strong>종강 6/22(월) 최종 발표</strong>까지 4단계로 진행합니다. 단계별 날짜·목표·할 일을 확인하고 <Link to="/project-checklist" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>수행 점검</Link>으로 진행 상황을 체크하세요.</p>
         </div>
       </section>
 
       <section className="section">
-        <div className="container" style={{ maxWidth: '820px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <div className="container" style={{ maxWidth: '860px', display: 'flex', flexDirection: 'column', gap: '18px' }}>
           {PROJECT_MILESTONES.map((m, i) => {
             const color = PHASE_COLOR[m.phase] || 'var(--primary-blue)';
             return (
-              <div key={i} style={{ background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderLeft: `5px solid ${color}`, borderRadius: '12px', padding: '16px 18px', color: 'var(--text-primary)' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 800, color }}>{m.period}</span>
-                  <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 9px', borderRadius: '999px', background: 'var(--bg-light-gray)', color }}>{m.phase}</span>
-                  <h3 style={{ margin: 0, fontSize: '16px' }}>{m.title}</h3>
-                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.week}</span>
+              <div key={i} style={{ background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderTop: `5px solid ${color}`, borderRadius: '14px', overflow: 'hidden', color: 'var(--text-primary)' }}>
+                {/* 상단: 단계 번호 + 큰 날짜 강조 */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px 12px', background: `${color}0d`, flexWrap: 'wrap' }}>
+                  <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '34px', borderRadius: '50%', background: color, color: '#fff', fontSize: '15px', fontWeight: 800, flexShrink: 0 }}>{i + 1}</span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* ★ 날짜 크게 강조 */}
+                    <div style={{ fontSize: '21px', fontWeight: 800, color, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{m.period}</div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: '12px', fontWeight: 800, padding: '2px 10px', borderRadius: '999px', background: color, color: '#fff' }}>{m.phase}</span>
+                      <strong style={{ fontSize: '15px' }}>{m.title}</strong>
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>· {m.week}</span>
+                    </div>
+                  </div>
                 </div>
-                <p style={{ margin: '6px 0 8px', fontSize: '13.5px', color: 'var(--text-secondary)' }}>🎯 {m.goal}</p>
-                <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                  {m.items.map((it, j) => <li key={j} style={{ fontSize: '14px' }}>{it}</li>)}
-                </ul>
+
+                {/* 본문: 목표 + 항목별 상세 설명 */}
+                <div style={{ padding: '14px 20px 18px' }}>
+                  <p style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>🎯 {m.goal}</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                    {m.items.map((it, j) => (
+                      <div key={j} style={{ display: 'flex', gap: '10px' }}>
+                        <span style={{ flexShrink: 0, fontSize: '12px', fontWeight: 800, color, marginTop: '2px' }}>{i + 1}-{j + 1}</span>
+                        <div>
+                          <div style={{ fontSize: '14.5px', fontWeight: 700, marginBottom: '2px' }}>{it.label}</div>
+                          <div style={{ fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.65 }}>{it.detail}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             );
           })}
