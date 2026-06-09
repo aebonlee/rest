@@ -87,9 +87,10 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '📖', color: '#e1567c', members: ['이소민', '신슬', '유용주', '구자성'],
   },
   {
-    id: 2, slug: 'heritage-guide', title: '문화재 AI 해설 앱',
-    tagline: '사진·위치로 문화재를 인식해 AI가 해설해 주는 앱',
-    icon: '🏯', color: '#b45309', members: ['박남영'],
+    // 2번: 문화재 삭제 후 24번 '취업자격증도우미'(임윤서)를 이 자리로 이동.
+    id: 2, slug: 'cert-helper', title: '✏️취업자격증도우미✏️',
+    tagline: '직무별 취업용 자격증 추천(금융권·마케팅)과 매일 퀴즈로 도움을 주는 앱',
+    icon: '🎓', color: '#b45309', members: ['임윤서'], note: '학생 제안',
   },
   {
     // 3번: 옛 '나이대별 한국사' 삭제 자리에 신규 등록(한승우).
