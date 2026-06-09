@@ -85,7 +85,7 @@ const ProjectSubmit = (): ReactElement => {
             // 강사: 전체 제출 현황(읽기 전용)
             <>
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', background: 'var(--bg-light-gray)', borderRadius: '8px', padding: '10px 14px' }}>강사 계정입니다. 전체 팀의 제출 현황을 확인합니다.</div>
-              {teams.map((t) => {
+              {[...teams].sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999)).map((t) => {
                 const s = subs[t.id] || EMPTY_SUBMISSION;
                 const has = s.summary || s.demo_url || s.slides_url || s.repo_url;
                 return (
@@ -107,7 +107,7 @@ const ProjectSubmit = (): ReactElement => {
             <div style={card}><p style={{ margin: 0, fontSize: '14px' }}>아직 소속된 팀이 없습니다. <Link to="/project-vote" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>프로젝트 팀구성</Link>에서 팀에 합류하세요.</p></div>
           ) : (
             // 학생(팀원): 내 팀 제출 폼
-            myTeams.map((t) => {
+            [...myTeams].sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999)).map((t) => {
               const d = drafts[t.id] || EMPTY_SUBMISSION;
               return (
                 <div key={t.id} style={card}>

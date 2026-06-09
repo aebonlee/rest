@@ -341,9 +341,11 @@ const ProjectBoard = (): ReactElement => {
                     {(() => {
                       const teamNos = buildTeamNumbers(allTeams, topics);
                       const trunc = (s: string) => (s.length > 26 ? s.slice(0, 26) + '…' : s);
-                      return allTeams.map((t) => (
-                        <option key={t.id} value={t.id}>{teamNos[t.id]}팀 · {trunc(t.project_topic || '주제 미정')}</option>
-                      ));
+                      return [...allTeams]
+                        .sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999))
+                        .map((t) => (
+                          <option key={t.id} value={t.id}>{teamNos[t.id]}팀 · {trunc(t.project_topic || '주제 미정')}</option>
+                        ));
                     })()}
                   </select>
                   <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>전체 {allTeams.length}팀 · 열람·삭제 가능</span>
