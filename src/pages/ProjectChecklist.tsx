@@ -81,7 +81,7 @@ const ProjectChecklist = (): ReactElement => {
       <div style={card}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '17px' }}>{team.name} · {team.project_topic}</h3>
+            <h3 style={{ margin: 0, fontSize: '17px' }}>{team.name}{team.project_topic && team.project_topic.trim() !== team.name.trim() ? ` · ${team.project_topic}` : ''}</h3>
             <p style={{ margin: '3px 0 0', fontSize: '12.5px', color: 'var(--text-secondary)' }}>
               팀원 {members(team).length}명{leader ? ` · 팀장 ${leader.name}` : ' · 팀장 미정'} · 완료 {done}/{total}
             </p>
@@ -150,7 +150,7 @@ const ProjectChecklist = (): ReactElement => {
                     return (
                       <div key={team.id} style={card}>
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '10px', flexWrap: 'wrap', marginBottom: '8px' }}>
-                          <h3 style={{ margin: 0, fontSize: '15.5px' }}>{team.name} · {team.project_topic}</h3>
+                          <h3 style={{ margin: 0, fontSize: '15.5px' }}>{team.name}{team.project_topic && team.project_topic.trim() !== team.name.trim() ? ` · ${team.project_topic}` : ''}</h3>
                           <span style={chip(percent === 100 ? '#d1fae5' : '#dbeafe', percent === 100 ? '#065f46' : '#1e3a8a')}>{done}/{total} 완료</span>
                         </div>
                         <ProgressBar percent={percent} />

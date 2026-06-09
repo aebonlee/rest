@@ -86,7 +86,7 @@ const ProjectSubmit = (): ReactElement => {
                 const has = s.summary || s.demo_url || s.slides_url || s.repo_url;
                 return (
                   <div key={t.id} style={card}>
-                    <h3 style={{ margin: '0 0 6px', fontSize: '16px' }}>{t.name} · {t.project_topic}</h3>
+                    <h3 style={{ margin: '0 0 6px', fontSize: '16px' }}>{t.name}{t.project_topic && t.project_topic.trim() !== t.name.trim() ? ` · ${t.project_topic}` : ''}</h3>
                     {has ? (
                       <div style={{ fontSize: '13.5px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
                         {s.summary && <span>📝 {s.summary}</span>}
@@ -107,7 +107,7 @@ const ProjectSubmit = (): ReactElement => {
               const d = drafts[t.id] || EMPTY_SUBMISSION;
               return (
                 <div key={t.id} style={card}>
-                  <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}>{t.name} · {t.project_topic}</h3>
+                  <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}>{t.name}{t.project_topic && t.project_topic.trim() !== t.name.trim() ? ` · ${t.project_topic}` : ''}</h3>
                   {fields.map((f) => (
                     <div key={f.key}>
                       <label style={labelStyle}>{f.label}</label>
