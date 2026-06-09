@@ -235,3 +235,30 @@ export const getTeamNoByTitle = (title: string): number | undefined =>
 // 정식 팀 + 학생 제안 주제 중 가장 큰 번호(현재 17). 미등록 학생 주제에 이어서
 // 번호를 부여할 때의 시작 기준점으로 사용한다(예: 18, 19 …).
 export const MAX_TEAM_NO = Math.max(...TEAM_PROJECTS.map((p) => p.id));
+
+/**
+ * REPO_BY_BOARD: 보드 번호(현재 주제) → 콘텐츠가 일치하는 실제 배포 레포 번호.
+ *
+ * project01~17은 2026-06-05에 "옛 주제 순서"로 만들어졌고, 06-08 보드 재정렬로 번호↔주제가 어긋났다.
+ * 그래서 갤러리는 보드 번호가 아니라 "레포의 실제 콘텐츠"에 맞춰 연결한다(내용 기반 매칭).
+ * project18~23은 2026-06-09 신규 생성으로 번호=주제가 일치한다.
+ *  - 매칭 레포 없음(준비 중): 2 취업자격증도우미, 3 부모복지, 17 영양제 알리미
+ *  - 10 동화책개발은 콘텐츠상 project01과 공유. 23 학습플래너는 project23 사용(옛 project11도 동일 주제).
+ */
+export const REPO_BY_BOARD: Record<number, number> = {
+  1: 1,   // 한국형 동화책 → project01
+  4: 9,   // 자격증 취약점 → project09
+  5: 2,   // 청년정책 챗봇 → project02
+  6: 10,  // 자소서·면접 코치 → project10
+  7: 3,   // 회복탄력성 루틴 → project03
+  8: 12,  // 근시 관리 → project12
+  9: 5,   // AI 창업 코치 → project05
+  10: 1,  // AI 동화책 개발 → project01(동화책 공유)
+  11: 4,  // 회복탄력성 2팀 → project04
+  12: 13, // JD 채용 진단 → project13
+  13: 14, // 맛집 동선 → project14
+  14: 15, // 육묘일기 → project15
+  15: 17, // 청년 AI 리터러시 → project17
+  16: 16, // 위로·격려(마음 한 스푼) → project16
+  18: 18, 19: 19, 20: 20, 21: 21, 22: 22, 23: 23, // 신규(번호=주제 일치)
+};
