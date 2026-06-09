@@ -69,6 +69,8 @@ export const PRESET_TOPICS: PresetTopic[] = [
   { key: 'p5', title: '청년지원정책 안내 챗봇', description: '조건을 입력하면 맞춤 청년지원정책을 안내하는 챗봇' },
   { key: 'p6', title: 'AI 자기소개서·면접 코치', description: '자기소개서 첨삭과 모의면접을 돕는 AI 코치' },
   { key: 'p7', title: '회복탄력성 루틴 코치', description: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱' },
+  // p8: '밀려도 괜찮은, AI 생성 학습 플래너'(일정/플래너 주제) — 보드 재편 때 누락된 것을 23번으로 재등록.
+  { key: 'p8', title: '밀려도 괜찮은, AI 생성 학습 플래너', description: '목표·과목에 맞춰 계획을 짜고, 밀리면 AI가 다시 계획을 짜 주는 학습 플래너' },
 ];
 
 // PRESET_KEYS: PRESET_TOPICS에서 key만 추출해 만든 Set(집합).

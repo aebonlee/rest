@@ -194,6 +194,12 @@ export const TEAM_PROJECTS: TeamProject[] = [
     tagline: '경제를 모르는 사람도 경제적 자립으로 성장하도록 AI가 단계별로 코칭하는 서비스',
     icon: '💰', color: '#ca8a04', members: ['박남영'], note: '학생 제안',
   },
+  {
+    // 23번: 보드 재편 때 누락된 '밀려도 괜찮은, AI 생성 학습 플래너'(옛 11팀) 재등록.
+    id: 23, slug: 'study-planner', title: '밀려도 괜찮은, AI 생성 학습 플래너',
+    tagline: '목표·과목에 맞춰 계획을 짜고, 밀리면 AI가 다시 계획을 짜 주는 학습 플래너',
+    icon: '🗓️', color: '#6366f1', members: ['최윤정'],
+  },
 ];
 
 /**
