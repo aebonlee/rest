@@ -28,18 +28,16 @@ const ProjectTimeline = (): ReactElement => {
             const color = PHASE_COLOR[m.phase] || 'var(--primary-blue)';
             return (
               <div key={i} style={{ background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderTop: `5px solid ${color}`, borderRadius: '14px', overflow: 'hidden', color: 'var(--text-primary)' }}>
-                {/* 상단: 단계 번호 + 큰 날짜 강조 */}
+                {/* 상단: (왼쪽) 단계 번호·이름 / (오른쪽 끝) 큰 날짜 강조 */}
                 <div style={{ display: 'flex', alignItems: 'center', gap: '14px', padding: '16px 20px 12px', background: `${color}0d`, flexWrap: 'wrap' }}>
                   <span style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '34px', borderRadius: '50%', background: color, color: '#fff', fontSize: '15px', fontWeight: 800, flexShrink: 0 }}>{i + 1}</span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    {/* ★ 날짜 크게 강조 */}
-                    <div style={{ fontSize: '21px', fontWeight: 800, color, letterSpacing: '-0.01em', lineHeight: 1.2 }}>{m.period}</div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: '12px', fontWeight: 800, padding: '2px 10px', borderRadius: '999px', background: color, color: '#fff' }}>{m.phase}</span>
-                      <strong style={{ fontSize: '15px' }}>{m.title}</strong>
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>· {m.week}</span>
-                    </div>
+                  <div style={{ flex: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                    <span style={{ fontSize: '12px', fontWeight: 800, padding: '2px 10px', borderRadius: '999px', background: color, color: '#fff' }}>{m.phase}</span>
+                    <strong style={{ fontSize: '15px' }}>{m.title}</strong>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>· {m.week}</span>
                   </div>
+                  {/* ★ 날짜 오른쪽 끝 크게 강조 */}
+                  <div style={{ fontSize: '21px', fontWeight: 800, color, letterSpacing: '-0.01em', lineHeight: 1.2, marginLeft: 'auto', textAlign: 'right', flexShrink: 0 }}>{m.period}</div>
                 </div>
 
                 {/* 본문: 목표 + 항목별 상세 설명 */}
