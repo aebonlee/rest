@@ -17,6 +17,9 @@ import { buildTeamNumbers } from '../../utils/teamNumber';
 import { getTeamNoByTitle, getTeamProject } from '../../data/teamProjects';
 import type { Team } from '../../types';
 
+// 번호별 구현 예시(레퍼런스) 배포 URL — aebonlee.github.io/projectNN. 팀 번호와 1:1 매칭.
+const liveUrl = (n: number) => `https://aebonlee.github.io/project${String(n).padStart(2, '0')}/`;
+
 const AppGallery = (): ReactElement => {
   const [teams, setTeams] = useState<Team[]>([]);
   const [topics, setTopics] = useState<CustomTopic[]>([]); // 번호 산출용(생성순)
@@ -56,7 +59,7 @@ const AppGallery = (): ReactElement => {
           ) : (
             <>
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-                총 <strong style={{ color: 'var(--primary-blue)' }}>{sorted.length}</strong>팀 · 🚀 앱 실행 <strong style={{ color: '#065f46' }}>{liveCount}</strong> · 준비 중 {sorted.length - liveCount}
+                총 <strong style={{ color: 'var(--primary-blue)' }}>{sorted.length}</strong>팀 · 팀 배포 제출 <strong style={{ color: '#065f46' }}>{liveCount}</strong> (나머지는 번호별 구현 예시로 연결)
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
               {sorted.map((t) => {
@@ -66,6 +69,7 @@ const AppGallery = (): ReactElement => {
                 const icon = proj?.icon ?? '🚀';
                 const color = proj?.color ?? 'var(--primary-blue)';
                 const demo = (subs[t.id]?.demo_url || '').trim();
+                const url = demo || liveUrl(no); // 팀이 제출한 배포 주소 우선, 없으면 번호별 구현 예시(github.io/projectNN)
                 const leader = members(t).find((m) => m.role === '팀장');
                 return (
                   <div key={t.id} style={{
@@ -84,9 +88,9 @@ const AppGallery = (): ReactElement => {
                     </span>
                     {subs[t.id]?.summary && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>📝 {subs[t.id].summary}</span>}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
-                      {demo
-                        ? <a href={demo} target="_blank" rel="noopener noreferrer" style={{ ...badge('#d1fae5', '#065f46'), textDecoration: 'none' }}>🚀 앱 실행 ↗</a>
-                        : <span style={badge('var(--bg-light-gray)', 'var(--text-secondary)')}>준비 중</span>}
+                      <a href={url} target="_blank" rel="noopener noreferrer" title={url} style={{ ...badge('#d1fae5', '#065f46'), textDecoration: 'none' }}>
+                        🚀 {demo ? '팀 배포 앱' : '구현 예시'} ↗
+                      </a>
                     </div>
                   </div>
                 );
@@ -95,7 +99,7 @@ const AppGallery = (): ReactElement => {
             </>
           )}
           <p style={{ marginTop: '20px', fontSize: '12.5px', color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
-            ‘앱 실행’은 각 팀이 <strong>산출물 제출</strong>에 입력한 배포 주소로 연결됩니다.
+            ‘구현 예시’는 팀 번호별 레퍼런스(aebonlee.github.io/project01~)로 연결됩니다. 팀이 <strong>산출물 제출</strong>에 배포 주소를 입력하면 ‘팀 배포 앱’으로 바뀝니다.
           </p>
         </div>
       </section>
