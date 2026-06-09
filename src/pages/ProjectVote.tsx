@@ -207,6 +207,28 @@ const ProjectVote = (): ReactElement => {
     else showToast(res.error === 'full' ? '정원이 가득 찼습니다.' : '합류 실패: ' + (res.error || ''), 'error');
   };
 
+  // handleApplyLeader(title, team): '팀장 신청' — 팀이 없으면 내가 팀장으로 팀 시작, 있으면 (미소속 시 합류 후) 팀장 신청.
+  const handleApplyLeader = async (title: string, team: Team | undefined) => {
+    if (lockGuard()) return;
+    if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
+    setBusy(true);
+    let res: { ok: boolean; error?: string; takenBy?: string };
+    if (!team) {
+      res = await createTeam(title, title, me('팀장')); // 첫 신청자가 팀장으로 팀 시작
+    } else {
+      const inTeam = !!user && members(team).some((m) => m.id === user.id);
+      if (!inTeam) {
+        const j = await joinTeam(team, me('팀원')); // 미소속이면 먼저 합류
+        if (!j.ok) { setBusy(false); showToast(j.error === 'full' ? '정원이 가득 찼습니다.' : '신청 실패: ' + (j.error || ''), 'error'); return; }
+      }
+      res = await claimLeader(team.id, user!.id); // 선착순 팀장 신청
+    }
+    setBusy(false);
+    if (res.ok) { showToast('🎉 팀장으로 신청했습니다!', 'success'); reload(); }
+    else if (res.error === 'taken') { showToast(`이미 ${res.takenBy || '다른 분'}이 팀장입니다.`, 'info'); reload(); }
+    else showToast('팀장 신청 실패: ' + (res.error || ''), 'error');
+  };
+
   // handleLeave(team): 내가 속한 팀에서 나간다.
   const handleLeave = async (team: Team) => {
     if (lockGuard()) return;
@@ -383,6 +405,7 @@ const ProjectVote = (): ReactElement => {
                 const team = teamForTitle(r.title);                      // 이 주제로 만들어진 팀(없으면 undefined)
                 const inThisTeam = !!team && !!user && members(team).some((m) => m.id === user.id); // 내가 이 팀 소속인가? (!!는 값을 true/false로 변환)
                 const full = !!team && members(team).length >= MAX_TEAM_SIZE; // 이 팀 정원이 찼나?
+                const hasLeader = !!team && members(team).some((m) => m.role === '팀장'); // 이 팀에 팀장이 정해졌나?
                 const canDelete = !r.isPreset && (r.ownerId === user?.id || isAdmin); // 삭제 가능? (학생 제안이고 + 내가 만든 것이거나 강사)
                 const canEdit = !locked && (inThisTeam || isAdmin || (!r.isPreset && r.ownerId === user?.id)); // 수정 가능? (팀원/강사/제안자)
                 return (
@@ -503,11 +526,20 @@ const ProjectVote = (): ReactElement => {
                         📌 패들렛
                       </a>
 
-                      {/* 팀이 아직 없고 + 강사가 아니면 '팀원 신청'(첫 신청자가 팀 시작) */}
-                      {!team && !isAdmin && (
-                        <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy || locked} onClick={() => handleApply(r.title)}>
-                          팀원 신청
-                        </button>
+                      {/* 비강사 + 이 팀 소속이 아니면: 팀원 신청 + 팀장 신청 (팀이 없어도 항상 표시·활성) */}
+                      {!inThisTeam && !isAdmin && (
+                        <>
+                          {/* 팀원 신청: 팀이 없으면 새로 시작, 있으면 합류 (정원 차면 마감) */}
+                          <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || locked || full} onClick={() => (team ? handleJoin(team) : handleApply(r.title))}>
+                            {full ? '정원 마감' : '팀원 신청'}
+                          </button>
+                          {/* 팀장 신청: 아직 팀장이 없을 때만(팀 없거나 팀장 미정). 정원 차면 비활성 */}
+                          {!hasLeader && (
+                            <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || locked || full} onClick={() => handleApplyLeader(r.title, team)}>
+                              팀장 신청
+                            </button>
+                          )}
+                        </>
                       )}
                       {/* 팀이 있고 + 내가 그 팀 소속이면: 게시판 이동 + 나가기 버튼 */}
                       {team && inThisTeam && (
@@ -515,12 +547,6 @@ const ProjectVote = (): ReactElement => {
                           <Link to="/project-board" className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }}>팀 게시판 →</Link>
                           <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy || locked} onClick={() => handleLeave(team)}>팀 나가기</button>
                         </>
-                      )}
-                      {/* 팀이 있고 + 내가 소속이 아니고 + 강사가 아니면: 합류 버튼(정원 차면 비활성화 + 흐리게) */}
-                      {team && !inThisTeam && !isAdmin && (
-                        <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || full || locked} onClick={() => handleJoin(team)}>
-                          {full ? '정원 마감' : '이 팀에 합류'}
-                        </button>
                       )}
 
                       {/* 수정 버튼(팀원/강사/제안자) — marginLeft auto로 오른쪽 정렬 시작 */}
