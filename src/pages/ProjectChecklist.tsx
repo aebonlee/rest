@@ -185,7 +185,7 @@ const ProjectChecklist = (): ReactElement => {
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
                 내 팀: <strong style={{ color: 'var(--primary-blue)' }}>{myTeams.map((t) => t.name).join(', ')}</strong> · 항목을 체크하며 진행하세요.
               </div>
-              {myTeams.map((team) => <TeamChecklist key={team.id} team={team} editable />)}
+              {[...myTeams].sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999)).map((team) => <TeamChecklist key={team.id} team={team} editable />)}
             </>
           )}
         </div>

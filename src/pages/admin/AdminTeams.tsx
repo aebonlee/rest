@@ -268,8 +268,10 @@ const AdminTeams = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : teams.length > 0 ? (
             <div className="teams-grid">
-              {/* 팀 배열을 .map으로 돌며 팀 하나당 카드 하나를 그린다. */}
-              {teams.map(team => {
+              {/* 팀 배열을 팀번호(name의 숫자) 오름차순으로 정렬해 카드를 그린다. */}
+              {[...teams]
+                .sort((a, b) => ((parseInt((a.name || '').replace(/[^0-9]/g, ''), 10) || 999) - (parseInt((b.name || '').replace(/[^0-9]/g, ''), 10) || 999)))
+                .map(team => {
                 // members가 배열이 아닐 수 있으므로(데이터 방어) 안전하게 빈 배열로 폴백.
                 // Array.isArray로 확인: DB 값이 깨졌거나 null이어도 아래 .find/.map/.length에서 에러 안 나게 한다.
                 const ms = Array.isArray(team.members) ? team.members : [];
