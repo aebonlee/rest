@@ -53,14 +53,16 @@ import { PRESET_TOPICS } from '../data/projectTopics';
 import { getBoardNo, BOARD_SIZE, assignExtraNumbers } from '../data/boardOrder';
 // 투표/주제 관련 DB 작업 함수들과, 그 데이터 모양을 나타내는 타입들을 가져온다.
 import {
-  listCustomTopics, listVotes, addTopic, deleteTopic, castVote, retractVote,
-  type CustomTopic, type TopicVote,
+  listCustomTopics, addTopic, deleteTopic, updateTopic,
+  type CustomTopic,
 } from '../utils/projectVote';
 // 팀 관련 DB 작업 함수들과 팀 정원 상수(MAX_TEAM_SIZE)를 가져온다.
 import {
   listTeams, createTeam, joinTeam, leaveTeam, MAX_TEAM_SIZE,
-  claimLeader, resetLeaders,
+  claimLeader, resetLeaders, updateTeamMeta,
 } from '../utils/projectTeams';
+// 운영 설정(잠금 상태) 읽기/쓰기.
+import { getSetting, setSetting, VOTE_LOCK_KEY } from '../utils/settings';
 // Team, TeamMember: 팀 한 개와 팀원 한 명의 데이터 모양을 정의한 타입.
 import type { Team, TeamMember } from '../types';
 
@@ -86,12 +88,15 @@ const ProjectVote = (): ReactElement => {
   // useState(초깃값)은 [현재값, 값을바꾸는함수] 한 쌍을 돌려준다.
   // setXxx를 호출해 값을 바꾸면 화면이 자동으로 다시 그려진다. (직접 custom = ... 처럼 바꾸면 안 됨)
   const [custom, setCustom] = useState<CustomTopic[]>([]); // 학생들이 제안한 주제 목록(처음엔 빈 배열)
-  const [votes, setVotes] = useState<TopicVote[]>([]);     // 전체 투표 목록
   const [teams, setTeams] = useState<Team[]>([]);          // 전체 팀 목록
   const [loading, setLoading] = useState(true);            // 데이터를 불러오는 중인가? (true면 로딩 표시)
   const [busy, setBusy] = useState(false);                 // 어떤 작업(투표/합류 등)을 처리 중인가? (중복 클릭 방지용)
   const [newTitle, setNewTitle] = useState('');            // '새 주제 제안' 입력칸의 제목 값
   const [newDesc, setNewDesc] = useState('');              // '새 주제 제안' 입력칸의 설명 값
+  const [locked, setLocked] = useState(false);             // 강사 '최종 확정' 잠금 상태(true면 모든 변경 비활성)
+  const [editKey, setEditKey] = useState<string | null>(null); // 현재 '수정' 패널이 열린 주제 key(없으면 null)
+  const [editTitle, setEditTitle] = useState('');          // 수정 패널: 주제 제목 입력값
+  const [editDesc, setEditDesc] = useState('');            // 수정 패널: 주제 설명 입력값
 
   // 화면/저장에 쓸 내 표시 이름을 정한다.
   // ?. (옵셔널 체이닝): 앞 값이 없으면(undefined/null) 에러 없이 그냥 undefined가 된다.
@@ -114,8 +119,8 @@ const ProjectVote = (): ReactElement => {
     setLoading(true); // 로딩 표시 켜기
     // Promise.all: 세 개의 비동기 요청을 "동시에" 보내고, 셋 다 끝날 때까지 기다린다(하나씩 기다리지 않음 → 빠름).
     // await: 비동기 작업이 끝날 때까지 잠시 멈춰 결과를 기다리라는 뜻. (async 함수 안에서만 쓸 수 있음)
-    const [c, v, t] = await Promise.all([listCustomTopics(), listVotes(), listTeams()]);
-    setCustom(c); setVotes(v); setTeams(t); // 받아온 결과로 각 상태 갱신
+    const [c, t, lk] = await Promise.all([listCustomTopics(), listTeams(), getSetting<boolean>(VOTE_LOCK_KEY, false)]);
+    setCustom(c); setTeams(t); setLocked(!!lk); // 받아온 결과로 각 상태 갱신
     setLoading(false); // 로딩 표시 끄기
   }, []);
 
@@ -124,10 +129,6 @@ const ProjectVote = (): ReactElement => {
   // reload는 useCallback으로 고정돼 있어 사실상 화면이 처음 뜰 때 딱 한 번만 reload()가 돈다.
   useEffect(() => { reload(); }, [reload]);
 
-  // myVoteKey: 내가 투표한 주제의 key(투표 안 했으면 undefined).
-  // useMemo: 계산 결과를 기억해 두고, 의존성([votes, user])이 바뀔 때만 다시 계산한다(불필요한 재계산 방지).
-  // .find(...): 배열에서 조건에 맞는 "첫 번째" 항목을 찾는다(없으면 undefined). 그 뒤 ?.topic_key로 안전하게 꺼낸다.
-  const myVoteKey = useMemo(() => votes.find((v) => v.user_id === user?.id)?.topic_key, [votes, user]);
   // 중복신청 허용: 내가 속한 팀이 여러 개일 수 있음
   // myTeams: 내가 팀원으로 들어가 있는 팀들만 골라낸 목록.
   // 비로그인(user 없음)이면 빈 배열. .filter는 조건을 만족하는 항목만 남기고, .some은 "하나라도 있나?"를 검사한다.
@@ -137,8 +138,7 @@ const ProjectVote = (): ReactElement => {
     [teams, user],
   );
 
-  // (득표수 표시는 화면에서 숨김 처리됨 — votersByKey/maxCount 등 집계는 더 이상 사용하지 않는다.
-  //  투표 데이터/기능 자체는 유지되며, 내 투표 여부(myVoteKey)만 카드 강조·버튼에 쓰인다.)
+  // (투표 방식 폐지 — 주제별 '팀원 신청'으로 팀을 구성한다. 득표/투표 UI는 없다.)
 
   // rows: 화면에 그릴 주제 카드 목록. 프리셋 주제 + 학생 제안 주제를 하나로 합치고, 고정 번호순으로 정렬한다.
   const rows: Row[] = useMemo(() => {
@@ -183,34 +183,29 @@ const ProjectVote = (): ReactElement => {
 
   // ── 이벤트 핸들러들: 버튼 클릭 등으로 실행되는 함수들 ──
 
-  // handleVote(key): 주제에 투표하거나(처음) 이미 한 투표를 취소(같은 주제 재클릭)한다.
-  const handleVote = async (key: string) => {
-    if (!user) return; // 비로그인이면 아무것도 안 함(가드 절: 조건 안 맞으면 일찍 빠져나감)
-    setBusy(true); // 처리 중 표시(버튼 비활성화로 더블클릭 방지)
-    // 삼항 연산자(조건 ? A : B): 내가 이미 이 주제에 투표했다면 취소(retractVote), 아니면 새로 투표(castVote).
-    const res = myVoteKey === key ? await retractVote(user.id) : await castVote(key, user.id, userName);
-    setBusy(false); // 처리 끝
-    // res.ok가 true면 성공. 성공 시 알림을 띄우고 reload()로 최신 데이터를 다시 불러와 화면을 갱신한다.
-    if (res.ok) { showToast(myVoteKey === key ? '투표를 취소했습니다.' : '투표 완료!', 'success'); reload(); }
-    else showToast('투표 실패: ' + (res.error || ''), 'error'); // 실패하면 에러 메시지(없으면 빈 문자열)
+  // lockGuard(): 강사 확정 잠금 상태면 변경을 막고 안내(true 반환 시 호출부에서 중단).
+  const lockGuard = (): boolean => {
+    if (locked) { showToast('강사가 최종 확정하여 잠겼습니다. 변경하려면 강사에게 문의하세요.', 'warning'); return true; }
+    return false;
   };
 
-  // handleCreateTeam(title): 해당 주제 제목으로 새 팀을 만들고, 만든 사람을 '팀장후보'로 넣는다.
-  const handleCreateTeam = async (title: string) => {
+  // handleApply(title): 팀원이 없는 주제에 '팀원 신청' — 팀이 없으면 첫 신청자가 팀을 시작하며 '팀원'으로 들어간다.
+  const handleApply = async (title: string) => {
+    if (lockGuard()) return;
     // 강사는 팀에 들어가지 않으므로 막고 안내만 한다.
     if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
-    // 중복신청 허용: 한 사람이 여러 주제에 팀을 만들거나 합류할 수 있습니다.
+    // 중복신청 허용: 한 사람이 여러 주제에 팀원으로 신청할 수 있습니다.
     setBusy(true);
-    // createTeam(팀이름, 주제, 첫멤버). 여기서는 팀이름과 주제를 둘 다 title로 쓴다.
-    const res = await createTeam(title, title, me('팀장후보'));
+    // createTeam(팀이름, 주제, 첫멤버). 첫 신청자는 '팀원'(팀장은 이후 '팀장 신청'으로 정함).
+    const res = await createTeam(title, title, me('팀원'));
     setBusy(false);
-    // 백틱(`...`)은 템플릿 문자열로, ${ } 안에 변수 값을 끼워 넣을 수 있다.
-    if (res.ok) { showToast(`'${title}' 팀이 만들어졌습니다!`, 'success'); reload(); }
-    else showToast('팀 생성 실패: ' + (res.error || ''), 'error');
+    if (res.ok) { showToast(`'${title}'에 팀원으로 신청했습니다!`, 'success'); reload(); }
+    else showToast('신청 실패: ' + (res.error || ''), 'error');
   };
 
   // handleJoin(team): 이미 있는 팀에 '팀원'으로 합류한다.
   const handleJoin = async (team: Team) => {
+    if (lockGuard()) return;
     if (isAdmin) { showToast('강사 계정은 팀에 참여하지 않습니다. (수강생 팀 구성 전용)', 'warning'); return; }
     setBusy(true);
     const res = await joinTeam(team, me('팀원'));
@@ -222,6 +217,7 @@ const ProjectVote = (): ReactElement => {
 
   // handleLeave(team): 내가 속한 팀에서 나간다.
   const handleLeave = async (team: Team) => {
+    if (lockGuard()) return;
     // confirm(): 브라우저 기본 확인창. "확인"을 누르면 true, "취소"면 false. 취소면 여기서 중단.
     if (!confirm(`'${team.name}' 팀에서 나가시겠습니까?`)) return;
     setBusy(true);
@@ -234,6 +230,7 @@ const ProjectVote = (): ReactElement => {
   // handleClaimLeader(team, memberId, memberName): 특정 팀원을 팀장으로 "신청"한다.
   // 팀장은 선착순이라, 동시에 여러 명이 눌러도 서버에서 먼저 들어온 한 명만 팀장이 된다(경쟁 상황 처리).
   const handleClaimLeader = async (team: Team, memberId: string, memberName: string) => {
+    if (lockGuard()) return;
     // \n은 줄바꿈 문자. 확인창에 두 줄로 안내한다.
     if (!confirm(`${memberName} 님을 '${team.name}' 팀장으로 신청합니다.\n먼저 신청한 한 명이 팀장이 되며, 이후에는 강사만 변경할 수 있습니다.`)) return;
     setBusy(true);
@@ -259,6 +256,7 @@ const ProjectVote = (): ReactElement => {
 
   // handleAdd(): '새 주제 제안' 입력칸의 내용으로 새 주제를 추가한다.
   const handleAdd = async () => {
+    if (lockGuard()) return;
     // .trim()으로 공백을 없앤 제목이 비어 있으면 추가하지 않고 경고만 한다(빈 주제 방지).
     if (!newTitle.trim()) { showToast('주제 제목을 입력하세요.', 'warning'); return; }
     setBusy(true);
@@ -272,10 +270,61 @@ const ProjectVote = (): ReactElement => {
   // handleDeleteTopic(key): 학생 제안 주제를 삭제한다(투표도 함께 삭제됨).
   // 주의: 다른 핸들러와 달리 setBusy를 쓰지 않는다. 삭제는 확인창으로 한 번 걸러지기 때문.
   const handleDeleteTopic = async (key: string) => {
+    if (lockGuard()) return;
     if (!confirm('이 주제를 삭제할까요? (투표도 함께 사라집니다)')) return;
     const res = await deleteTopic(key);
     if (res.ok) { showToast('주제를 삭제했습니다.', 'info'); reload(); }
     else showToast('삭제 실패: ' + (res.error || ''), 'error');
+  };
+
+  // handleRemoveMember(team, member): 팀원/강사가 팀에서 특정 멤버를 제외(leaveTeam 재사용 — 마지막 1명이면 팀 삭제).
+  const handleRemoveMember = async (team: Team, member: TeamMember) => {
+    if (lockGuard()) return;
+    if (!confirm(`'${member.name}' 님을 팀에서 제외할까요?`)) return;
+    setBusy(true);
+    const res = await leaveTeam(team, member.id);
+    setBusy(false);
+    if (res.ok) { showToast(`${member.name} 님을 제외했습니다.`, 'info'); reload(); }
+    else showToast('제외 실패: ' + (res.error || ''), 'error');
+  };
+
+  // openEdit(r): 수정 패널 열기/닫기(토글). 열 때 현재 제목·설명을 입력값으로 채운다.
+  const openEdit = (r: Row) => {
+    if (editKey === r.key) { setEditKey(null); return; }
+    setEditKey(r.key); setEditTitle(r.title); setEditDesc(r.description);
+  };
+
+  // handleSaveEdit(r): 주제 제목/설명 수정. '동일 이름'의 커스텀 주제·팀을 함께 갱신(이름 기준 통합 관리).
+  const handleSaveEdit = async (r: Row) => {
+    if (lockGuard()) return;
+    const title = editTitle.trim(), desc = editDesc.trim();
+    if (!title) { showToast('주제 제목을 입력하세요.', 'warning'); return; }
+    setBusy(true);
+    const oldName = r.title.trim();
+    // 같은 이름의 커스텀 주제 모두 갱신(프리셋은 코드 고정이라 제외)
+    const sameTopics = custom.filter((c) => c.title.trim() === oldName);
+    for (const c of sameTopics) await updateTopic(c.id, title, desc);
+    // 같은 이름으로 매칭되는 팀 모두 project_topic/설명 동기화
+    const sameTeams = teams.filter((t) => (t.project_topic || '').trim() === oldName);
+    for (const t of sameTeams) await updateTeamMeta(t.id, { project_topic: title, description: desc });
+    setBusy(false);
+    setEditKey(null);
+    const n = sameTopics.length + sameTeams.length;
+    showToast(`수정했습니다${n > 1 ? ` (동일 이름 ${n}건 함께 반영)` : ''}.`, 'success');
+    reload();
+  };
+
+  // handleToggleLock(): (강사 전용) 팀구성 '최종 확정' ↔ '확정 해제'.
+  const handleToggleLock = async () => {
+    const next = !locked;
+    if (!confirm(next
+      ? '팀구성을 최종 확정하여 잠글까요?\n이후 팀원 신청·합류·팀장·주제 수정이 모두 막힙니다.'
+      : '확정을 해제하여 다시 변경 가능하게 할까요?')) return;
+    setBusy(true);
+    const res = await setSetting(VOTE_LOCK_KEY, next);
+    setBusy(false);
+    if (res.ok) { setLocked(next); showToast(next ? '🔒 팀구성을 최종 확정했습니다.' : '확정을 해제했습니다.', 'success'); }
+    else showToast('처리 실패: ' + (res.error || ''), 'error');
   };
 
   // ── 인라인 스타일 객체들 ──
@@ -299,11 +348,11 @@ const ProjectVote = (): ReactElement => {
   return (
     <>
       {/* 페이지 제목/검색엔진 설정. noindex는 검색에 노출하지 말라는 표시 */}
-      <SEOHead title="팀구성 — 주제 투표" path="/project-vote" noindex />
+      <SEOHead title="팀구성 — 주제별 팀원 신청" path="/project-vote" noindex />
       <section className="page-header">
         <div className="container">
-          <h2>팀구성 · 주제 투표</h2>
-          <p>주제에 투표하면 관심 있는 사람이 모입니다. 바로 팀을 만들거나 합류해 보세요. (투표는 1인 1표 · 팀 신청은 중복 허용 — 여러 주제에 참여할 수 있어요)</p>
+          <h2>팀구성 · 주제별 팀원 신청</h2>
+          <p>원하는 주제에 <strong>팀원 신청</strong>으로 팀을 구성하세요. 여러 주제에 참여할 수 있고, 강사 최종 확정 전까지는 각 팀을 자유롭게 수정·보완할 수 있습니다.</p>
         </div>
       </section>
 
@@ -314,6 +363,12 @@ const ProjectVote = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : (
             <>
+              {/* 강사 최종 확정 잠금 배너 */}
+              {locked && (
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px' }}>
+                  🔒 강사가 팀구성을 최종 확정했습니다 — 팀원 신청·합류·팀장·주제 수정이 모두 잠겨 있습니다.
+                </div>
+              )}
               {/* 상단 요약: 주제 개수, (있으면) 내 팀 목록과 게시판 링크 (득표 수 표시는 숨김) */}
               <div style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>
                 주제 {rows.length}개
@@ -332,16 +387,16 @@ const ProjectVote = (): ReactElement => {
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '16px', alignItems: 'stretch' }}>
               {rows.map((r) => {
                 // 이 카드 한 장을 그리기 위해 미리 계산하는 값들:
-                const teamNo = teamNoForRow(r);                          // 이 주제의 고정 팀 번호(= 패들렛 번호). 득표 순위와 무관.
-                const mineVote = myVoteKey === r.key;                    // 내가 이 주제에 투표했나?
+                const teamNo = teamNoForRow(r);                          // 이 주제의 고정 팀 번호(= 패들렛 번호).
                 const team = teamForTitle(r.title);                      // 이 주제로 만들어진 팀(없으면 undefined)
                 const inThisTeam = !!team && !!user && members(team).some((m) => m.id === user.id); // 내가 이 팀 소속인가? (!!는 값을 true/false로 변환)
                 const full = !!team && members(team).length >= MAX_TEAM_SIZE; // 이 팀 정원이 찼나?
                 const canDelete = !r.isPreset && (r.ownerId === user?.id || isAdmin); // 삭제 가능? (학생 제안이고 + 내가 만든 것이거나 강사)
+                const canEdit = !locked && (inThisTeam || isAdmin || (!r.isPreset && r.ownerId === user?.id)); // 수정 가능? (팀원/강사/제안자)
                 return (
                   // key={r.key}: 리스트의 각 항목에 고유 key를 주면 리액트가 효율적으로 갱신한다(필수).
-                  // 내가 투표한 카드는 왼쪽에 파란 줄로 강조한다(삼항 연산자로 스타일 분기).
-                  <div key={r.key} style={{ ...card, borderLeft: mineVote ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%' }}>
+                  // 내가 속한 팀 카드는 왼쪽에 파란 줄로 강조한다.
+                  <div key={r.key} style={{ ...card, borderLeft: inThisTeam ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)', display: 'flex', flexDirection: 'column', height: '100%' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '12px' }}>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
@@ -384,7 +439,7 @@ const ProjectVote = (): ReactElement => {
                               {/* 팀장 미정: 팀원·관리자가 각 이름별로 팀장 신청 */}
                               {/* 팀장이 없고 + (내가 이 팀 소속이거나 강사)일 때만 '팀장 신청' 버튼 노출 */}
                               {!hasLeader && (inThisTeam || isAdmin) && (
-                                <button onClick={() => handleClaimLeader(team, m.id, m.name)} disabled={busy}
+                                <button onClick={() => handleClaimLeader(team, m.id, m.name)} disabled={busy || locked}
                                   style={{ fontSize: '12px', fontWeight: 700, padding: '3px 11px', borderRadius: '6px', border: 'none', background: 'var(--primary-blue)', color: '#fff', cursor: 'pointer' }}>
                                   팀장 신청
                                 </button>
@@ -398,7 +453,7 @@ const ProjectVote = (): ReactElement => {
                         )}
                         {/* 강사이고 팀장이 정해진 경우, 팀장 초기화 버튼 제공 */}
                         {isAdmin && hasLeader && (
-                          <button onClick={() => handleResetLeaders(team)} disabled={busy}
+                          <button onClick={() => handleResetLeaders(team)} disabled={busy || locked}
                             style={{ marginTop: '8px', fontSize: '12px', padding: '2px 10px', borderRadius: '6px', border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer' }}>
                             이 팀 팀장 초기화
                           </button>
@@ -407,20 +462,42 @@ const ProjectVote = (): ReactElement => {
                       );
                     })()}
 
+                    {/* 수정 패널 — 팀원/강사/제안자가 주제·설명 편집 + 팀원 제외. 동일 이름은 함께 반영. */}
+                    {editKey === r.key && (
+                      <div style={{ background: 'var(--bg-light-gray)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '12px 14px', marginBottom: '12px' }}>
+                        <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '8px' }}>✏️ 수정</div>
+                        {!r.isPreset ? (
+                          <>
+                            <input style={{ ...input, marginBottom: '8px' }} value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="주제 제목" />
+                            <input style={{ ...input, marginBottom: '8px' }} value={editDesc} onChange={(e) => setEditDesc(e.target.value)} placeholder="한 줄 설명" />
+                          </>
+                        ) : (
+                          <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 8px' }}>프리셋 주제라 제목·설명은 수정할 수 없습니다. (팀원 제외만 가능)</p>
+                        )}
+                        {team && members(team).length > 0 && (
+                          <div style={{ marginBottom: '8px' }}>
+                            <div style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)', marginBottom: '4px' }}>팀원 제외</div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                              {members(team).map((m) => (
+                                <span key={m.id} style={{ ...chip('#eff6ff', '#1e40af'), display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                                  {m.name}{m.role === '팀장' ? ' 👑' : ''}
+                                  <button onClick={() => handleRemoveMember(team, m)} disabled={busy} title="제외" style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 800, padding: 0, lineHeight: 1 }}>✕</button>
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        <div style={{ display: 'flex', gap: '8px' }}>
+                          {!r.isPreset && <button className="btn btn-primary" style={{ padding: '6px 14px', fontSize: '13px' }} disabled={busy} onClick={() => handleSaveEdit(r)}>저장</button>}
+                          <button className="btn btn-secondary" style={{ padding: '6px 14px', fontSize: '13px' }} onClick={() => setEditKey(null)}>닫기</button>
+                        </div>
+                      </div>
+                    )}
+
                     {/* 액션 */}
-                    {/* 카드 하단의 버튼들(투표/팀 만들기/합류/나가기/삭제) */}
+                    {/* 카드 하단의 버튼들(투표/팀원 신청/합류/나가기/수정/삭제) */}
                     {/* marginTop:auto — 카드가 그리드로 늘어나 빈 공간이 생겨도 버튼 줄을 항상 맨 아래에 정렬 */}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: 'auto', paddingTop: '4px' }}>
-                      {/* 투표 버튼: 내가 이미 투표했으면 강조 스타일 + "취소" 안내, 아니면 일반 스타일 */}
-                      <button
-                        className={mineVote ? 'btn btn-primary' : 'btn btn-secondary'}
-                        style={{ padding: '8px 18px', fontSize: '14px' }}
-                        disabled={busy} /* 처리 중이면 비활성화(중복 클릭 방지) */
-                        onClick={() => handleVote(r.key)}
-                      >
-                        {mineVote ? '✓ 내 투표 (취소)' : '이 주제에 투표'}
-                      </button>
-
                       {/* 패들렛 버튼: 카드의 '고정 팀 번호'(teamNo)에 맞춰 패들렛 보드를 새 탭으로 연다.
                           예) 3팀 → project03, 8팀 → project08 … (화면의 N팀 번호와 항상 일치) */}
                       <a
@@ -434,29 +511,35 @@ const ProjectVote = (): ReactElement => {
                         📌 패들렛
                       </a>
 
-                      {/* 팀이 아직 없고 + 강사가 아니면 '팀 만들기' 버튼 */}
+                      {/* 팀이 아직 없고 + 강사가 아니면 '팀원 신청'(첫 신청자가 팀 시작) */}
                       {!team && !isAdmin && (
-                        <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleCreateTeam(r.title)}>
-                          이 주제로 팀 만들기
+                        <button className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy || locked} onClick={() => handleApply(r.title)}>
+                          팀원 신청
                         </button>
                       )}
                       {/* 팀이 있고 + 내가 그 팀 소속이면: 게시판 이동 + 나가기 버튼 */}
                       {team && inThisTeam && (
                         <>
                           <Link to="/project-board" className="btn btn-primary" style={{ padding: '8px 18px', fontSize: '14px' }}>팀 게시판 →</Link>
-                          <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy} onClick={() => handleLeave(team)}>팀 나가기</button>
+                          <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px' }} disabled={busy || locked} onClick={() => handleLeave(team)}>팀 나가기</button>
                         </>
                       )}
                       {/* 팀이 있고 + 내가 소속이 아니고 + 강사가 아니면: 합류 버튼(정원 차면 비활성화 + 흐리게) */}
                       {team && !inThisTeam && !isAdmin && (
-                        <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || full} onClick={() => handleJoin(team)}>
+                        <button className="btn btn-secondary" style={{ padding: '8px 18px', fontSize: '14px', opacity: full ? 0.5 : 1 }} disabled={busy || full || locked} onClick={() => handleJoin(team)}>
                           {full ? '정원 마감' : '이 팀에 합류'}
                         </button>
                       )}
 
-                      {/* 삭제 권한이 있을 때만 '주제 삭제'. marginLeft: 'auto'로 오른쪽 끝에 붙인다 */}
+                      {/* 수정 버튼(팀원/강사/제안자) — marginLeft auto로 오른쪽 정렬 시작 */}
+                      {canEdit && (
+                        <button onClick={() => openEdit(r)} style={{ marginLeft: 'auto', background: 'none', border: '1px solid var(--border-light)', borderRadius: '6px', padding: '5px 12px', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px' }}>
+                          {editKey === r.key ? '수정 닫기' : '✏️ 수정'}
+                        </button>
+                      )}
+                      {/* 삭제 권한이 있을 때만 '주제 삭제' */}
                       {canDelete && (
-                        <button onClick={() => handleDeleteTopic(r.key)} style={{ marginLeft: 'auto', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '13px' }}>주제 삭제</button>
+                        <button onClick={() => handleDeleteTopic(r.key)} disabled={busy || locked} style={{ marginLeft: canEdit ? 0 : 'auto', background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', fontSize: '13px' }}>주제 삭제</button>
                       )}
                     </div>
                   </div>
@@ -464,17 +547,32 @@ const ProjectVote = (): ReactElement => {
               })}
               </div>
 
-              {/* 새 주제 추가 (그리드 바깥 — 전체 폭으로 크게 표시해 가독성↑) */}
-              {/* 입력칸 2개(제목/설명) + 추가 버튼. value와 onChange가 한 쌍으로 묶인 "제어 컴포넌트" 방식 */}
-              <div style={card}>
-                <h3 style={{ margin: '0 0 12px', fontSize: '17px' }}>새 주제 제안</h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                  {/* value: 상태값을 화면에 표시, onChange: 사용자가 타이핑할 때마다 상태를 갱신 → 항상 동기화 */}
-                  <input style={input} placeholder="주제 제목 (예: 우리 동네 안전 지도 앱)" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
-                  <input style={input} placeholder="한 줄 설명 (선택)" value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
-                  <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handleAdd}>주제 추가</button>
+              {/* 새 주제 추가 — 잠금 시 숨김. 입력칸 2개(제목/설명) + 추가 버튼. */}
+              {!locked && (
+                <div style={card}>
+                  <h3 style={{ margin: '0 0 12px', fontSize: '17px' }}>새 주제 제안</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                    <input style={input} placeholder="주제 제목 (예: 우리 동네 안전 지도 앱)" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                    <input style={input} placeholder="한 줄 설명 (선택)" value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
+                    <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handleAdd}>주제 추가</button>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* 강사 전용: 맨 아래 '최종 확정' / '확정 해제' — 확정 시 모든 변경이 잠긴다. */}
+              {isAdmin && (
+                <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', borderColor: locked ? '#fde68a' : 'var(--border-light)' }}>
+                  <div>
+                    <strong style={{ fontSize: '15px' }}>{locked ? '🔒 팀구성 최종 확정됨' : '강사 최종 확정'}</strong>
+                    <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                      {locked ? '현재 모든 변경이 잠겨 있습니다. 다시 열려면 확정을 해제하세요.' : '팀 구성을 마치면 최종 확정하여 더 이상 추가·변경되지 않게 잠급니다.'}
+                    </p>
+                  </div>
+                  <button className={locked ? 'btn btn-secondary' : 'btn btn-primary'} style={{ padding: '10px 20px' }} disabled={busy} onClick={handleToggleLock}>
+                    {locked ? '확정 해제' : '강사 최종 확정'}
+                  </button>
+                </div>
+              )}
             </>
           )}
         </div>

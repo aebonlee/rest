@@ -206,6 +206,15 @@ export async function leaveTeam(team: Team, userId: string): Promise<{ ok: boole
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+// 팀의 메타 정보(주제/설명/이름)를 수정한다. 커스텀 주제 제목 변경 시 팀의 project_topic 동기화에 사용.
+// 매개변수: teamId, patch(project_topic/description/name 중 일부). 반환값: { ok, error? }.
+export async function updateTeamMeta(teamId: string, patch: { project_topic?: string; description?: string; name?: string }): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const { error } = await client.from(TEAMS_TABLE).update(patch).eq('id', teamId);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
 /** 팀장 지원/취소 — 본인 역할을 '팀장후보' ↔ '팀원' 토글 (확정 팀장은 변경 안 함) */
 // 매개변수: team(대상 팀), userId(본인 id), on(true=지원, false=취소).
 // 반환값: { ok, error? }. 부수효과: TEAMS_TABLE update.

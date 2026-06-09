@@ -174,6 +174,21 @@ export async function deleteTopic(id: string): Promise<{ ok: boolean; error?: st
 }
 
 /**
+ * 커스텀 주제의 제목/설명을 수정한다(팀원/관리자 — RLS로 통제).
+ * @param id 주제 행 PK(UUID)
+ * @param title 새 제목
+ * @param description 새 설명
+ * @returns { ok, error? }
+ * @sideeffect TOPICS_TABLE 해당 행 UPDATE
+ */
+export async function updateTopic(id: string, title: string, description: string): Promise<{ ok: boolean; error?: string }> {
+  const client = getSupabase();
+  if (!client) return { ok: false, error: 'no-client' };
+  const { error } = await client.from(TOPICS_TABLE).update({ title, description }).eq('id', id);
+  return error ? { ok: false, error: error.message } : { ok: true };
+}
+
+/**
  * 1인 1표 업서트 (user_id 충돌 시 topic_key 변경)
  *
  * user_id가 UNIQUE이므로 동일 사용자가 다시 투표하면 INSERT 충돌이 발생하고,
