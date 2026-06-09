@@ -84,11 +84,16 @@
     max-width: var(--container-max);
     margin-left: auto;
     margin-right: auto;
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 24px;   /* project-guide의 .sidebar-layout과 동일한 좌우 여백 */
+    padding-right: 24px;
 }
-/* 본문 컬럼은 좌우 패딩을 제거(레이아웃이 좌우 여백을 책임) → 사이드바/본문이 상단 메뉴와 정렬 */
-.project-content { padding-left: 0; padding-right: 0; }
+/* 본문 컬럼: 좌우 패딩 제거 + min-width:0(★ 와이드 콘텐츠가 flex를 밀어 가로로 넘치는 것 방지)
+   → project-guide의 .sidebar-content와 동일하게 동작해 가로 범위가 일치한다. */
+.project-content {
+    padding-left: 0;
+    padding-right: 0;
+    min-width: 0;
+}
 @media (max-width: 768px) {
     .project-layout { padding-left: 16px; padding-right: 16px; }
 }
