@@ -148,7 +148,7 @@ const ProjectChecklist = (): ReactElement => {
               ) : (
                 // 진행률 높은 순으로 정렬해 한눈에 보기
                 [...teams]
-                  .sort((a, b) => checklistProgress(checklists[b.id]).percent - checklistProgress(checklists[a.id]).percent)
+                  .sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999) || a.project_topic.localeCompare(b.project_topic))
                   .map((team) => {
                     const { done, total, percent } = checklistProgress(checklists[team.id]);
                     const items = checklists[team.id] || {};
