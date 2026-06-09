@@ -61,7 +61,7 @@ const AppGallery = (): ReactElement => {
               <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
                 총 <strong style={{ color: 'var(--primary-blue)' }}>{sorted.length}</strong>팀 · 팀 배포 제출 <strong style={{ color: '#065f46' }}>{liveCount}</strong> (나머지는 번호별 구현 예시로 연결)
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(360px, 1fr))', gap: '16px' }}>
               {sorted.map((t) => {
                 const no = teamNos[t.id];
                 const projNo = getTeamNoByTitle(t.project_topic);
