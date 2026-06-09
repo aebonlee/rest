@@ -91,8 +91,8 @@ const ProjectVote = (): ReactElement => {
   const [teams, setTeams] = useState<Team[]>([]);          // 전체 팀 목록
   const [loading, setLoading] = useState(true);            // 데이터를 불러오는 중인가? (true면 로딩 표시)
   const [busy, setBusy] = useState(false);                 // 어떤 작업(투표/합류 등)을 처리 중인가? (중복 클릭 방지용)
-  const [newTitle, setNewTitle] = useState('');            // '새 주제 제안' 입력칸의 제목 값
-  const [newDesc, setNewDesc] = useState('');              // '새 주제 제안' 입력칸의 설명 값
+  const [newTitle, setNewTitle] = useState('');            // '아이디어 제안' 입력칸의 제목 값
+  const [newDesc, setNewDesc] = useState('');              // '아이디어 제안' 입력칸의 설명 값
   const [locked, setLocked] = useState(false);             // 강사 '최종 확정' 잠금 상태(true면 모든 변경 비활성)
   const [editKey, setEditKey] = useState<string | null>(null); // 현재 '수정' 패널이 열린 주제 key(없으면 null)
   const [editTitle, setEditTitle] = useState('');          // 수정 패널: 주제 제목 입력값
@@ -264,16 +264,14 @@ const ProjectVote = (): ReactElement => {
     else showToast('초기화 실패: ' + (res.error || ''), 'error');
   };
 
-  // handleAdd(): '새 주제 제안' 입력칸의 내용으로 새 주제를 추가한다.
+  // handleAdd(): '아이디어 제안' 입력으로 새 주제를 추가한다.
+  //   ※ 잠금(확정) 중에도 허용한다 — 늦게 들어온 아이디어는 '검토용'일 뿐, 순서대로 진행하는 절차(팀 결성 팀들)에는 포함되지 않는다.
   const handleAdd = async () => {
-    if (lockGuard()) return;
-    // .trim()으로 공백을 없앤 제목이 비어 있으면 추가하지 않고 경고만 한다(빈 주제 방지).
     if (!newTitle.trim()) { showToast('주제 제목을 입력하세요.', 'warning'); return; }
     setBusy(true);
     const res = await addTopic(newTitle.trim(), newDesc.trim(), user!.id, userName);
     setBusy(false);
-    // 성공 시 입력칸을 비우고('') 알림 후 갱신.
-    if (res.ok) { setNewTitle(''); setNewDesc(''); showToast('새 주제가 추가되었습니다.', 'success'); reload(); }
+    if (res.ok) { setNewTitle(''); setNewDesc(''); showToast('아이디어가 제안되었습니다. (검토용)', 'success'); reload(); }
     else showToast('추가 실패: ' + (res.error || ''), 'error');
   };
 
@@ -550,17 +548,22 @@ const ProjectVote = (): ReactElement => {
               })}
               </div>
 
-              {/* 새 주제 추가 — 잠금 시 숨김. 입력칸 2개(제목/설명) + 추가 버튼. */}
-              {!locked && (
-                <div style={card}>
-                  <h3 style={{ margin: '0 0 12px', fontSize: '17px' }}>새 주제 제안</h3>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                    <input style={input} placeholder="주제 제목 (예: 우리 동네 안전 지도 앱)" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
-                    <input style={input} placeholder="한 줄 설명 (선택)" value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
-                    <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handleAdd}>주제 추가</button>
-                  </div>
+              {/* 아이디어 제안 — 확정 후에도 받지만 '검토용'(순서대로 진행하는 절차에는 미포함). */}
+              <div style={card}>
+                <h3 style={{ margin: '0 0 6px', fontSize: '17px' }}>
+                  💡 아이디어 제안{locked && <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>(검토용 · 진행 절차 미포함)</span>}
+                </h3>
+                <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  {locked
+                    ? '팀 구성은 마감되었습니다. 제안된 아이디어는 검토용으로만 모이며, 순서대로 진행하는 프로젝트(결성된 팀)에는 포함되지 않습니다.'
+                    : '관심 있는 주제를 제안해 팀원을 모아보세요.'}
+                </p>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+                  <input style={input} placeholder="주제 제목 (예: 우리 동네 안전 지도 앱)" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} />
+                  <input style={input} placeholder="한 줄 설명 (선택)" value={newDesc} onChange={(e) => setNewDesc(e.target.value)} />
+                  <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 24px' }} disabled={busy} onClick={handleAdd}>아이디어 제안</button>
                 </div>
-              )}
+              </div>
 
               {/* 강사 전용: 맨 아래 '최종 확정' / '확정 해제' — 확정 시 모든 변경이 잠긴다. */}
               {isAdmin && (
