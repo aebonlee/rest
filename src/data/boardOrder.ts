@@ -70,3 +70,24 @@ const NO_BY_TITLE = new Map<string, number>(
  * @returns 1~21 중 해당 번호, 등록되지 않은 주제면 undefined
  */
 export const getBoardNo = (title: string): number | undefined => NO_BY_TITLE.get(normalizeTitle(title));
+
+// 비어 있는(삭제된) 번호 슬롯 목록 — 새 주제를 먼저 배정할 자리. 오름차순(예: [3]).
+export const EMPTY_SLOTS: number[] = BOARD_ORDER
+  .map((t, i) => (normalizeTitle(t) === '' ? i + 1 : 0))
+  .filter((n) => n > 0);
+
+/**
+ * boardOrder에 등록되지 않은 "새로 접수된 주제"들에 번호를 배정한다.
+ *  - 먼저 빈 슬롯(EMPTY_SLOTS, 예: 3번)을 순서대로 채우고,
+ *  - 그 다음 BOARD_SIZE+1(22)부터 이어서 부여한다.
+ * @param orderedKeys 미등록 항목의 "안정적 순서"(예: 주제 생성순 키 배열)
+ * @returns key → 번호 맵
+ */
+export function assignExtraNumbers(orderedKeys: string[]): Record<string, number> {
+  const map: Record<string, number> = {};
+  let nextNew = BOARD_SIZE; // 이후 ++nextNew → 22, 23 …
+  orderedKeys.forEach((key, i) => {
+    map[key] = i < EMPTY_SLOTS.length ? EMPTY_SLOTS[i] : ++nextNew;
+  });
+  return map;
+}
