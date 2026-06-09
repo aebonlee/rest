@@ -6,6 +6,13 @@
     display: flex;
     min-height: calc(100vh - var(--nav-height));
     padding-top: var(--nav-height);
+    /* 일반 페이지(.container)와 동일하게: 최대 1280px·가운데 정렬·좌우 24px.
+       (이전엔 max-width가 없어 넓은 화면에서 본문이 전체 폭으로 퍼졌음) */
+    max-width: var(--container-max);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 24px;
+    padding-right: 24px;
 }
 
 .admin-sidebar {
@@ -71,6 +78,7 @@
     flex: 1;
     padding: 32px 40px;
     overflow-x: hidden;
+    min-width: 0; /* 와이드 콘텐츠(표·그리드)가 flex를 밀어 가로로 넘치는 것 방지 */
 }
 
 /* ── 프로젝트 섹션 레이아웃 (좌측 사이드바 + 본문) ──
@@ -287,7 +295,7 @@
 }
 
 @media (max-width: 768px) {
-    .admin-layout { flex-direction: column; }
+    .admin-layout { flex-direction: column; padding-left: 0; padding-right: 0; }
     .admin-sidebar {
         width: 100%;
         height: auto;
