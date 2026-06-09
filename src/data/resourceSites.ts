@@ -150,4 +150,32 @@ export const SITE_GROUPS: SiteGroup[] = [
     { name: 'React 공식 문서', desc: 'React 프레임워크 문서', url: 'https://react.dev/' },
     { name: 'Vite 공식 문서', desc: 'Vite 빌드 도구 문서', url: 'https://vite.dev/' },
   ] },
+  // [그룹 6] 디자인 참고 — owner: 'external'. 프로젝트 화면을 만들 때 참고할 UI/웹 디자인 영감·색상·폰트.
+  { id: 'design', label: '디자인 참고', icon: '🎨', owner: 'external', sites: [
+    { name: 'Dribbble', desc: 'UI·그래픽 디자인 샷 모음 — 화면 디자인 영감 얻기 좋음', url: 'https://dribbble.com/', featured: true, accent: '#ea4c89', badge: '디자인 영감' },
+    { name: 'Behance', desc: 'Adobe의 디자이너 포트폴리오·작업물 갤러리', url: 'https://www.behance.net/' },
+    { name: 'Mobbin', desc: '실제 앱·웹의 UI 패턴/플로우 레퍼런스 — 화면 구성 참고', url: 'https://mobbin.com/' },
+    { name: 'Awwwards', desc: '우수 웹사이트 디자인 수상작 갤러리', url: 'https://www.awwwards.com/' },
+    { name: 'Land-book', desc: '랜딩페이지 디자인 갤러리 — 소개 페이지 참고', url: 'https://land-book.com/' },
+    { name: 'Godly', desc: '최신 웹 디자인 영감 큐레이션', url: 'https://godly.website/' },
+    { name: 'Pinterest', desc: '무드보드·디자인 아이디어 수집', url: 'https://www.pinterest.com/' },
+    { name: 'Coolors', desc: '색상 팔레트 생성기 — 우리 앱 색 조합 잡기', url: 'https://coolors.co/' },
+    { name: 'Color Hunt', desc: '큐레이션된 색상 팔레트 모음', url: 'https://colorhunt.co/' },
+    { name: 'Google Fonts', desc: '무료·상업용 웹폰트(한글 포함)', url: 'https://fonts.google.com/', badge: '무료·상업' },
+  ] },
+  // [그룹 7] 상업용 이미지·아이콘 — owner: 'external'. 무료 스톡 + AI 이미지 생성. ※ 라이선스는 사용 전 각 사이트 약관 확인.
+  { id: 'images', label: '상업용 이미지·아이콘', icon: '🖼️', owner: 'external', sites: [
+    { name: 'Unsplash', desc: '고화질 무료 사진 — 상업적 사용 가능(출처 표기 불필요)', url: 'https://unsplash.com/', featured: true, accent: '#111111', badge: '무료·상업' },
+    { name: 'Pexels', desc: '무료 사진·영상 — 상업적 사용 가능', url: 'https://www.pexels.com/', badge: '무료·상업' },
+    { name: 'Pixabay', desc: '무료 사진·일러스트·영상·아이콘', url: 'https://pixabay.com/', badge: '무료·상업' },
+    { name: 'unDraw', desc: '오픈소스 일러스트 — 출처 표기 없이 상업 사용 가능', url: 'https://undraw.co/illustrations', badge: '무료·상업' },
+    { name: 'Freepik', desc: '벡터·일러스트·사진 (무료/프리미엄)', url: 'https://www.freepik.com/', badge: '라이선스 확인' },
+    { name: 'Flaticon', desc: '아이콘 100만+ (무료/프리미엄)', url: 'https://www.flaticon.com/', badge: '라이선스 확인' },
+    { name: 'Icons8', desc: '아이콘·일러스트·사진·AI 생성 도구', url: 'https://icons8.com/', badge: '라이선스 확인' },
+    { name: 'Adobe Firefly', desc: '상업적 사용 안전한 AI 이미지 생성(라이선스 명확)', url: 'https://firefly.adobe.com/', featured: true, accent: '#ff3366', badge: 'AI 생성·상업' },
+    { name: 'Microsoft Designer', desc: '무료 AI 이미지 생성(DALL·E 기반) + 디자인 도구', url: 'https://designer.microsoft.com/', badge: 'AI 생성' },
+    { name: 'Ideogram', desc: '텍스트(글자) 표현이 강한 AI 이미지 생성', url: 'https://ideogram.ai/', badge: 'AI 생성' },
+    { name: 'Leonardo.AI', desc: '게임·앱용 고품질 AI 이미지 생성', url: 'https://leonardo.ai/', badge: 'AI 생성' },
+    { name: 'Canva', desc: '디자인 도구 + AI 이미지(Magic Media) — 발표자료에도 유용', url: 'https://www.canva.com/', badge: '라이선스 확인' },
+  ] },
 ];
