@@ -18,7 +18,7 @@ const ProjectTimeline = (): ReactElement => {
       <section className="page-header">
         <div className="container">
           <h2>프로젝트 일정 · 마일스톤</h2>
-          <p>4단계(기획 → 개발 → 배포·공유 → 발표)로 진행합니다. 각 주차의 목표와 할 일을 확인하고 <Link to="/project-checklist" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>수행 점검</Link>으로 진행 상황을 체크하세요.</p>
+          <p>팀구성 확정(6/9) ~ <strong>종강 6/22(월) 최종 발표</strong>까지 4단계로 진행합니다. 각 단계의 날짜·목표·할 일을 확인하고 <Link to="/project-checklist" style={{ color: 'var(--primary-blue)', fontWeight: 700 }}>수행 점검</Link>으로 진행 상황을 체크하세요.</p>
         </div>
       </section>
 
@@ -29,9 +29,10 @@ const ProjectTimeline = (): ReactElement => {
             return (
               <div key={i} style={{ background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderLeft: `5px solid ${color}`, borderRadius: '12px', padding: '16px 18px', color: 'var(--text-primary)' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 800, color }}>{m.week}</span>
+                  <span style={{ fontSize: '13px', fontWeight: 800, color }}>{m.period}</span>
                   <span style={{ fontSize: '12px', fontWeight: 700, padding: '2px 9px', borderRadius: '999px', background: 'var(--bg-light-gray)', color }}>{m.phase}</span>
                   <h3 style={{ margin: 0, fontSize: '16px' }}>{m.title}</h3>
+                  <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{m.week}</span>
                 </div>
                 <p style={{ margin: '6px 0 8px', fontSize: '13.5px', color: 'var(--text-secondary)' }}>🎯 {m.goal}</p>
                 <ul style={{ margin: 0, paddingLeft: '18px', display: 'flex', flexDirection: 'column', gap: '3px' }}>
@@ -41,7 +42,7 @@ const ProjectTimeline = (): ReactElement => {
             );
           })}
           <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', textAlign: 'center', marginTop: '4px' }}>
-            ※ 주차는 기수 일정에 맞춰 운영합니다. 구체적 날짜는 공지를 확인하세요.
+            ※ 2026 AI Reboot 1기 일정 — <strong>종강 6/22(월) 최종 발표</strong>. 세부 일정 변경 시 공지를 확인하세요.
           </p>
         </div>
       </section>
