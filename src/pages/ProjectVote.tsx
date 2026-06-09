@@ -162,10 +162,6 @@ const ProjectVote = (): ReactElement => {
   // teamNoForRow(r): 이 주제 카드의 "고정 번호"(= 패들렛 번호). 등록=getBoardNo, 미등록=rowExtra.
   const teamNoForRow = (r: Row): number => topicNumber(r.title, rowExtra);
 
-  // padletUrl(n): 번호를 2자리(0패딩)로 맞춰 패들렛 보드 주소 생성. 예) 1 → .../project01
-  //   - 패들렛 번호는 카드의 '고정 보드 번호'(teamNoForRow)와 1:1로 매칭한다(득표순과 무관).
-  const padletUrl = (n: number) => `https://padlet.com/aebon/project${String(n).padStart(2, '0')}`;
-
   // members(t): 팀 t의 팀원 배열을 안전하게 꺼낸다(배열이 아니면 빈 배열로). 곳곳에서 반복되어 함수로 묶음.
   const members = (t: Team): TeamMember[] => (Array.isArray(t.members) ? t.members : []);
   // teamForTitle(title): 주제 제목과 연결된 팀을 찾는다. 양쪽 모두 .trim()으로 앞뒤 공백을 없애고 비교한다
@@ -513,18 +509,7 @@ const ProjectVote = (): ReactElement => {
                     {/* 카드 하단의 버튼들(투표/팀원 신청/합류/나가기/수정/삭제) */}
                     {/* marginTop:auto — 카드가 그리드로 늘어나 빈 공간이 생겨도 버튼 줄을 항상 맨 아래에 정렬 */}
                     <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', alignItems: 'center', marginTop: 'auto', paddingTop: '4px' }}>
-                      {/* 패들렛 버튼: 카드의 '고정 팀 번호'(teamNo)에 맞춰 패들렛 보드를 새 탭으로 연다.
-                          예) 3팀 → project03, 8팀 → project08 … (화면의 N팀 번호와 항상 일치) */}
-                      <a
-                        href={padletUrl(teamNo)}
-                        target="_blank"
-                        rel="noopener noreferrer"   /* 새 탭 보안(opener 탈취 방지) */
-                        className="btn btn-secondary"
-                        style={{ padding: '8px 18px', fontSize: '14px' }}
-                        title={`${teamNo}팀 패들렛 project${String(teamNo).padStart(2, '0')} 열기`}
-                      >
-                        📌 패들렛
-                      </a>
+                      {/* (팀구성 카드의 📌 패들렛 버튼은 제거됨 — 패들렛은 '팀별 패들렛' 메뉴에서 확인) */}
 
                       {/* 비강사 + 이 팀 소속이 아니면: 팀원 신청 + 팀장 신청 (팀이 없어도 항상 표시·활성) */}
                       {!inThisTeam && !isAdmin && (
