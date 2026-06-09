@@ -33,6 +33,7 @@ const AppGallery = (): ReactElement => {
   const members = (t: Team) => (Array.isArray(t.members) ? t.members : []);
   // 번호 오름차순 정렬
   const sorted = [...teams].sort((a, b) => (teamNos[a.id] ?? 999) - (teamNos[b.id] ?? 999));
+  const liveCount = sorted.filter((t) => (subs[t.id]?.demo_url || '').trim()).length; // 배포된(앱 실행 가능) 팀 수
 
   const badge = (bg: string, color: string): CSSProperties => ({ fontSize: '11px', fontWeight: 700, padding: '2px 9px', borderRadius: '999px', background: bg, color });
 
@@ -53,7 +54,11 @@ const AppGallery = (): ReactElement => {
           ) : sorted.length === 0 ? (
             <p className="empty-message">아직 결성된 팀이 없습니다.</p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
+            <>
+              <div style={{ fontSize: '14px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+                총 <strong style={{ color: 'var(--primary-blue)' }}>{sorted.length}</strong>팀 · 🚀 앱 실행 <strong style={{ color: '#065f46' }}>{liveCount}</strong> · 준비 중 {sorted.length - liveCount}
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '14px' }}>
               {sorted.map((t) => {
                 const no = teamNos[t.id];
                 const projNo = getTeamNoByTitle(t.project_topic);
@@ -73,9 +78,9 @@ const AppGallery = (): ReactElement => {
                       <span style={{ fontSize: '26px' }}>{icon}</span>
                       <span style={{ fontSize: '11px', fontWeight: 800, color }}>{no}팀 · PROJECT {String(no).padStart(2, '0')}</span>
                     </div>
-                    <strong style={{ fontSize: '15.5px', lineHeight: 1.35 }}>{t.project_topic}</strong>
+                    <strong title={t.project_topic} style={{ fontSize: '15.5px', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '42px' }}>{t.project_topic}</strong>
                     <span style={{ fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.5, flex: 1 }}>
-                      {members(t).map((m) => m.name).join(' · ') || '모집 중'}{leader ? ` · 팀장 ${leader.name}` : ''}
+                      👥 {members(t).map((m) => m.name).join(' · ') || '모집 중'}{leader ? ` · 팀장 ${leader.name}` : ''}
                     </span>
                     {subs[t.id]?.summary && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>📝 {subs[t.id].summary}</span>}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
@@ -86,7 +91,8 @@ const AppGallery = (): ReactElement => {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            </>
           )}
           <p style={{ marginTop: '20px', fontSize: '12.5px', color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
             ‘앱 실행’은 각 팀이 <strong>산출물 제출</strong>에 입력한 배포 주소로 연결됩니다.
