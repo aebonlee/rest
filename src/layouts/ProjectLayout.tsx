@@ -15,6 +15,7 @@ const ProjectLayout = (): ReactElement => {
   const prev = idx > 0 ? PROJECT_STEPS[idx - 1] : null;
   const next = idx >= 0 && idx < PROJECT_STEPS.length - 1 ? PROJECT_STEPS[idx + 1] : null;
   const last = PROJECT_STEPS.length - 1;
+  const step = idx >= 0 ? PROJECT_STEPS[idx] : null;   // 현재 단계(가이드 표시용)
 
   // 단계 번호 원형 스타일(상태별).
   const circle = (state: 'done' | 'current' | 'todo'): CSSProperties => ({
@@ -51,6 +52,25 @@ const ProjectLayout = (): ReactElement => {
                 </Fragment>
               );
             })}
+          </div>
+        )}
+
+        {/* 이번 단계 가이드 — 현재 단계에서 할 일을 요약해 안내(데이터: projectSteps.ts) */}
+        {step && (
+          <div style={{ background: 'var(--bg-light-gray)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+              <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)' }}>📍 {idx + 1}단계 가이드</span>
+              <strong style={{ fontSize: '14.5px' }}>{step.label}</strong>
+            </div>
+            <p style={{ margin: '6px 0 10px', fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{step.summary}</p>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+              {step.todos.map((t, i) => (
+                <div key={i} style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', fontSize: '13.5px' }}>
+                  <span style={{ color: 'var(--primary-blue)', fontWeight: 800, flexShrink: 0 }}>{i + 1}.</span>
+                  <span>{t}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
