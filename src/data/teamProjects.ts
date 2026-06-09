@@ -91,7 +91,12 @@ export const TEAM_PROJECTS: TeamProject[] = [
     tagline: '사진·위치로 문화재를 인식해 AI가 해설해 주는 앱',
     icon: '🏯', color: '#b45309', members: ['박남영'],
   },
-  // id 3('나이대별 한국사 학습·시험 앱')은 삭제됨 — 다른 팀 번호 유지를 위해 3번은 비워 둔다.
+  {
+    // 3번: 옛 '나이대별 한국사' 삭제 자리에 신규 등록(한승우).
+    id: 3, slug: 'parent-care', title: '부모님의 복지 데이터를 실시간 분석하여 자녀에게 맞춤형 혜택과 리포트를 제공하는 자녀 전용 대리 케어 솔루션',
+    tagline: '부모님 복지 데이터를 분석해 자녀에게 맞춤 혜택·리포트를 제공하는 대리 케어 솔루션',
+    icon: '🧓', color: '#0d9488', members: ['한승우'], note: '학생 제안',
+  },
   {
     id: 4, slug: 'cert-weakness', title: '자격증 취약점 분석 학습 앱',
     tagline: '학습 데이터로 자격증 취약 영역을 분석·보완해 주는 앱',
@@ -183,6 +188,11 @@ export const TEAM_PROJECTS: TeamProject[] = [
     id: 21, slug: 'mental-care', title: '진료실 밖에서도 이어지는 정신과 케어 — AI 증상 기록·임상 리포트 플랫폼',
     tagline: '정신과 외래 환자의 일상·증상을 AI가 임상 언어로 정리해 진료 공백을 잇는 플랫폼',
     icon: '🧠', color: '#6366f1', members: ['모집 중'], note: '학생 제안',
+  },
+  {
+    id: 22, slug: 'finance-coach', title: '경제를 하나도 모르는 사람이 경제적 자립을 향해 성장하는 여정을 AI가 코칭하는 서비스',
+    tagline: '경제를 모르는 사람도 경제적 자립으로 성장하도록 AI가 단계별로 코칭하는 서비스',
+    icon: '💰', color: '#ca8a04', members: ['박남영'], note: '학생 제안',
   },
 ];
 
