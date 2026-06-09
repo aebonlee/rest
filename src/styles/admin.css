@@ -87,11 +87,9 @@
     padding-left: 24px;   /* project-guide의 .sidebar-layout과 동일한 좌우 여백 */
     padding-right: 24px;
 }
-/* 본문 컬럼: 좌우 패딩 제거 + min-width:0(★ 와이드 콘텐츠가 flex를 밀어 가로로 넘치는 것 방지)
-   → project-guide의 .sidebar-content와 동일하게 동작해 가로 범위가 일치한다. */
+/* 본문 컬럼: admin-content의 기본 여백(32px 40px)을 유지해 사이드바와의 간격·우측 여백을 둔다.
+   min-width:0 은 와이드 콘텐츠가 flex를 밀어 가로로 넘치는 것을 막는다(가로 범위 정렬). */
 .project-content {
-    padding-left: 0;
-    padding-right: 0;
     min-width: 0;
 }
 @media (max-width: 768px) {
