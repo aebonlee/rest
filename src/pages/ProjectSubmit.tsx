@@ -11,6 +11,7 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import { listTeams } from '../utils/projectTeams';
 import { listSubmissions, saveSubmission, EMPTY_SUBMISSION, type SubmissionData } from '../utils/projectSubmission';
+import { listCustomTopics, type CustomTopic } from '../utils/projectVote';
 import { buildTeamNumbers } from '../utils/teamNumber';
 import type { Team } from '../types';
 
@@ -19,6 +20,7 @@ const ProjectSubmit = (): ReactElement => {
   const { showToast } = useToast();
 
   const [teams, setTeams] = useState<Team[]>([]);
+  const [topics, setTopics] = useState<CustomTopic[]>([]); // 미등록 주제 번호 산출용
   const [subs, setSubs] = useState<Record<string, SubmissionData>>({});      // 서버 저장본
   const [drafts, setDrafts] = useState<Record<string, SubmissionData>>({});  // 입력 중 초안
   const [loading, setLoading] = useState(true);
@@ -26,8 +28,8 @@ const ProjectSubmit = (): ReactElement => {
 
   const reload = useCallback(async () => {
     setLoading(true);
-    const [t, s] = await Promise.all([listTeams(), listSubmissions()]);
-    setTeams(t); setSubs(s);
+    const [t, tp, s] = await Promise.all([listTeams(), listCustomTopics(), listSubmissions()]);
+    setTeams(t); setTopics(tp); setSubs(s);
     // 초안을 서버 저장본으로 초기화(없으면 빈 값).
     const d: Record<string, SubmissionData> = {};
     t.forEach((tm) => { d[tm.id] = { ...EMPTY_SUBMISSION, ...(s[tm.id] || {}) }; });
@@ -38,7 +40,7 @@ const ProjectSubmit = (): ReactElement => {
 
   const members = (t: Team) => (Array.isArray(t.members) ? t.members : []);
   const myTeams = user ? teams.filter((t) => members(t).some((m) => m.id === user.id)) : [];
-  const teamNos = buildTeamNumbers(teams); // 주제 → 고정 보드 번호(새 주제는 22+ 자동)
+  const teamNos = buildTeamNumbers(teams, topics); // 주제 제목 → 고정 번호(모든 화면과 동일 기준)
 
   // 초안 한 필드 갱신.
   const setField = (teamId: string, key: keyof SubmissionData, value: string) => {

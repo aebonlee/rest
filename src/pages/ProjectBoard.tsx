@@ -60,6 +60,8 @@ import {
 import type { Team, TeamMember } from '../types';
 // buildTeamNumbers — 주제 → 고정 보드 번호 맵(새 주제는 22+ 자동). 관리자 팀 선택 라벨에 사용.
 import { buildTeamNumbers } from '../utils/teamNumber';
+// listCustomTopics — 미등록 주제 번호 산출 기준(생성순).
+import { listCustomTopics, type CustomTopic } from '../utils/projectVote';
 
 // catMeta — 카테고리 키(k)에 해당하는 메타데이터(emoji/label 등)를 반환하는 도우미 함수.
 //   .find(...): 배열에서 조건(c.key === k)을 만족하는 "첫 항목"을 찾아 반환. 없으면 undefined.
@@ -85,6 +87,7 @@ const ProjectBoard = (): ReactElement => {
   //    <Team | null> 같은 꺾쇠는 TS 타입 지정: "Team 또는 null이 들어갈 수 있다"는 의미.
   const [team, setTeam] = useState<Team | null>(null);        // 현재 선택/소속된 팀
   const [allTeams, setAllTeams] = useState<Team[]>([]);       // 관리자용: 전체 팀 목록 (Team[] = Team 배열)
+  const [topics, setTopics] = useState<CustomTopic[]>([]);    // 미등록 주제 번호 산출 기준(생성순)
   const [posts, setPosts] = useState<TeamPost[]>([]);         // 현재 팀의 글 목록
   const [comments, setComments] = useState<TeamComment[]>([]); // 현재 팀의 댓글 목록(전 글 합산)
   const [loading, setLoading] = useState(true);               // 초기 로딩 스피너 표시 여부(처음엔 true)
@@ -163,6 +166,8 @@ const ProjectBoard = (): ReactElement => {
   // useEffect: 화면이 그려진 뒤 실행되는 "부수효과" 실행기. 두 번째 인자 [load]가 바뀔 때마다 다시 실행된다.
   //   load는 user/isAdmin이 바뀔 때만 새로 만들어지므로 → 마운트 시 + 로그인/권한 변경 시 게시판을 로드한다.
   useEffect(() => { load(); }, [load]);
+  // 관리자 팀 선택 라벨의 번호 산출을 위해 커스텀 주제 목록을 1회 로드.
+  useEffect(() => { listCustomTopics().then(setTopics); }, []);
 
   /**
    * selectTeam — (관리자 전용) 드롭다운에서 팀을 바꿀 때 해당 팀으로 전환하고 게시판 재로드.
@@ -334,7 +339,7 @@ const ProjectBoard = (): ReactElement => {
                   <select value={team.id} onChange={(e) => selectTeam(e.target.value)} style={{ ...input, flex: 1, minWidth: '220px', maxWidth: '440px', textOverflow: 'ellipsis' }}>
                     {/* 라벨: '번호팀 · 주제'(긴 주제는 26자에서 말줄임). 번호는 주제 기준 고정값(새 주제는 22+ 자동). */}
                     {(() => {
-                      const teamNos = buildTeamNumbers(allTeams);
+                      const teamNos = buildTeamNumbers(allTeams, topics);
                       const trunc = (s: string) => (s.length > 26 ? s.slice(0, 26) + '…' : s);
                       return allTeams.map((t) => (
                         <option key={t.id} value={t.id}>{teamNos[t.id]}팀 · {trunc(t.project_topic || '주제 미정')}</option>

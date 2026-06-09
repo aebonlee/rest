@@ -16,6 +16,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import { listTeams } from '../utils/projectTeams';
+import { listCustomTopics, type CustomTopic } from '../utils/projectVote';
 import { listChecklists, setChecklistItem } from '../utils/projectChecklist';
 import { CHECKLIST_ITEMS, CHECKLIST_PHASES, checklistProgress } from '../data/projectChecklist';
 import { buildTeamNumbers } from '../utils/teamNumber';
@@ -27,15 +28,16 @@ const ProjectChecklist = (): ReactElement => {
 
   // teams: 전체 팀, checklists: team_id → { itemKey: 완료여부 } 맵
   const [teams, setTeams] = useState<Team[]>([]);
+  const [topics, setTopics] = useState<CustomTopic[]>([]); // 미등록 주제 번호 산출용(생성순)
   const [checklists, setChecklists] = useState<Record<string, Record<string, boolean>>>({});
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(false);
 
-  // 서버에서 팀·체크상태를 함께 불러온다.
+  // 서버에서 팀·주제·체크상태를 함께 불러온다.
   const reload = useCallback(async () => {
     setLoading(true);
-    const [t, c] = await Promise.all([listTeams(), listChecklists()]);
-    setTeams(t); setChecklists(c);
+    const [t, tp, c] = await Promise.all([listTeams(), listCustomTopics(), listChecklists()]);
+    setTeams(t); setTopics(tp); setChecklists(c);
     setLoading(false);
   }, []);
   useEffect(() => { reload(); }, [reload]);
@@ -44,8 +46,8 @@ const ProjectChecklist = (): ReactElement => {
   const members = (t: Team) => (Array.isArray(t.members) ? t.members : []);
   // 내가 속한 팀들(강사는 팀에 포함되지 않으므로 빈 배열).
   const myTeams = user ? teams.filter((t) => members(t).some((m) => m.id === user.id)) : [];
-  // 주제 → 고정 보드 번호(미등록 새 주제는 22+ 자동 부여). 모든 팀에 번호가 붙는다.
-  const teamNos = buildTeamNumbers(teams);
+  // 주제 제목 → 고정 번호(미등록 새 주제는 빈 슬롯→22+). 모든 화면과 동일 기준(custom 생성순).
+  const teamNos = buildTeamNumbers(teams, topics);
 
   // 항목 토글: 낙관적으로 화면을 먼저 갱신하고, 실패 시 되돌린다.
   const toggle = async (teamId: string, itemKey: string, done: boolean) => {

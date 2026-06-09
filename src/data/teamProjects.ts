@@ -165,7 +165,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '💊', color: '#22c55e', members: ['모집 중'], note: '학생 제안',
   },
   {
-    id: 18, slug: 'news-vocab', title: '뉴스 기반 용어·어휘 학습 서비스',
+    id: 18, slug: 'news-vocab', title: '사용자가 뉴스를 통해 원하는 분야(한국어 문해력, 영어, IT 등)의 핵심 용어와 어휘를 매일 꾸준히 학습하는 서비스.',
     tagline: '관심 분야·난이도를 고르면 엄선된 뉴스로 핵심 용어·어휘를 익히고 나만의 용어사전을 만드는 서비스',
     icon: '📰', color: '#3b82f6', members: ['모집 중'], note: '학생 제안',
   },

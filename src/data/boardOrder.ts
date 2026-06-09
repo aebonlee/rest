@@ -77,17 +77,31 @@ export const EMPTY_SLOTS: number[] = BOARD_ORDER
   .filter((n) => n > 0);
 
 /**
- * boardOrder에 등록되지 않은 "새로 접수된 주제"들에 번호를 배정한다.
- *  - 먼저 빈 슬롯(EMPTY_SLOTS, 예: 3번)을 순서대로 채우고,
- *  - 그 다음 BOARD_SIZE+1(22)부터 이어서 부여한다.
- * @param orderedKeys 미등록 항목의 "안정적 순서"(예: 주제 생성순 키 배열)
- * @returns key → 번호 맵
+ * boardOrder에 등록되지 않은 "새로 접수된 주제"들에 번호를 "제목 기준"으로 배정한다.
+ *  - 먼저 빈 슬롯(EMPTY_SLOTS, 예: 3번)을 순서대로 채우고, 그 다음 BOARD_SIZE+1(22)부터 이어서 부여.
+ *  - 키가 정규화된 제목이므로, 어느 화면에서 부르든(주제 목록/팀 목록) 같은 제목은 항상 같은 번호가 된다.
+ *    → 팀구성·수행점검·게시판·산출물 제출 등 모든 뷰의 번호가 일치한다.
+ * @param titlesInOrder 미등록 주제의 "안정적 순서" 제목 배열(예: rest_project_topics 생성순)
+ * @returns 정규화제목 → 번호 맵
  */
-export function assignExtraNumbers(orderedKeys: string[]): Record<string, number> {
-  const map: Record<string, number> = {};
+export function extraNumbersByTitle(titlesInOrder: string[]): Map<string, number> {
+  const map = new Map<string, number>();
   let nextNew = BOARD_SIZE; // 이후 ++nextNew → 22, 23 …
-  orderedKeys.forEach((key, i) => {
-    map[key] = i < EMPTY_SLOTS.length ? EMPTY_SLOTS[i] : ++nextNew;
-  });
+  let i = 0;                // 배정된 미등록 주제 수(빈 슬롯/신규 번호 인덱스)
+  for (const raw of titlesInOrder) {
+    const t = normalizeTitle(raw);
+    if (t === '' || getBoardNo(raw) !== undefined || map.has(t)) continue; // 빈/이미 등록됨/중복 제외
+    map.set(t, i < EMPTY_SLOTS.length ? EMPTY_SLOTS[i] : ++nextNew);
+    i++;
+  }
   return map;
+}
+
+/**
+ * 주제 제목 → 최종 번호. 등록 주제는 고정 번호(getBoardNo), 미등록은 extra 맵에서 조회.
+ * @param title 주제 제목
+ * @param extra extraNumbersByTitle(...) 결과(미등록 주제 번호 맵)
+ */
+export function topicNumber(title: string, extra: Map<string, number>): number {
+  return getBoardNo(title) ?? extra.get(normalizeTitle(title)) ?? (BOARD_SIZE + 1);
 }
