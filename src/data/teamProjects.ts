@@ -91,11 +91,7 @@ export const TEAM_PROJECTS: TeamProject[] = [
     tagline: '사진·위치로 문화재를 인식해 AI가 해설해 주는 앱',
     icon: '🏯', color: '#b45309', members: ['박남영'],
   },
-  {
-    id: 3, slug: 'korean-history', title: '나이대별 한국사 학습·시험 앱',
-    tagline: '연령대별 난이도로 한국사를 학습하고 시험까지 보는 앱',
-    icon: '📜', color: '#9333ea', members: ['이유민'],
-  },
+  // id 3('나이대별 한국사 학습·시험 앱')은 삭제됨 — 다른 팀 번호 유지를 위해 3번은 비워 둔다.
   {
     id: 4, slug: 'cert-weakness', title: '자격증 취약점 분석 학습 앱',
     tagline: '학습 데이터로 자격증 취약 영역을 분석·보완해 주는 앱',

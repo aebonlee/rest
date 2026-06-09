@@ -30,7 +30,7 @@ export const BOARD_ORDER: string[] = [
   // ── 프리셋 1~7 ──
   '한국형 AI 동화책 제작 앱',              // 1
   '문화재 AI 해설 앱',                     // 2
-  '나이대별 한국사 학습·시험 앱',          // 3
+  '',                                      // 3 — 삭제됨(나이대별 한국사). 번호 유지를 위해 빈 슬롯
   '자격증 취약점 분석 학습 앱',            // 4
   '청년지원정책 안내 챗봇',                // 5
   'AI 자기소개서·면접 코치',               // 6
@@ -59,7 +59,10 @@ export const BOARD_SIZE = BOARD_ORDER.length;
 const normalizeTitle = (s: string): string => (s || '').toLowerCase().replace(/\s+/g, '').trim();
 
 // 정규화된 제목 → 고정 번호(1~21) 빠른 조회 맵.
-const NO_BY_TITLE = new Map<string, number>(BOARD_ORDER.map((t, i) => [normalizeTitle(t), i + 1]));
+// 빈 슬롯(삭제된 번호)은 매핑에서 제외 — 빈 문자열이 실제 주제와 잘못 매칭되지 않게 한다.
+const NO_BY_TITLE = new Map<string, number>(
+  BOARD_ORDER.map((t, i) => [normalizeTitle(t), i + 1] as [string, number]).filter(([k]) => k !== ''),
+);
 
 /**
  * 주제 제목으로 고정 보드 번호(= 패들렛 번호)를 찾는다.
