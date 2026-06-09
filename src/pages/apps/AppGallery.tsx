@@ -14,7 +14,7 @@ import { listTeams } from '../../utils/projectTeams';
 import { listCustomTopics, type CustomTopic } from '../../utils/projectVote';
 import { listSubmissions, type SubmissionData } from '../../utils/projectSubmission';
 import { buildTeamNumbers } from '../../utils/teamNumber';
-import { getTeamNoByTitle, getTeamProject, REPO_BY_BOARD } from '../../data/teamProjects';
+import { getTeamNoByTitle, getTeamProject, REPO_BY_BOARD, IDLE_REPOS } from '../../data/teamProjects';
 import type { Team } from '../../types';
 
 // 구현 예시(레퍼런스) 배포 URL — aebonlee.github.io/projectNN. 보드 번호가 아니라 콘텐츠가 일치하는 레포 번호로 연결.
@@ -103,6 +103,27 @@ const AppGallery = (): ReactElement => {
           <p style={{ marginTop: '20px', fontSize: '12.5px', color: 'var(--text-secondary, #9ca3af)', textAlign: 'center' }}>
 ‘구현 예시’는 각 주제의 콘텐츠가 일치하는 레퍼런스(aebonlee.github.io/projectNN)로 연결됩니다. 팀이 <strong>산출물 제출</strong>에 배포 주소를 입력하면 ‘팀 배포 앱’으로 바뀝니다.
           </p>
+
+          {/* 유휴 레포(현재 보드와 연결되지 않는 과거 구현분) — 참고 보관용 별도 섹션 */}
+          {!loading && (
+            <div style={{ marginTop: '36px', paddingTop: '22px', borderTop: '1px dashed var(--border-light, #e5e7eb)' }}>
+              <h3 style={{ fontSize: '15px', margin: '0 0 4px' }}>🗂️ 유휴 레포 (참고 보관)</h3>
+              <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 14px' }}>
+                과거에 구현됐지만 현재 팀구성과 연결되지 않는 프로젝트입니다(주제 삭제·변경·중복). 참고용으로만 열어볼 수 있습니다.
+              </p>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '12px' }}>
+                {IDLE_REPOS.map((r) => (
+                  <a key={r.no} href={`https://aebonlee.github.io/project${String(r.no).padStart(2, '0')}/`} target="_blank" rel="noopener noreferrer"
+                    style={{ display: 'flex', flexDirection: 'column', gap: '4px', padding: '14px 16px', borderRadius: '12px', textDecoration: 'none',
+                      color: 'var(--text-primary)', border: '1px solid var(--border-light, #e5e7eb)', background: 'var(--bg-light-gray, #f9fafb)', opacity: 0.92 }}>
+                    <span style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-secondary)' }}>project{String(r.no).padStart(2, '0')} · 보관</span>
+                    <strong style={{ fontSize: '14px' }}>{r.title}</strong>
+                    <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{r.reason} · 열기 ↗</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
     </>
