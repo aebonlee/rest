@@ -21337,6 +21337,7 @@ export const coachingTopics: Topic[] = [
   },
   {
     id: 'coach-key',
+    dividerBefore: true,
     title: 'AI API Key 안전 수칙',
     icon: '🔑',
     description: 'AI Reboot Academy · 학생 배포용 — 이 한 장만 지키면 키 사고의 99%는 일어나지 않습니다.',
