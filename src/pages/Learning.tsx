@@ -618,6 +618,12 @@ const Learning = (): ReactElement => {
   const [selectedSubIndex, setSelectedSubIndex] = useState<number | null>(null);
   // openIndex: 드롭다운(3차 메뉴)이 펼쳐진 일자 — 아코디언(한 번에 하나만 열림)
   const [openIndex, setOpenIndex] = useState<number | null>(() => computeInitialIndex(phase));
+  // half: 정규과정처럼 일자 메뉴가 많을 때 좌측 메뉴를 전반(0)/후반(1)으로 나눠 보여줄 현재 절반.
+  const [half, setHalf] = useState<0 | 1>(() => {
+    const tps = phase ? phaseMap[phase]?.topics : undefined;
+    const m = tps ? Math.ceil(tps.length / 2) : 0;
+    return computeInitialIndex(phase) >= m ? 1 : 0;
+  });
 
   // phase에 해당하는 설정 조회 — 없으면(잘못된 URL) 홈으로 즉시 리다이렉트.
   // [개념] phase ? A : undefined → phase가 있으면 phaseMap에서 찾고, 아예 없으면 undefined.
@@ -630,6 +636,10 @@ const Learning = (): ReactElement => {
   const isRegular = phase === 'regular';            // 정규과정 여부(날짜 라벨/오늘 뱃지 등에 사용)
   const today = todayISO();                          // 오늘 날짜 문자열
   const topic = topics[selectedIndex];               // 현재 선택된 일자 토픽
+  // 일자 메뉴가 많으면(정규과정) 좌측 메뉴 상단에 전/후반 구분 탭을 두고 절반씩만 보여준다.
+  const mid = Math.ceil(topics.length / 2);
+  const useHalfTabs = isRegular && topics.length > 10;
+  const dayNum = (tp?: { title?: string }): string => (tp?.title?.match(/Day\s*(\d+)/)?.[1] ?? '');
   // 하위 섹션 존재 여부 / 현재 활성화된 하위 섹션(없거나 개요면 null)
   // [개념] !!(...) 는 값을 true/false로 강제 변환. (값이 있으면 true, 없으면 false)
   const hasSubSections = !!(topic.subSections && topic.subSections.length > 0);
@@ -683,9 +693,29 @@ const Learning = (): ReactElement => {
         {/* 좌측 사이드바 네비게이션 */}
         <aside className="sidebar">
           <nav className="sidebar-menu">
+            {/* 일자 메뉴가 많으면(정규과정) 좌측 메뉴 상단에 전/후반 구분 탭 */}
+            {useHalfTabs && (
+              <div style={{ display: 'flex', gap: '6px', marginBottom: '12px' }}>
+                {([0, 1] as const).map((h) => (
+                  <button key={h} type="button"
+                    onClick={() => { setHalf(h); handleDayClick(h === 0 ? 0 : mid); }}
+                    style={{
+                      flex: 1, padding: '8px 6px', fontSize: '12px', fontWeight: 700, cursor: 'pointer',
+                      borderRadius: '8px', border: '1px solid var(--border-light, #e5e7eb)',
+                      background: half === h ? 'var(--primary-blue, #0046C8)' : 'var(--bg-white, #fff)',
+                      color: half === h ? '#fff' : 'var(--text-secondary, #6b7280)',
+                    }}>
+                    {h === 0
+                      ? `전반부 · Day ${dayNum(topics[0])}~${dayNum(topics[mid - 1])}`
+                      : `후반부 · Day ${dayNum(topics[mid])}~${dayNum(topics[topics.length - 1])}`}
+                  </button>
+                ))}
+              </div>
+            )}
             {/* 토픽(일자)별 버튼 + (펼쳐졌을 때) 하위 섹션 드롭다운 */}
             {/* map 콜백이 { ... return JSX } 형태인 이유: 아래처럼 변수들을 먼저 계산해야 하기 때문. */}
             {topics.map((tp, i) => {
+              if (useHalfTabs && (half === 0 ? i >= mid : i < mid)) return null; // 현재 절반(전/후반)만 표시
               const isActive = selectedIndex === i;                   // 현재 선택된 일자인가
               const isToday = isRegular && REGULAR_DATES[i] === today; // 오늘 날짜 일자인가('오늘' 뱃지)
               const isCheckpoint = tp.id.startsWith('reg-check');   // 점검일 — id가 'reg-check'로 시작하면 점검일
