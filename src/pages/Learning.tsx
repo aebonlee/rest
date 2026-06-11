@@ -103,7 +103,7 @@ const calloutColors: Record<string, { bg: string; border: string; emoji: string;
  * 부수효과: 복사 버튼 클릭 시 클립보드 쓰기 및 1.5초간 '복사됨' 상태 표시.
  *           (부수효과 = 화면 그리기 외에 바깥 세상에 영향을 주는 일. 여기선 클립보드 쓰기.)
  */
-const CodeBlock = ({ lang, content }: { lang?: string; content: string }): ReactElement => {
+const CodeBlock = ({ lang, content, wrap }: { lang?: string; content: string; wrap?: boolean }): ReactElement => {
   // copied: 복사 성공 후 잠깐 true가 되어 버튼 라벨/색을 '복사됨'으로 바꾼다.
   // [개념] useState(false) → 초기값 false. [현재값, 바꾸는함수] 두 개를 배열로 돌려줌.
   //        setCopied(true) 를 호출하면 React가 이 컴포넌트를 자동으로 다시 그려준다(리렌더).
@@ -203,11 +203,13 @@ const CodeBlock = ({ lang, content }: { lang?: string; content: string }): React
         color: '#e2e8f0',
         padding: '16px 18px',
         borderRadius: '0 0 8px 8px',
-        overflowX: 'auto',
         fontSize: '15px',
-        lineHeight: 1.6,
         fontFamily: "'JetBrains Mono', 'Consolas', 'Courier New', monospace",
         margin: 0,
+        // wrap=true(코칭): 긴 줄을 자동 줄바꿈하고 줄간격을 넓혀 가독성↑. 아니면 기존 가로 스크롤.
+        ...(wrap
+          ? { whiteSpace: 'pre-wrap' as const, wordBreak: 'break-word' as const, overflowWrap: 'break-word' as const, lineHeight: 2.1 }
+          : { overflowX: 'auto' as const, lineHeight: 1.6 }),
       }}>
         {/* 중괄호 안의 content는 위 props로 받은 코드 문자열을 그대로 출력 */}
         <code>{content}</code>
@@ -461,7 +463,7 @@ const ColorPalette = (): ReactElement => (
  * 주의: section.svg는 dangerouslySetInnerHTML로 주입되므로 신뢰 가능한 데이터여야 함.
  *       (사용자 입력 같은 외부 문자열을 여기 넣으면 XSS 보안 취약점이 됩니다. 우리 데이터 파일만 넣으세요.)
  */
-const renderSection = (section: ContentSection, idx: number): ReactElement => (
+const renderSection = (section: ContentSection, idx: number, wrapCode = false): ReactElement => (
   <div key={idx} style={{ marginBottom: '20px' }}>
     {/* 소제목(있을 때만) */}
     {section.subtitle && (
@@ -490,7 +492,7 @@ const renderSection = (section: ContentSection, idx: number): ReactElement => (
     )}
     {/* 코드 블록(복사 가능) — 위에서 만든 CodeBlock 부품 재사용 */}
     {section.code && (
-      <CodeBlock lang={section.code.lang} content={section.code.content} />
+      <CodeBlock lang={section.code.lang} content={section.code.content} wrap={wrapCode} />
     )}
     {/* 표 — 가로 스크롤 래퍼로 감싸 모바일 대응 */}
     {section.table && (
@@ -857,7 +859,7 @@ const Learning = (): ReactElement => {
                     </p>
                   )}
                   {/* 하위 섹션의 콘텐츠 블록들 — 각 section을 renderSection으로 그림 */}
-                  {activeSub.content.map((section, idx) => renderSection(section, idx))}
+                  {activeSub.content.map((section, idx) => renderSection(section, idx, phase === 'coaching'))}
                 </>
               ) : (
                 <>
@@ -865,7 +867,7 @@ const Learning = (): ReactElement => {
                   <p style={{ fontSize: '16px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
                     {topic.description}
                   </p>
-                  {topic.content.map((section, idx) => renderSection(section, idx))}
+                  {topic.content.map((section, idx) => renderSection(section, idx, phase === 'coaching'))}
                 </>
               )}
             </div>
