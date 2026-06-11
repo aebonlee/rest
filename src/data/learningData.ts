@@ -21335,4 +21335,85 @@ export const coachingTopics: Topic[] = [
       { subtitle: '최종 체크리스트', items: ['서비스가 정상 배포되어 접근 가능한가?', '국내 LLM이 핵심 기능에 활용되고 있는가?', '발표 자료가 5~10분 분량으로 준비되었는가?', '예상 질문에 대한 답변이 준비되었는가?'] },
     ],
   },
+  {
+    id: 'coach-key',
+    title: 'AI API Key 안전 수칙',
+    icon: '🔑',
+    description: 'AI Reboot Academy · 학생 배포용 — 이 한 장만 지키면 키 사고의 99%는 일어나지 않습니다.',
+    content: [
+      { subtitle: '0. 키의 본질', text: 'API Key = 비밀번호 + 신용카드. 키를 아는 사람은 누구나 키 주인의 돈으로 AI를 호출할 수 있습니다. “내 저장소는 아무도 안 봐”는 착각입니다 — 공개 GitHub에 올라간 키는 수집 봇이 수 분 안에 긁어갑니다.' },
+
+      { subtitle: '1. 우리 수업의 키 운영 방식', items: [
+        '키는 강사가 발급해서 빌려주는 것입니다 (총 5개 로테이션 운영).',
+        '실습 단계가 끝나면 강사가 폐기 후 재발급합니다. 어제 받은 키가 오늘 안 되면 정상입니다.',
+        '키를 단톡방·캡처·메모앱·코드 주석으로 옮기지 마세요. 전달은 강사가 정한 경로로만.',
+        '과정 종료(경진대회 후) 시 전 키 일괄 폐기됩니다. 출품작은 본인 키 또는 프록시 구조로 전환해야 합니다.',
+      ] },
+
+      { subtitle: '2. 절대 금지 3가지', items: [
+        '코드에 하드코딩 금지 — const KEY = "sk-..." 이 줄이 보이면 그 프로젝트는 이미 사고입니다. 브라우저에서 F12만 눌러도 다 보입니다.',
+        'GitHub 푸시 금지 — 커밋을 나중에 지워도 git 히스토리에는 영원히 남습니다.',
+        '프론트엔드에서 직접 API 호출 금지 — 키가 사용자 브라우저로 배달되는 구조 자체가 노출입니다.',
+      ] },
+
+      { subtitle: '3. 기본기: .env + .gitignore는 한 세트' },
+      { code: { lang: 'bash', content: `# .env  ← 키는 여기에만
+VITE_SUPABASE_URL=...
+AI_API_KEY=sk-xxxx        # 서버 전용. VITE_ 접두사 붙이면 브라우저에 노출되므로 금지!
+
+# .gitignore  ← 이 한 줄이 없으면 .env는 의미 없음
+.env` } },
+      { callout: { type: 'warn', text: '사고의 90%는 .gitignore에 .env 한 줄을 빼먹어서 일어납니다. 푸시 전 반드시 확인.' } },
+
+      { subtitle: '4. 올바른 호출 구조 (어제 배운 Supabase가 답)' },
+      { code: { lang: 'text', content: `[브라우저] ──로그인 세션 토큰──▶ [Supabase Edge Function] ──API Key──▶ [AI API]
+                                   키는 여기(Secrets)에만 존재` } },
+      { items: [
+        '브라우저는 Edge Function만 호출하고, 키는 Supabase 환경변수(Secrets)에만 있습니다.',
+        '어제 연결한 구글/카카오 로그인 세션으로 호출자를 검증하면, “로그인한 사람만 쓸 수 있는 키”가 됩니다.',
+      ] },
+
+      { subtitle: '5. 저장 위치 등급표' },
+      { table: {
+        headers: ['등급', '위치', '판정'],
+        rows: [
+          ['🚫 금지', '소스코드 하드코딩 · 공개 repo', '즉시 사고'],
+          ['⚠️ 임시(실습만)', 'localStorage / sessionStorage', 'XSS 한 방이면 털림. 수업 실습 외 사용 금지, 실습 후 삭제'],
+          ['✅ 허용', '로컬 .env (+ .gitignore)', '개발 단계 표준'],
+          ['✅✅ 권장', 'Supabase Secrets / DB 암호화 저장 + Edge Function 경유', '출품작·운영 표준'],
+        ],
+      } },
+
+      { subtitle: '6. 한도는 보험이다', items: [
+        'API 콘솔에서 월 사용량 상한 + 알림을 먼저 설정하고 개발 시작.',
+        '데모 중 무한루프 하나가 키 주인 카드를 긁습니다. 호출부에는 재시도 횟수 제한을 거세요.',
+      ] },
+
+      { subtitle: '7. 노출 사고 시 행동 수칙 (순서 중요)', items: [
+        '고민하지 말고 키부터 폐기(revoke) — 강사에게 즉시 보고',
+        '재발급 받아 교체',
+        '노출 경로 확인 (커밋 히스토리, 캡처, 단톡방)',
+        '같은 실수 방지: .gitignore 확인 후 다음 커밋',
+      ] },
+      { callout: { type: 'warn', text: '보고한 사람은 감점 없음. 숨긴 노출이 발견되면 실격급 감점. (경진대회 루브릭 동일 적용)' } },
+
+      { subtitle: '8. Claude Code에게 이렇게 말하세요', text: '포인트만 짚어주면 Claude Code가 처리합니다. 아래 문장을 그대로 쓰세요.' },
+      { items: [
+        '"이 프로젝트에서 하드코딩된 키를 찾아 .env로 분리하고, .gitignore에 .env가 있는지 확인해줘."',
+        '"AI API 호출을 Supabase Edge Function 경유로 옮겨줘. 키는 Supabase Secrets에서 읽고, 로그인 세션이 없으면 401을 반환해."',
+        '"푸시하기 전에 이 저장소에 키·비밀번호가 커밋된 적 있는지 히스토리까지 검사해줘."',
+        '"API 호출에 재시도 상한과 에러 처리를 추가해줘. 무한루프가 생기지 않게."',
+      ] },
+
+      { subtitle: '9. 제출 전 셀프 체크 ✅', items: [
+        '소스코드 어디에도 sk-, key=, 토큰 문자열이 없다 (전체 검색해봤다)',
+        '.gitignore에 .env가 있다',
+        'localStorage에 키를 저장한 코드가 없다 (실습 코드 삭제 확인)',
+        'AI 호출은 전부 Edge Function을 거친다',
+        '사용량 한도/알림이 설정되어 있다',
+        '위 항목을 Claude Code에게 8번 문장으로 한 번 더 검사시켰다',
+      ] },
+      { callout: { type: 'info', text: 'AI Reboot Academy · DreamIT Biz — 키는 빌려 쓰는 것, 책임은 함께 지는 것.' } },
+    ],
+  },
 ];
