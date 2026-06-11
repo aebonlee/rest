@@ -1052,6 +1052,85 @@ print(repr("a\\nb"))               # 보이지 않는 문자까지 표시
 
           { callout: { type: 'info', text: '다음 페이지에서 이 파이썬으로 Gradio·Streamlit을 써서 코드 몇 줄로 AI 데모 웹앱을 띄워봅니다.' } },
         ],
+        subSections: [
+          {
+            id: 'pre-5-python-ex1', title: '예제 1 · 리스트·반복·통계', icon: '📋',
+            summary: '리스트 컴프리헨션으로 필터링 + 합계·평균·최댓값.',
+            content: [
+              { text: 'Colab/VS Code에 붙여넣고 그대로 실행하면 됩니다(입력 불필요). 점수 리스트에서 합격자를 거르고 통계를 냅니다.' },
+              { code: { lang: 'python', content: `scores = [88, 42, 95, 67, 73, 30]
+
+passed = [s for s in scores if s >= 60]   # 컴프리헨션: 60점 이상만
+print("합격:", passed)
+print("평균:", round(sum(scores) / len(scores), 1))
+print("최고점:", max(scores))` } },
+            ],
+          },
+          {
+            id: 'pre-5-python-ex2', title: '예제 2 · 딕셔너리·빈도 세기', icon: '🗂️',
+            summary: 'dict.get으로 단어 등장 횟수 집계.',
+            content: [
+              { text: '문장을 단어로 쪼개 각 단어가 몇 번 나왔는지 딕셔너리로 셉니다. 데이터 분석의 기본 패턴입니다.' },
+              { code: { lang: 'python', content: `text = "apple banana apple cherry banana apple"
+
+freq = {}
+for w in text.split():
+    freq[w] = freq.get(w, 0) + 1
+
+print(freq)            # {'apple': 3, 'banana': 2, 'cherry': 1}
+print("최다 단어:", max(freq, key=freq.get))` } },
+            ],
+          },
+          {
+            id: 'pre-5-python-ex3', title: '예제 3 · 함수·예외 처리', icon: '🛡️',
+            summary: 'try/except로 에러가 나도 멈추지 않는 안전한 함수.',
+            content: [
+              { text: '0으로 나누는 것 같은 오류를 try/except로 잡아 프로그램이 죽지 않게 합니다. AI 호출·파일 처리에도 똑같이 쓰입니다.' },
+              { code: { lang: 'python', content: `def safe_div(a, b):
+    try:
+        return a / b
+    except ZeroDivisionError:
+        return "0으로 나눌 수 없어요"
+
+print(safe_div(10, 2))   # 5.0
+print(safe_div(10, 0))   # 0으로 나눌 수 없어요` } },
+            ],
+          },
+          {
+            id: 'pre-5-python-ex4', title: '예제 4 · pandas 데이터 다루기', icon: '🐼',
+            summary: '데이터프레임 생성 → 평균·필터. 데이터 분석의 표준.',
+            content: [
+              { text: 'Colab은 pandas가 이미 깔려 있습니다. VS Code는 `pip install pandas` 후 실행하세요.' },
+              { code: { lang: 'python', content: `import pandas as pd
+
+df = pd.DataFrame({
+    "이름": ["민수", "지영", "철수"],
+    "점수": [88, 95, 67],
+})
+
+print(df)
+print("평균 점수:", df["점수"].mean())
+print(df[df["점수"] >= 80])      # 80점 이상만 필터` } },
+            ],
+          },
+          {
+            id: 'pre-5-python-ex5', title: '예제 5 · API로 외부 데이터 가져오기', icon: '🌐',
+            summary: 'requests로 공개 API(JSON) 호출 — AI API 호출의 기본기.',
+            content: [
+              { text: '키 없이 쓸 수 있는 공개 API로 JSON을 받아 파싱합니다. AI API 호출도 구조는 똑같습니다(주소·헤더·응답 파싱). VS Code는 `pip install requests` 필요.' },
+              { code: { lang: 'python', content: `import requests
+
+# 키가 필요 없는 공개 API 예시
+r = requests.get("https://api.github.com/repos/python/cpython")
+data = r.json()
+
+print("저장소:", data["full_name"])
+print("스타 수:", data["stargazers_count"])
+print("언어:", data["language"])` } },
+              { callout: { type: 'info', text: 'AI API(OpenAI·Solar 등)도 같은 방식입니다. 단, 키가 필요하면 코드에 박지 말고 환경변수·입력으로 받으세요. (기술코칭 "AI API Key 안전 수칙" 참고)' } },
+            ],
+          },
+        ],
       },
 
   // ── 부록 박스 ② 그라이디오 Tip! ──
