@@ -21676,4 +21676,168 @@ tools: WebSearch, WebFetch, Read
       { callout: { type: 'info', text: 'DreamIT Biz · Claude Code 일상 가이드 — 설계서(시스템 편)와 한 세트입니다.' } },
     ],
   },
+  {
+    id: 'coach-deploy',
+    title: '배포·버그 119',
+    icon: '🚀',
+    description: '실습 중 가장 자주 막히는 10가지 — 증상 → 원인 → 해결. 에러 메시지째 Claude Code에 붙여넣으면 절반은 끝.',
+    content: [
+      { subtitle: '자주 막히는 10가지 (증상 → 원인 → 해결)' },
+      { table: {
+        headers: ['증상', '원인', '해결'],
+        rows: [
+          ['배포 후 새로고침하면 404', 'SPA 라우팅을 정적 서버가 모름', '404.html 리다이렉트 트릭 또는 HashRouter, base 경로 설정'],
+          ['배포본이 흰 화면·CSS 깨짐', 'Vite base 경로 불일치', "vite.config의 base를 './' 또는 '/저장소명/'으로"],
+          ['로컬은 되는데 배포본 기능 마비', '.env가 빌드에 안 들어감', 'GitHub Actions Secret 등록 / .env 주입 확인'],
+          ['배포본에서 로그인·AI 안 됨', 'VITE_ 환경변수 미설정', '브라우저 노출용은 VITE_ 접두사, 빌드 시 주입 필요'],
+          ['콘솔에 CORS 에러', '브라우저에서 외부 API 직접 호출', 'Supabase Edge Function 프록시 경유로 변경'],
+          ['Supabase infinite recursion in policy', 'RLS 정책이 자기 테이블을 다시 조회', '정책에서 자기참조 제거 / security definer 함수로 분리'],
+          ['데이터 0행·권한 오류', 'RLS가 anon을 차단', '읽기 정책 추가 또는 인증 세션으로 호출'],
+          ['빌드 실패: noUnusedLocals', '미사용 import·변수', '제거하거나 실제로 사용'],
+          ['커스텀 도메인이 풀림', 'public/CNAME 누락', 'CNAME 파일 유지 + DNS 레코드 확인'],
+          ['push했는데 배포가 안 됨', 'Actions 워크플로 실패', 'gh run list로 실패 로그 확인 후 원인 수정'],
+        ],
+      } },
+      { callout: { type: 'tip', text: '막히면 에러 메시지를 그대로 복사해 "이 에러의 원인과 해결을 단계로 알려줘"라고 붙여넣으세요. 추측보다 메시지가 답을 더 빨리 줍니다.' } },
+      { subtitle: '디버깅 3원칙', items: [
+        '한 번에 하나만 바꾼다 — 여러 개 동시에 고치면 무엇이 효과였는지 모른다.',
+        '에러 메시지를 끝까지 읽는다 — 파일·라인·원인이 대부분 적혀 있다.',
+        '재현 → 격리 → 수정 → 재확인 — 고쳤다고 믿지 말고 다시 돌려본다.',
+      ] },
+    ],
+  },
+  {
+    id: 'coach-contest',
+    title: '경진대회 출품 가이드',
+    icon: '🏆',
+    description: '제출물 패키지 · 8슬라이드 · 3분 데모 · 예상 Q&A · 루브릭 자가채점 — 출품 직전 한 장.',
+    content: [
+      { subtitle: '1. 제출물 패키지', items: [
+        '배포 URL (외부에서 접속·동작 확인)',
+        '소스 저장소 링크 (README 포함)',
+        '발표자료 8슬라이드 (5~10분)',
+        '데모 백업 영상 (라이브 실패 대비) + 데모 계정',
+        'PRD 1장 (문제·타깃·핵심기능·범위)',
+      ] },
+      { subtitle: '2. 8슬라이드 구성' },
+      { table: {
+        headers: ['#', '슬라이드', '핵심'],
+        rows: [
+          ['1', '표지', '서비스명 + 한 줄 가치 제안 + 팀·발표일'],
+          ['2', '문제', '누구의 어떤 불편 (숫자 1개)'],
+          ['3', '타깃·시장', '핵심 사용자와 규모'],
+          ['4', '해결 (데모)', '실제 동작 화면 — 여기에 시간 제일 많이'],
+          ['5', '아키텍처', 'React·Supabase·Edge Function·국산 LLM 흐름'],
+          ['6', '국산 LLM 활용', '어떤 모델을 핵심 기능 어디에 (가점 포인트)'],
+          ['7', '차별점·확장', '왜 우리가 다른가 + 다음 단계'],
+          ['8', '팀·회고', '역할 + 배운 점'],
+        ],
+      } },
+      { subtitle: '3. 3분 데모 시나리오', items: [
+        '① 문제를 1문장으로 — "○○가 ○○를 못해서 불편하다"',
+        '② 핵심 기능 1개를 라이브로 — 입력 → 결과까지 끊김 없이',
+        '③ 결과 화면에서 임팩트 한 줄 — "이걸로 ○○가 ○○됩니다"',
+        '④ (시간 남으면) 저장·비교 등 보조 기능 짧게',
+      ] },
+      { subtitle: '4. 예상 Q&A (미리 답 준비)', items: [
+        '왜 이 국산 LLM을 골랐나? (한국어·비용·도메인 적합성)',
+        'API 비용·한도는 어떻게 관리하나?',
+        '경쟁 서비스 대비 차별점은?',
+        '데이터·API 키 보안은? (Edge Function·RLS)',
+        '실서비스로 키운다면 다음 단계는?',
+      ] },
+      { subtitle: '5. 루브릭 자가채점 (기준 근사 — 공지 루브릭 우선)' },
+      { table: {
+        headers: ['항목', '가중치', '자가점검'],
+        rows: [
+          ['서비스 완성도·동작', '30%', '외부 URL에서 핵심 기능이 끊김 없이 동작하는가'],
+          ['국산 LLM 활용', '25%', 'Solar/HyperCLOVA X/EXAONE을 핵심 기능에 통합했는가'],
+          ['문제 정의·기획(PRD·MoSCoW)', '20%', '문제·타깃·범위가 명확한가'],
+          ['UX·완성도', '15%', '직관적 흐름·에러/로딩 처리·반응형'],
+          ['발표·데모', '10%', '문제→해결→데모 흐름으로 5~10분 구성'],
+        ],
+      } },
+      { callout: { type: 'warn', text: '라이브 데모는 네트워크·로그인으로 자주 실패합니다. 백업 녹화 영상과 데모 계정을 반드시 준비하고, 발표 직전 1회 리허설로 전체 흐름을 점검하세요.' } },
+    ],
+  },
+  {
+    id: 'coach-llm',
+    title: '국산 LLM 선택 가이드',
+    icon: '🇰🇷',
+    description: '경진대회 평가의 25%가 국산 LLM 활용 — 어떤 모델을, 어디에, 왜 쓸지 고르는 기준.',
+    content: [
+      { subtitle: '왜 국산 LLM인가', items: [
+        '경진대회 가점 — 평가 기준의 25%가 국산 LLM 활용도',
+        '한국어 토큰 효율 — 한국어를 더 적은 토큰으로 처리(비용·속도)',
+        '데이터 주권 — 국내 인프라·정책 대응',
+      ] },
+      { subtitle: '모델 비교' },
+      { table: {
+        headers: ['모델', '제공사', '강점', '콘솔'],
+        rows: [
+          ['Solar Pro', '업스테이지(Upstage)', '한국어 특화·경량·빠른 시작, 신규 크레딧', 'console.upstage.ai'],
+          ['HyperCLOVA X', '네이버', '한국어 대규모·생태계(클로바 스튜디오)', 'clovastudio.naver.com'],
+          ['EXAONE', 'LG AI연구원', '연구·전문 도메인 강점', 'LG 제공 채널'],
+        ],
+      } },
+      { subtitle: '언제 무엇을', items: [
+        '빠르게 챗봇/요약 MVP를 만든다 → Solar Pro (문서·크레딧·시작 난이도 유리)',
+        '네이버 생태계·대규모 한국어가 필요하다 → HyperCLOVA X',
+        '전문·연구 도메인 품질이 중요하다 → EXAONE 검토',
+      ] },
+      { subtitle: '가점 전략', items: [
+        '국산 LLM을 "핵심 기능"에 통합한다 (장식이 아니라 서비스의 심장).',
+        '발표·README에 "어떤 모델을 어디에 왜" 한 줄로 명시한다.',
+        '폴백을 둔다 — 키 없을 때도 동작하게(시연 안전), 하지만 본 기능은 국산 LLM.',
+      ] },
+      { callout: { type: 'tip', text: 'API 키는 항상 안전 수칙대로 — .env + .gitignore, 그리고 호출은 Supabase Edge Function 경유로 키를 숨기세요. (부록: AI API Key 안전 수칙 참고)' } },
+    ],
+  },
+  {
+    id: 'coach-supabase',
+    title: 'Supabase 실전 패턴',
+    icon: '🛡️',
+    description: '로그인·RLS·Edge Function — AI 서비스의 백엔드를 백엔드 없이. 키 안전 수칙 ②(Edge Function)의 실전판.',
+    content: [
+      { subtitle: '1. 소셜 로그인 (구글·카카오)' },
+      { text: '대시보드 Authentication → Providers에서 구글·카카오를 켜고 키를 넣은 뒤, 코드는 한 줄입니다.' },
+      { code: { lang: 'typescript', content: `// 로그인
+await supabase.auth.signInWithOAuth({ provider: 'google' }); // 또는 'kakao'
+
+// 현재 세션 확인
+const { data: { session } } = await supabase.auth.getSession();
+
+// 로그아웃
+await supabase.auth.signOut();` } },
+      { subtitle: '2. RLS(Row Level Security) — "내 데이터만"' },
+      { text: '테이블을 만들면 RLS를 켜고, "본인 행만" 접근하도록 정책을 답니다. RLS가 없으면 anon 키로 누구나 전체를 읽습니다.' },
+      { code: { lang: 'sql', content: `alter table chats enable row level security;
+
+-- 본인이 만든 행만 읽기
+create policy "read own" on chats
+  for select using (auth.uid() = user_id);
+
+-- 본인 행만 쓰기
+create policy "insert own" on chats
+  for insert with check (auth.uid() = user_id);` } },
+      { subtitle: '3. Edge Function으로 API 키 보호' },
+      { text: 'LLM 호출은 브라우저가 아니라 Edge Function에서. 키는 Supabase Secrets에만 두고, 로그인 세션이 없으면 401을 반환합니다.' },
+      { code: { lang: 'typescript', content: `// supabase/functions/ask/index.ts (요지)
+const auth = req.headers.get('Authorization');
+if (!auth) return new Response('Unauthorized', { status: 401 });
+const key = Deno.env.get('SOLAR_API_KEY');     // Secrets에만 존재
+const r = await fetch('https://api.upstage.ai/v1/chat/completions', {
+  method: 'POST',
+  headers: { Authorization: \`Bearer \${key}\`, 'Content-Type': 'application/json' },
+  body: JSON.stringify(payload),
+});
+return new Response(await r.text(), { headers: { 'Content-Type': 'application/json' } });` } },
+      { subtitle: '자주 겪는 함정', items: [
+        'infinite recursion in policy → 정책 안에서 같은 테이블을 다시 select하지 말 것. 필요하면 security definer 함수로 분리.',
+        '데이터가 0행 → RLS는 켰는데 정책이 없음. select 정책을 추가했는지 확인.',
+        'anon 키를 service_role로 착각 → 클라이언트엔 anon만. service_role은 절대 노출 금지(키 안전 수칙).',
+      ] },
+      { callout: { type: 'info', text: '구조 한 줄 요약: [브라우저] → (로그인 세션) → [Edge Function: 키 보호] → [LLM]. 키는 Edge Function Secrets에만, 데이터는 RLS로 본인 것만.' } },
+    ],
+  },
 ];
