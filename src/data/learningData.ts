@@ -11739,7 +11739,7 @@ serve(async (req) => {
       { subtitle: '학습 목표', items: [
         '제품 요구사항 문서(PRD)의 8개 섹션을 채울 수 있다',
         '사용자 스토리를 INVEST 원칙에 맞게 작성한다',
-        'MoSCoW로 MVP 범위를 결정한다',
+        'MoSCoW(Must have·Should have·Could have·Won’t have)로 MVP 범위를 결정한다',
         '프론트엔드·백엔드·LLM의 통합 아키텍처를 도식화한다',
       ] },
 
@@ -11756,7 +11756,7 @@ serve(async (req) => {
           ['Key Features', '핵심 기능 3~5개', '대화형 진단·맞춤 추천·이력서 첨삭'],
           ['Tech Stack', '사용 기술', 'React + Supabase + Solar API'],
           ['LLM Usage', '국내 LLM 활용', 'Solar Pro 주력 + HyperCLOVA 폴백'],
-          ['MVP Scope', '5월 22일까지 만들 범위', '핵심 챗봇 + 로그인 + 결과 저장'],
+          ['MVP Scope', '6월 22일까지 만들 범위', '핵심 챗봇 + 로그인 + 결과 저장'],
           ['Success Metric', '성공 판정 기준', '50명 사용자 + 만족도 4.0/5'],
         ],
       } },
@@ -11774,7 +11774,7 @@ so that 다음 학습 방향을 결정할 수 있다.
 나쁜 예
 "사용자가 좋게 쓸 수 있는 시스템" — 누구의 어떤 가치인지 불명확` } },
 
-      { subtitle: 'MoSCoW 우선순위' },
+      { subtitle: 'MoSCoW 우선순위 (Must have · Should have · Could have · Won’t have)' },
       { table: {
         headers: ['등급', '의미', '예'],
         rows: [
@@ -11787,27 +11787,34 @@ so that 다음 학습 방향을 결정할 수 있다.
       { callout: { type: 'tip', text: '6월 1일~22일 4주 일정에서 Must만 100% 완성하고 Should의 50%를 달성하는 것이 현실적 목표입니다. 욕심내면 모든 게 미완성으로 끝납니다.' } },
 
       { subtitle: 'AI 통합 아키텍처' },
-      { code: { lang: 'text', content: `┌──────────────────┐
-│   React 프론트엔드 │  ← 사용자 화면
-└────────┬─────────┘
-         │ fetch
-         ▼
-┌──────────────────┐    ┌──────────────────┐
-│   Supabase Auth  │    │  Supabase DB     │
-│   (회원/세션)     │    │  (대화 기록·결과) │
-└──────────────────┘    └──────────────────┘
-         ▲                       ▲
-         │                       │
-         │      ┌────────────────┘
-         │      │
-┌────────┴──────┴──┐
-│ Supabase Edge Fn │  ← LLM 호출 프록시
-│  (API 키 보호)    │
-└────────┬─────────┘
-         ▼
-┌──────────────────┐
-│   Solar API      │  ← 국내 LLM
-└──────────────────┘` } },
+      { svg: `<svg viewBox="0 0 640 312" role="img" aria-label="AI 통합 아키텍처: React 프론트엔드가 Supabase Auth·DB·Edge Function을 호출하고, Edge Function이 API 키를 보호하며 Solar API(국내 LLM)를 프록시한다" style="width:100%;max-width:640px;height:auto;font-family:system-ui,-apple-system,sans-serif">
+  <defs>
+    <marker id="aiarr" markerWidth="9" markerHeight="9" refX="7" refY="4" orient="auto"><path d="M0,0 L8,4 L0,8 Z" fill="#6b7280"/></marker>
+  </defs>
+  <rect x="200" y="18" width="240" height="54" rx="10" fill="#eff6ff" stroke="#3b82f6" stroke-width="1.5"/>
+  <text x="320" y="42" text-anchor="middle" font-size="14" font-weight="700" fill="#1e3a8a">React 프론트엔드</text>
+  <text x="320" y="60" text-anchor="middle" font-size="11" fill="#6b7280">사용자 화면</text>
+  <line x1="320" y1="72" x2="320" y2="98" stroke="#6b7280" stroke-width="1.5"/>
+  <text x="330" y="90" font-size="11" fill="#6b7280">fetch</text>
+  <line x1="115" y1="98" x2="500" y2="98" stroke="#6b7280" stroke-width="1.5"/>
+  <line x1="115" y1="98" x2="115" y2="121" stroke="#6b7280" stroke-width="1.5" marker-end="url(#aiarr)"/>
+  <line x1="290" y1="98" x2="290" y2="121" stroke="#6b7280" stroke-width="1.5" marker-end="url(#aiarr)"/>
+  <line x1="500" y1="98" x2="500" y2="117" stroke="#6b7280" stroke-width="1.5" marker-end="url(#aiarr)"/>
+  <rect x="40" y="124" width="150" height="64" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="115" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">Supabase Auth</text>
+  <text x="115" y="168" text-anchor="middle" font-size="11" fill="#6b7280">회원 · 세션</text>
+  <rect x="215" y="124" width="150" height="64" rx="10" fill="#f0fdf4" stroke="#16a34a" stroke-width="1.5"/>
+  <text x="290" y="150" text-anchor="middle" font-size="13" font-weight="700" fill="#166534">Supabase DB</text>
+  <text x="290" y="168" text-anchor="middle" font-size="11" fill="#6b7280">대화 기록 · 결과</text>
+  <rect x="400" y="120" width="200" height="72" rx="10" fill="#fef9c3" stroke="#ca8a04" stroke-width="2"/>
+  <text x="500" y="146" text-anchor="middle" font-size="13" font-weight="800" fill="#854d0e">Supabase Edge Fn</text>
+  <text x="500" y="164" text-anchor="middle" font-size="11" fill="#854d0e">🔑 API 키 보호 · LLM 프록시</text>
+  <line x1="500" y1="192" x2="500" y2="240" stroke="#6b7280" stroke-width="1.5" marker-end="url(#aiarr)"/>
+  <text x="510" y="220" font-size="11" fill="#6b7280">API Key</text>
+  <rect x="400" y="242" width="200" height="56" rx="10" fill="#faf5ff" stroke="#9333ea" stroke-width="1.5"/>
+  <text x="500" y="268" text-anchor="middle" font-size="13" font-weight="700" fill="#6b21a8">Solar API</text>
+  <text x="500" y="286" text-anchor="middle" font-size="11" fill="#6b7280">국내 LLM</text>
+</svg>` },
 
       { subtitle: 'API 키 보안 — 왜 Edge Function인가' },
       { items: [
