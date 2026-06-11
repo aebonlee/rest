@@ -1217,6 +1217,99 @@ gr.ChatInterface(
             'examples를 3개 넣은 나만의 계산기',
           ] },
         ],
+        subSections: [
+          {
+            id: 'pre-5-gradio-ex1', title: '예제 1 · 인사 데모', icon: '👋',
+            summary: 'Interface로 텍스트 입력→출력. Gradio의 가장 기본 형태.',
+            content: [
+              { text: 'Colab: 셀에 붙여넣고 실행하면 셀 안에 데모가 뜹니다(공개 링크도 생성). VS Code: 파일로 저장 후 `python 파일명.py`로 실행하면 localhost로 열립니다.' },
+              { code: { lang: 'python', content: `import gradio as gr
+
+def greet(name):
+    return f"안녕하세요, {name}님! 👋"
+
+gr.Interface(fn=greet, inputs="text", outputs="text", title="인사 데모").launch()` } },
+            ],
+          },
+          {
+            id: 'pre-5-gradio-ex2', title: '예제 2 · 섭씨→화씨 변환기', icon: '🌡️',
+            summary: 'Number 입력/출력 + examples로 미리 시험해 볼 값 제공.',
+            content: [
+              { text: '숫자 입력칸과 결과칸을 붙이고, examples로 클릭 한 번에 시험해 볼 값을 제공합니다.' },
+              { code: { lang: 'python', content: `import gradio as gr
+
+def c_to_f(c):
+    return round(c * 9 / 5 + 32, 1)
+
+gr.Interface(
+    fn=c_to_f,
+    inputs=gr.Number(label="섭씨(℃)"),
+    outputs=gr.Number(label="화씨(℉)"),
+    examples=[[0], [36.5], [100]],
+    title="섭씨 → 화씨 변환기",
+).launch()` } },
+            ],
+          },
+          {
+            id: 'pre-5-gradio-ex3', title: '예제 3 · 이미지 흑백 변환', icon: '🖼️',
+            summary: 'Image 입출력 + PIL로 이미지를 가공.',
+            content: [
+              { text: '이미지를 업로드하면 PIL의 convert("L")로 흑백으로 바꿔 보여줍니다. (Colab/VS Code 동일)' },
+              { code: { lang: 'python', content: `import gradio as gr
+from PIL import Image
+
+def to_gray(img: Image.Image):
+    return img.convert("L")   # L = 흑백(grayscale)
+
+gr.Interface(
+    fn=to_gray,
+    inputs=gr.Image(type="pil", label="원본 이미지"),
+    outputs=gr.Image(type="pil", label="흑백 이미지"),
+    title="이미지 흑백 변환",
+).launch()` } },
+            ],
+          },
+          {
+            id: 'pre-5-gradio-ex4', title: '예제 4 · 챗봇 UI', icon: '💬',
+            summary: 'ChatInterface로 대화형 UI를 코드 몇 줄로.',
+            content: [
+              { text: 'gr.ChatInterface는 대화창·기록·전송 버튼을 자동으로 만들어 줍니다. respond(message, history)만 채우면 됩니다.' },
+              { code: { lang: 'python', content: `import gradio as gr
+
+def respond(message, history):
+    # history: [(사용자, 봇), ...] 형태의 이전 대화
+    return f"'{message}' 라고 하셨네요. (예시 응답)"
+
+gr.ChatInterface(fn=respond, title="간단 챗봇").launch()` } },
+            ],
+          },
+          {
+            id: 'pre-5-gradio-ex5', title: '예제 5 · AI 챗봇 (LLM 연동)', icon: '🤖',
+            summary: 'OpenAI/국산 LLM 연동 + API 키는 입력창으로(하드코딩 금지).',
+            content: [
+              { text: '설치: `pip install openai` · 키를 코드에 박지 말고 비밀번호 입력창으로 받습니다. base_url을 바꾸면 Solar 등 국산 LLM에도 연결됩니다.' },
+              { code: { lang: 'python', content: `import gradio as gr
+from openai import OpenAI
+
+def chat(message, history, api_key):
+    if not api_key:
+        return "API 키를 입력하세요. (코드에 키를 하드코딩하지 마세요)"
+    client = OpenAI(api_key=api_key)   # 국산 LLM은 base_url 추가
+    r = client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": message}],
+    )
+    return r.choices[0].message.content
+
+gr.ChatInterface(
+    fn=chat,
+    additional_inputs=[gr.Textbox(label="API Key", type="password")],
+    title="AI 챗봇 (키는 입력창으로)",
+).launch()` } },
+              { callout: { type: 'warn', text: '키는 절대 코드에 하드코딩하지 마세요. 실습은 입력창으로, 배포는 .env/서버 환경변수로. (기술코칭 부록 "AI API Key 안전 수칙" 참고)' } },
+            ],
+          },
+        ],
       },
 
   // ── 부록 박스 ③ 스트림릿 Tip! ──
@@ -1414,6 +1507,87 @@ url = st.secrets["supabase"]["url"]` } },
           ] },
 
           { callout: { type: 'info', text: '정리: 빠른 AI 모델 시연은 Gradio, 데이터 대시보드는 Streamlit. 둘 다 파이썬만으로 웹앱을 만들 수 있습니다.' } },
+        ],
+        subSections: [
+          {
+            id: 'pre-5-streamlit-ex1', title: '예제 1 · Hello + 위젯', icon: '👋',
+            summary: 'text_input·button — 가장 기본. 실행: streamlit run app.py',
+            content: [
+              { text: '파일을 app.py로 저장하고 터미널에서 `streamlit run app.py`로 실행하면 브라우저가 열립니다. (Streamlit은 Colab보다 VS Code에서 실행 권장 — Colab은 별도 터널 필요)' },
+              { code: { lang: 'python', content: `# app.py   →   실행:  streamlit run app.py
+import streamlit as st
+
+st.title("👋 첫 Streamlit 앱")
+name = st.text_input("이름을 입력하세요")
+if st.button("인사하기"):
+    st.success(f"안녕하세요, {name}님!")` } },
+            ],
+          },
+          {
+            id: 'pre-5-streamlit-ex2', title: '예제 2 · 위젯 즉시 반응', icon: '🎚️',
+            summary: 'slider·checkbox를 건드리면 스크립트가 다시 실행되어 화면 갱신.',
+            content: [
+              { text: 'Streamlit은 위젯을 조작할 때마다 스크립트를 위에서 아래로 다시 실행합니다. 그래서 값 변화가 즉시 반영됩니다.' },
+              { code: { lang: 'python', content: `import streamlit as st
+
+st.header("실시간 위젯")
+n = st.slider("숫자", 0, 100, 25)
+st.write("제곱:", n ** 2)
+if st.checkbox("자세히 보기"):
+    st.write({"n": n, "제곱": n ** 2, "세제곱": n ** 3})` } },
+            ],
+          },
+          {
+            id: 'pre-5-streamlit-ex3', title: '예제 3 · 데이터·차트', icon: '📈',
+            summary: 'pandas 데이터프레임 + line_chart로 즉석 시각화.',
+            content: [
+              { text: '설치: `pip install pandas numpy` · 데이터프레임을 그대로 차트·표로 그립니다.' },
+              { code: { lang: 'python', content: `import streamlit as st
+import pandas as pd
+import numpy as np
+
+st.header("📈 차트 데모")
+df = pd.DataFrame(np.random.randn(20, 3), columns=["A", "B", "C"])
+st.line_chart(df)
+st.dataframe(df.describe())` } },
+            ],
+          },
+          {
+            id: 'pre-5-streamlit-ex4', title: '예제 4 · CSV 업로드 분석', icon: '📂',
+            summary: 'file_uploader로 CSV를 올려 표·차트로 분석.',
+            content: [
+              { text: '사용자가 올린 CSV를 pandas로 읽어 미리보기와 숫자형 컬럼 막대그래프를 보여줍니다.' },
+              { code: { lang: 'python', content: `import streamlit as st
+import pandas as pd
+
+st.header("📂 CSV 업로드 분석")
+file = st.file_uploader("CSV 파일을 올리세요", type="csv")
+if file:
+    df = pd.read_csv(file)
+    st.dataframe(df.head())
+    st.bar_chart(df.select_dtypes("number"))` } },
+            ],
+          },
+          {
+            id: 'pre-5-streamlit-ex5', title: '예제 5 · 세션 상태 카운터', icon: '🔢',
+            summary: 'st.session_state로 값이 유지되는 상태 관리.',
+            content: [
+              { text: 'Streamlit은 매번 스크립트를 다시 실행하므로, 값을 기억하려면 st.session_state에 저장합니다.' },
+              { code: { lang: 'python', content: `import streamlit as st
+
+st.header("🔢 세션 상태 카운터")
+if "count" not in st.session_state:
+    st.session_state.count = 0
+
+col1, col2 = st.columns(2)
+if col1.button("➕ 증가"):
+    st.session_state.count += 1
+if col2.button("🔄 초기화"):
+    st.session_state.count = 0
+
+st.metric("카운트", st.session_state.count)` } },
+            ],
+          },
         ],
       },
 ];
