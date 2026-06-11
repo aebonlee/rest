@@ -103,6 +103,39 @@ const calloutColors: Record<string, { bg: string; border: string; emoji: string;
  * 부수효과: 복사 버튼 클릭 시 클립보드 쓰기 및 1.5초간 '복사됨' 상태 표시.
  *           (부수효과 = 화면 그리기 외에 바깥 세상에 영향을 주는 일. 여기선 클립보드 쓰기.)
  */
+// 언어별 한 줄 주석 기호 — 코드 주석을 녹색으로 강조하기 위해 사용.
+const COMMENT_MARK: Record<string, string> = {
+  python: '#', py: '#', bash: '#', sh: '#', shell: '#', yaml: '#', yml: '#', toml: '#', ini: '#', text: '#',
+  sql: '--',
+  typescript: '//', javascript: '//', ts: '//', js: '//', tsx: '//', jsx: '//', json: '//',
+};
+// 따옴표(문자열) 안이 아닌 위치에서 주석 기호가 시작되는 인덱스를 찾는다(없으면 -1).
+const commentStart = (line: string, mark: string): number => {
+  let quote = '';
+  for (let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if (quote) { if (ch === quote && line[i - 1] !== '\\') quote = ''; continue; }
+    if (ch === '"' || ch === "'" || ch === '`') { quote = ch; continue; }
+    if (line.startsWith(mark, i)) return i;
+  }
+  return -1;
+};
+// 코드 문자열을 줄 단위로 그리되, 주석 부분만 녹색(span)으로 칠한다.
+const renderCode = (content: string, lang?: string) => {
+  const mark = lang ? COMMENT_MARK[lang.toLowerCase()] : undefined;
+  if (!mark) return content;
+  const lines = content.split('\n');
+  return lines.map((ln, i) => {
+    const p = commentStart(ln, mark);
+    return (
+      <span key={i}>
+        {p < 0 ? ln : <>{ln.slice(0, p)}<span style={{ color: '#4ade80' }}>{ln.slice(p)}</span></>}
+        {i < lines.length - 1 ? '\n' : ''}
+      </span>
+    );
+  });
+};
+
 const CodeBlock = ({ lang, content, wrap }: { lang?: string; content: string; wrap?: boolean }): ReactElement => {
   // copied: 복사 성공 후 잠깐 true가 되어 버튼 라벨/색을 '복사됨'으로 바꾼다.
   // [개념] useState(false) → 초기값 false. [현재값, 바꾸는함수] 두 개를 배열로 돌려줌.
@@ -212,7 +245,7 @@ const CodeBlock = ({ lang, content, wrap }: { lang?: string; content: string; wr
           : { overflowX: 'auto' as const, lineHeight: 1.6 }),
       }}>
         {/* 중괄호 안의 content는 위 props로 받은 코드 문자열을 그대로 출력 */}
-        <code>{content}</code>
+        <code>{renderCode(content, lang)}</code>
       </pre>
     </div>
   );

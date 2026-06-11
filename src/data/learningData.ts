@@ -1058,12 +1058,37 @@ print(repr("a\\nb"))               # 보이지 않는 문자까지 표시
             summary: '리스트 컴프리헨션으로 필터링 + 합계·평균·최댓값.',
             content: [
               { text: 'Colab/VS Code에 붙여넣고 그대로 실행하면 됩니다(입력 불필요). 점수 리스트에서 합격자를 거르고 통계를 냅니다.' },
-              { code: { lang: 'python', content: `scores = [88, 42, 95, 67, 73, 30]
+              { code: { lang: 'python', content: `# 학생들의 시험 점수 리스트 (0~100점)
+scores = [88, 42, 95, 67, 73, 30, 100, 58]
 
-passed = [s for s in scores if s >= 60]   # 컴프리헨션: 60점 이상만
-print("합격:", passed)
-print("평균:", round(sum(scores) / len(scores), 1))
-print("최고점:", max(scores))` } },
+# 1) 리스트 컴프리헨션 — 조건에 맞는 값만 골라 새 리스트로
+passed = [s for s in scores if s >= 60]   # 60점 이상(합격)
+failed = [s for s in scores if s < 60]    # 60점 미만(불합격)
+
+# 2) 내장 함수로 통계 계산
+avg = sum(scores) / len(scores)           # 평균 = 합계 / 개수
+top = max(scores)                          # 최고점
+low = min(scores)                          # 최저점
+
+# 3) 점수를 등급으로 바꾸는 함수 (조건문)
+def grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    else:
+        return "D"
+
+# 4) f-string으로 결과를 보기 좋게 출력
+print(f"합격 {len(passed)}명: {passed}")
+print(f"불합격 {len(failed)}명: {failed}")
+print(f"평균 {avg:.1f} / 최고 {top} / 최저 {low}")
+
+# 5) 반복문으로 각 점수의 등급 출력
+for s in scores:
+    print(f"{s:>3}점 → {grade(s)}등급")   # :>3 = 오른쪽 정렬(3칸)` } },
             ],
           },
           {
@@ -1071,14 +1096,24 @@ print("최고점:", max(scores))` } },
             summary: 'dict.get으로 단어 등장 횟수 집계.',
             content: [
               { text: '문장을 단어로 쪼개 각 단어가 몇 번 나왔는지 딕셔너리로 셉니다. 데이터 분석의 기본 패턴입니다.' },
-              { code: { lang: 'python', content: `text = "apple banana apple cherry banana apple"
+              { code: { lang: 'python', content: `text = "apple banana apple cherry banana apple grape banana"
 
+# 1) 단어별 등장 횟수를 딕셔너리에 모으기
 freq = {}
-for w in text.split():
-    freq[w] = freq.get(w, 0) + 1
+for word in text.split():                  # split(): 공백 기준으로 단어 분리
+    freq[word] = freq.get(word, 0) + 1     # 없으면 0에서 시작해 +1
 
-print(freq)            # {'apple': 3, 'banana': 2, 'cherry': 1}
-print("최다 단어:", max(freq, key=freq.get))` } },
+print("빈도:", freq)
+
+# 2) 값(횟수)이 가장 큰 키 = 최다 단어
+top_word = max(freq, key=freq.get)
+print(f"최다 단어: {top_word} ({freq[top_word]}회)")
+
+# 3) 횟수 많은 순으로 정렬해서 막대그래프처럼 출력
+#    sorted(..., key=람다, reverse=True) → 횟수 내림차순
+for word, count in sorted(freq.items(), key=lambda x: x[1], reverse=True):
+    bar = "■" * count                      # 횟수만큼 막대 문자 반복
+    print(f"{word:<8} {bar} {count}")      # :<8 = 왼쪽 정렬(8칸)` } },
             ],
           },
           {
@@ -1086,14 +1121,23 @@ print("최다 단어:", max(freq, key=freq.get))` } },
             summary: 'try/except로 에러가 나도 멈추지 않는 안전한 함수.',
             content: [
               { text: '0으로 나누는 것 같은 오류를 try/except로 잡아 프로그램이 죽지 않게 합니다. AI 호출·파일 처리에도 똑같이 쓰입니다.' },
-              { code: { lang: 'python', content: `def safe_div(a, b):
+              { code: { lang: 'python', content: `# 여러 종류의 에러를 안전하게 처리하는 나눗셈 함수
+def safe_divide(a, b):
     try:
-        return a / b
-    except ZeroDivisionError:
-        return "0으로 나눌 수 없어요"
+        result = a / b                     # 여기서 에러가 날 수 있음
+    except ZeroDivisionError:              # 0으로 나눌 때
+        return "❌ 0으로 나눌 수 없어요"
+    except TypeError:                      # 숫자가 아닌 값일 때
+        return "❌ 숫자만 입력하세요"
+    else:                                  # 에러 없이 성공했을 때만
+        return f"✅ 결과: {result}"
+    finally:                               # 성공/실패와 무관하게 항상 실행
+        print("  (계산 시도 완료)")
 
-print(safe_div(10, 2))   # 5.0
-print(safe_div(10, 0))   # 0으로 나눌 수 없어요` } },
+# 다양한 입력으로 테스트 — 프로그램이 멈추지 않고 끝까지 실행됨
+print(safe_divide(10, 2))      # 정상 → ✅ 결과: 5.0
+print(safe_divide(10, 0))      # 0으로 나누기 → 에러 메시지
+print(safe_divide(10, "x"))    # 타입 에러 → 에러 메시지` } },
             ],
           },
           {
@@ -1103,14 +1147,27 @@ print(safe_div(10, 0))   # 0으로 나눌 수 없어요` } },
               { text: 'Colab은 pandas가 이미 깔려 있습니다. VS Code는 `pip install pandas` 후 실행하세요.' },
               { code: { lang: 'python', content: `import pandas as pd
 
+# 1) 딕셔너리로 표(DataFrame) 만들기 — 키가 열 이름이 됨
 df = pd.DataFrame({
-    "이름": ["민수", "지영", "철수"],
-    "점수": [88, 95, 67],
+    "이름": ["민수", "지영", "철수", "영희", "준호"],
+    "반":   ["A", "B", "A", "B", "A"],
+    "점수": [88, 95, 67, 72, 90],
 })
-
 print(df)
-print("평균 점수:", df["점수"].mean())
-print(df[df["점수"] >= 80])      # 80점 이상만 필터` } },
+
+# 2) 기본 통계 (한 줄이면 끝)
+print("\\n평균 점수:", df["점수"].mean())
+print("점수 요약:\\n", df["점수"].describe())
+
+# 3) 조건 필터 — 80점 이상인 행만
+print("\\n80점 이상:\\n", df[df["점수"] >= 80])
+
+# 4) 그룹별 집계 — 반(A/B)별 평균 점수
+print("\\n반별 평균:\\n", df.groupby("반")["점수"].mean())
+
+# 5) 계산 결과로 새 열 추가 — 합격 여부(True/False)
+df["합격"] = df["점수"] >= 70
+print("\\n합격 여부:\\n", df)` } },
             ],
           },
           {
@@ -1120,13 +1177,24 @@ print(df[df["점수"] >= 80])      # 80점 이상만 필터` } },
               { text: '키 없이 쓸 수 있는 공개 API로 JSON을 받아 파싱합니다. AI API 호출도 구조는 똑같습니다(주소·헤더·응답 파싱). VS Code는 `pip install requests` 필요.' },
               { code: { lang: 'python', content: `import requests
 
-# 키가 필요 없는 공개 API 예시
-r = requests.get("https://api.github.com/repos/python/cpython")
-data = r.json()
+# 1) 키가 필요 없는 공개 API 호출 (GitHub 저장소 정보)
+url = "https://api.github.com/repos/python/cpython"
+res = requests.get(url, timeout=10)        # timeout: 10초 안에 응답 없으면 중단
 
-print("저장소:", data["full_name"])
-print("스타 수:", data["stargazers_count"])
-print("언어:", data["language"])` } },
+# 2) 상태 코드 확인 — 200이면 성공 (4xx/5xx면 실패)
+if res.status_code != 200:
+    print("요청 실패:", res.status_code)
+else:
+    data = res.json()                      # JSON 응답을 파이썬 딕셔너리로 변환
+    # 3) 필요한 값만 꺼내 쓰기
+    print("저장소:", data["full_name"])
+    print("설명:", data["description"])
+    print("스타:", data["stargazers_count"])
+    print("언어:", data["language"])
+
+# 4) AI API(OpenAI·Solar 등)도 구조가 똑같습니다:
+#    requests.post(url, headers={"Authorization": "Bearer <키>"}, json=payload)
+#    단, 키는 코드에 하드코딩하지 말고 환경변수/입력으로 받으세요!` } },
               { callout: { type: 'info', text: 'AI API(OpenAI·Solar 등)도 같은 방식입니다. 단, 키가 필요하면 코드에 박지 말고 환경변수·입력으로 받으세요. (기술코칭 "AI API Key 안전 수칙" 참고)' } },
             ],
           },
@@ -1304,10 +1372,25 @@ gr.ChatInterface(
               { text: 'Colab: 셀에 붙여넣고 실행하면 셀 안에 데모가 뜹니다(공개 링크도 생성). VS Code: 파일로 저장 후 `python 파일명.py`로 실행하면 localhost로 열립니다.' },
               { code: { lang: 'python', content: `import gradio as gr
 
-def greet(name):
-    return f"안녕하세요, {name}님! 👋"
+# 입력(name, is_morning)을 받아 인사말을 돌려주는 함수
+def greet(name, is_morning):
+    # 체크박스 값(True/False)에 따라 인사를 다르게
+    hello = "좋은 아침이에요" if is_morning else "안녕하세요"
+    return f"{hello}, {name}님! 👋"
 
-gr.Interface(fn=greet, inputs="text", outputs="text", title="인사 데모").launch()` } },
+# Interface: 함수 + 입력 위젯 + 출력 위젯을 묶어 웹 UI 생성
+demo = gr.Interface(
+    fn=greet,                              # 실행할 함수
+    inputs=[                               # 입력 위젯 2개
+        gr.Textbox(label="이름"),
+        gr.Checkbox(label="아침인가요?"),
+    ],
+    outputs=gr.Textbox(label="인사말"),     # 출력 위젯
+    title="인사 데모",
+    description="이름을 넣으면 인사해 줍니다.",
+)
+
+demo.launch()   # Colab: 셀 안에 표시 / VS Code: localhost 자동 열림` } },
             ],
           },
           {
@@ -1317,15 +1400,22 @@ gr.Interface(fn=greet, inputs="text", outputs="text", title="인사 데모").lau
               { text: '숫자 입력칸과 결과칸을 붙이고, examples로 클릭 한 번에 시험해 볼 값을 제공합니다.' },
               { code: { lang: 'python', content: `import gradio as gr
 
-def c_to_f(c):
-    return round(c * 9 / 5 + 32, 1)
+# 섭씨를 화씨·켈빈으로 한 번에 변환
+def convert(celsius):
+    fahrenheit = celsius * 9 / 5 + 32      # 화씨 = ℃ × 9/5 + 32
+    kelvin = celsius + 273.15              # 켈빈 = ℃ + 273.15
+    # 여러 값을 튜플로 return → 출력 위젯에 순서대로 채워짐
+    return round(fahrenheit, 1), round(kelvin, 2)
 
 gr.Interface(
-    fn=c_to_f,
-    inputs=gr.Number(label="섭씨(℃)"),
-    outputs=gr.Number(label="화씨(℉)"),
-    examples=[[0], [36.5], [100]],
-    title="섭씨 → 화씨 변환기",
+    fn=convert,
+    inputs=gr.Number(label="섭씨(℃)", value=25),   # value: 기본값
+    outputs=[                                       # 출력 위젯 2개
+        gr.Number(label="화씨(℉)"),
+        gr.Number(label="켈빈(K)"),
+    ],
+    examples=[[0], [36.5], [100]],          # 클릭 한 번에 시험해 볼 값
+    title="온도 변환기",
 ).launch()` } },
             ],
           },
@@ -1335,16 +1425,26 @@ gr.Interface(
             content: [
               { text: '이미지를 업로드하면 PIL의 convert("L")로 흑백으로 바꿔 보여줍니다. (Colab/VS Code 동일)' },
               { code: { lang: 'python', content: `import gradio as gr
-from PIL import Image
+from PIL import Image, ImageFilter         # Pillow: 이미지 처리 라이브러리
 
-def to_gray(img: Image.Image):
-    return img.convert("L")   # L = 흑백(grayscale)
+# 라디오 버튼(mode) 선택에 따라 다른 효과를 적용
+def process(img: Image.Image, mode):
+    if mode == "흑백":
+        return img.convert("L")            # L = 흑백(grayscale)
+    elif mode == "블러":
+        return img.filter(ImageFilter.GaussianBlur(5))   # 흐리게
+    elif mode == "좌우반전":
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+    return img                             # 그 외엔 원본 그대로
 
 gr.Interface(
-    fn=to_gray,
-    inputs=gr.Image(type="pil", label="원본 이미지"),
-    outputs=gr.Image(type="pil", label="흑백 이미지"),
-    title="이미지 흑백 변환",
+    fn=process,
+    inputs=[
+        gr.Image(type="pil", label="원본"),
+        gr.Radio(["흑백", "블러", "좌우반전"], value="흑백", label="효과"),
+    ],
+    outputs=gr.Image(type="pil", label="결과"),
+    title="이미지 효과 변환기",
 ).launch()` } },
             ],
           },
@@ -1355,11 +1455,26 @@ gr.Interface(
               { text: 'gr.ChatInterface는 대화창·기록·전송 버튼을 자동으로 만들어 줍니다. respond(message, history)만 채우면 됩니다.' },
               { code: { lang: 'python', content: `import gradio as gr
 
+# message: 사용자가 보낸 말, history: 이전 대화 목록
 def respond(message, history):
-    # history: [(사용자, 봇), ...] 형태의 이전 대화
-    return f"'{message}' 라고 하셨네요. (예시 응답)"
+    msg = message.lower()                  # 소문자로 통일해 비교
+    # 키워드에 따라 다른 답변 — 규칙 기반 챗봇
+    if "안녕" in msg or "hello" in msg:
+        return "안녕하세요! 무엇을 도와드릴까요? 😊"
+    elif "시간" in msg or "몇 시" in msg:
+        from datetime import datetime
+        return f"지금은 {datetime.now():%H시 %M분} 입니다."
+    elif "도움" in msg:
+        return "‘안녕’, ‘시간’ 같은 단어를 입력해 보세요."
+    else:
+        return f"'{message}' 라고 하셨군요. (아직 못 배운 말이에요)"
 
-gr.ChatInterface(fn=respond, title="간단 챗봇").launch()` } },
+# ChatInterface: 대화창·기록·전송 버튼을 자동으로 만들어 줌
+gr.ChatInterface(
+    fn=respond,
+    title="규칙 기반 챗봇",
+    examples=["안녕", "지금 몇 시야?", "도움말"],   # 예시 질문 버튼
+).launch()` } },
             ],
           },
           {
@@ -1368,21 +1483,33 @@ gr.ChatInterface(fn=respond, title="간단 챗봇").launch()` } },
             content: [
               { text: '설치: `pip install openai` · 키를 코드에 박지 말고 비밀번호 입력창으로 받습니다. base_url을 바꾸면 Solar 등 국산 LLM에도 연결됩니다.' },
               { code: { lang: 'python', content: `import gradio as gr
-from openai import OpenAI
+from openai import OpenAI                  # pip install openai
 
-def chat(message, history, api_key):
+def chat(message, history, api_key, persona):
+    # 1) 키가 없으면 안내 — 절대 코드에 키를 하드코딩하지 않는다!
     if not api_key:
-        return "API 키를 입력하세요. (코드에 키를 하드코딩하지 마세요)"
-    client = OpenAI(api_key=api_key)   # 국산 LLM은 base_url 추가
-    r = client.chat.completions.create(
-        model="gpt-4o-mini",
-        messages=[{"role": "user", "content": message}],
-    )
-    return r.choices[0].message.content
+        return "🔑 위에 API 키를 입력하세요. (코드 하드코딩 금지)"
+    try:
+        client = OpenAI(api_key=api_key)   # 국산 LLM은 base_url= 추가
+        # 2) system 메시지로 챗봇 성격(persona) 지정
+        messages = [{"role": "system", "content": f"너는 {persona}야. 한국어로 친절하게 답해."}]
+        # 3) 이전 대화(history)도 함께 보내 문맥 유지
+        for user, bot in history:
+            messages.append({"role": "user", "content": user})
+            messages.append({"role": "assistant", "content": bot})
+        messages.append({"role": "user", "content": message})
+        # 4) LLM 호출 후 답변 텍스트만 꺼내기
+        res = client.chat.completions.create(model="gpt-4o-mini", messages=messages)
+        return res.choices[0].message.content
+    except Exception as e:                  # 네트워크·키 오류 등 안전 처리
+        return f"오류가 발생했어요: {e}"
 
 gr.ChatInterface(
     fn=chat,
-    additional_inputs=[gr.Textbox(label="API Key", type="password")],
+    additional_inputs=[                     # 채팅 외 추가 입력
+        gr.Textbox(label="API Key", type="password"),
+        gr.Textbox(label="챗봇 성격", value="친절한 비서"),
+    ],
     title="AI 챗봇 (키는 입력창으로)",
 ).launch()` } },
               { callout: { type: 'warn', text: '키는 절대 코드에 하드코딩하지 마세요. 실습은 입력창으로, 배포는 .env/서버 환경변수로. (기술코칭 부록 "AI API Key 안전 수칙" 참고)' } },
@@ -1597,9 +1724,19 @@ url = st.secrets["supabase"]["url"]` } },
 import streamlit as st
 
 st.title("👋 첫 Streamlit 앱")
-name = st.text_input("이름을 입력하세요")
+
+# 1) 사이드바에 입력 위젯 배치 (with 블록 안에 두면 왼쪽 패널로)
+with st.sidebar:
+    name = st.text_input("이름")
+    age = st.number_input("나이", min_value=0, max_value=120, value=20)
+
+# 2) 버튼을 누르면 인사 출력
 if st.button("인사하기"):
-    st.success(f"안녕하세요, {name}님!")` } },
+    if name:                               # 이름이 비어있지 않으면
+        st.success(f"안녕하세요, {name}님! ({age}세)")
+        st.balloons()                      # 축하 풍선 효과 🎈
+    else:
+        st.warning("이름을 입력해 주세요.")   # 노란 경고 메시지` } },
             ],
           },
           {
@@ -1609,11 +1746,21 @@ if st.button("인사하기"):
               { text: 'Streamlit은 위젯을 조작할 때마다 스크립트를 위에서 아래로 다시 실행합니다. 그래서 값 변화가 즉시 반영됩니다.' },
               { code: { lang: 'python', content: `import streamlit as st
 
-st.header("실시간 위젯")
-n = st.slider("숫자", 0, 100, 25)
-st.write("제곱:", n ** 2)
-if st.checkbox("자세히 보기"):
-    st.write({"n": n, "제곱": n ** 2, "세제곱": n ** 3})` } },
+st.header("🎚️ 실시간 위젯")
+
+# 위젯을 조작하면 스크립트가 위→아래로 다시 실행되어 즉시 반영됨
+col1, col2 = st.columns(2)                 # 화면을 2칸으로 나누기
+with col1:
+    base = st.slider("밑(base)", 1, 20, 2)
+with col2:
+    exp = st.slider("지수(exp)", 1, 10, 3)
+
+# st.metric: 큰 숫자 카드로 결과 강조
+st.metric("결과", f"{base} ^ {exp} = {base ** exp}")
+
+# 체크박스를 켜면 계산 과정도 펼쳐 보여주기
+if st.checkbox("계산 과정 보기"):
+    st.write([f"{base}^{i} = {base ** i}" for i in range(1, exp + 1)])` } },
             ],
           },
           {
@@ -1625,10 +1772,22 @@ if st.checkbox("자세히 보기"):
 import pandas as pd
 import numpy as np
 
-st.header("📈 차트 데모")
-df = pd.DataFrame(np.random.randn(20, 3), columns=["A", "B", "C"])
-st.line_chart(df)
-st.dataframe(df.describe())` } },
+st.header("📈 매출 대시보드")
+
+# 1) 슬라이더로 기간 조절 — 바꾸면 차트가 즉시 갱신됨
+days = st.slider("기간(일)", 7, 90, 30)
+
+# 2) 실습용 가짜 매출 데이터 생성
+df = pd.DataFrame({
+    "날짜": pd.date_range("2026-01-01", periods=days),
+    "매출": np.random.randint(50, 200, days).cumsum(),  # cumsum: 누적 합계
+})
+df = df.set_index("날짜")                   # 날짜를 인덱스로 → 차트 x축이 됨
+
+# 3) 지표 카드 + 라인차트 + 표
+st.metric("총 매출", f"{int(df['매출'].iloc[-1]):,}만원")  # 마지막 값
+st.line_chart(df)                          # 한 줄로 꺾은선 차트
+st.dataframe(df.tail())                    # 최근 데이터 표로` } },
             ],
           },
           {
@@ -1639,12 +1798,28 @@ st.dataframe(df.describe())` } },
               { code: { lang: 'python', content: `import streamlit as st
 import pandas as pd
 
-st.header("📂 CSV 업로드 분석")
+st.header("📂 CSV 업로드 분석기")
+
 file = st.file_uploader("CSV 파일을 올리세요", type="csv")
-if file:
-    df = pd.read_csv(file)
+
+if file is None:
+    # 파일을 올리기 전 안내
+    st.info("엑셀에서 표를 만들어 .csv로 저장한 뒤 올려보세요.")
+else:
+    df = pd.read_csv(file)                  # 업로드한 파일을 표로 읽기
+    st.success(f"{len(df)}행 × {len(df.columns)}열을 불러왔어요.")
+
+    # 1) 미리보기 + 기초 통계
+    st.subheader("미리보기")
     st.dataframe(df.head())
-    st.bar_chart(df.select_dtypes("number"))` } },
+    st.subheader("기초 통계")
+    st.dataframe(df.describe())
+
+    # 2) 숫자 컬럼만 골라 사용자가 선택 → 막대그래프
+    num_cols = df.select_dtypes("number").columns.tolist()
+    if num_cols:
+        col = st.selectbox("차트로 볼 컬럼", num_cols)
+        st.bar_chart(df[col])` } },
             ],
           },
           {
@@ -1654,17 +1829,24 @@ if file:
               { text: 'Streamlit은 매번 스크립트를 다시 실행하므로, 값을 기억하려면 st.session_state에 저장합니다.' },
               { code: { lang: 'python', content: `import streamlit as st
 
-st.header("🔢 세션 상태 카운터")
-if "count" not in st.session_state:
-    st.session_state.count = 0
+st.header("✅ 할 일 목록 (세션 상태)")
 
-col1, col2 = st.columns(2)
-if col1.button("➕ 증가"):
-    st.session_state.count += 1
-if col2.button("🔄 초기화"):
-    st.session_state.count = 0
+# 1) session_state에 리스트를 보관 — 스크립트가 재실행돼도 값이 유지됨
+if "todos" not in st.session_state:
+    st.session_state.todos = []            # 최초 1회만 빈 리스트로 초기화
 
-st.metric("카운트", st.session_state.count)` } },
+# 2) 입력 + 추가 버튼
+task = st.text_input("할 일")
+if st.button("추가") and task:
+    st.session_state.todos.append(task)    # 리스트에 새 항목 추가
+
+# 3) 목록을 체크박스로 표시 — 체크하면 완료 처리(삭제)
+for i, todo in enumerate(list(st.session_state.todos)):
+    if st.checkbox(todo, key=i):           # key: 위젯마다 고유값 필요
+        st.session_state.todos.remove(todo)  # 완료 → 목록에서 제거
+        st.rerun()                         # 화면을 즉시 다시 그리기
+
+st.caption(f"남은 할 일: {len(st.session_state.todos)}개")` } },
             ],
           },
         ],
