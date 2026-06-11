@@ -636,7 +636,9 @@ const Learning = (): ReactElement => {
   // activeSub: 하위 섹션을 보고 있는 중이면 그 섹션 객체, 아니면 null(=개요 보기).
   // [개념] topic.subSections! 의 '!'는 "여기선 절대 undefined 아님"을 TypeScript에 단언(non-null assertion).
   //        앞의 hasSubSections 검사로 실제 안전이 보장되기에 쓸 수 있습니다.
-  const activeSub = (hasSubSections && selectedSubIndex !== null)
+  // 점검일(reg-check-*)은 하위섹션을 '별도 페이지'가 아니라 한 페이지에 모두 스택하고, 사이드바 하위메뉴는 책갈피(앵커 스크롤)로 쓴다.
+  const topicIsCheckpoint = topic.id.startsWith('reg-check');
+  const activeSub = (hasSubSections && selectedSubIndex !== null && !topicIsCheckpoint)
     ? topic.subSections![selectedSubIndex]
     : null;
 
@@ -773,7 +775,7 @@ const Learning = (): ReactElement => {
                       {/* '개요' 항목 — 클릭 시 selectedSubIndex를 null로(=일자 개요 콘텐츠 표시) */}
                       <button
                         type="button"
-                        onClick={() => setSelectedSubIndex(null)}
+                        onClick={() => { setSelectedSubIndex(null); if (isCheckpoint) document.getElementById('lesson-top')?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                         style={{
                           textAlign: 'left',
                           padding: '6px 10px',
@@ -799,7 +801,7 @@ const Learning = (): ReactElement => {
                         <button
                           key={sub.id}
                           type="button"
-                          onClick={() => setSelectedSubIndex(si)}
+                          onClick={() => { setSelectedSubIndex(si); if (isCheckpoint) document.getElementById('sub-' + sub.id)?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }}
                           style={{
                             textAlign: 'left',
                             padding: '6px 10px',
@@ -831,7 +833,7 @@ const Learning = (): ReactElement => {
 
         {/* 우측 콘텐츠 영역 */}
         <div className="sidebar-content">
-          <div className="topic-card">
+          <div className="topic-card" id="lesson-top">
             <div className="topic-card-header">
               {/* 하위 섹션 활성 시 그 아이콘(없으면 일자 아이콘), 아니면 일자 아이콘 */}
               {/* activeSub.icon || topic.icon: 하위 아이콘이 없으면(||) 일자 아이콘으로 대체 */}
@@ -849,8 +851,24 @@ const Learning = (): ReactElement => {
               </div>
             </div>
             <div className="topic-card-body">
-              {/* activeSub가 있으면 하위 섹션 콘텐츠, 없으면 일자 개요 콘텐츠 렌더 */}
-              {activeSub ? (
+              {/* 점검일이면 모든 하위섹션을 한 페이지에 스택(앵커 id=책갈피), activeSub면 하위섹션 단독, 아니면 일자 개요 */}
+              {topicIsCheckpoint && hasSubSections ? (
+                <>
+                  <p style={{ fontSize: '16px', color: 'var(--text-secondary, #6b7280)', marginBottom: '24px', lineHeight: 1.7 }}>
+                    {topic.description}
+                  </p>
+                  {topic.content.map((section, idx) => renderSection(section, idx, phase === 'coaching'))}
+                  {topic.subSections!.map((sub) => (
+                    <div key={sub.id} id={`sub-${sub.id}`} style={{ scrollMarginTop: '84px', marginTop: '44px', paddingTop: '20px', borderTop: '2px solid var(--border-light, #e5e7eb)' }}>
+                      <h2 style={{ fontSize: '21px', fontWeight: 800, margin: '0 0 6px', color: 'var(--text-primary, #111827)' }}>{sub.icon ? `${sub.icon} ` : ''}{sub.title}</h2>
+                      {sub.summary && (
+                        <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 18px', lineHeight: 1.7 }}>{sub.summary}</p>
+                      )}
+                      {sub.content.map((section, idx) => renderSection(section, idx, phase === 'coaching'))}
+                    </div>
+                  ))}
+                </>
+              ) : activeSub ? (
                 <>
                   {/* 하위 섹션 요약(있을 때만) */}
                   {activeSub.summary && (
