@@ -64,6 +64,13 @@ html[data-color="purple"] {
     color: #fff;
     font-size: 16px;
     line-height: 1.5;
+    transition: transform 0.25s ease, background 0.25s ease, border-color 0.25s ease;
+}
+
+.hero-info-card:hover {
+    transform: translateY(-3px);
+    background: rgba(255,255,255,0.18);
+    border-color: rgba(255,255,255,0.35);
 }
 
 .hero-info-icon {
@@ -135,12 +142,14 @@ html[data-color="purple"] {
 
 /* -- Competition -- */
 .competition-highlight { max-width: 700px; margin: 0 auto; }
-.competition-card { background: var(--bg-white); border-radius: 16px; padding: 40px; box-shadow: var(--shadow-lg); text-align: center; }
-.competition-card h3 { font-size: 24px; font-weight: 700; margin-bottom: 16px; color: var(--text-primary); }
-.competition-card p { font-size: 16px; color: var(--text-secondary); margin-bottom: 20px; }
-.competition-card ul { text-align: left; max-width: 400px; margin: 0 auto 24px; list-style: none; }
-.competition-card ul li { padding: 8px 0; font-size: 16px; color: var(--text-primary); }
-.competition-card ul li::before { content: '\2705 '; }
+.competition-card { position: relative; overflow: hidden; background: var(--bg-white); border-radius: 18px; padding: 48px 44px; box-shadow: var(--shadow-lg); text-align: center; }
+.competition-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px; background: var(--accent-gradient); }
+.competition-card h3 { font-size: 26px; font-weight: 800; margin-bottom: 14px; color: var(--text-primary); letter-spacing: -0.01em; }
+.competition-card > p { font-size: 16px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 28px; max-width: 480px; margin-left: auto; margin-right: auto; }
+.competition-card ul { text-align: left; max-width: 460px; margin: 0 auto 28px; list-style: none; padding: 0; display: flex; flex-direction: column; gap: 12px; }
+.competition-card ul li { display: flex; align-items: center; gap: 12px; padding: 15px 20px; font-size: 16px; line-height: 1.5; color: var(--text-primary); background: var(--bg-light-gray); border-radius: 12px; border-left: 3px solid var(--primary-blue); transition: var(--transition-base); }
+.competition-card ul li:hover { background: #EEF3FB; transform: translateX(3px); box-shadow: var(--shadow-sm); }
+.competition-card ul li::before { content: '\2705'; flex-shrink: 0; font-size: 15px; line-height: 1; }
 .competition-overview { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .competition-overview > .competition-info-card:first-child { grid-column: 1 / -1; }
 .competition-info-card { background: var(--bg-white); border-radius: 16px; padding: 32px; box-shadow: var(--shadow-md); transition: var(--transition-base); }

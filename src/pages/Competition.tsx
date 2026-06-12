@@ -125,7 +125,7 @@ const Competition = (): ReactElement => {
               <h3>🎁 참가 혜택</h3>
               {/* ul = 순서 없는 목록(점 목록), li = 목록의 각 항목. */}
               <ul className="benefit-list">
-                <li>Claude 유료 플랜 1개월 제공(6월 한달)</li>
+                <li>Claude 유료 플랜 1개월 제공 (6월 한 달)</li>
                 <li>국내 LLM API 비용 지원 (Solar 등)</li>
                 <li>전문 기술코칭 8시간 지원</li>
                 <li>프로젝트 포트폴리오 완성</li>
@@ -158,7 +158,7 @@ const Competition = (): ReactElement => {
                 </div>
                 <div className="llm-card">
                   <h4>🧠 Claude (Anthropic)</h4>
-                  <p>안전한 AI 어시스턴트 - 유료 플랜 1개월 제공(6월 한달)</p>
+                  <p>안전한 AI 어시스턴트 — 유료 플랜 1개월 제공 (6월 한 달)</p>
                   <span className="llm-badge">해외</span>
                 </div>
               </div>

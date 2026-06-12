@@ -105,7 +105,7 @@ const Home = (): ReactElement => {
               </div>
               <div className="hero-info-card">
                 <span className="hero-info-icon">⏱️</span>
-                <div><strong>총 교육시간</strong><br/>80H (선수20H+정규52H+코칭8H)</div>
+                <div><strong>총 교육 시간</strong><br/>80H (선수 20H + 정규 52H + 코칭 8H)</div>
               </div>
               <div className="hero-info-card">
                 <span className="hero-info-icon">💻</span>
@@ -210,8 +210,8 @@ const Home = (): ReactElement => {
               <h3>AI 리부트 경진대회</h3>
               <p>국내 LLM(Solar 등)을 활용한 서비스 개발 경진대회에 출품합니다.</p>
               <ul>
-                <li>국내 LLM 활용 가산점</li>
-                <li>Claude 유료 플랜 1개월 제공(6월 한달)</li>
+                <li>국내 LLM 활용 시 가산점 부여</li>
+                <li>Claude 유료 플랜 1개월 제공 (6월 한 달)</li>
                 <li>국내 LLM API 비용 지원</li>
               </ul>
               <Link to="/competition" className="btn btn-primary">대회 상세 보기</Link>
@@ -233,7 +233,7 @@ const Home = (): ReactElement => {
             </div>
             <div className="eligibility-card">
               <h4>AI 도구 지원</h4>
-              <p>Claude 유료 플랜 1개월 제공(6월 한달) + 국내 LLM API 비용 지원</p>
+              <p>Claude 유료 플랜 1개월 제공 (6월 한 달) + 국내 LLM API 비용 지원</p>
             </div>
             <div className="eligibility-card">
               <h4>수료 후 혜택</h4>

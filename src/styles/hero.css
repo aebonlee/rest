@@ -177,12 +177,12 @@
 }
 
 .hero-title {
-    font-size: 60px;
+    font-size: 46px;
     font-weight: 700;
-    line-height: 1.15;
+    line-height: 1.2;
     color: var(--text-white);
-    margin-bottom: 24px;
-    letter-spacing: -0.03em;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
 }
 
 .title-line {
@@ -343,14 +343,14 @@
 
 /* Responsive */
 @media (max-width: 1024px) {
-  .hero-title { font-size: 44px; }
+  .hero-title { font-size: 38px; }
   .carousel-arrow { width: 40px; height: 40px; font-size: 17px; }
   .carousel-arrow--prev { left: 16px; }
   .carousel-arrow--next { right: 16px; }
 }
 @media (max-width: 768px) {
   .hero { min-height: min(75vh, 600px); padding-bottom: 72px; }
-  .hero-title { font-size: 36px; }
+  .hero-title { font-size: 32px; }
   .hero-description { font-size: 17px; }
   .carousel-arrow { display: none; }
   .carousel-dots { bottom: 20px; gap: 10px; }
@@ -358,7 +358,7 @@
   .scroll-indicator { bottom: 48px; }
 }
 @media (max-width: 480px) {
-  .hero-title { font-size: 28px; }
+  .hero-title { font-size: 26px; }
   .hero-description { font-size: 16px; }
   .hero-buttons { flex-direction: column; }
   .hero-buttons .btn { width: 100%; text-align: center; }

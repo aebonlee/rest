@@ -34,5 +34,25 @@
 - `coursePhases` 기술코칭 단계 description을 신설된 부록 교안 맥락에 맞게 갱신: "1:1/팀별 코칭 + 실전 부록 교안(Supabase 실전·키 보안·비용 사고 대응 등)". 영문 description도 동일 취지로 수정.
 - Home 화면 구조·디자인은 그대로 두고 데이터 문구만 변경(데이터-화면 분리 원칙 유지).
 
+## 후속 2 — 메인페이지 디자인 고도화 · 띄어쓰기 재검토
+
+### 히어로 타이틀 크기 축소 (`styles/hero.css`)
+- `.hero-title` 60px → **46px**(line-height 1.15→1.2, letter-spacing -0.03em→-0.02em, margin 24→20). 너무 크다는 피드백 반영.
+- 반응형 동반 축소: 1024px 44→38 / 768px 36→32 / 480px 28→26.
+
+### 경진대회 카드 재디자인 (`styles/site.css`, `Home.tsx`)
+- 리스트 항목이 "딱 붙어 보기 안 좋다" → `.competition-card ul`을 **flex column + gap 12px**, 각 `li`를 **연한 회색 배경·좌측 파란 보더·라운드·체크와 텍스트 사이 gap 12px**의 카드형 행으로 변경 + hover(살짝 우측 이동·그림자).
+- 카드 자체 폴리시: 상단 **accent-gradient 5px 바**(`::before`), 패딩·라운드 확대, h3 800 weight·자간 정리, 본문 p 줄간격/최대폭 정돈.
+- 문구 정리: "국내 LLM 활용 가산점" → "국내 LLM 활용 시 가산점 부여".
+
+### 히어로 정보 카드 hover 추가 (`styles/site.css`)
+- `.hero-info-card`에 transition + hover(위로 3px·배경 약간 진하게)로 인터랙션 보강. 기존 글래스모피즘 톤 유지.
+
+### 띄어쓰기 재검토 (`Home.tsx`, `Competition.tsx`)
+- "6월 한달" → **"6월 한 달"**(Home 2곳·Competition 2곳 전부).
+- "1개월 제공(...)" → "1개월 제공 (...)" 괄호 앞 공백 통일.
+- "총 교육시간" → "총 교육 시간", "선수20H+정규52H+코칭8H" → "선수 20H + 정규 52H + 코칭 8H"(교육 기간/방식 등 다른 카드와 띄어쓰기 일관).
+- Competition 하이픈 `-` → 전각 `—`(문장 부호 정돈).
+
 ## 영향 범위
-- `src/data/learningData.ts`(콘텐츠 신설), `src/config/site.ts`(푸터 링크), `src/config/curriculum.ts`(메인 카드 문구). 모두 데이터 레이어 변경으로 UI 로직 코드 수정 없음.
+- `src/data/learningData.ts`(콘텐츠 신설), `src/config/site.ts`(푸터 링크), `src/config/curriculum.ts`(메인 카드 문구), `src/pages/Home.tsx`·`src/pages/Competition.tsx`(문구·띄어쓰기), `src/styles/hero.css`·`src/styles/site.css`(히어로 크기·경진대회 카드·정보 카드 호버). 콘텐츠·문구·스타일 레이어 변경으로 컴포넌트 로직 변경 없음.
