@@ -80,8 +80,22 @@ html[data-color="purple"] {
 .fa-inline { margin-right: 0.12em; color: inherit; }
 
 .hero-info-icon {
-    font-size: 28px;
     flex-shrink: 0;
+    /* FA 아이콘을 원형 배지 안에 담아 정돈된 룩으로(이모지 대체 후 일관성) */
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    background: rgba(255, 255, 255, 0.16);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.hero-info-card:hover .hero-info-icon {
+    background: rgba(255, 255, 255, 0.26);
 }
 
 .hero-info-card strong {
@@ -550,7 +564,7 @@ html[data-color="purple"] {
 @media (max-width: 768px) {
     .hero-info-cards { grid-template-columns: repeat(2, 1fr); gap: 10px; }
     .hero-info-card { padding: 12px 14px; font-size: 15px; }
-    .hero-info-icon { font-size: 22px; }
+    .hero-info-icon { width: 36px; height: 36px; font-size: 16px; }
     .course-cards { grid-template-columns: 1fr; }
     .dashboard-stats { grid-template-columns: 1fr; }
     .quick-links { grid-template-columns: repeat(2, 1fr); }

@@ -40,6 +40,10 @@
     (장식 이모지만 변환, **화살표·체크박스 원본 보존** 확인).
   - `🔧 → [FA:wrench]`, `👩‍🏫 → [FA:chalkboard-user]`, 미매핑 `🍜 → 🍜`(원본 유지).
 
+## 후속 — 메인 히어로 아이콘 정돈
+- 히어로 정보 카드 아이콘(📅⏱💻🏆 → FA)이 흰 글리프로 밋밋해, **42px 원형 배지**(반투명 배경·테두리) 안에
+  18px 아이콘으로 담아 정돈. 카드 hover 시 배지 배경도 함께 진해지도록 연동. 모바일은 36px/16px.
+
 ## 영향 범위
 - 신규: `src/utils/emojiIcon.tsx`. 수정: `main.tsx`, `pages/{Learning,Home,Competition,MyPage,Instructor}.tsx`,
   `components/{AdminSidebar,ProjectSidebar}.tsx`, `styles/{site,navbar}.css`, `package.json`(FA 의존성).
