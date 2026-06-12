@@ -181,9 +181,13 @@ const site: SiteConfig = {
   // 푸터에 노출할 빠른 링크 목록(상단 메뉴 중 일부를 재노출).
   // 푸터(footer): 페이지 맨 아래 영역. 여기서는 자주 쓰는 메뉴 몇 개를 다시 보여줍니다.
   footerLinks: [
+    // 학습 3개 과정(핵심 콘텐츠) — 상단 메뉴와 동일 경로로 푸터에서도 바로 진입
+    { path: '/learning/prerequisite', labelKey: 'site.nav.prerequisite' },
+    { path: '/learning/regular', labelKey: 'site.nav.regular' },
+    { path: '/learning/coaching', labelKey: 'site.nav.coaching' },
+    // 안내·정보 페이지
     { path: '/curriculum', labelKey: 'site.nav.curriculum' },
     { path: '/schedule', labelKey: 'site.nav.schedule' },
-    { path: '/instructor', labelKey: 'site.nav.instructor' },
     { path: '/resources', labelKey: 'site.nav.resources' },
   ],
   // 패밀리 사이트(외부 형제 서비스) 목록 — 푸터의 사이트 모음/링크에 사용.

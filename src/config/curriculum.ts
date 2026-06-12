@@ -142,8 +142,8 @@ export const coursePhases: CoursePhase[] = [
     name: '기술코칭',
     nameEn: 'Tech Coaching',
     hours: 8,
-    description: '프로젝트 진행 중 1:1/팀별 기술 코칭 세션',
-    descriptionEn: 'One-on-one and team-based technical coaching during project phase',
+    description: '1:1/팀별 코칭 + 실전 부록 교안(Supabase 실전·키 보안·비용 사고 대응 등)',
+    descriptionEn: 'Team coaching + practical appendices (Supabase patterns, key security, cost-incident response)',
     color: '#F59E0B', // 주황 계열 — 기술코칭 테마 컬러
     icon: '🔧',
     days: [

@@ -24,5 +24,15 @@
 - `npm run build` 성공(Learning 청크 정상 빌드).
 - `subSections` 렌더링은 기존 정규과정 일자별 상세와 동일 경로(Learning.tsx `hasSubSections`) 재사용 — 코칭 탭에서 3차 드롭다운으로 노출.
 
+## 후속 — 푸터·메인페이지 갱신 (사이트 전체 맥락 유지)
+
+### 푸터 바로가기 갱신 (`config/site.ts`)
+- 기존 바로가기는 정보성 페이지(커리큘럼·일정·강사·자료)만 노출 → 학습 핵심 동선과 불일치.
+- `footerLinks`에 학습 3개 과정(**선수과정·정규과정·기술코칭**)을 상단에 추가하고, 강사소개는 제외하여 6개로 정리. 모두 기존 라벨 키(`site.nav.prerequisite/regular/coaching`) 재사용 — Footer 컴포넌트 코드 변경 없음.
+
+### 메인페이지 과정 카드 문구 갱신 (`config/curriculum.ts`)
+- `coursePhases` 기술코칭 단계 description을 신설된 부록 교안 맥락에 맞게 갱신: "1:1/팀별 코칭 + 실전 부록 교안(Supabase 실전·키 보안·비용 사고 대응 등)". 영문 description도 동일 취지로 수정.
+- Home 화면 구조·디자인은 그대로 두고 데이터 문구만 변경(데이터-화면 분리 원칙 유지).
+
 ## 영향 범위
-- `src/data/learningData.ts` 단일 파일. 데이터 추가만으로 UI 로직 변경 없음.
+- `src/data/learningData.ts`(콘텐츠 신설), `src/config/site.ts`(푸터 링크), `src/config/curriculum.ts`(메인 카드 문구). 모두 데이터 레이어 변경으로 UI 로직 코드 수정 없음.
