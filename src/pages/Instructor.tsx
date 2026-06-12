@@ -13,6 +13,7 @@
 import type { ReactElement } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import SEOHead from '../components/SEOHead';
+import { EmojiIcon } from '../utils/emojiIcon';
 
 // 강사 한 명의 정보 형태.
 interface InstructorInfo {
@@ -65,7 +66,7 @@ const Instructor = (): ReactElement => {
           <div className="instructor-grid">
             {instructors.map((inst) => (
               <div key={inst.name} className="instructor-card">
-                <div className="instructor-icon">{inst.icon}</div>
+                <div className="instructor-icon"><EmojiIcon char={inst.icon} /></div>
                 <div className="instructor-info">
                   <h3 className="instructor-name">{inst.name}</h3>
                   <p className="instructor-role">{inst.role}</p>

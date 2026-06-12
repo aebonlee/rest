@@ -49,6 +49,8 @@ import { useParams, Navigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 // SEOHead: 검색엔진/공유용 메타 태그(<title> 등)를 넣어주는 우리 컴포넌트.
 import SEOHead from '../components/SEOHead';
+// 이모지 → Font Awesome 자동 치환 헬퍼(미매핑 문자는 원문 유지: 화살표·체크박스 등 안전)
+import { withIcons, EmojiIcon } from '../utils/emojiIcon';
 // 학습 데이터(과정별 토픽 목록)와 그 형태를 설명하는 타입들을 가져옴.
 import {
   prerequisiteTopics,
@@ -508,19 +510,19 @@ const renderSection = (section: ContentSection, idx: number, wrapCode = false): 
         color: 'var(--text-primary, #1a1a1a)',
         borderLeft: '3px solid var(--primary-blue, #0046C8)',
         paddingLeft: '10px',
-      }}>{section.subtitle}</h4>
+      }}>{withIcons(section.subtitle)}</h4>
     )}
     {/* 본문 단락 */}
     {section.text && (
       <p style={{ margin: '0 0 12px', lineHeight: 1.75, color: 'var(--text-primary, #1a1a1a)' }}>
-        {section.text}
+        {withIcons(section.text)}
       </p>
     )}
     {/* 불릿 리스트 */}
     {section.items && (
       <ul style={{ margin: '0 0 12px', paddingLeft: '20px', lineHeight: 1.85, color: 'var(--text-primary, #1a1a1a)' }}>
         {/* items 배열의 각 문자열을 <li>로. j는 인덱스(여기선 항목이 단순 문자열이라 key로 인덱스 사용). */}
-        {section.items.map((item, j) => <li key={j}>{item}</li>)}
+        {section.items.map((item, j) => <li key={j}>{withIcons(item)}</li>)}
       </ul>
     )}
     {/* 코드 블록(복사 가능) — 위에서 만든 CodeBlock 부품 재사용 */}
@@ -549,7 +551,7 @@ const renderSection = (section: ContentSection, idx: number, wrapCode = false): 
                   fontWeight: 700,
                   color: 'var(--text-primary, #1a1a1a)',
                   borderBottom: '2px solid var(--primary-blue, #0046C8)',
-                }}>{h}</th>
+                }}>{withIcons(h)}</th>
               ))}
             </tr>
           </thead>
@@ -568,7 +570,7 @@ const renderSection = (section: ContentSection, idx: number, wrapCode = false): 
                     // keep-all: 한글 단어는 쪼개지 않고 공백/화살표(→) 위치에서만 줄바꿈.
                     whiteSpace: 'normal',
                     wordBreak: 'keep-all',
-                  }}>{cell}</td>
+                  }}>{withIcons(cell)}</td>
                 ))}
               </tr>
             ))}
@@ -600,9 +602,9 @@ const renderSection = (section: ContentSection, idx: number, wrapCode = false): 
         color: '#1a1a1a',
       }}>
         <strong style={{ marginRight: '8px' }}>
-          {calloutColors[section.callout.type].emoji} {calloutColors[section.callout.type].label}
+          <EmojiIcon char={calloutColors[section.callout.type].emoji} /> {calloutColors[section.callout.type].label}
         </strong>
-        {section.callout.text}
+        {withIcons(section.callout.text)}
       </div>
     )}
     {/* 색채 학습 자료 블록(플래그가 true일 때만) — 위에서 만든 ColorPalette 부품 사용 */}
@@ -795,7 +797,7 @@ const Learning = (): ReactElement => {
                     }}
                   >
                     <span style={{ textAlign: 'left', flex: 1 }}>
-                      {tp.title}
+                      {withIcons(tp.title)}
                       {/* 정규과정 날짜 라벨(있을 때만) */}
                       {dateLabel && (
                         <span style={{ marginLeft: '6px', fontSize: '12.5px', opacity: 0.7, fontWeight: 500 }}>
@@ -882,8 +884,8 @@ const Learning = (): ReactElement => {
                             cursor: 'pointer',
                           }}
                         >
-                          {/* 아이콘이 있으면 접두로 붙임. sub.icon이 없으면 빈 문자열('')을 붙여 제목만 표시. */}
-                          {sub.icon ? `${sub.icon} ` : ''}{sub.title}
+                          {/* 아이콘이 있으면 접두로 붙임(FA 치환). 없으면 제목만 표시. */}
+                          {sub.icon && <><EmojiIcon char={sub.icon} />{' '}</>}{withIcons(sub.title)}
                         </button>
                       ))}
                     </div>
@@ -900,17 +902,17 @@ const Learning = (): ReactElement => {
             <div className="topic-card-header">
               {/* 하위 섹션 활성 시 그 아이콘(없으면 일자 아이콘), 아니면 일자 아이콘 */}
               {/* activeSub.icon || topic.icon: 하위 아이콘이 없으면(||) 일자 아이콘으로 대체 */}
-              <div className="topic-card-icon">{activeSub ? (activeSub.icon || topic.icon) : topic.icon}</div>
+              <div className="topic-card-icon"><EmojiIcon char={activeSub ? (activeSub.icon || topic.icon) : topic.icon} /></div>
               <div className="topic-card-title">
                 {/* 하위 섹션 보기일 땐 상위 일자 제목 + 하위 섹션 제목, 아니면 일자 제목만 */}
                 {activeSub ? (
                   <>
                     <span style={{ fontSize: '15px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)', display: 'block', marginBottom: '4px' }}>
-                      {topic.title}{/* 위에 작게: 어떤 일자에 속한 섹션인지 알려줌 */}
+                      {withIcons(topic.title)}{/* 위에 작게: 어떤 일자에 속한 섹션인지 알려줌 */}
                     </span>
-                    {activeSub.title}{/* 크게: 현재 하위 섹션 제목 */}
+                    {withIcons(activeSub.title)}{/* 크게: 현재 하위 섹션 제목 */}
                   </>
-                ) : topic.title}
+                ) : withIcons(topic.title)}
               </div>
             </div>
             <div className="topic-card-body">
@@ -923,7 +925,7 @@ const Learning = (): ReactElement => {
                   {topic.content.map((section, idx) => renderSection(section, idx, phase === 'coaching'))}
                   {topic.subSections!.map((sub) => (
                     <div key={sub.id} id={`sub-${sub.id}`} style={{ scrollMarginTop: '84px', marginTop: '44px', paddingTop: '20px', borderTop: '2px solid var(--border-light, #e5e7eb)' }}>
-                      <h2 style={{ fontSize: '21px', fontWeight: 800, margin: '0 0 6px', color: 'var(--text-primary, #111827)' }}>{sub.icon ? `${sub.icon} ` : ''}{sub.title}</h2>
+                      <h2 style={{ fontSize: '21px', fontWeight: 800, margin: '0 0 6px', color: 'var(--text-primary, #111827)' }}>{sub.icon && <><EmojiIcon char={sub.icon} />{' '}</>}{withIcons(sub.title)}</h2>
                       {sub.summary && (
                         <p style={{ fontSize: '15px', color: 'var(--text-secondary, #6b7280)', margin: '0 0 18px', lineHeight: 1.7 }}>{sub.summary}</p>
                       )}

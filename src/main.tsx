@@ -43,6 +43,11 @@ import { createRoot } from 'react-dom/client'
 // 전역 CSS 파일. 값을 가져오는 게 아니라 "이 스타일을 앱에 포함시켜라"라는 명령입니다.
 //   - from 없이 경로만 import 하면, 그 파일의 효과(여기선 스타일 적용)만 발생합니다.
 import './index.css'
+// Font Awesome 코어 CSS를 직접 포함하고 자동 주입을 끈다.
+//   - 이렇게 해야 아이콘이 "거대하게 깜빡였다 작아지는" FOUC 현상을 방지한다(권장 패턴).
+import { config } from '@fortawesome/fontawesome-svg-core'
+import '@fortawesome/fontawesome-svg-core/styles.css'
+config.autoAddCss = false
 // App: 우리 애플리케이션의 "최상위 컴포넌트". 모든 화면/페이지가 이 안에 들어 있습니다.
 //   - 중괄호 { } 없이 가져오는 건 "default export"(파일이 대표로 내보낸 하나)이기 때문.
 import App from './App'

@@ -43,6 +43,7 @@ import { type ReactElement } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 // SEOHead: 페이지의 제목/주소 같은 메타데이터를 설정해 주는 컴포넌트.
 import SEOHead from '../components/SEOHead';
+import { withIcons } from '../utils/emojiIcon';
 
 /**
  * Competition
@@ -97,7 +98,7 @@ const Competition = (): ReactElement => {
           <div className="competition-overview">
             {/* 카드 1: 대회 기본 정보(대회명/주최/주제/우대사항)를 표 형태(그리드)로 보여 줌. */}
             <div className="competition-info-card">
-              <h3>📋 대회 개요</h3>
+              <h3>{withIcons('📋 대회 개요')}</h3>
               <div className="info-grid">
                 {/* info-item 하나가 "항목 이름(strong) + 값(span)" 한 쌍을 나타냅니다. */}
                 <div className="info-item">
@@ -122,7 +123,7 @@ const Competition = (): ReactElement => {
 
             {/* 카드 2: 참가자가 받는 혜택을 목록(ul > li)으로 나열합니다. */}
             <div className="competition-info-card">
-              <h3>🎁 참가 혜택</h3>
+              <h3>{withIcons('🎁 참가 혜택')}</h3>
               {/* ul = 순서 없는 목록(점 목록), li = 목록의 각 항목. */}
               <ul className="benefit-list">
                 <li>Claude 유료 플랜 1개월 제공 (6월 한 달)</li>
@@ -137,27 +138,27 @@ const Competition = (): ReactElement => {
             {/*   - 국내 LLM(Solar)은 가산점 대상이라 '추천' 배지를 답니다. */}
             {/*   - 나머지(ChatGPT/Gemini/Claude)는 '해외' 배지를 답니다. */}
             <div className="competition-info-card">
-              <h3>🤖 활용 가능 LLM</h3>
+              <h3>{withIcons('🤖 활용 가능 LLM')}</h3>
               <div className="llm-cards">
                 {/* Solar: 국내 대표 LLM. recommended 클래스가 추가되어 '추천' 배지가 강조 스타일로 표시됩니다. */}
                 <div className="llm-card">
-                  <h4>☀️ Solar (Upstage)</h4>
+                  <h4>{withIcons('☀️ Solar (Upstage)')}</h4>
                   <p>국내 대표 LLM - 가산점 적용</p>
                   {/* className에 'recommended'를 함께 적어, 기본 배지와 다른 강조 스타일을 줍니다. */}
                   <span className="llm-badge recommended">추천</span>
                 </div>
                 <div className="llm-card">
-                  <h4>💬 ChatGPT (OpenAI)</h4>
+                  <h4>{withIcons('💬 ChatGPT (OpenAI)')}</h4>
                   <p>범용 LLM</p>
                   <span className="llm-badge">해외</span>
                 </div>
                 <div className="llm-card">
-                  <h4>✨ Gemini (Google)</h4>
+                  <h4>{withIcons('✨ Gemini (Google)')}</h4>
                   <p>멀티모달 LLM</p>
                   <span className="llm-badge">해외</span>
                 </div>
                 <div className="llm-card">
-                  <h4>🧠 Claude (Anthropic)</h4>
+                  <h4>{withIcons('🧠 Claude (Anthropic)')}</h4>
                   <p>안전한 AI 어시스턴트 — 유료 플랜 1개월 제공 (6월 한 달)</p>
                   <span className="llm-badge">해외</span>
                 </div>

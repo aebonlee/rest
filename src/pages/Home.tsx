@@ -31,6 +31,8 @@ import { Link } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 // SEOHead: 페이지의 <title>이나 메타 설명 등 검색엔진/공유용 정보를 넣어주는 컴포넌트.
 import SEOHead from '../components/SEOHead';
+// 이모지 → Font Awesome 치환 헬퍼
+import { EmojiIcon } from '../utils/emojiIcon';
 // site: 사이트 이름/설명 등 전역 설정값이 담긴 객체.
 import site from '../config/site';
 // coursePhases(과정 단계 배열), projectExamples(프로젝트 예시 배열) — 화면에 반복 렌더할 데이터.
@@ -99,20 +101,20 @@ const Home = (): ReactElement => {
             {/* 핵심 정보 카드: 기간/시간/방식/목표 (아래 4개는 고정 문구라 t 대신 직접 적음) */}
             <div className="hero-info-cards">
               <div className="hero-info-card">
-                <span className="hero-info-icon">📅</span>
+                <span className="hero-info-icon"><EmojiIcon char="📅" /></span>
                 {/* <br/> 는 줄바꿈. JSX에서는 닫는 슬래시(/)를 꼭 붙여야 한다(<br/>). */}
                 <div><strong>교육 기간</strong><br/>2026.6.1 ~ 6.22</div>
               </div>
               <div className="hero-info-card">
-                <span className="hero-info-icon">⏱️</span>
+                <span className="hero-info-icon"><EmojiIcon char="⏱️" /></span>
                 <div><strong>총 교육 시간</strong><br/>80H (선수 20H + 정규 52H + 코칭 8H)</div>
               </div>
               <div className="hero-info-card">
-                <span className="hero-info-icon">💻</span>
+                <span className="hero-info-icon"><EmojiIcon char="💻" /></span>
                 <div><strong>교육 방식</strong><br/>오프라인 집중 교육</div>
               </div>
               <div className="hero-info-card">
-                <span className="hero-info-icon">🏆</span>
+                <span className="hero-info-icon"><EmojiIcon char="🏆" /></span>
                 <div><strong>목표</strong><br/>AI 리부트 경진대회 출품</div>
               </div>
             </div>
@@ -138,7 +140,7 @@ const Home = (): ReactElement => {
               // key={phase.id} : 각 단계의 고유 id를 key로 사용(index보다 안전한 권장 방식).
               // style의 borderTopColor: 카드마다 단계 색을 윗 테두리에 입힌다.
               <div key={phase.id} className="course-card" style={{ borderTopColor: phase.color }}>
-                <div className="course-card-icon">{phase.icon}</div>
+                <div className="course-card-icon"><EmojiIcon char={phase.icon} /></div>
                 <h3 className="course-card-title">{phase.name}</h3>
                 {/* phase.hours 숫자 뒤에 "시간"이 붙어 출력된다. */}
                 <p className="course-card-hours">{phase.hours}시간</p>

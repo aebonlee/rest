@@ -121,10 +121,13 @@
 
 .dropdown-menu li a {
     display: block;
-    padding: 12px 20px;
+    padding: 10px 20px;
     color: var(--text-primary);
     text-decoration: none;
-    font-size: 16px;
+    /* 상단 메뉴(.nav-link 15px/600)에 종속되는 통일 체계 — 한 단계 작고 가벼운 두께 */
+    font-size: 14.5px;
+    font-weight: 500;
+    line-height: 1.5;
     transition: all 0.2s ease;
     border-radius: 4px;
     margin: 0 4px;
@@ -592,7 +595,8 @@
 
   .dropdown-menu li a {
     padding: 12px 40px;
-    font-size: 16px;
+    font-size: 14.5px;
+    font-weight: 500;
     margin: 0;
     border-radius: 0;
   }

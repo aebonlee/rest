@@ -73,6 +73,12 @@ html[data-color="purple"] {
     border-color: rgba(255,255,255,0.35);
 }
 
+/* ── Font Awesome 아이콘 — 이모지 대체(emojiIcon.tsx) ── */
+/* 컨테이너의 font-size로 크기를, currentColor로 색을 상속받아 주변 텍스트와 일관되게 표시 */
+.svg-inline--fa { vertical-align: -0.125em; }
+/* 본문 텍스트 중간에 끼는 인라인 아이콘은 글자와 살짝 간격 */
+.fa-inline { margin-right: 0.12em; color: inherit; }
+
 .hero-info-icon {
     font-size: 28px;
     flex-shrink: 0;

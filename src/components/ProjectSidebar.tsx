@@ -7,6 +7,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { PROJECT_STEPS } from '../data/projectSteps';
+import { EmojiIcon } from '../utils/emojiIcon';
 
 const ProjectSidebar = (): ReactElement => {
   const { pathname } = useLocation();
@@ -42,15 +43,15 @@ const ProjectSidebar = (): ReactElement => {
       </nav>
       <div className="admin-sidebar-footer">
         <Link to="/project-guide" className="admin-sidebar-item">
-          <span className="admin-sidebar-icon">💡</span>
+          <span className="admin-sidebar-icon"><EmojiIcon char="💡" /></span>
           <span className="admin-sidebar-label">아이디어 예시</span>
         </Link>
         <Link to="/projects/apps" className="admin-sidebar-item">
-          <span className="admin-sidebar-icon">🖼️</span>
+          <span className="admin-sidebar-icon"><EmojiIcon char="🖼️" /></span>
           <span className="admin-sidebar-label">구현 예시</span>
         </Link>
         <Link to="/" className="admin-sidebar-item">
-          <span className="admin-sidebar-icon">🏠</span>
+          <span className="admin-sidebar-icon"><EmojiIcon char="🏠" /></span>
           <span className="admin-sidebar-label">사이트로 돌아가기</span>
         </Link>
       </div>

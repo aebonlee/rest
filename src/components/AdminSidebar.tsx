@@ -53,6 +53,7 @@ import { Link, useLocation } from 'react-router-dom';
 //   (TypeScript: 자바스크립트에 "이 값은 어떤 종류다"라는 타입 정보를 더해
 //    실수를 미리 잡아 주는 언어. .tsx 확장자가 그 증거다.)
 import type { ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 
 // [메뉴 데이터를 코드와 분리해 둔 이유]
 // 화면에 보여줄 메뉴를 "배열(목록 데이터)"로 따로 정의한다.
@@ -140,7 +141,7 @@ const AdminSidebar = (): ReactElement => {
             className={`admin-sidebar-item ${location.pathname === item.path ? 'active' : ''}`}
           >
             {/* 메뉴 아이콘(이모지). { } 안은 자바스크립트 값을 화면에 출력하는 구역이다. */}
-            <span className="admin-sidebar-icon">{item.icon}</span>
+            <span className="admin-sidebar-icon"><EmojiIcon char={item.icon} /></span>
             {/* 메뉴 텍스트 라벨 */}
             <span className="admin-sidebar-label">{item.label}</span>
           </Link>
@@ -150,7 +151,7 @@ const AdminSidebar = (): ReactElement => {
           이 링크는 메뉴 배열에 없는 "고정 링크"이므로 map이 아니라 직접 작성한다. */}
       <div className="admin-sidebar-footer">
         <Link to="/" className="admin-sidebar-item">
-          <span className="admin-sidebar-icon">🏠</span>
+          <span className="admin-sidebar-icon"><EmojiIcon char="🏠" /></span>
           <span className="admin-sidebar-label">사이트로 돌아가기</span>
         </Link>
       </div>

@@ -56,6 +56,7 @@ import site from '../config/site';
 import { REGULAR_DATES } from '../config/regularSchedule';
 // <head> 안의 제목·메타태그(SEO)를 설정하는 컴포넌트.
 import SEOHead from '../components/SEOHead';
+import { EmojiIcon } from '../utils/emojiIcon';
 
 // 사이트별 DB 접두사(site.dbPrefix)를 붙인 실제 Supabase 테이블명 매핑.
 // 예: dbPrefix가 'rest_'이면 실제 테이블명은 'rest_attendance'가 됩니다.
@@ -416,7 +417,7 @@ const MyPage = (): ReactElement => {
               return (
                 <div style={{ marginTop: '18px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '10px' }}>
-                    <div style={{ fontSize: '14px', fontWeight: 700 }}>📅 6월 출석 달력</div>
+                    <div style={{ fontSize: '14px', fontWeight: 700 }}><EmojiIcon char="📅" /> 6월 출석 달력</div>
                     <div style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>출석 <strong style={{ color: '#10b981' }}>{presentDays}</strong>일</div>
                   </div>
                   {/* 요일 헤더(일~토). i===0(일) 빨강, i===6(토) 파랑 */}
@@ -444,7 +445,7 @@ const MyPage = (): ReactElement => {
           {/* 수강 다짐 */}
           <div style={card}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <h3 style={{ margin: 0, fontSize: '18px' }}>✊ 수강 다짐</h3>
+              <h3 style={{ margin: 0, fontSize: '18px' }}><EmojiIcon char="✊" /> 수강 다짐</h3>
               {/* 편집 중이 아닐 때만 작성/수정 버튼 노출. 클릭하면 현재 다짐을 임시값으로 복사한 뒤 편집 모드 진입. */}
               {/* (임시값에 먼저 복사해야, 편집을 시작했을 때 기존 내용이 textarea에 채워집니다.) */}
               {!pledgeEditing && (
@@ -487,19 +488,19 @@ const MyPage = (): ReactElement => {
                   display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 15px', borderRadius: '10px',
                   textDecoration: 'none', border: '1px solid var(--border-light)', background: 'var(--bg-white)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '15px',
                 }}>
-                  <span style={{ fontSize: '20px' }}>{l.icon}</span>{l.label}
+                  <span style={{ fontSize: '20px' }}><EmojiIcon char={l.icon} /></span>{l.label}
                 </Link>
               ))}
               {/* 외부 사이트(Padlet)는 일반 a 태그로 연결.
                   target="_blank"는 새 탭에서 열고, rel="noopener noreferrer"는
                   새 탭이 원래 페이지를 조작하지 못하게 막는 보안 설정입니다(외부 링크엔 꼭 권장). */}
               <a href={PADLET_URL} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 15px', borderRadius: '10px', textDecoration: 'none', border: '1px solid var(--border-light)', background: 'var(--bg-white)', color: 'var(--text-primary)', fontWeight: 600, fontSize: '15px' }}>
-                <span style={{ fontSize: '20px' }}>📌</span>공유 게시판
+                <span style={{ fontSize: '20px' }}><EmojiIcon char="📌" /></span>공유 게시판
               </a>
               {/* 관리자(isAdmin)일 때만 관리자 페이지 진입 버튼을 추가로 노출. */}
               {isAdmin && (
                 <Link to="/admin" style={{ display: 'flex', alignItems: 'center', gap: '9px', padding: '13px 15px', borderRadius: '10px', textDecoration: 'none', border: '1px solid var(--primary-blue)', background: 'var(--primary-blue)', color: '#fff', fontWeight: 600, fontSize: '15px' }}>
-                  <span style={{ fontSize: '20px' }}>🛠️</span>관리자
+                  <span style={{ fontSize: '20px' }}><EmojiIcon char="🛠️" /></span>관리자
                 </Link>
               )}
             </div>
