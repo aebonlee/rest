@@ -42,6 +42,7 @@
 //  - useMemo: 비싼 계산 결과를 캐시(기억)해 불필요한 재계산을 막는다.
 //  - type ReactElement: "React가 그릴 수 있는 화면 요소" 타입(반환 타입 표기용).
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 // 화면 구성 요소(컴포넌트)들을 다른 파일에서 가져온다. import 는 "다른 파일의
 // 기능을 이 파일에서 쓰겠다"는 선언이다.
 import AdminSidebar from '../../components/AdminSidebar'; // 관리자 화면 왼쪽 사이드바
@@ -313,11 +314,11 @@ const AdminAttendance = (): ReactElement => {
             <button type="button" onClick={downloadAttWord} disabled={loading || people.length === 0} style={{
               padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               border: 'none', borderRadius: '7px', background: '#2b579a', color: '#fff',
-            }}>⬇ Word</button>
+            }}><EmojiIcon char="⬇" /> Word</button>
             <button type="button" onClick={downloadAttPdf} disabled={loading || people.length === 0} style={{
               padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
               border: 'none', borderRadius: '7px', background: '#b91c1c', color: '#fff',
-            }}>⬇ PDF</button>
+            }}><EmojiIcon char="⬇" /> PDF</button>
           </div>
           {/* 로딩/빈 상태/데이터 표 3분기 렌더링 */}
           {/* 삼항 연산자(조건 ? A : B)를 중첩해 세 가지 화면 중 하나를 고른다. */}

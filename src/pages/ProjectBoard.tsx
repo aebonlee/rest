@@ -39,6 +39,7 @@
 // - type ReactElement: 컴포넌트가 반환하는 "화면 요소"의 타입(타입만 가져옴, 실제 값 아님).
 // - type CSSProperties: style={{...}} 에 넣는 인라인 스타일 객체의 타입.
 import { useState, useEffect, useCallback, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // Link: 페이지 새로고침 없이 다른 경로로 이동하게 해주는 라우터 링크(<a> 태그의 SPA 버전).
 import { Link } from 'react-router-dom';
 // useAuth: 로그인 사용자/프로필/관리자 여부를 "어디서든" 꺼내 쓰게 해주는 인증 컨텍스트 훅.
@@ -334,7 +335,7 @@ const ProjectBoard = (): ReactElement => {
               {/* 관리자: 팀 선택 드롭다운 (모든 팀 열람). {isAdmin && (...)}: isAdmin이 true일 때만 뒤 요소를 그린다. */}
               {isAdmin && (
                 <div style={{ ...card, display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)' }}>👑 관리자 — 팀 선택</span>
+                  <span style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)' }}><EmojiIcon char="👑" /> 관리자 — 팀 선택</span>
                   {/* select의 value를 현재 팀 id로 묶고(=제어 컴포넌트), 바뀌면 selectTeam으로 해당 팀 게시판 전환. */}
                   <select value={team.id} onChange={(e) => selectTeam(e.target.value)} style={{ ...input, flex: 1, minWidth: '220px', maxWidth: '440px', textOverflow: 'ellipsis' }}>
                     {/* 라벨: '번호팀 · 주제'(긴 주제는 26자에서 말줄임). 번호는 주제 기준 고정값(새 주제는 22+ 자동). */}
@@ -359,7 +360,7 @@ const ProjectBoard = (): ReactElement => {
                   {/* members(team): 위에서 만든 안전 도우미로 멤버 배열을 받아 각 멤버를 배지로 그린다. i는 순번(인덱스). */}
                   {members(team).map((m, i) => (
                     // 역할이 '팀장'이면 노란 배지 + 왕관 이모지로 강조. (배경/글자색을 삼항연산자로 분기)
-                    <span key={i} style={{ fontSize: '13px', padding: '3px 10px', borderRadius: '999px', background: m.role === '팀장' ? '#fef3c7' : 'var(--bg-light-gray)', color: m.role === '팀장' ? '#92400e' : 'var(--text-secondary)' }}>{m.role === '팀장' ? '👑 ' : ''}{m.name}</span>
+                    <span key={i} style={{ fontSize: '13px', padding: '3px 10px', borderRadius: '999px', background: m.role === '팀장' ? '#fef3c7' : 'var(--bg-light-gray)', color: m.role === '팀장' ? '#92400e' : 'var(--text-secondary)' }}>{m.role === '팀장' ? <><EmojiIcon char="👑" />{' '}</> : ''}{m.name}</span>
                   ))}
                 </div>
               </div>
@@ -369,7 +370,7 @@ const ProjectBoard = (): ReactElement => {
                 {/* 클릭하면 showGuide를 반대로 뒤집어(toggle) 안내를 펼치거나 접는다.
                     (v) => !v: "현재 값의 반대"로 갱신. 최신 상태 기준으로 안전하게 토글하는 패턴. */}
                 <button type="button" onClick={() => setShowGuide((v) => !v)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '15px', fontWeight: 700, padding: 0 }}>
-                  <span>📚 프로젝트 자료, 이렇게 정리하세요</span>
+                  <span><EmojiIcon char="📚" /> 프로젝트 자료, 이렇게 정리하세요</span>
                   <span style={{ color: 'var(--text-secondary)' }}>{showGuide ? '▲' : '▼'}</span>
                 </button>
                 {/* 펼쳐졌을 때만(showGuide가 true일 때만) 안내 본문 렌더링 */}
@@ -377,12 +378,12 @@ const ProjectBoard = (): ReactElement => {
                   <div style={{ marginTop: '12px', fontSize: '14px', lineHeight: 1.8, color: 'var(--text-secondary)' }}>
                     <p style={{ margin: '0 0 8px' }}>글마다 <strong>카테고리</strong>를 꼭 골라 주세요. 나중에 칩(태그)으로 한눈에 모아볼 수 있어요.</p>
                     <ul style={{ margin: '0 0 8px', paddingLeft: '20px' }}>
-                      <li><strong>📝 회의록</strong> — 회의 날짜·참석자·결정사항·다음 할 일. 제목은 <code>[6/10] 1차 회의</code> 처럼 날짜로 시작하면 정렬돼요.</li>
-                      <li><strong>💡 아이디어</strong> — 기획·기능 제안. 한 글에 하나의 아이디어로.</li>
-                      <li><strong>📎 자료</strong> — 참고 링크(구글드라이브·노션·깃허브·피그마 등)는 <strong>자료 링크</strong> 칸에 URL을 넣으면 클릭 카드로 정리됩니다.</li>
+                      <li><strong><EmojiIcon char="📝" /> 회의록</strong> — 회의 날짜·참석자·결정사항·다음 할 일. 제목은 <code>[6/10] 1차 회의</code> 처럼 날짜로 시작하면 정렬돼요.</li>
+                      <li><strong><EmojiIcon char="💡" /> 아이디어</strong> — 기획·기능 제안. 한 글에 하나의 아이디어로.</li>
+                      <li><strong><EmojiIcon char="📎" /> 자료</strong> — 참고 링크(구글드라이브·노션·깃허브·피그마 등)는 <strong>자료 링크</strong> 칸에 URL을 넣으면 클릭 카드로 정리됩니다.</li>
                       <li><strong>{'</> 소스코드'}</strong> — 코드 조각은 본문 대신 <strong>소스코드 첨부</strong>로 붙여야 줄바꿈·들여쓰기가 보존돼요.</li>
                     </ul>
-                    <p style={{ margin: 0 }}>👩‍🏫 강사가 글에 <strong>피드백 댓글</strong>을 남기면 <span style={{ color: '#92400e', fontWeight: 700 }}>강사</span> 배지가 붙습니다. 댓글로 진행 상황을 함께 점검하세요.</p>
+                    <p style={{ margin: 0 }}><EmojiIcon char="👩‍🏫" /> 강사가 글에 <strong>피드백 댓글</strong>을 남기면 <span style={{ color: '#92400e', fontWeight: 700 }}>강사</span> 배지가 붙습니다. 댓글로 진행 상황을 함께 점검하세요.</p>
                   </div>
                 )}
               </div>
@@ -392,7 +393,7 @@ const ProjectBoard = (): ReactElement => {
                 <div style={card}>
                   {/* showResources 토글로 자료 링크 목록 펼침/접힘 */}
                   <button type="button" onClick={() => setShowResources((v) => !v)} style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-primary)', fontSize: '16px', fontWeight: 700, padding: 0 }}>
-                    <span>📎 우리 팀 자료 모음 ({linkPosts.length})</span>
+                    <span><EmojiIcon char="📎" /> 우리 팀 자료 모음 ({linkPosts.length})</span>
                     <span style={{ color: 'var(--text-secondary)' }}>{showResources ? '▲' : '▼'}</span>
                   </button>
                   {showResources && (
@@ -401,7 +402,7 @@ const ProjectBoard = (): ReactElement => {
                         // 새 탭으로 안전한 URL 열기. target="_blank"=새 탭, rel="noopener noreferrer"=새 탭이
                         //   원래 페이지를 조작하지 못하게 막는 보안 설정(외부 링크 열 때 권장).
                         <a key={p.id} href={safeUrl(p.link_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '10px 12px', borderRadius: '10px', border: '1px solid var(--border-light)', textDecoration: 'none', color: 'var(--text-primary)' }}>
-                          <span style={{ fontSize: '18px', flexShrink: 0 }}>🔗</span>
+                          <span style={{ fontSize: '18px', flexShrink: 0 }}><EmojiIcon char="🔗" /></span>
                           <span style={{ flex: 1, minWidth: 0 }}>
                             {/* 제목/URL이 길면 말줄임(...) 처리: overflow:hidden + textOverflow:ellipsis + whiteSpace:nowrap 3종 세트. */}
                             <span style={{ display: 'block', fontWeight: 600, fontSize: '14px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.title}</span>
@@ -499,7 +500,7 @@ const ProjectBoard = (): ReactElement => {
                       {/* 자료 링크: 공백 제거 후 값이 있을 때만 링크 카드 표시 */}
                       {(p.link_url || '').trim() && (
                         <a href={safeUrl(p.link_url)} target="_blank" rel="noopener noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', margin: '0 0 10px', padding: '9px 14px', borderRadius: '10px', border: '1px solid var(--border-light)', background: 'var(--bg-light-gray)', textDecoration: 'none', color: 'var(--primary-blue)', fontSize: '14px', fontWeight: 600, maxWidth: '100%' }}>
-                          <span style={{ flexShrink: 0 }}>🔗</span>
+                          <span style={{ flexShrink: 0 }}><EmojiIcon char="🔗" /></span>
                           <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.link_url}</span>
                           <span style={{ flexShrink: 0 }}>↗</span>
                         </a>
@@ -516,13 +517,13 @@ const ProjectBoard = (): ReactElement => {
                           <div key={c.id} style={{ display: 'flex', gap: '8px', alignItems: 'baseline', padding: '5px 0', fontSize: '14px', ...(c.is_staff ? { background: '#fffbeb', borderRadius: '8px', padding: '7px 10px', margin: '3px 0' } : {}) }}>
                             <strong style={{ fontSize: '13px', flexShrink: 0 }}>
                               {/* 강사 댓글에는 '강사' 배지 표시(c.is_staff가 true일 때만). */}
-                              {c.is_staff && <span style={{ fontSize: '11px', fontWeight: 700, padding: '1px 7px', borderRadius: '999px', background: '#fde68a', color: '#92400e', marginRight: '6px' }}>👩‍🏫 강사</span>}
+                              {c.is_staff && <span style={{ fontSize: '11px', fontWeight: 700, padding: '1px 7px', borderRadius: '999px', background: '#fde68a', color: '#92400e', marginRight: '6px' }}><EmojiIcon char="👩‍🏫" /> 강사</span>}
                               {c.author_name}
                             </strong>
                             <span style={{ flex: 1, whiteSpace: 'pre-wrap', lineHeight: 1.6 }}>{c.content}</span>
                             <span style={{ fontSize: '11px', color: 'var(--text-secondary)', flexShrink: 0 }}>{new Date(c.created_at).toLocaleDateString('ko-KR')}</span>
                             {/* 댓글 작성자 본인 또는 관리자만 삭제 버튼(✕) 노출(글 권한과 동일한 원리). */}
-                            {(c.author_id === user?.id || isAdmin) && <button onClick={() => handleDeleteComment(c)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}>✕</button>}
+                            {(c.author_id === user?.id || isAdmin) && <button onClick={() => handleDeleteComment(c)} style={{ background: 'none', border: 'none', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '12px', flexShrink: 0 }}><EmojiIcon char="✕" /></button>}
                           </div>
                         ))}
                         {/* 댓글 입력칸: 글 ID별로 입력값을 분리 관리(commentText[p.id]). Enter 키로도 등록 가능. */}

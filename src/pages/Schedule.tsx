@@ -32,6 +32,7 @@
 // 'type ReactElement'에서 type 키워드는 "이건 실제 값이 아니라 타입(자료형)만 가져온다"는 뜻입니다.
 // ReactElement는 "화면에 그려질 React 요소"를 가리키는 타입입니다.
 import { type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // 다국어(번역) 기능을 쓰기 위한 커스텀 훅을 가져옵니다.
 import { useLanguage } from '../contexts/LanguageContext';
 // 페이지의 SEO(검색엔진 최적화) 메타정보를 설정하는 컴포넌트를 가져옵니다.
@@ -99,7 +100,7 @@ const Schedule = (): ReactElement => {
                     바깥 {}는 "JS 표현식 시작", 안쪽 {}는 "객체 리터럴"을 뜻합니다. */}
                 <span className="legend-dot" style={{ background: p.color }}></span>
                 {/* p.icon 과 p.name 을 한 줄에 함께 표시(예: "🎯 기초 단계") */}
-                <span>{p.icon} {p.name}</span>
+                <span><EmojiIcon char={p.icon} /> {p.name}</span>
               </div>
             ))}
           </div>

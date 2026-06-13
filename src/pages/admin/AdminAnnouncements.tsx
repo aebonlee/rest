@@ -48,6 +48,7 @@
 //  - type ReactElement / type FormEvent: '타입'만 가져온다는 표시(type 키워드).
 //    TypeScript에서 "이 변수는 어떤 모양이어야 한다"를 알려주는 용도라 실제 코드 동작에는 영향이 없다.
 import { useState, useEffect, type ReactElement, type FormEvent } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 import AdminSidebar from '../../components/AdminSidebar';   // 관리자 페이지 좌측 메뉴(사이드바) 컴포넌트.
 import SEOHead from '../../components/SEOHead';             // <head> 태그(제목, 검색엔진 설정 등)를 관리하는 컴포넌트.
 import { useAuth } from '../../contexts/AuthContext';       // 로그인 사용자 정보를 어디서나 꺼내 쓰게 해주는 훅.
@@ -246,7 +247,7 @@ const AdminAnnouncements = (): ReactElement => {
                   {items.map(a => (
                     <tr key={a.id}>
                       {/* 고정 공지면 📌 아이콘 표시, 아니면 빈칸 (삼항 연산자) */}
-                      <td>{a.is_pinned ? '📌' : ''}</td><td>{a.title}</td><td>{a.category}</td>
+                      <td>{a.is_pinned ? <EmojiIcon char="📌" /> : ''}</td><td>{a.title}</td><td>{a.category}</td>
                       {/* 등록일은 한국 로케일 날짜 형식으로 표시 */}
                       {/* new Date(문자열): DB의 날짜 문자열을 Date 객체로 변환. toLocaleDateString('ko-KR')로 한국식 날짜 표기. */}
                       <td>{a.author_name}</td><td>{new Date(a.created_at).toLocaleDateString('ko-KR')}</td>

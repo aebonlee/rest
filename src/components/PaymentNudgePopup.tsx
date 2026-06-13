@@ -35,6 +35,7 @@
 //  - useEffect: 화면이 그려진 뒤(또는 특정 값이 바뀔 때) 실행할 "부수 효과"(데이터 조회 등)를 정의한다.
 //  ※ "훅(Hook)"은 함수형 컴포넌트에서 React 기능을 빌려 쓰는 특수 함수다. 이름이 use로 시작한다.
 import { useState, useEffect } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // Supabase 사용자 객체 및 클라이언트 타입 (타입 전용 import — 런타임 번들 영향 없음)
 //  ※ `import type`은 "타입 정보만" 가져온다는 TypeScript 문법이다. 실제 코드가 아니라
 //    "이 변수는 User 모양이다" 같은 설명서만 가져오므로 빌드 결과물(번들) 크기에 영향이 없다.
@@ -262,11 +263,11 @@ export default function PaymentNudgePopup({
           }}
           title="닫기"
         >
-          ✕
+          <EmojiIcon char="✕" />
         </button>
 
         {/* 아이콘 (시각적 장식용 이모지) */}
-        <div style={{ fontSize: '48px', marginBottom: '12px' }}>📚</div>
+        <div style={{ fontSize: '48px', marginBottom: '12px' }}><EmojiIcon char="📚" /></div>
 
         {/* 제목 */}
         <h2 style={{ margin: '0 0 8px', fontSize: '20px', fontWeight: 700, color: '#111' }}>

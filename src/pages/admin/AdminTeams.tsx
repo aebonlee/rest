@@ -41,6 +41,7 @@
 // - useMemo: 계산 결과를 "기억(캐시)"해 두고, 의존하는 값이 바뀔 때만 다시 계산하는 훅. 불필요한 재계산 방지.
 // - type ReactElement: 컴포넌트가 반환하는 "React 화면 요소"의 타입(TS 타입만 가져옴, 실행 코드 아님).
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
+import { EmojiIcon, withIcons } from '../../utils/emojiIcon';
 // 관리자 페이지 왼쪽에 항상 붙는 사이드바(메뉴) 컴포넌트.
 import AdminSidebar from '../../components/AdminSidebar';
 // 페이지의 <title>이나 검색엔진용 메타 태그를 넣어주는 컴포넌트.
@@ -231,7 +232,7 @@ const AdminTeams = (): ReactElement => {
           <div style={{ border: '1px solid var(--border-light, #e5e7eb)', borderRadius: '12px', padding: '16px 18px', marginBottom: '24px', background: 'var(--bg-light-gray, #f8f9fa)' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '10px' }}>
               <div>
-                <strong style={{ fontSize: '15px' }}>📋 확정 명단으로 팀 정리</strong>
+                <strong style={{ fontSize: '15px' }}><EmojiIcon char="📋" /> 확정 명단으로 팀 정리</strong>
                 {/* 팀 수 및 매칭 통계 요약. 미매칭이 있을 때만 경고색으로 별도 표시 */}
                 <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
                   {/* {변수}로 JS 값을 화면에 끼워 넣는다. */}
@@ -249,13 +250,13 @@ const AdminTeams = (): ReactElement => {
             </div>
             {/* 작업 결과 메시지(성공/실패)는 존재할 때만 표시 */}
             {/* msg가 빈 문자열('')이면 거짓 취급이라 안 보이고, 내용이 있으면 <p>가 나타난다. */}
-            {msg && <p style={{ margin: '10px 0 0', fontSize: '13px', fontWeight: 600 }}>{msg}</p>}
+            {msg && <p style={{ margin: '10px 0 0', fontSize: '13px', fontWeight: 600 }}>{withIcons(msg)}</p>}
             {/* 미매칭 인원이 있으면 "팀명 이름" 목록을 쉼표로 나열하여 안내 */}
             {unmatchedCount > 0 && (
               <p style={{ margin: '10px 0 0', fontSize: '12.5px', color: '#d97706' }}>
                 {/* flatMap: 각 팀에서 미매칭 멤버를 "팀명 이름" 문자열 배열로 만든 뒤, 모든 팀 결과를 한 배열로 평탄화. */}
                 {/* .join(', '): 그 배열을 쉼표+공백으로 이어 하나의 문자열로 만든다. */}
-                ⚠ 미매칭(가입 계정 없음): {preview.flatMap((t) => t.matched.filter((x) => !x.person).map((x) => `${teamName(t.no)} ${x.name}`)).join(', ')}
+                <EmojiIcon char="⚠" /> 미매칭(가입 계정 없음): {preview.flatMap((t) => t.matched.filter((x) => !x.person).map((x) => `${teamName(t.no)} ${x.name}`)).join(', ')}
               </p>
             )}
             {/* 팀장은 미지정으로 생성되며, 학생이 직접 지원해야 함을 안내 */}
@@ -291,7 +292,7 @@ const AdminTeams = (): ReactElement => {
                       {/* 각 팀원: 이름 + 팀장 표시(👑) + 미매칭 표시(임시 id 'unmatched:' 접두 시 ⚠) */}
                       {/* key={i}: 여기선 멤버에 고유 id가 마땅치 않아 인덱스 i를 key로 사용(목록이 거의 안 바뀌어 허용). */}
                       {/* String(m.id).startsWith('unmatched:'): id가 숫자여도 문자열로 바꿔 'unmatched:'로 시작하는지 검사. */}
-                      <ul>{ms.map((m, i) => <li key={i}>{m.name} {m.role === '팀장' ? '👑 팀장' : ''}{String(m.id).startsWith('unmatched:') ? ' ⚠미매칭' : ''}</li>)}</ul>
+                      <ul>{ms.map((m, i) => <li key={i}>{m.name} {m.role === '팀장' ? <><EmojiIcon char="👑" /> 팀장</> : ''}{String(m.id).startsWith('unmatched:') ? <>{' '}<EmojiIcon char="⚠" />미매칭</> : ''}</li>)}</ul>
                     </div>
                   </div>
                 );

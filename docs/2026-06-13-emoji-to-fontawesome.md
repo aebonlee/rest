@@ -45,8 +45,25 @@
 - 히어로 정보 카드 아이콘(📅⏱💻🏆 → FA)이 흰 글리프로 밋밋해, **42px 원형 배지**(반투명 배경·테두리) 안에
   18px 아이콘으로 담아 정돈. 카드 hover 시 배지 배경도 함께 진해지도록 연동. 모바일은 36px/16px.
 
+## 후속 2 — 사이트 전체 페이지 이모지 점검·전환
+
+1차에서 메인 노출 페이지 위주로만 전환했던 것을 **전 페이지로 확대**. 약 30개 파일을 점검해 JSX 렌더
+위치의 이모지를 모두 FA로 전환했다.
+
+- **전환(A유형) 완료 파일**: Dashboard, AdminDashboard, About, ProjectGuide, Classroom, Curriculum,
+  Resources, Materials, AppGallery, ProjectSubmit, ProjectLayout, Schedule, ProjectVote, ProjectBoard,
+  Assessment, ProjectTimeline, ProjectPadlets, Announcements, ProjectChecklist, AssignmentDetail,
+  AnnouncementDetail, PaymentNudgePopup, admin/{Teams,Attendance,Assignments,Announcements,Roster,Grades}.
+  - 인라인 텍스트는 `<EmojiIcon char="…" />`로, 데이터 `icon`/`emoji` 필드는 렌더 사이트에서 `EmojiIcon`으로,
+    `<Section icon>`·동적 ternary(`m.file_type === 'pdf' ? '📄' …`)도 컴포넌트/표현식 단위로 래핑.
+  - 매핑 보강: `⬇`→download, `⬆`→upload, 교사/개발자 ZWJ(`👩‍🏫`,`👨‍💻`) 등 추가.
+- **의도적으로 이모지 유지(B유형 — 문자열이라 FA 불가)**: `showToast('🎉 …')` 토스트, input
+  `placeholder="🔗 …"`, `aria-label`/`title` 속성. (단, AdminTeams 상태 메시지 `{msg}`는 렌더 지점을
+  `withIcons(msg)`로 감싸 ✅/⚠를 FA로 표시.)
+- 최종 점검 결과 렌더 가능한 raw 이모지 0건(잔여는 데이터 기본값 2건·주석 2건뿐, 모두 렌더 시 FA 경유).
+
 ## 영향 범위
 
-- 신규: `src/utils/emojiIcon.tsx`. 수정: `main.tsx`, `pages/{Learning,Home,Competition,MyPage,Instructor}.tsx`,
-  `components/{AdminSidebar,ProjectSidebar}.tsx`, `styles/{site,navbar}.css`, `package.json`(FA 의존성).
+- 신규: `src/utils/emojiIcon.tsx`. 수정: `main.tsx`, `styles/{site,navbar}.css`, `package.json`(FA 의존성),
+  그리고 위 1·2차에서 전환한 **약 35개 page/component 파일**.
 - 데이터 파일(learningData 등)은 **무수정** — 렌더 시점 치환이라 콘텐츠는 그대로.

@@ -33,6 +33,7 @@
 // - type ReactElement: 컴포넌트가 반환하는 "화면 조각"의 타입(TypeScript용). 'type' 키워드는
 //   "이건 실제 값이 아니라 타입만 가져온다"는 뜻이라 빌드 결과물에 포함되지 않습니다.
 import { useState, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import SEOHead from '../components/SEOHead';        // 페이지 제목·설명 등 SEO 메타데이터를 넣어주는 컴포넌트
 import { SITE_GROUPS } from '../data/resourceSites'; // 그룹/사이트 목록 데이터 (별도 데이터 파일에서 가져옴)
 
@@ -143,7 +144,7 @@ const Resources = (): ReactElement => {
               boxShadow: '0 4px 14px rgba(0,70,200,0.25)',
             }}
           >
-            📌 학습기간 참고사이트 — ReBoot 1기 ↗
+            <EmojiIcon char="📌" /> 학습기간 참고사이트 — ReBoot 1기 ↗
           </a>
         </div>
       </section>
@@ -209,7 +210,7 @@ const Resources = (): ReactElement => {
                       <strong style={{ fontSize: s.featured ? '16px' : '15px' }}>
                         {/* featured 항목은 이름 앞에 별(⭐) 아이콘 표시.
                              {조건 && <JSX>} 패턴: 조건이 true 일 때만 뒤의 요소를 그림(false면 아무것도 안 나옴). */}
-                        {s.featured && <span style={{ marginRight: '6px' }}>⭐</span>}{s.name}
+                        {s.featured && <span style={{ marginRight: '6px' }}><EmojiIcon char="⭐" /></span>}{s.name}
                       </strong>
                       {/* featured면 배지(s.badge 가 없으면 기본값 '추천'), 아니면 이동 화살표(→) 표시 */}
                       {s.featured

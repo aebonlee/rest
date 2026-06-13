@@ -32,6 +32,7 @@
 // - type ReactElement: "이 함수는 화면 요소(JSX)를 돌려준다"는 것을 알려주는 타입 표시.
 //   앞에 'type'을 붙이면 "실행 코드가 아니라 타입 정보만 가져온다"는 뜻이라 빌드 결과가 가벼워집니다.
 import { useState, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // useLanguage: 우리가 직접 만든 "다국어(i18n) 기능" 훅. 현재 언어에 맞는 글자를 꺼내 줍니다.
 //   (i18n = internationalization, 국제화. 한국어/영어 등 여러 언어를 지원하는 것.)
 import { useLanguage } from '../contexts/LanguageContext';
@@ -158,7 +159,7 @@ const Curriculum = (): ReactElement => {
                       {/* 프로젝트가 있는 일자만 🎯 배지 표시 */}
                       {day.project && (
                         <div className="day-project">
-                          <span>🎯 {day.project}</span>
+                          <span><EmojiIcon char="🎯" /> {day.project}</span>
                         </div>
                       )}
                       <span className="day-hours">{day.hours}시간</span>

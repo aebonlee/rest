@@ -381,7 +381,7 @@ const ColorChip = ({ hex, label, sub, height = 56 }: { hex: string; label?: stri
       {label && <span style={{ fontWeight: 700 }}>{label}</span>}
       {/* HEX 값 — 복사 직후엔 '✓ 복사됨'으로 잠시 바뀜 */}
       <span style={{ fontFamily: "'JetBrains Mono', monospace", opacity: 0.92 }}>
-        {copied ? '✓ 복사됨' : hex}
+        {copied ? <><EmojiIcon char="✓" /> 복사됨</> : hex}
       </span>
       {/* 보조 텍스트(선택) */}
       {sub && <span style={{ fontSize: '11px', opacity: 0.85 }}>{sub}</span>}
@@ -475,7 +475,7 @@ const ColorPalette = (): ReactElement => (
 
     {/* 팁 */}
     <div style={{ background: '#ecfdf5', borderLeft: '4px solid #10b981', borderRadius: '0 8px 8px 0', padding: '12px 16px', fontSize: '15px', lineHeight: 1.7, color: '#1a1a1a' }}>
-      <strong>💡 팁 — 색은 적게, 의미는 분명히</strong>
+      <strong><EmojiIcon char="💡" /> 팁 — 색은 적게, 의미는 분명히</strong>
       <ul style={{ margin: '6px 0 0', paddingLeft: '18px' }}>
         <li>한 화면에 메인 1 + 보조 1 + 강조 1 = 3색이면 충분합니다.</li>
         <li>중성색(회색)은 색 수에서 빼고 마음껏 쓰세요.</li>
@@ -858,7 +858,7 @@ const Learning = (): ReactElement => {
                           cursor: 'pointer',
                         }}
                       >
-                        📋 개요
+                        <EmojiIcon char="📋" /> 개요
                       </button>
                       {/* 각 하위 섹션 버튼 — 클릭 시 해당 인덱스로 selectedSubIndex 설정 */}
                       {/* subSections!: 위 expanded 검사로 존재가 보장되므로 '!'로 단언. si=하위 섹션 인덱스. */}

@@ -5,6 +5,7 @@
  *  - 저장: rest_team_submission (utils/projectSubmission).
  */
 import { useState, useEffect, useCallback, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -93,10 +94,10 @@ const ProjectSubmit = (): ReactElement => {
                     <h3 style={{ margin: '0 0 6px', fontSize: '16px' }}>{teamNos[t.id]}팀 · {t.project_topic}</h3>
                     {has ? (
                       <div style={{ fontSize: '13.5px', color: 'var(--text-secondary)', display: 'flex', flexDirection: 'column', gap: '3px' }}>
-                        {s.summary && <span>📝 {s.summary}</span>}
-                        {s.demo_url && <span>🔗 데모: {s.demo_url}</span>}
-                        {s.slides_url && <span>📊 발표자료: {s.slides_url}</span>}
-                        {s.repo_url && <span>💻 소스: {s.repo_url}</span>}
+                        {s.summary && <span><EmojiIcon char="📝" /> {s.summary}</span>}
+                        {s.demo_url && <span><EmojiIcon char="🔗" /> 데모: {s.demo_url}</span>}
+                        {s.slides_url && <span><EmojiIcon char="📊" /> 발표자료: {s.slides_url}</span>}
+                        {s.repo_url && <span><EmojiIcon char="💻" /> 소스: {s.repo_url}</span>}
                       </div>
                     ) : <span style={{ fontSize: '13px', color: 'var(--text-secondary)' }}>미제출</span>}
                   </div>

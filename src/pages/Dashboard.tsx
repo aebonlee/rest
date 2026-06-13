@@ -41,6 +41,7 @@
 // - type ReactElement: 타입스크립트(TS) "타입"만 가져온다는 표시. 실제 코드가 아니라 "이 변수는 이런 모양"이라는 설명용.
 //   (TS는 자바스크립트에 "타입 검사"를 더한 언어. 잘못된 값 사용을 미리 잡아준다.)
 import { useState, useEffect, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // Link: 페이지 새로고침 없이 화면만 바꿔주는 라우터 링크 컴포넌트. <a>와 달리 SPA 내부 이동에 사용.
 import { Link } from 'react-router-dom';
 // useAuth: 우리 앱이 만든 "인증 컨텍스트"에서 로그인 정보(user, profile)를 꺼내 쓰는 커스텀 훅.
@@ -193,20 +194,20 @@ const Dashboard = (): ReactElement => {
           <div className="dashboard-stats">
             {/* 출석 일수 카드 */}
             <div className="stat-card">
-              <div className="stat-icon">✅</div>
+              <div className="stat-icon"><EmojiIcon char="✅" /></div>
               {/* { } 안에 상태값을 넣으면 그 값이 화면에 글자로 표시된다. */}
               <div className="stat-value">{attendanceCount}</div>
               <div className="stat-label">출석 일수</div>
             </div>
             {/* 과제 제출 카드: 제출 수 / 전체 과제 수 (예: 3/10) */}
             <div className="stat-card">
-              <div className="stat-icon">📝</div>
+              <div className="stat-icon"><EmojiIcon char="📝" /></div>
               <div className="stat-value">{submissionCount}/{assignmentCount}</div>
               <div className="stat-label">과제 제출</div>
             </div>
             {/* 진행률 카드: 과제가 0건이면 0%로 처리(0 나눗셈 방지) */}
             <div className="stat-card">
-              <div className="stat-icon">📊</div>
+              <div className="stat-icon"><EmojiIcon char="📊" /></div>
               {/* 삼항 연산자(조건 ? A : B): 조건이 참이면 A, 거짓이면 B. */}
               {/* assignmentCount가 0이면 (submissionCount / 0)은 무한대/NaN이 되므로, 0보다 클 때만 계산하고 아니면 0. */}
               {/* Math.round(...): 소수점을 반올림해 정수 퍼센트로 만든다. */}
@@ -218,7 +219,7 @@ const Dashboard = (): ReactElement => {
           {/* 학습평가 성적 영역: 선수평가/사후평가 카드 */}
           {/* style={{ ... }}: JSX에서 인라인 스타일은 "객체"로 준다. 바깥 { }는 JS 표현식, 안쪽 { }는 객체. */}
           <div className="dashboard-section" style={{ marginBottom: '24px' }}>
-            <h3>🎯 내 학습평가 성적</h3>
+            <h3><EmojiIcon char="🎯" /> 내 학습평가 성적</h3>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '12px', marginTop: '12px' }}>
               {/* 선수/사후평가 두 종류를 순회하며 카드 생성 */}
               {/* .map(함수): 배열의 각 원소를 변환해 "JSX 요소들의 배열"을 만든다. React는 그 배열을 차례로 렌더링한다. */}
@@ -282,7 +283,7 @@ const Dashboard = (): ReactElement => {
             </div>
             {/* 진단평가 안내: 자습용이며 성적 미반영임을 명시 */}
             <p style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginTop: '10px' }}>
-              💡 <Link to="/assessment/diagnostic" style={{ color: 'var(--primary-blue, #0046C8)' }}>진단평가</Link>는 사후평가 전 자습용으로, 정답·해설이 공개되어 있고 성적에는 반영되지 않습니다.
+              <EmojiIcon char="💡" /> <Link to="/assessment/diagnostic" style={{ color: 'var(--primary-blue, #0046C8)' }}>진단평가</Link>는 사후평가 전 자습용으로, 정답·해설이 공개되어 있고 성적에는 반영되지 않습니다.
             </p>
           </div>
 
@@ -291,7 +292,7 @@ const Dashboard = (): ReactElement => {
             {/* 공지사항 영역 */}
             <div className="dashboard-section">
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                <h3>📢 공지사항</h3>
+                <h3><EmojiIcon char="📢" /> 공지사항</h3>
                 {/* 공지사항 전체 목록 페이지로 이동 */}
                 <Link to="/announcements" style={{ fontSize: '13px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)', textDecoration: 'none' }}>전체보기 →</Link>
               </div>
@@ -320,21 +321,21 @@ const Dashboard = (): ReactElement => {
 
             {/* 바로가기 영역: 주요 기능 페이지 링크 모음 */}
             <div className="dashboard-section">
-              <h3>🔗 바로가기</h3>
+              <h3><EmojiIcon char="🔗" /> 바로가기</h3>
               <div className="quick-links">
                 {/* 내부 페이지 이동은 <Link>를 쓴다(새로고침 없이 빠르게 화면 전환). */}
-                <Link to="/announcements" className="quick-link-card">📢 공지사항</Link>
-                <Link to="/materials" className="quick-link-card">📁 강의자료</Link>
-                <Link to="/assignments" className="quick-link-card">📝 과제</Link>
-                <Link to="/project-vote" className="quick-link-card">🧩 팀구성</Link>
-                <Link to="/project-board" className="quick-link-card">🗂️ 프로젝트 관리</Link>
-                <Link to="/qna" className="quick-link-card">❓ Q&A</Link>
-                <Link to="/classroom" className="quick-link-card">💻 온라인강의실</Link>
-                <Link to="/mypage" className="quick-link-card">👤 마이페이지</Link>
+                <Link to="/announcements" className="quick-link-card"><EmojiIcon char="📢" /> 공지사항</Link>
+                <Link to="/materials" className="quick-link-card"><EmojiIcon char="📁" /> 강의자료</Link>
+                <Link to="/assignments" className="quick-link-card"><EmojiIcon char="📝" /> 과제</Link>
+                <Link to="/project-vote" className="quick-link-card"><EmojiIcon char="🧩" /> 팀구성</Link>
+                <Link to="/project-board" className="quick-link-card"><EmojiIcon char="🗂️" /> 프로젝트 관리</Link>
+                <Link to="/qna" className="quick-link-card"><EmojiIcon char="❓" /> Q&A</Link>
+                <Link to="/classroom" className="quick-link-card"><EmojiIcon char="💻" /> 온라인강의실</Link>
+                <Link to="/mypage" className="quick-link-card"><EmojiIcon char="👤" /> 마이페이지</Link>
                 {/* 외부 Padlet 공유 게시판: 새 탭 + noopener로 보안 처리 */}
                 {/* 외부 사이트라 <Link>가 아닌 일반 <a>를 사용한다. */}
                 {/* target="_blank": 새 탭에서 열기. rel="noopener noreferrer": 새 탭 페이지가 원래 창을 조작하지 못하게 막는 보안 설정. */}
-                <a href="https://padlet.com/aebon/rest01" target="_blank" rel="noopener noreferrer" className="quick-link-card">📌 공유 게시판</a>
+                <a href="https://padlet.com/aebon/rest01" target="_blank" rel="noopener noreferrer" className="quick-link-card"><EmojiIcon char="📌" /> 공유 게시판</a>
               </div>
             </div>
           </div>

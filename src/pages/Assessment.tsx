@@ -36,6 +36,7 @@
 // - useRef: 다시 그려져도 사라지지 않는 "보관함". 여기서는 각 문항 DOM 요소를 가리키는 데 사용.
 // - type ReactElement: 이 컴포넌트가 "화면 요소"를 반환한다는 타입 표시(TypeScript 전용, 실행에는 영향 없음).
 import { useState, useMemo, useEffect, useRef, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // react-router-dom: 페이지(주소) 이동을 다루는 라이브러리.
 // - useParams: 주소 안의 변수(예: /assessment/:type 의 type)를 꺼낸다.
 // - Navigate: 다른 주소로 자동 이동시키는 컴포넌트.
@@ -388,7 +389,7 @@ const Assessment = (): ReactElement => {
                     margin: '0 0 8px',
                     letterSpacing: '0.05em',
                   }}>
-                    {passed ? '✓ 합격' : '✗ 불합격'}
+                    {passed ? <><EmojiIcon char="✓" /> 합격</> : <><EmojiIcon char="✗" /> 불합격</>}
                   </p>
                   <h2 style={{
                     fontSize: '48px', fontWeight: 800, margin: '0 0 8px',
@@ -487,7 +488,7 @@ const Assessment = (): ReactElement => {
                             color: isCorrect ? '#065f46' : '#991b1b',
                           }}>
                             {/* 중첩 삼항연산자: 정답이면 정답, 아니면 미응답인지 따져 미응답/오답 표시 */}
-                            {isCorrect ? '✓ 정답' : isUnanswered ? '미응답' : '✗ 오답'}
+                            {isCorrect ? <><EmojiIcon char="✓" /> 정답</> : isUnanswered ? '미응답' : <><EmojiIcon char="✗" /> 오답</>}
                           </span>
                         )}
                       </div>
@@ -581,7 +582,7 @@ const Assessment = (): ReactElement => {
                           borderRadius: '0 8px 8px 0',
                         }}>
                           <p style={{ margin: '0 0 4px', fontSize: '14px', fontWeight: 700, color: 'var(--primary-blue, #0046C8)', letterSpacing: '0.05em' }}>
-                            💡 해설
+                            <EmojiIcon char="💡" /> 해설
                           </p>
                           <p style={{ margin: 0, fontSize: '15.5px', lineHeight: 1.7, color: 'var(--text-primary, #1a1a1a)' }}>
                             {q.explanation}
@@ -819,8 +820,8 @@ const Assessment = (): ReactElement => {
                         }}>
                           {/* 상태별 안내 문구 (해당 상태일 때만 그려진다) */}
                           {saveStatus === 'saving' && '성적 저장 중…'}
-                          {saveStatus === 'saved' && '✓ 성적이 저장되었습니다'}
-                          {saveStatus === 'error' && '⚠ 성적 저장 실패 (네트워크 확인)'}
+                          {saveStatus === 'saved' && <><EmojiIcon char="✓" /> 성적이 저장되었습니다</>}
+                          {saveStatus === 'error' && <><EmojiIcon char="⚠" /> 성적 저장 실패 (네트워크 확인)</>}
                           {saveStatus === 'guest' && '로그인하면 성적이 저장됩니다'}
                         </div>
                       )}

@@ -5,6 +5,7 @@
  *  - 단계 순서는 data/projectSteps.ts(PROJECT_STEPS) 단일 소스를 따른다.
  */
 import { Fragment, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import ProjectSidebar from '../components/ProjectSidebar';
 import { PROJECT_STEPS, stepIndexOf } from '../data/projectSteps';
@@ -44,7 +45,7 @@ const ProjectLayout = (): ReactElement => {
                     <div style={{ flex: '1 1 16px', minWidth: '16px', height: '2px', borderRadius: '1px', marginTop: '14px', background: i <= idx ? '#10b981' : 'var(--border-light)' }} />
                   )}
                   <Link to={s.path} title={s.label} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '8px', textDecoration: 'none', flexShrink: 0, width: '84px' }}>
-                    <span style={circle(state)}>{state === 'done' ? '✓' : i + 1}</span>
+                    <span style={circle(state)}>{state === 'done' ? <EmojiIcon char="✓" /> : i + 1}</span>
                     <span style={{ fontSize: '11.5px', fontWeight: state === 'current' ? 700 : 500, color: state === 'current' ? 'var(--primary-blue)' : state === 'done' ? 'var(--text-primary)' : 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.3 }}>
                       {s.label}
                     </span>
@@ -59,7 +60,7 @@ const ProjectLayout = (): ReactElement => {
         {step && (
           <div style={{ background: 'var(--bg-light-gray)', border: '1px solid var(--border-light)', borderRadius: '12px', padding: '14px 18px', marginBottom: '20px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-              <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)' }}>📍 {idx + 1}단계 가이드</span>
+              <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)' }}><EmojiIcon char="📍" /> {idx + 1}단계 가이드</span>
               <strong style={{ fontSize: '14.5px' }}>{step.label}</strong>
             </div>
             <p style={{ margin: '6px 0 10px', fontSize: '13.5px', color: 'var(--text-secondary)', lineHeight: 1.6 }}>{step.summary}</p>
@@ -84,7 +85,7 @@ const ProjectLayout = (): ReactElement => {
               : <span />}
             {next
               ? <Link to={next.path} className="btn btn-primary" style={{ padding: '9px 16px', fontSize: '14px' }}>다음 · {next.label} →</Link>
-              : <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 700, alignSelf: 'center' }}>마지막 단계 {idx === last ? '✓' : ''}</span>}
+              : <span style={{ fontSize: '13px', color: '#10b981', fontWeight: 700, alignSelf: 'center' }}>마지막 단계 {idx === last ? <EmojiIcon char="✓" /> : ''}</span>}
           </div>
         )}
       </div>

@@ -341,7 +341,7 @@ const MyPage = (): ReactElement => {
                 {today ? (
                   <span style={{ display: 'inline-flex', alignItems: 'center', padding: '10px 18px', borderRadius: '8px', fontWeight: 700, background: '#d1fae5', color: '#065f46' }}>
                     {/* 체크인 시각(ISO 문자열)을 Date로 바꿔 '오후 2:05' 같은 시:분 형식으로 표시 */}
-                    ✓ {STATUS_LABEL[today.status] || today.status} 완료 ({new Date(today.check_in_time).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })})
+                    <EmojiIcon char="✓" /> {STATUS_LABEL[today.status] || today.status} 완료 ({new Date(today.check_in_time).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })})
                   </span>
                 ) : isClassDay ? (
                   // checking(체크 진행 중)이면 버튼을 잠가 중복 클릭을 막습니다.

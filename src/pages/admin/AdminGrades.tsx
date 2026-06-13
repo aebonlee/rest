@@ -40,6 +40,7 @@
 //   useMemo   : 비싼 계산 결과를 기억(캐시)해 두고, 의존하는 값이 안 바뀌면 다시 계산하지 않는다.
 //   type ReactElement : "JSX 한 덩어리"의 타입. 함수가 화면 요소를 반환한다는 표시에 쓴다.
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 import AdminSidebar from '../../components/AdminSidebar'; // 관리자 좌측 메뉴 컴포넌트
 import SEOHead from '../../components/SEOHead'; // <head> 의 제목·메타태그를 설정하는 컴포넌트
 import getSupabase from '../../utils/supabase'; // Supabase 클라이언트(연결 객체)를 만들어주는 함수
@@ -355,7 +356,7 @@ const AdminGrades = (): ReactElement => {
               background: '#fff7ed', border: '1px solid #fdba74',
             }}>
               <strong style={{ fontSize: '14px', color: '#9a3412' }}>
-                ⚠ 매칭 안 된 평가기록 {orphanGrades.length}건
+                <EmojiIcon char="⚠" /> 매칭 안 된 평가기록 {orphanGrades.length}건
               </strong>
               <p style={{ margin: '4px 0 10px', fontSize: '12.5px', color: '#9a3412' }}>
                 점수는 저장돼 있으나 수강생 계정과 연결되지 않았습니다. 가입 도메인이 다르거나(다른 사이트로 가입),
@@ -403,11 +404,11 @@ const AdminGrades = (): ReactElement => {
                 <button type="button" onClick={() => downloadExcel(t)} disabled={loading || people.length === 0} style={{
                   padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                   border: 'none', borderRadius: '7px', background: '#107c41', color: '#fff',
-                }}>⬇ Excel</button>
+                }}><EmojiIcon char="⬇" /> Excel</button>
                 <button type="button" onClick={() => downloadPdf(t)} disabled={loading || people.length === 0} style={{
                   padding: '7px 14px', fontSize: '13px', fontWeight: 600, cursor: 'pointer',
                   border: 'none', borderRadius: '7px', background: '#b91c1c', color: '#fff',
-                }}>⬇ PDF</button>
+                }}><EmojiIcon char="⬇" /> PDF</button>
               </div>
             ))}
           </div>

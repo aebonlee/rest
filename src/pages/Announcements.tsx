@@ -48,6 +48,7 @@
 //  - type ReactElement : 컴포넌트가 반환하는 "화면 요소"의 타입(자료형). type 키워드는 타입만 가져온다는 표시.
 // 참고: 훅(Hook)이란 함수형 컴포넌트에서 React 기능(상태·생명주기 등)을 쓰게 해주는 use~ 함수다.
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import SEOHead from '../components/SEOHead';      // <head> 태그에 제목·SEO 정보를 넣어주는 컴포넌트
 import getSupabase from '../utils/supabase';      // Supabase 연결 클라이언트를 가져오는 함수
 import site from '../config/site';                // 사이트 공통 설정(접두사 등)
@@ -210,7 +211,7 @@ const Announcements = (): ReactElement => {
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', alignItems: 'center', marginBottom: '18px' }}>
             {/* 검색 입력 영역(돋보기 아이콘 + 텍스트 입력) */}
             <div style={{ position: 'relative', flex: '1 1 240px', minWidth: '200px' }}>
-              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary, #9ca3af)', fontSize: '14px' }}>🔍</span>
+              <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: 'var(--text-secondary, #9ca3af)', fontSize: '14px' }}><EmojiIcon char="🔍" /></span>
               <input
                 type="text"
                 value={query} // 입력칸이 보여줄 값을 상태(query)에 묶는다 = "제어 컴포넌트"(값의 단일 출처가 React 상태).
@@ -278,7 +279,7 @@ const Announcements = (): ReactElement => {
                     >
                       {/* 좌측 번호 영역: 고정 공지는 압정 아이콘, 일반은 순번(idx+1, 1부터) 표시 */}
                       <span style={{ width: '36px', textAlign: 'center', color: 'var(--text-secondary, #9ca3af)', fontSize: '14px' }}>
-                        {a.is_pinned ? '📌' : idx + 1}
+                        {a.is_pinned ? <EmojiIcon char="📌" /> : idx + 1}
                       </span>
                       <CategoryBadge category={a.category} />{/* 위에서 정의한 배지 컴포넌트 재사용 */}
                       {/* 제목: 길면 말줄임(...) 처리, 고정 공지는 굵게 강조 */}

@@ -11,6 +11,7 @@
  *  - 팀 목록: utils/projectTeams.ts (listTeams)
  */
 import { useState, useEffect, useCallback, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -163,7 +164,7 @@ const ProjectChecklist = (): ReactElement => {
                         <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '10px' }}>
                           {CHECKLIST_ITEMS.map((it) => (
                             <span key={it.key} style={chip(items[it.key] ? '#dcfce7' : 'var(--bg-light-gray)', items[it.key] ? '#166534' : 'var(--text-secondary)')}>
-                              {items[it.key] ? '✓' : '○'} {it.label}
+                              {items[it.key] ? <EmojiIcon char="✓" /> : '○'} {it.label}
                             </span>
                           ))}
                         </div>

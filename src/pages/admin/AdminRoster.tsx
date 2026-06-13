@@ -39,6 +39,7 @@
 // - useMemo: 계산 결과를 "기억"해서, 입력이 바뀔 때만 다시 계산한다(불필요한 재계산 방지).
 // - type ReactElement: "React가 그릴 수 있는 화면 조각"을 가리키는 타입(TypeScript 전용, 실행 코드 아님).
 import { useState, useEffect, useMemo, type ReactElement } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 import AdminSidebar from '../../components/AdminSidebar';   // 관리자 페이지 왼쪽 메뉴(사이드바) 컴포넌트.
 import SEOHead from '../../components/SEOHead';             // <head> 태그(제목, 검색엔진 설정 등)를 다루는 컴포넌트.
 import getSupabase from '../../utils/supabase';            // Supabase 클라이언트(접속 도구)를 만들어 주는 함수.
@@ -328,11 +329,11 @@ const AdminRoster = (): ReactElement => {
           ) : (
             <>
               {/* 미가입 — 가장 중요 */}
-              <h3 style={{ margin: '8px 0 10px', color: '#ef4444' }}>⚠ 미가입 ({notSignedUp.length}) — 명단에 있으나 회원가입 미확인</h3>
+              <h3 style={{ margin: '8px 0 10px', color: '#ef4444' }}><EmojiIcon char="⚠" /> 미가입 ({notSignedUp.length}) — 명단에 있으나 회원가입 미확인</h3>
               {/* 전원 가입 시 안내 문구, 아니면 미가입자 테이블 */}
               {/* 미가입자가 0명이면 축하 문구를, 아니면 표를 보여준다. */}
               {notSignedUp.length === 0 ? (
-                <p style={{ color: '#10b981', fontSize: '14.5px', marginBottom: '24px' }}>✓ 명단 전원이 가입을 완료했습니다.</p>
+                <p style={{ color: '#10b981', fontSize: '14.5px', marginBottom: '24px' }}><EmojiIcon char="✓" /> 명단 전원이 가입을 완료했습니다.</p>
               ) : (
                 <div className="admin-table-wrapper" style={{ marginBottom: '24px' }}>
                   <table className="admin-table">

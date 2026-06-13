@@ -38,6 +38,7 @@
 // 리액트의 기본 훅들과, 타입 표기에 쓰는 ReactElement 타입을 가져온다.
 // (type 키워드가 붙은 import는 "값이 아니라 타입만" 가져온다는 뜻 → 빌드 시 실제 코드로 남지 않음)
 import { useState, useEffect, useCallback, useMemo, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // Link: 페이지 새로고침 없이 다른 경로로 이동하게 해주는 컴포넌트(라우터의 <a> 태그라고 보면 됨).
 import { Link } from 'react-router-dom';
 // useAuth: 현재 로그인한 사용자 정보(user, profile)와 강사 여부(isAdmin)를 알려주는 우리 훅.
@@ -374,7 +375,7 @@ const ProjectVote = (): ReactElement => {
               {/* 강사 최종 확정 잠금 배너 */}
               {locked && (
                 <div style={{ fontSize: '14px', fontWeight: 700, color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px' }}>
-                  🔒 강사가 팀구성을 최종 확정했습니다 — 팀원 신청·합류·팀장·주제 수정이 모두 잠겨 있습니다.
+                  <EmojiIcon char="🔒" /> 강사가 팀구성을 최종 확정했습니다 — 팀원 신청·합류·팀장·주제 수정이 모두 잠겨 있습니다.
                 </div>
               )}
               {/* 상단 요약: 주제 개수, (있으면) 내 팀 목록과 게시판 링크 (득표 수 표시는 숨김) */}
@@ -444,7 +445,7 @@ const ProjectVote = (): ReactElement => {
                             <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: '6px', flexWrap: 'wrap' }}>
                               <span style={chip('#eff6ff', '#1e40af')}>{m.name}</span>
                               {/* 팀장인 사람에게는 왕관 칩 */}
-                              {m.role === '팀장' && <span style={chip('#fef3c7', '#92400e')}>👑 팀장</span>}
+                              {m.role === '팀장' && <span style={chip('#fef3c7', '#92400e')}><EmojiIcon char="👑" /> 팀장</span>}
                               {/* 팀장 미정: 팀원·관리자가 각 이름별로 팀장 신청 */}
                               {/* 팀장이 없고 + (내가 이 팀 소속이거나 강사)일 때만 '팀장 신청' 버튼 노출 */}
                               {!hasLeader && (inThisTeam || isAdmin) && (
@@ -458,7 +459,7 @@ const ProjectVote = (): ReactElement => {
                         </div>
                         {/* 내가 팀장이면(강사 제외) 안내 문구 */}
                         {!isAdmin && iAmLeader && (
-                          <p style={{ margin: '8px 0 0', fontSize: '12.5px', fontWeight: 700, color: '#92400e' }}>👑 당신이 이 팀의 팀장입니다.</p>
+                          <p style={{ margin: '8px 0 0', fontSize: '12.5px', fontWeight: 700, color: '#92400e' }}><EmojiIcon char="👑" /> 당신이 이 팀의 팀장입니다.</p>
                         )}
                         {/* 강사이고 팀장이 정해진 경우, 팀장 초기화 버튼 제공 */}
                         {isAdmin && hasLeader && (
@@ -474,7 +475,7 @@ const ProjectVote = (): ReactElement => {
                     {/* 수정 패널 — 팀원/강사/제안자가 주제·설명 편집 + 팀원 제외. 동일 이름은 함께 반영. */}
                     {editKey === r.key && (
                       <div style={{ background: 'var(--bg-light-gray)', border: '1px solid var(--border-light)', borderRadius: '10px', padding: '12px 14px', marginBottom: '12px' }}>
-                        <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '8px' }}>✏️ 수정</div>
+                        <div style={{ fontSize: '12px', fontWeight: 800, color: 'var(--primary-blue)', marginBottom: '8px' }}><EmojiIcon char="✏️" /> 수정</div>
                         {!r.isPreset ? (
                           <>
                             <input style={{ ...input, marginBottom: '8px' }} value={editTitle} onChange={(e) => setEditTitle(e.target.value)} placeholder="주제 제목" />
@@ -489,8 +490,8 @@ const ProjectVote = (): ReactElement => {
                             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
                               {members(team).map((m) => (
                                 <span key={m.id} style={{ ...chip('#eff6ff', '#1e40af'), display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                                  {m.name}{m.role === '팀장' ? ' 👑' : ''}
-                                  <button onClick={() => handleRemoveMember(team, m)} disabled={busy} title="제외" style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 800, padding: 0, lineHeight: 1 }}>✕</button>
+                                  {m.name}{m.role === '팀장' ? <>{' '}<EmojiIcon char="👑" /></> : ''}
+                                  <button onClick={() => handleRemoveMember(team, m)} disabled={busy} title="제외" style={{ border: 'none', background: 'none', color: '#ef4444', cursor: 'pointer', fontWeight: 800, padding: 0, lineHeight: 1 }}><EmojiIcon char="✕" /></button>
                                 </span>
                               ))}
                             </div>
@@ -535,7 +536,7 @@ const ProjectVote = (): ReactElement => {
                       {/* 수정 버튼(팀원/강사/제안자) — marginLeft auto로 오른쪽 정렬 시작 */}
                       {canEdit && (
                         <button onClick={() => openEdit(r)} style={{ marginLeft: 'auto', background: 'none', border: '1px solid var(--border-light)', borderRadius: '6px', padding: '5px 12px', color: 'var(--text-secondary)', cursor: 'pointer', fontSize: '13px' }}>
-                          {editKey === r.key ? '수정 닫기' : '✏️ 수정'}
+                          {editKey === r.key ? '수정 닫기' : <><EmojiIcon char="✏️" /> 수정</>}
                         </button>
                       )}
                       {/* 삭제 권한이 있을 때만 '주제 삭제' */}
@@ -551,7 +552,7 @@ const ProjectVote = (): ReactElement => {
               {/* 아이디어 제안 — 확정 후에도 받지만 '검토용'(순서대로 진행하는 절차에는 미포함). */}
               <div style={card}>
                 <h3 style={{ margin: '0 0 6px', fontSize: '17px' }}>
-                  💡 아이디어 제안{locked && <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>(검토용 · 진행 절차 미포함)</span>}
+                  <EmojiIcon char="💡" /> 아이디어 제안{locked && <span style={{ marginLeft: '8px', fontSize: '12px', fontWeight: 600, color: 'var(--text-secondary)' }}>(검토용 · 진행 절차 미포함)</span>}
                 </h3>
                 <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--text-secondary)' }}>
                   {locked
@@ -569,7 +570,7 @@ const ProjectVote = (): ReactElement => {
               {isAdmin && (
                 <div style={{ ...card, display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap', borderColor: locked ? '#fde68a' : 'var(--border-light)' }}>
                   <div>
-                    <strong style={{ fontSize: '15px' }}>{locked ? '🔒 팀구성 최종 확정됨' : '강사 최종 확정'}</strong>
+                    <strong style={{ fontSize: '15px' }}>{locked ? <><EmojiIcon char="🔒" /> 팀구성 최종 확정됨</> : '강사 최종 확정'}</strong>
                     <p style={{ margin: '4px 0 0', fontSize: '13px', color: 'var(--text-secondary)' }}>
                       {locked ? '현재 모든 변경이 잠겨 있습니다. 다시 열려면 확정을 해제하세요.' : '팀 구성을 마치면 최종 확정하여 더 이상 추가·변경되지 않게 잠급니다.'}
                     </p>

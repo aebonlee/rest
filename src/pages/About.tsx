@@ -44,6 +44,7 @@
 // ── import: 이 파일에서 쓸 외부 코드를 끌어오는 부분 ──
 // SEOHead: 페이지의 제목/설명/주소를 <head>에 심어주는 우리 프로젝트의 컴포넌트.
 import SEOHead from '../components/SEOHead';
+import { EmojiIcon } from '../utils/emojiIcon';
 // Link: 페이지를 새로고침 없이 부드럽게 이동시키는 react-router의 내부 링크 컴포넌트.
 //       (일반 <a> 태그는 페이지를 통째로 새로고침하지만, <Link>는 그러지 않아 더 빠르다.)
 import { Link } from 'react-router-dom';
@@ -240,7 +241,7 @@ export default function About(): ReactElement {
               flexShrink: 0, // 좁아져도 원이 찌그러지지 않게 크기 고정
             }}>
               {/* role="img" + aria-label = 화면 낭독기(시각장애인용)가 이모지를 글자로 읽게 해주는 접근성 표시 */}
-              <span role="img" aria-label="이애본 박사">👩‍🏫</span>
+              <span role="img" aria-label="이애본 박사"><EmojiIcon char="👩‍🏫" /></span>
             </div>
             {/* 프로필 텍스트 영역(이름·직함·소개·태그·상세 링크) */}
             <div style={{ flex: 1, minWidth: '280px' }}>
@@ -331,7 +332,7 @@ export default function About(): ReactElement {
                   marginBottom: '14px',
                 }}>
                   {/* {r.emoji}: 중괄호 안에 변수를 넣으면 그 값이 화면에 출력된다(JSX의 값 끼워넣기). */}
-                  <span role="img" aria-label={r.title}>{r.emoji}</span>
+                  <span role="img" aria-label={r.title}><EmojiIcon char={r.emoji} /></span>
                 </div>
                 <strong style={{ fontSize: '17px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '8px' }}>
                   {r.title}
@@ -389,7 +390,7 @@ export default function About(): ReactElement {
                 borderRadius: '10px',
               }}>
                 <div style={{ fontSize: '28px', lineHeight: 1, marginBottom: '10px' }}>
-                  <span role="img" aria-label={b.title}>{b.emoji}</span>
+                  <span role="img" aria-label={b.title}><EmojiIcon char={b.emoji} /></span>
                 </div>
                 <strong style={{ fontSize: '16px', color: 'var(--text-primary, #1a1a1a)', display: 'block', marginBottom: '6px' }}>
                   {b.title}
@@ -479,7 +480,7 @@ export default function About(): ReactElement {
                 {/*   href={`mailto:${c.email}`} 에서 백틱(``)은 "템플릿 리터럴" — 문자열 안에 ${변수}로 값을 끼워 넣는 문법. */}
                 {/*   주의: 백틱 문자열 "안쪽"에는 절대 주석을 넣지 말 것. 넣으면 그 글자가 그대로 출력돼 버린다. */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="이메일">📧</span>
+                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="이메일"><EmojiIcon char="📧" /></span>
                   <div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>이메일 (강사 직통)</div>
                     <a href={`mailto:${c.email}`} style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
@@ -493,7 +494,7 @@ export default function About(): ReactElement {
                 {/*     /-/  = 찾을 패턴(하이픈 한 글자), 끝의 g = global(첫 번째만 말고 모두 바꿈). */}
                 {/*     예: '010-1234-5678' → '01012345678'. 전화 다이얼은 숫자만 받기 때문에 이렇게 정리한다. */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="전화">📞</span>
+                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="전화"><EmojiIcon char="📞" /></span>
                   <div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>전화</div>
                     <a href={`tel:${c.phone.replace(/-/g, '')}`} style={{ color: 'var(--text-primary, #1a1a1a)', textDecoration: 'none', fontWeight: 600 }}>
@@ -505,7 +506,7 @@ export default function About(): ReactElement {
                 {/* 카카오톡 ID: 설정에 값이 있을 때만 조건부 표시(앞서 본 && 패턴과 동일) */}
                 {c.kakao && (
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                    <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="카카오톡">💬</span>
+                    <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="카카오톡"><EmojiIcon char="💬" /></span>
                     <div>
                       <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>카카오톡 ID</div>
                       {/* @{c.kakao} : 화면에 '@' 글자 뒤에 카카오 ID 값을 이어 붙여 보여준다. */}
@@ -518,7 +519,7 @@ export default function About(): ReactElement {
                 {/*   rel="noopener noreferrer" = 보안 옵션. 새 탭으로 열린 외부 사이트가 자바스크립트로 */}
                 {/*   원래 우리 페이지를 조작하는 "탭 탈취(tabnabbing)"를 막아준다. 외부 링크엔 꼭 붙이는 습관! */}
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="본 사이트">🌐</span>
+                  <span style={{ fontSize: '20px', lineHeight: 1 }} role="img" aria-label="본 사이트"><EmojiIcon char="🌐" /></span>
                   <div>
                     <div style={{ fontSize: '14px', color: 'var(--text-secondary, #6b7280)', marginBottom: '2px' }}>회사 본 사이트</div>
                     <a href={site.parentSite.url} target="_blank" rel="noopener noreferrer"
@@ -572,7 +573,7 @@ export default function About(): ReactElement {
                     fontSize: '16px',
                     fontWeight: 600,
                   }}>
-                    <span role="img" aria-label="link" style={{ fontSize: '18px', lineHeight: 1 }}>🔗</span>
+                    <span role="img" aria-label="link" style={{ fontSize: '18px', lineHeight: 1 }}><EmojiIcon char="🔗" /></span>
                     <span>{fs.name}</span>
                   </a>
                 ))}

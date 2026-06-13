@@ -45,6 +45,7 @@
 // - type ReactElement: "이 함수가 반환하는 값은 React 화면 요소"라고 타입(TS)으로 표시. 'type'이
 //   붙으면 실행에는 영향 없고 타입 검사용으로만 쓰인다.
 import { useState, useEffect, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // react-router-dom: 페이지 이동(라우팅) 라이브러리.
 // - useParams: 현재 URL의 :id 같은 "동적 부분"을 꺼내는 훅.
 // - useNavigate: 코드로 다른 주소로 이동하게 해주는 함수를 돌려주는 훅.
@@ -72,7 +73,7 @@ const Section = ({ icon, title, children }: { icon: string; title: string; child
   // className은 HTML의 class와 같다(JSX에서는 class가 예약어라 className으로 쓴다 — CSS 연결용).
   <section className="pgd-section">
     {/* 중괄호 {icon} / {title} 은 "여기에 변수 값을 출력하라"는 뜻 */}
-    <h2><span className="pgd-section-icon">{icon}</span> {title}</h2>
+    <h2><span className="pgd-section-icon"><EmojiIcon char={icon} /></span> {title}</h2>
     {/* {children}: 태그 사이에 넣은 내용을 이 위치에 그대로 끼워 넣는다 */}
     <div className="pgd-card">{children}</div>
   </section>
@@ -180,7 +181,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
           {/* 주의: <pre> 태그는 공백과 줄바꿈을 "있는 그대로" 표시한다.
               프롬프트 원문의 들여쓰기/줄나눔이 중요하므로 일부러 pre를 쓴다. */}
           <div className="pgd-prompt-block"><pre>{ex.prompt}</pre></div>
-          <p className="pgd-prompt-note">💡 {ex.note}</p>
+          <p className="pgd-prompt-note"><EmojiIcon char="💡" /> {ex.note}</p>
         </div>
       ))}
     </Section>
@@ -190,7 +191,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
       <div className="pgd-impl-grid">
         {/* 프론트엔드 구현 정보: 설명/스택/주요 페이지 목록 */}
         <div className="pgd-impl-item">
-          <h3>🖥️ 프론트엔드</h3>
+          <h3><EmojiIcon char="🖥️" /> 프론트엔드</h3>
           <p>{project.implementation.frontend.description}</p>
           <span className="pgd-tech-badge">{project.implementation.frontend.stack}</span>
           <h4>주요 페이지</h4>
@@ -198,7 +199,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
         </div>
         {/* 백엔드 구현 정보: 설명/스택/API 엔드포인트 목록 */}
         <div className="pgd-impl-item">
-          <h3>⚙️ 백엔드</h3>
+          <h3><EmojiIcon char="⚙️" /> 백엔드</h3>
           <p>{project.implementation.backend.description}</p>
           <span className="pgd-tech-badge">{project.implementation.backend.stack}</span>
           <h4>API 엔드포인트</h4>
@@ -206,7 +207,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
         </div>
       </div>
       <div className="pgd-db">
-        <h3>🗄️ 데이터베이스</h3>
+        <h3><EmojiIcon char="🗄️" /> 데이터베이스</h3>
         <div className="pgd-db-tables">
           {/* DB 테이블별 카드: 테이블명과 필드 정의(code로 표시) */}
           {project.implementation.database.tables.map((t, i) => (
@@ -233,7 +234,7 @@ const ProjectDetail = ({ project }: { project: ProjectData }): ReactElement => (
       <ul className="pgd-expansion">
         {/* 각 확장 아이디어 앞에 프로젝트 테마 색상의 체크 표시(✓) */}
         {project.expansion.map((e, i) => (
-          <li key={i}><span style={{ color: project.color }}>✓</span> {e}</li>
+          <li key={i}><span style={{ color: project.color }}><EmojiIcon char="✓" /></span> {e}</li>
         ))}
       </ul>
     </Section>
@@ -332,7 +333,7 @@ const ProjectGuide = (): ReactElement => {
           <div className="pgd-hero-card" style={{ borderLeftColor: project.color }}>
             {/* 아이콘 배경은 테마 색 + '18'(hex 뒤의 '18'은 투명도/알파, 약 9%)로 연하게, 글자색은 원색.
                 주의: 백틱 문자열 안에는 주석을 넣지 말 것(출력이 바뀜). */}
-            <span className="pgd-hero-icon" style={{ background: `${project.color}18`, color: project.color }}>{project.icon}</span>
+            <span className="pgd-hero-icon" style={{ background: `${project.color}18`, color: project.color }}><EmojiIcon char={project.icon} /></span>
             <div>
               <h3 className="pgd-hero-title">{project.title}</h3>
               <p className="pgd-hero-subtitle">{project.subtitle}</p>

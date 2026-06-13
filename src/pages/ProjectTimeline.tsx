@@ -4,6 +4,7 @@
  *  - 날짜를 크게 강조하고, 각 할 일에 상세 설명을 붙여 한눈에 이해하도록 한다.
  */
 import { type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
 import { PROJECT_MILESTONES } from '../data/projectSchedule';
@@ -42,7 +43,7 @@ const ProjectTimeline = (): ReactElement => {
 
                 {/* 본문: 목표 + 항목별 상세 설명 */}
                 <div style={{ padding: '14px 20px 18px' }}>
-                  <p style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}>🎯 {m.goal}</p>
+                  <p style={{ margin: '0 0 14px', fontSize: '14px', fontWeight: 700, color: 'var(--text-primary)' }}><EmojiIcon char="🎯" /> {m.goal}</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
                     {m.items.map((it, j) => (
                       <div key={j} style={{ display: 'flex', gap: '10px' }}>

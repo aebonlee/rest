@@ -38,6 +38,7 @@
 //  - useEffect: 화면이 처음 나타날 때 등 특정 시점에 코드를 실행하는 훅.
 //  - type ReactElement, type FormEvent: 'type'을 붙이면 실행 코드가 아니라 타입(자료의 종류) 정보만 가져옵니다.
 import { useState, useEffect, type ReactElement, type FormEvent } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 import AdminSidebar from '../../components/AdminSidebar';
 import SEOHead from '../../components/SEOHead';
 import { useToast } from '../../contexts/ToastContext';
@@ -245,7 +246,7 @@ const AdminAssignments = (): ReactElement => {
             // onSubmit에 handleSubmit 연결: 폼 안에서 Enter를 누르거나 제출 버튼을 누르면 실행됨.
             <form onSubmit={handleSubmit} className="admin-form">
               {/* 폼 헤더: editingId 유무로 수정/신규 표시 전환 */}
-              <div style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--primary-blue, #0046C8)' }}>{editingId ? '✏️ 과제 수정' : '➕ 새 과제 등록'}</div>
+              <div style={{ fontWeight: 700, marginBottom: '8px', color: 'var(--primary-blue, #0046C8)' }}>{editingId ? <><EmojiIcon char="✏️" /> 과제 수정</> : <><EmojiIcon char="➕" /> 새 과제 등록</>}</div>
               <div className="form-row">
                 {/* 제목(필수). value와 onChange가 짝을 이루는 controlled input입니다.
                     {...form, title: ...} : 기존 form을 복사하고 title만 새 값으로 바꿔 불변성을 지킵니다.

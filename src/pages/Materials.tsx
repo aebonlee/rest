@@ -30,6 +30,7 @@
 // - type ReactElement: 컴포넌트가 반환하는 "화면 요소"의 타입(TypeScript 타입 표기).
 //   (참고: 훅 = use로 시작하는 특수 함수. 반드시 컴포넌트 함수의 최상단에서만 호출해야 함)
 import { useState, useEffect, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { useAuth } from '../contexts/AuthContext';   // 로그인/인증 상태를 다루는 우리 앱의 컨텍스트 훅
 import SEOHead from '../components/SEOHead';          // 페이지 제목/검색엔진 메타 정보를 넣어주는 컴포넌트
 import getSupabase from '../utils/supabase';          // Supabase 클라이언트(서버 접속 객체)를 만들어 주는 함수
@@ -157,7 +158,7 @@ const Materials = (): ReactElement => {
                   <div className="material-icon">
                     {/* 파일 타입별 이모지 아이콘 매핑: pdf=문서, zip=압축, pptx=발표, 그 외=일반 파일 */}
                     {/* 삼항연산자를 연달아 써서 여러 경우를 구분합니다(중첩 삼항). */}
-                    {m.file_type === 'pdf' ? '📄' : m.file_type === 'zip' ? '📦' : m.file_type === 'pptx' ? '📊' : '📁'}
+                    <EmojiIcon char={m.file_type === 'pdf' ? '📄' : m.file_type === 'zip' ? '📦' : m.file_type === 'pptx' ? '📊' : '📁'} />
                   </div>
                   <div className="material-info">
                     <h4>{m.title}</h4>

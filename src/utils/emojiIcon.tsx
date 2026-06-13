@@ -33,6 +33,7 @@ import {
   faCalendar, faNewspaper, faCircleQuestion, faStopwatch, faSliders, faMobileScreen,
   faBug, faMicrophone, faSackDollar, faGift, faPhone, faPlus, faReceipt, faSeedling,
   faEye, faCompass, faPaintbrush, faDatabase, faCircleInfo, faChalkboardUser,
+  faDownload, faUpload,
 } from '@fortawesome/free-solid-svg-icons';
 
 // 이모지 → FA 아이콘 매핑. 여기에 없는 문자(화살표·체크박스 등)는 변환하지 않는다.
@@ -72,6 +73,7 @@ const MAP: Record<string, IconDefinition> = {
   '➕': faPlus, '🧾': faReceipt, '🌱': faSeedling, '👁': faEye, '🧭': faCompass,
   '🎒': faBookOpen, '🖌': faPaintbrush, '🗃': faDatabase, 'ℹ': faCircleInfo,
   '👩‍🏫': faChalkboardUser, '👨‍🏫': faChalkboardUser, '👩‍💻': faLaptopCode, '👨‍💻': faLaptopCode,
+  '⬇': faDownload, '⬆': faUpload,
 };
 
 // 매핑 키들로 정규식을 구성. 뒤따르는 변형 선택자(U+FE0F)는 함께 흡수한다.

@@ -35,6 +35,7 @@
 //   ※ TypeScript에서 'type'을 붙여 import하면 "이건 실제 코드가 아니라 타입(설계도)만 가져온다"는 표시.
 //      덕분에 빌드 결과물에 불필요한 코드가 포함되지 않는다.
 import { type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // SEOHead: 페이지 제목/설명 등 검색엔진용 정보를 넣어주는 우리 프로젝트의 컴포넌트.
 import SEOHead from '../components/SEOHead';
 
@@ -133,7 +134,7 @@ const Classroom = (): ReactElement => {
             </div>
             {/* 휴강 공지 배너(노란 경고색) — 수강생이 놓치지 않도록 눈에 띄게 표시. */}
             <div style={{ marginTop: '14px', padding: '10px 14px', borderRadius: '10px', background: '#fef3c7', color: '#92400e', fontSize: '14px', fontWeight: 600 }}>
-              ⚠ 6/3(화)은 휴강입니다.
+              <EmojiIcon char="⚠" /> 6/3(화)은 휴강입니다.
             </div>
           </div>
 
@@ -142,7 +143,7 @@ const Classroom = (): ReactElement => {
                 먼저 공통 card 스타일을 그대로 펼쳐 넣고, 그 뒤 borderLeft를 추가/덮어쓴다.
                 즉 "공통 스타일 + 이 카드만의 추가 스타일" 조합. 원본 card 객체는 그대로 보존된다(불변성). */}
           <div style={{ ...card, borderLeft: '4px solid var(--primary-blue)' }}>
-            <h3 style={{ margin: '0 0 6px', fontSize: '18px' }}>💻 온라인 수업 (Zoom)</h3>
+            <h3 style={{ margin: '0 0 6px', fontSize: '18px' }}><EmojiIcon char="💻" /> 온라인 수업 (Zoom)</h3>
             <p style={{ margin: '0 0 16px', fontSize: '14px', color: 'var(--text-secondary)' }}>오프라인(월요일)을 제외한 평일은 Zoom으로 진행합니다.</p>
             {/* Zoom 강의실 입장 링크.
                 ※ target="_blank": 링크를 "새 탭"에서 연다.
@@ -167,7 +168,7 @@ const Classroom = (): ReactElement => {
           {/* ── 카드 3: 오프라인 ──────────────────────────────────────────
               좌측 초록 테두리로 온라인 카드와 시각적으로 구분한다(card 스타일 + borderLeft 덮어쓰기). */}
           <div style={{ ...card, borderLeft: '4px solid #10b981' }}>
-            <h3 style={{ margin: '0 0 6px', fontSize: '18px' }}>📍 오프라인 수업 (월요일)</h3>
+            <h3 style={{ margin: '0 0 6px', fontSize: '18px' }}><EmojiIcon char="📍" /> 오프라인 수업 (월요일)</h3>
             <p style={{ margin: '0 0 6px', fontSize: '14px', color: 'var(--text-secondary)' }}>매주 월요일은 아래 장소에서 대면으로 진행합니다.</p>
             {/* 상수 OFFLINE_ADDR(주소)을 화면에 꽂아 표시. */}
             <p style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600 }}>{OFFLINE_ADDR}</p>

@@ -9,6 +9,7 @@
  *    → 깃허브 레포 번호가 보드 번호와 달라도 링크가 깨지지 않는다(번호와 무관).
  */
 import { useState, useEffect, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../../utils/emojiIcon';
 import SEOHead from '../../components/SEOHead';
 import { listTeams } from '../../utils/projectTeams';
 import { listCustomTopics, type CustomTopic } from '../../utils/projectVote';
@@ -81,17 +82,17 @@ const AppGallery = (): ReactElement => {
                     background: 'var(--bg-white, #fff)',
                   }}>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '26px' }}>{icon}</span>
+                      <span style={{ fontSize: '26px' }}><EmojiIcon char={icon} /></span>
                       <span style={{ fontSize: '11px', fontWeight: 800, color }}>{no}팀{repoNo ? ` · 예시 project${String(repoNo).padStart(2, '0')}` : ''}</span>
                     </div>
                     <strong title={t.project_topic} style={{ fontSize: '15.5px', lineHeight: 1.35, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '42px' }}>{t.project_topic}</strong>
                     <span style={{ fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)', lineHeight: 1.5, flex: 1 }}>
-                      👥 {members(t).map((m) => m.name).join(' · ') || '모집 중'}{leader ? ` · 팀장 ${leader.name}` : ''}
+                      <EmojiIcon char="👥" /> {members(t).map((m) => m.name).join(' · ') || '모집 중'}{leader ? ` · 팀장 ${leader.name}` : ''}
                     </span>
-                    {subs[t.id]?.summary && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>📝 {subs[t.id].summary}</span>}
+                    {subs[t.id]?.summary && <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}><EmojiIcon char="📝" /> {subs[t.id].summary}</span>}
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
                       {url
-                        ? <a href={url} target="_blank" rel="noopener noreferrer" title={url} style={{ ...badge('#d1fae5', '#065f46'), textDecoration: 'none' }}>🚀 {demo ? '팀 배포 앱' : '구현 예시'} ↗</a>
+                        ? <a href={url} target="_blank" rel="noopener noreferrer" title={url} style={{ ...badge('#d1fae5', '#065f46'), textDecoration: 'none' }}><EmojiIcon char="🚀" /> {demo ? '팀 배포 앱' : '구현 예시'} ↗</a>
                         : <span style={badge('var(--bg-light-gray)', 'var(--text-secondary)')}>준비 중</span>}
                     </div>
                   </div>
@@ -107,7 +108,7 @@ const AppGallery = (): ReactElement => {
           {/* 유휴 레포(현재 보드와 연결되지 않는 과거 구현분) — 참고 보관용 별도 섹션 */}
           {!loading && (
             <div style={{ marginTop: '36px', paddingTop: '22px', borderTop: '1px dashed var(--border-light, #e5e7eb)' }}>
-              <h3 style={{ fontSize: '15px', margin: '0 0 4px' }}>🗂️ 유휴 레포 (참고 보관)</h3>
+              <h3 style={{ fontSize: '15px', margin: '0 0 4px' }}><EmojiIcon char="🗂️" /> 유휴 레포 (참고 보관)</h3>
               <p style={{ fontSize: '12.5px', color: 'var(--text-secondary)', margin: '0 0 14px' }}>
                 과거에 구현됐지만 현재 팀구성과 연결되지 않는 프로젝트입니다(주제 삭제·변경·중복). 참고용으로만 열어볼 수 있습니다.
               </p>

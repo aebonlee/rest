@@ -5,6 +5,7 @@
  *  - 패들렛: padlet.com/aebon/project{번호}. (번호 = 패들렛 보드 번호)
  */
 import { useState, useEffect, type ReactElement, type CSSProperties } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 import SEOHead from '../components/SEOHead';
 import { listTeams } from '../utils/projectTeams';
 import { listCustomTopics, type CustomTopic } from '../utils/projectVote';
@@ -73,7 +74,7 @@ const ProjectPadlets = (): ReactElement => {
                     onMouseLeave={(e) => { e.currentTarget.style.transform = 'none'; e.currentTarget.style.boxShadow = 'none'; }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: '26px' }}>{icon}</span>
+                      <span style={{ fontSize: '26px' }}><EmojiIcon char={icon} /></span>
                       <span style={{ fontSize: '11px', fontWeight: 800, color }}>{no}팀 · PROJECT {String(no).padStart(2, '0')}</span>
                     </div>
                     <strong style={{ fontSize: '15.5px', lineHeight: 1.35 }}>{t.project_topic}</strong>
@@ -81,7 +82,7 @@ const ProjectPadlets = (): ReactElement => {
                       {members(t).map((m) => m.name).join(' · ') || '모집 중'}{leader ? ` · 팀장 ${leader.name}` : ''}
                     </span>
                     <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '4px' }}>
-                      <span style={badge('#fef9c3', '#854d0e')}>📌 패들렛 열기 ↗</span>
+                      <span style={badge('#fef9c3', '#854d0e')}><EmojiIcon char="📌" /> 패들렛 열기 ↗</span>
                     </div>
                   </a>
                 );

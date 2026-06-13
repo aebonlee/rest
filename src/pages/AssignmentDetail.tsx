@@ -45,6 +45,7 @@
 // type ReactElement, type FormEvent 처럼 'type'이 붙은 것은 "타입(TypeScript용 데이터 모양 정보)"만
 // 가져온다는 뜻이라 실제 실행 코드에는 포함되지 않습니다.
 import { useState, useEffect, type ReactElement, type FormEvent } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // useParams: 주소(URL) 안의 파라미터를 꺼내는 훅. Link: 페이지 이동용 링크 컴포넌트(<a> 대신 사용).
 import { useParams, Link } from 'react-router-dom';
 // useAuth: 로그인 정보(현재 사용자/프로필)를 어디서든 꺼내 쓰게 해주는 우리가 만든 훅.
@@ -252,7 +253,7 @@ const AssignmentDetail = (): ReactElement => {
                 <p><strong>마감일:</strong> {new Date(assignment.due_date).toLocaleString('ko-KR')}</p>
                 {/* 마감 초과 시 경고 문구 */}
                 {/* [개념] {조건 && JSX} : 조건이 참일 때만 뒤의 JSX를 보여준다(거짓이면 아무것도 안 그림). */}
-                {isOverdue && <p style={{ color: '#DC2626' }}>⚠️ 마감 기한이 지났습니다.</p>}
+                {isOverdue && <p style={{ color: '#DC2626' }}><EmojiIcon char="⚠️" /> 마감 기한이 지났습니다.</p>}
               </div>
             </div>
 

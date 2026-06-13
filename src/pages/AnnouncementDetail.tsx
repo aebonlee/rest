@@ -33,6 +33,7 @@
 //   - useEffect : "마운트(화면에 처음 나타남)" 또는 특정 값이 바뀔 때 코드를 실행하게 해주는 훅.
 //   - type ReactElement : 이 컴포넌트가 "리액트 화면 요소"를 반환한다는 것을 타입으로 표시(TypeScript 문법).
 import { useState, useEffect, type ReactElement } from 'react';
+import { EmojiIcon } from '../utils/emojiIcon';
 // useParams : 주소(URL)의 파라미터(:id 등)를 꺼내오는 훅. / Link : 새로고침 없이 다른 페이지로 이동하는 링크 컴포넌트.
 import { useParams, Link } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
@@ -149,7 +150,7 @@ const AnnouncementDetail = (): ReactElement => {
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
                 {/* {조건 && <요소/>} : 조건이 참일 때만 뒤의 요소를 그립니다(거짓이면 아무것도 안 그림). */}
                 {/* 즉 is_pinned(고정 공지)가 true일 때만 핀 아이콘을 표시. */}
-                {item.is_pinned && <span style={{ fontSize: '14px' }}>📌</span>}
+                {item.is_pinned && <span style={{ fontSize: '14px' }}><EmojiIcon char="📌" /></span>}
                 <CategoryBadge category={item.category} />
               </div>
               <h2 style={{ margin: '12px 0 8px', fontSize: '24px', lineHeight: 1.35 }}>{item.title}</h2>
