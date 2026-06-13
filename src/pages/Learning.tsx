@@ -858,7 +858,7 @@ const Learning = (): ReactElement => {
                           cursor: 'pointer',
                         }}
                       >
-                        <EmojiIcon char="📋" /> 개요
+                        <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: selectedSubIndex === null ? 'var(--primary-blue, #0046C8)' : 'var(--text-light, #9ca3af)', marginRight: '8px', verticalAlign: 'middle' }} />개요
                       </button>
                       {/* 각 하위 섹션 버튼 — 클릭 시 해당 인덱스로 selectedSubIndex 설정 */}
                       {/* subSections!: 위 expanded 검사로 존재가 보장되므로 '!'로 단언. si=하위 섹션 인덱스. */}
@@ -884,8 +884,8 @@ const Learning = (): ReactElement => {
                             cursor: 'pointer',
                           }}
                         >
-                          {/* 아이콘이 있으면 접두로 붙임(FA 치환). 없으면 제목만 표시. */}
-                          {sub.icon && <><EmojiIcon char={sub.icon} />{' '}</>}{withIcons(sub.title)}
+                          {/* 하위메뉴는 아이콘 대신 간단한 동그라미 불릿으로 표기(선택 시 파란색) */}
+                          <span style={{ display: 'inline-block', width: '5px', height: '5px', borderRadius: '50%', background: selectedSubIndex === si ? 'var(--primary-blue, #0046C8)' : 'var(--text-light, #9ca3af)', marginRight: '8px', verticalAlign: 'middle' }} />{withIcons(sub.title)}
                         </button>
                       ))}
                     </div>
