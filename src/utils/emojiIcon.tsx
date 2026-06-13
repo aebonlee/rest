@@ -33,8 +33,12 @@ import {
   faCalendar, faNewspaper, faCircleQuestion, faStopwatch, faSliders, faMobileScreen,
   faBug, faMicrophone, faSackDollar, faGift, faPhone, faPlus, faReceipt, faSeedling,
   faEye, faCompass, faPaintbrush, faDatabase, faCircleInfo, faChalkboardUser,
-  faDownload, faUpload,
+  faDownload, faUpload, faArrowsLeftRight, faVial, faPenNib, faWater, faTemperatureHalf,
+  faBowlFood, faMedal, faFilm, faMusic, faPaw, faUserTie, faHeart, faMoneyBillWave,
+  faRulerCombined, faShuffle, faRepeat, faPlug, faHashtag, faFont, faHammer, faMap,
+  faCircleExclamation, faSpa, faCalculator, faHandHoldingHeart, faCat, faFlag,
 } from '@fortawesome/free-solid-svg-icons';
+import { faPython } from '@fortawesome/free-brands-svg-icons';
 
 // 이모지 → FA 아이콘 매핑. 여기에 없는 문자(화살표·체크박스 등)는 변환하지 않는다.
 const MAP: Record<string, IconDefinition> = {
@@ -68,12 +72,20 @@ const MAP: Record<string, IconDefinition> = {
   '📧': faEnvelope, '📤': faEnvelope, '📭': faEnvelopeOpen,
   '⚪': faCircle, '🏠': faHouse, '📍': faLocationDot,
   '🗓': faCalendarDays, '📅': faCalendar, '📰': faNewspaper,
-  '❓': faCircleQuestion, '⏱': faStopwatch, '🎚': faSliders, '📱': faMobileScreen,
+  '❓': faCircleQuestion, '⏱': faStopwatch, '🎚': faSliders, '🎛': faSliders, '📱': faMobileScreen,
   '🐛': faBug, '🎤': faMicrophone, '💰': faSackDollar, '🎁': faGift, '📞': faPhone,
   '➕': faPlus, '🧾': faReceipt, '🌱': faSeedling, '👁': faEye, '🧭': faCompass,
   '🎒': faBookOpen, '🖌': faPaintbrush, '🗃': faDatabase, 'ℹ': faCircleInfo,
-  '👩‍🏫': faChalkboardUser, '👨‍🏫': faChalkboardUser, '👩‍💻': faLaptopCode, '👨‍💻': faLaptopCode,
+  '👩‍🏫': faChalkboardUser, '👨‍🏫': faChalkboardUser, '🧑‍🏫': faChalkboardUser,
+  '👩‍💻': faLaptopCode, '👨‍💻': faLaptopCode, '🧑‍💻': faLaptopCode,
   '⬇': faDownload, '⬆': faUpload,
+  // 정규과정 토픽/하위메뉴 및 프로젝트 데이터 아이콘 보강 — 미매핑 이모지 일관화
+  '↔': faArrowsLeftRight, '⚗': faVial, '✍': faPenNib, '🌊': faWater, '🌡': faTemperatureHalf,
+  '🍜': faBowlFood, '🎖': faMedal, '🎬': faFilm, '🎵': faMusic, '🐼': faPaw, '🐱': faCat,
+  '👔': faUserTie, '💚': faHeart, '💸': faMoneyBillWave, '📐': faRulerCombined, '🔀': faShuffle,
+  '🔁': faRepeat, '🔌': faPlug, '🔢': faHashtag, '🔤': faFont, '🔨': faHammer, '🗺': faMap,
+  '🚨': faCircleExclamation, '🧘': faSpa, '🧮': faCalculator, '🫂': faHandHoldingHeart,
+  '🐍': faPython, '🇰🇷': faFlag,
 };
 
 // 매핑 키들로 정규식을 구성. 뒤따르는 변형 선택자(U+FE0F)는 함께 흡수한다.
