@@ -99,3 +99,44 @@ export function buildIdToPersonIds(profiles: UserProfile[]): Map<string, string[
   for (const g of groups) for (const id of g.ids) m.set(id, g.ids);
   return m;
 }
+
+/** 미가입(계정 매칭 실패) 명단 학생을 위한 합성 프로필 — 화면 표기/타입 안정용(실제 계정 아님). */
+const syntheticProfile = (name: string, email: string): UserProfile => ({
+  id: `roster:${email || name}`, email, name, display_name: name, avatar_url: '',
+  phone: '', provider: '', role: 'member', signup_domain: '', visited_sites: [],
+  last_sign_in_at: '', updated_at: '',
+});
+
+/** 명단 학생 1명을 표현하는 입력 타입(roster.ts의 RosterStudent와 호환). */
+export interface RosterEntry { no: number; name: string; emails: string[]; }
+
+/**
+ * 공식 명단(이메일)을 기준으로 사람을 묶는다 — 출결·성적의 source of truth.
+ *  · 명단 순서를 그대로 유지하고, 학생마다 emails 로 user_profiles 계정을 매칭한다.
+ *  · 전화번호/이름 자동 통합과 달리 "다른 학생이 같은 전화번호"여도 절대 섞이지 않는다.
+ *  · 계정을 못 찾은(미가입) 학생도 빈 ids 로 포함되어 화면에서 바로 드러난다.
+ */
+export function groupByRoster(roster: RosterEntry[], profiles: UserProfile[]): PersonGroup[] {
+  const byEmail = new Map<string, UserProfile>();
+  for (const p of profiles) {
+    const e = normEmail(p.email);
+    if (e) byEmail.set(e, p);
+  }
+  return roster.map((st) => {
+    const matched = st.emails
+      .map((e) => byEmail.get(normEmail(e)))
+      .filter((p): p is UserProfile => !!p)
+      .sort((a, b) => recency(b) - recency(a));   // 최근 활동 계정이 대표
+    const primary = matched[0] || syntheticProfile(st.name, st.emails[0] || '');
+    return {
+      key: `roster:${st.no}`,
+      primary,
+      accounts: matched,
+      ids: matched.map((a) => a.id),
+      emails: matched.length ? matched.map((a) => a.email).filter(Boolean) : st.emails,
+      name: st.name,
+      phone: primary.phone || '',
+      isMerged: matched.length > 1,
+    };
+  });
+}

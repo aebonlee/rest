@@ -53,12 +53,12 @@ import { useToast } from '../../contexts/ToastContext';
 import getSupabase from '../../utils/supabase';
 // 사이트 설정(주소, DB 접두사 등)이 담긴 객체.
 import site from '../../config/site';
-// 동일인 통합 유틸 함수와 그 결과 타입(PersonGroup).
-import { groupByPerson, type PersonGroup } from '../../utils/people';
+// 공식 명단 기준 그룹화 유틸과 결과 타입(PersonGroup).
+import { groupByRoster, type PersonGroup } from '../../utils/people';
+// 출결 집계의 source of truth — 공식 수강생 명단(활성 29명)과 그 계정 이메일.
+import { ACTIVE_ROSTER, ROSTER_EMAILS } from '../../config/roster';
 // 표를 Word/PDF 파일로 내보내는 함수들과 셀(Cell) 타입.
 import { exportTableWord, exportTablePdf, type Cell } from '../../utils/exportTable';
-// 출석 대상에서 제외할 관리자 이메일 목록.
-import { ADMIN_EMAILS } from '../../config/admin';
 // TypeScript 타입만 가져온다(import type). 실제 코드가 아니라 "자료형 정의"라서
 // 빌드 결과물에는 포함되지 않는다.
 import type { Attendance, UserProfile } from '../../types';
@@ -67,13 +67,8 @@ import type { Attendance, UserProfile } from '../../types';
 // 주의: 백틱(`)으로 감싼 부분은 "템플릿 리터럴"이라 부르며, ${...} 안의 값을 문자열에
 //       끼워 넣는다. 예) dbPrefix 가 'rest_' 이면 결과는 'rest_attendance'.
 const TABLES = { attendance: `${site.dbPrefix}attendance` };
-// 본 사이트의 호스트명(예: rest.dreamitbiz.com). signup_domain 필터에 사용
-// new URL(...) 은 주소 문자열을 분해해주는 내장 객체이고, .hostname 으로 도메인만 뽑는다.
-const REST_HOSTNAME = new URL(site.url).hostname;
-// 출석 대상에서 제외할 스태프 역할 목록
+// 역할 배지(학생/관리자) 표기에 사용하는 스태프 역할 목록
 const STAFF_ROLES = ['admin', 'superadmin'];
-// 출결 대상이 아닌 계정(조교 등) — role은 학생(member)이지만 출석 집계에서 제외한다.
-const EXCLUDED_EMAILS = ['iryn0325@hanmail.net'];
 
 /** 정규 수업일 (6/1~6/22 평일, 6/3 공휴일) */
 const CLASS_DAYS: number[] = (() => {
@@ -138,7 +133,8 @@ const AdminAttendance = (): ReactElement => {
     const [attRes, monthRes, signupRes] = await Promise.all([
       client.from(TABLES.attendance).select('*').eq('date', selectedDate),
       client.from(TABLES.attendance).select('student_id, date, status').gte('date', '2026-06-01').lte('date', '2026-06-30'),
-      client.from('user_profiles').select('*').eq('signup_domain', REST_HOSTNAME),
+      // 공식 명단 이메일로 계정을 직접 조회(도메인·전화번호 변수 무관하게 정확히 매칭)
+      client.from('user_profiles').select('*').in('email', ROSTER_EMAILS),
     ]);
 
     // 선택일 출결 레코드 반영(데이터 없으면 기존 상태 유지)
@@ -148,15 +144,8 @@ const AdminAttendance = (): ReactElement => {
     // (monthRes.data || []) : data 가 null/undefined 면 대신 빈 배열을 쓴다(에러 방지).
     setMonthly((monthRes.data || []) as Attendance[]);
 
-    // 가입자 중 스태프 역할/관리자 이메일 제외 → 학생만 남기고 표시명 기준 정렬
-    // filter: 조건이 true 인 항목만 남긴 "새 배열"을 만든다(원본은 그대로 — 불변성 유지).
-    // sort: 항목을 정렬한다. localeCompare 는 한글/영문을 사전 순으로 비교한다.
-    // 옵셔널 체이닝 대신 여기선 (u.email || '') 로 email 이 없을 때 빈 문자열로 대체한다.
-    //   .toLowerCase() 는 대소문자 차이로 비교가 어긋나는 것을 막기 위함.
-    const list = ((signupRes.data || []) as UserProfile[])
-      .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()) && !EXCLUDED_EMAILS.includes((u.email || '').toLowerCase()))
-      .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));
-    setStudents(list);
+    // 조회된 명단 계정을 그대로 보관(정렬·집계는 ACTIVE_ROSTER 순서로 groupByRoster 가 처리).
+    setStudents((signupRes.data || []) as UserProfile[]);
     setLoading(false); // 모든 처리가 끝났으니 로딩 종료(스피너 사라지고 표 표시)
   };
 
@@ -170,7 +159,7 @@ const AdminAttendance = (): ReactElement => {
   // students 가 바뀔 때만 재계산(useMemo 메모이제이션)
   // useMemo(계산함수, [의존성]): 의존성이 그대로면 이전 결과를 재사용해 불필요한 계산을 막는다.
   //   groupByPerson 이 무거울 수 있으니, students 가 바뀔 때만 다시 묶는다.
-  const people = useMemo(() => groupByPerson(students), [students]);
+  const people = useMemo(() => groupByRoster(ACTIVE_ROSTER, students), [students]);
 
   /** 동일인의 여러 계정 중 선택일 출결 레코드 */
   // person.ids(동일인의 모든 계정 id) 중 하나라도 일치하는 레코드를 찾음
@@ -184,6 +173,8 @@ const AdminAttendance = (): ReactElement => {
   const markAttendance = async (person: PersonGroup, status: 'present' | 'absent' | 'late' | 'excused') => {
     const client = getSupabase();
     if (!client) return; // 클라이언트 없으면 아무 것도 안 하고 종료
+    // 계정이 매칭되지 않은(미가입 의심) 명단 학생은 실제 계정 id가 없어 출결 기록 불가 → 안내 후 중단
+    if (person.ids.length === 0) { showToast('계정이 확인되지 않은 수강생입니다(가입 이메일 확인 필요).', 'error'); return; }
     // 동일인의 기존 출결 레코드 존재 여부 확인
     const existing = findRecord(person.ids);
     if (existing) {
@@ -295,11 +286,10 @@ const AdminAttendance = (): ReactElement => {
             </div>
             <div style={{ fontSize: '14.5px', fontWeight: 600, color: 'var(--primary-blue, #0046C8)' }}>
               총 {people.length}명
-              {/* 통합된 사람 수와 실제 계정 수가 다를 때만 계정 수를 부가 표기 */}
-              {/* 조건부 렌더링: {조건 && <JSX/>} 는 조건이 true 일 때만 JSX를 그린다. */}
-              {people.length !== students.length && (
-                <span style={{ fontSize: '12.5px', fontWeight: 500, color: 'var(--text-secondary, #6b7280)' }}>
-                  {' '}· 계정 {students.length}개(동일인 통합)
+              {/* 명단 기준이라 항상 활성 수강생 수(29명). 계정 매칭 안 된(미가입 의심) 인원만 부가 경고 표기. */}
+              {people.some((p) => p.ids.length === 0) && (
+                <span style={{ fontSize: '12.5px', fontWeight: 500, color: '#d97706' }}>
+                  {' '}· 계정 미확인 {people.filter((p) => p.ids.length === 0).length}명
                 </span>
               )}
             </div>
