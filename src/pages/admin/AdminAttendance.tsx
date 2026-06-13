@@ -241,9 +241,18 @@ const AdminAttendance = (): ReactElement => {
     // ?? -1 : STATUS_RANK 에 없는 알 수 없는 상태면 -1(최하위)로 취급(널 병합 연산자).
     if (!prev || (STATUS_RANK[r.status] ?? -1) > (STATUS_RANK[prev] ?? -1)) monthLookup[k] = r.status;
   });
-  // 특정 사람(pkey)의 특정 상태(st) 일수를 정규 수업일 범위에서 카운트
-  // 수업일들 중 해당 사람·날짜의 상태가 st 와 같은 날만 걸러(filter) 그 개수(length)를 센다.
-  const tally = (pkey: string, st: string) => CLASS_DAYS.filter(d => monthLookup[`${pkey}|${dateOfJune(d)}`] === st).length;
+  // 오늘 날짜(로컬/KST 기준) — '지난 수업일'에 기록이 없으면 결석으로 간주하기 위한 기준선
+  const TODAY = (() => { const d = new Date(); return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`; })();
+  // 효과적 상태: 출/지/사 기록이 있으면 그 상태, 없고 '지난 수업일'이면 결석(absent),
+  //   오늘·미래 수업일은 아직 미정('')으로 둔다(미래를 결석 처리하지 않음).
+  const effStatus = (pkey: string, d: number): string => {
+    const date = dateOfJune(d);
+    const st = monthLookup[`${pkey}|${date}`];
+    if (st) return st;
+    return date < TODAY ? 'absent' : '';
+  };
+  // 특정 사람(pkey)의 특정 상태(st) 일수를 정규 수업일 범위에서 카운트(효과적 상태 기준).
+  const tally = (pkey: string, st: string) => CLASS_DAYS.filter(d => effStatus(pkey, d) === st).length;
 
   // ── 일자별 출결일지 다운로드 (Word / PDF) ──
   // 상태 코드 → 한국어 표기 매핑(파일 출력용)
@@ -434,12 +443,11 @@ const AdminAttendance = (): ReactElement => {
                           {g.name}
                         </td>
                         {CLASS_DAYS.map(d => {
-                          // 해당 사람·날짜의 통합 상태를 룩업
-                          // 앞서 만든 monthLookup 사전에서 '사람키|날짜' 로 상태를 즉시 꺼낸다.
-                          const st = monthLookup[`${g.key}|${dateOfJune(d)}`];
+                          // 효과적 상태: 출/지/사 기록 또는 '지난 수업일 미기록 = 결석', 오늘·미래는 미정('')
+                          const st = effStatus(g.key, d);
                           return (
                             <td key={d} style={{ textAlign: 'center', padding: '8px 5px' }}>
-                              {/* 기록 있으면 색상 약어, 없으면 점(·) 표시 */}
+                              {/* 상태 있으면 색상 약어(결석 포함), 오늘·미래 미기록은 점(·) 표시 */}
                               {st ? <span style={{ fontWeight: 800, color: ABBR_COLOR[st] }}>{ABBR[st]}</span> : <span style={{ color: 'var(--border-light, #d1d5db)' }}>·</span>}
                             </td>
                           );
