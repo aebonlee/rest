@@ -93,6 +93,11 @@ const ABBR_COLOR: Record<string, string> = { present: '#10b981', late: '#d97706'
 // 일자(1~22)를 'YYYY-06-DD' 형식 날짜 문자열로 변환(monthLookup 키 생성용)
 // padStart(2, '0') 은 한 자리 숫자 앞에 0을 채워 두 자리로 만든다. 예) 5 → '05'.
 const dateOfJune = (d: number) => `2026-06-${String(d).padStart(2, '0')}`;
+// 'YYYY-MM-DD' → 한글 요일(일~토). 개인별 출석부의 날짜 옆에 병기.
+const WEEKDAY_KO = ['일', '월', '화', '수', '목', '금', '토'];
+const weekdayOf = (dateStr: string) => WEEKDAY_KO[new Date(dateStr + 'T00:00:00').getDay()];
+// ISO 시각 → '오후 2:05' 형태(없으면 '-')
+const fmtTime = (iso?: string) => (iso ? new Date(iso).toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : '-');
 
 // 출결 관리 메인 컴포넌트
 // (): ReactElement 는 "이 함수는 인자를 받지 않고, 화면 요소를 반환한다"는 타입 표기.
@@ -113,6 +118,8 @@ const AdminAttendance = (): ReactElement => {
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   // 로딩 상태(스피너 표시 및 버튼 비활성화 제어). 처음엔 true(데이터 불러오는 중).
   const [loading, setLoading] = useState(true);
+  // 개인별 출석부 모달 대상(이름 클릭 시 설정). null이면 모달 닫힘.
+  const [detailPerson, setDetailPerson] = useState<PersonGroup | null>(null);
 
   // selectedDate 기준 일자/월별 출결 + 학생 목록을 한 번에 로드
   // async 함수: 내부에서 await 로 "끝날 때까지 기다리는" 비동기 작업을 쓸 수 있다.
@@ -132,7 +139,7 @@ const AdminAttendance = (): ReactElement => {
     //   .eq = 같음, .gte = 크거나같음(>=), .lte = 작거나같음(<=).
     const [attRes, monthRes, signupRes] = await Promise.all([
       client.from(TABLES.attendance).select('*').eq('date', selectedDate),
-      client.from(TABLES.attendance).select('student_id, date, status').gte('date', '2026-06-01').lte('date', '2026-06-30'),
+      client.from(TABLES.attendance).select('id, student_id, date, status, check_in_time').gte('date', '2026-06-01').lte('date', '2026-06-30'),
       // 공식 명단 이메일로 계정을 직접 조회(도메인·전화번호 변수 무관하게 정확히 매칭)
       client.from('user_profiles').select('*').in('email', ROSTER_EMAILS),
     ]);
@@ -204,6 +211,28 @@ const AdminAttendance = (): ReactElement => {
     // delete: 해당 id 의 행을 DB에서 영구 삭제한다. (되돌릴 수 없으니 신중)
     await client.from(TABLES.attendance).delete().eq('id', existing.id);
     showToast('출결 상태를 해제했습니다.', 'success');
+    await loadData();
+  };
+
+  // 개인별 출석부에서 '특정 날짜'의 상태를 저장/변경/해제 (선택일과 무관한 임의 날짜 대상)
+  //   status === null 이면 해제(삭제). 기존 기록이 있으면 update, 없으면 insert.
+  const setStatusFor = async (
+    person: PersonGroup,
+    dateStr: string,
+    status: 'present' | 'absent' | 'late' | 'excused' | null,
+  ) => {
+    const client = getSupabase();
+    if (!client) return;
+    if (person.ids.length === 0) { showToast('계정이 확인되지 않은 수강생입니다(가입 이메일 확인 필요).', 'error'); return; }
+    // 월별 레코드(monthly)에서 이 사람의 해당 날짜 기록을 찾는다(동일인 모든 계정 id 대상).
+    const existing = monthly.find(r => person.ids.includes(r.student_id) && r.date === dateStr);
+    if (status === null) {
+      if (existing) await client.from(TABLES.attendance).delete().eq('id', existing.id);
+    } else if (existing) {
+      await client.from(TABLES.attendance).update({ status }).eq('id', existing.id);
+    } else {
+      await client.from(TABLES.attendance).insert({ student_id: person.primary.id, date: dateStr, status, check_in_time: new Date().toISOString() });
+    }
     await loadData();
   };
 
@@ -369,7 +398,9 @@ const AdminAttendance = (): ReactElement => {
                           </span>
                         </td>
                         <td>
-                          {g.name}
+                          {/* 이름 클릭 → 개인별 출석부(전체 수업일) 모달 열기·수정 */}
+                          <button type="button" onClick={() => setDetailPerson(g)} title="개인별 출석부 보기/수정"
+                            style={{ background: 'none', border: 'none', padding: 0, color: 'var(--primary-blue, #0046C8)', fontWeight: 600, fontSize: 'inherit', cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '2px' }}>{g.name}</button>
                           {/* 동일인 통합 그룹이면 합쳐진 계정 수 배지 표시 */}
                           {g.isMerged && (
                             <span title={`동일인 ${g.accounts.length}계정`} style={{
@@ -436,11 +467,12 @@ const AdminAttendance = (): ReactElement => {
                   </thead>
                   <tbody>
                     {people.map((g, i) => (
-                      <tr key={g.key}>
+                      // 행(이름 줄) 전체 클릭 → 개인별 출석부 팝업
+                      <tr key={g.key} onClick={() => setDetailPerson(g)} title={`${g.name} 개인별 출석부 보기`} style={{ cursor: 'pointer' }}>
                         {/* 이름 셀도 좌측 고정 — 앞에 순번 배지 표기 */}
                         <td style={{ position: 'sticky', left: 0, background: 'var(--bg-white, #fff)', fontWeight: 600, whiteSpace: 'nowrap', padding: '8px 14px' }}>
                           <span style={{ display: 'inline-block', minWidth: '20px', color: 'var(--text-light, #9ca3af)', fontWeight: 700, marginRight: '10px', textAlign: 'right' }}>{i + 1}</span>
-                          {g.name}
+                          <span style={{ color: 'var(--primary-blue, #0046C8)', textDecoration: 'underline', textUnderlineOffset: '2px' }}>{g.name}</span>
                         </td>
                         {CLASS_DAYS.map(d => {
                           // 효과적 상태: 출/지/사 기록 또는 '지난 수업일 미기록 = 결석', 오늘·미래는 미정('')
@@ -465,6 +497,72 @@ const AdminAttendance = (): ReactElement => {
           )}
         </div>
       </div>
+
+      {/* ── 개인별 출석부 팝업 ── 이름/행 클릭 시. 날짜별 상태+시각 표기 + 직접 수정 */}
+      {detailPerson && (
+        <div
+          onClick={() => setDetailPerson(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.5)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}
+        >
+          {/* 내부 클릭은 닫힘 전파 차단(stopPropagation) — 오버레이 클릭만 닫힘 */}
+          <div onClick={(e) => e.stopPropagation()} style={{ background: '#fff', borderRadius: '14px', width: '100%', maxWidth: '560px', maxHeight: '86vh', display: 'flex', flexDirection: 'column', boxShadow: '0 20px 60px rgba(0,0,0,0.3)' }}>
+            {/* 헤더: 이름 + 상태별 누계 + 닫기 */}
+            <div style={{ padding: '18px 22px', borderBottom: '1px solid var(--border-light, #e5e7eb)', display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
+              <div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: 'var(--text-primary, #111827)' }}>
+                  {detailPerson.name} <span style={{ fontSize: '13px', fontWeight: 600, color: 'var(--text-secondary, #6b7280)' }}>· 개인별 출석부</span>
+                </div>
+                <div style={{ fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)', marginTop: '4px' }}>
+                  <span style={{ color: '#10b981', fontWeight: 700 }}>출석 {tally(detailPerson.key, 'present')}</span>{' · '}
+                  <span style={{ color: '#d97706', fontWeight: 700 }}>지각 {tally(detailPerson.key, 'late')}</span>{' · '}
+                  <span style={{ color: '#ef4444', fontWeight: 700 }}>결석 {tally(detailPerson.key, 'absent')}</span>{' · '}
+                  <span style={{ color: '#6b7280', fontWeight: 700 }}>사유 {tally(detailPerson.key, 'excused')}</span>
+                  {'  /  '}정규 수업일 {CLASS_DAYS.length}일
+                </div>
+                {detailPerson.emails.length > 0 && (
+                  <div style={{ fontSize: '11.5px', color: 'var(--text-light, #9ca3af)', marginTop: '2px' }}>{detailPerson.emails.join(' / ')}</div>
+                )}
+              </div>
+              <button type="button" onClick={() => setDetailPerson(null)} title="닫기" style={{ background: 'none', border: 'none', fontSize: '20px', lineHeight: 1, color: 'var(--text-secondary, #6b7280)', cursor: 'pointer', padding: '2px 6px' }}>×</button>
+            </div>
+
+            {/* 본문: 수업일별 행(날짜·요일 / 시각 / 상태 / 수정 버튼) */}
+            <div style={{ overflowY: 'auto', padding: '6px 0' }}>
+              {detailPerson.ids.length === 0 ? (
+                <div style={{ padding: '18px 22px', color: '#d97706', fontSize: '14px' }}>
+                  계정이 확인되지 않아 출결을 기록할 수 없습니다. 가입 이메일을 명단과 맞춰 주세요.
+                </div>
+              ) : CLASS_DAYS.map((d) => {
+                const dateStr = dateOfJune(d);
+                const rec = monthly.find((r) => detailPerson.ids.includes(r.student_id) && r.date === dateStr);
+                const stored = rec?.status;              // 실제 기록된 상태(없을 수 있음)
+                const eff = effStatus(detailPerson.key, d); // 표시용(지난 수업일 미기록=결석)
+                return (
+                  <div key={d} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 22px', borderBottom: '1px solid #f3f4f6' }}>
+                    <div style={{ width: '78px', fontWeight: 600, fontSize: '13.5px', flexShrink: 0 }}>6/{d}({weekdayOf(dateStr)})</div>
+                    {/* 체크인 시각 병기 */}
+                    <div style={{ width: '60px', fontSize: '12.5px', color: 'var(--text-secondary, #6b7280)', fontVariantNumeric: 'tabular-nums', flexShrink: 0 }}>{fmtTime(rec?.check_in_time)}</div>
+                    {/* 현재 상태 약어(미기록 결석 포함) */}
+                    <div style={{ width: '22px', textAlign: 'center', fontWeight: 800, flexShrink: 0, color: eff ? ABBR_COLOR[eff] : 'var(--border-light, #d1d5db)' }}>{eff ? ABBR[eff] : '·'}</div>
+                    {/* 수정 버튼: 출/지/사/결 + 해제 */}
+                    <div style={{ display: 'flex', gap: '4px', marginLeft: 'auto', flexShrink: 0 }}>
+                      {([['present', '출'], ['late', '지'], ['excused', '사'], ['absent', '결']] as const).map(([st, label]) => {
+                        const on = stored === st;
+                        return (
+                          <button key={st} type="button" onClick={() => setStatusFor(detailPerson, dateStr, st)}
+                            style={{ minWidth: '30px', padding: '3px 7px', fontSize: '12.5px', fontWeight: 700, borderRadius: '6px', cursor: 'pointer', border: `1px solid ${on ? ABBR_COLOR[st] : '#e5e7eb'}`, background: on ? ABBR_COLOR[st] : '#fff', color: on ? '#fff' : 'var(--text-secondary, #6b7280)' }}>{label}</button>
+                        );
+                      })}
+                      <button type="button" onClick={() => setStatusFor(detailPerson, dateStr, null)} disabled={!stored}
+                        style={{ padding: '3px 8px', fontSize: '12px', borderRadius: '6px', border: '1px solid #e5e7eb', background: '#fff', color: stored ? 'var(--text-secondary, #6b7280)' : '#d1d5db', cursor: stored ? 'pointer' : 'not-allowed' }}>해제</button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };
