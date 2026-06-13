@@ -57,6 +57,8 @@ import type { UserProfile } from '../../types'; // 사용자 프로필의 타입
 const REST_HOSTNAME = new URL(site.url).hostname;
 // 수강생 집계에서 제외할 운영진 역할. (이 역할을 가진 계정은 학생이 아님)
 const STAFF_ROLES = ['admin', 'superadmin'];
+// 출결·성적 대상이 아닌 계정(조교 등) — role은 학생(member)이지만 집계에서 제외.
+const EXCLUDED_EMAILS = ['iryn0325@hanmail.net'];
 // 점수로 집계하는 평가 종류(진단평가 제외) — 표시 순서이기도 함.
 // as const : 이 배열을 "읽기 전용 + 정확한 문자열 타입"으로 고정한다.
 //   → 덕분에 typeof GRADED_TYPES[number] 가 'prerequisite' | 'summative' 로 좁혀져 오타를 막는다.
@@ -133,7 +135,7 @@ const AdminGrades = (): ReactElement => {
         // filter: 조건이 true 인 항목만 남긴다. 여기선 운영진 역할도 아니고 관리자 이메일도 아닌 사람.
         // (u.email || '') : email 이 없을 때 빈 문자열로 대체 → .toLowerCase() 에서 에러 방지.
         // 대소문자를 통일(toLowerCase)해 비교해야 'Admin@x' 같은 표기도 제대로 걸러진다.
-        .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()))
+        .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()) && !EXCLUDED_EMAILS.includes((u.email || '').toLowerCase()))
         // sort: 두 항목 a,b 를 비교해 순서를 정한다. localeCompare 는 한글 가나다 순서를 올바르게 처리한다.
         // a.display_name || a.name || a.email || '' : 앞의 값이 비어 있으면 다음 값을 쓰는 "대체 사슬".
         .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));

@@ -72,6 +72,8 @@ const TABLES = { attendance: `${site.dbPrefix}attendance` };
 const REST_HOSTNAME = new URL(site.url).hostname;
 // 출석 대상에서 제외할 스태프 역할 목록
 const STAFF_ROLES = ['admin', 'superadmin'];
+// 출결 대상이 아닌 계정(조교 등) — role은 학생(member)이지만 출석 집계에서 제외한다.
+const EXCLUDED_EMAILS = ['iryn0325@hanmail.net'];
 
 /** 정규 수업일 (6/1~6/22 평일, 6/3 공휴일) */
 const CLASS_DAYS: number[] = (() => {
@@ -152,7 +154,7 @@ const AdminAttendance = (): ReactElement => {
     // 옵셔널 체이닝 대신 여기선 (u.email || '') 로 email 이 없을 때 빈 문자열로 대체한다.
     //   .toLowerCase() 는 대소문자 차이로 비교가 어긋나는 것을 막기 위함.
     const list = ((signupRes.data || []) as UserProfile[])
-      .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()))
+      .filter((u) => !STAFF_ROLES.includes(u.role) && !ADMIN_EMAILS.includes((u.email || '').toLowerCase()) && !EXCLUDED_EMAILS.includes((u.email || '').toLowerCase()))
       .sort((a, b) => (a.display_name || a.name || a.email || '').localeCompare(b.display_name || b.name || b.email || ''));
     setStudents(list);
     setLoading(false); // 모든 처리가 끝났으니 로딩 종료(스피너 사라지고 표 표시)
@@ -425,25 +427,28 @@ const AdminAttendance = (): ReactElement => {
                     <tr>
                       {/* 이름 열은 가로 스크롤 시 좌측 고정(sticky) */}
                       {/* position: 'sticky', left: 0 — 가로로 스크롤해도 이름 칸이 왼쪽에 붙어 있게 한다. */}
-                      <th style={{ position: 'sticky', left: 0, background: 'var(--bg-light-gray, #f5f7fa)' }}>이름</th>
+                      <th style={{ position: 'sticky', left: 0, background: 'var(--bg-light-gray, #f5f7fa)', padding: '8px 14px' }}>No. · 이름</th>
                       {/* 수업일 일자를 열 헤더로 나열 */}
-                      {CLASS_DAYS.map(d => <th key={d} style={{ textAlign: 'center', minWidth: '30px' }}>{d}</th>)}
+                      {CLASS_DAYS.map(d => <th key={d} style={{ textAlign: 'center', minWidth: '34px', padding: '8px 5px' }}>{d}</th>)}
                       <th style={{ textAlign: 'center' }}>출석</th>
                       <th style={{ textAlign: 'center' }}>지각</th>
                       <th style={{ textAlign: 'center' }}>결석</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {people.map(g => (
+                    {people.map((g, i) => (
                       <tr key={g.key}>
-                        {/* 이름 셀도 좌측 고정 */}
-                        <td style={{ position: 'sticky', left: 0, background: 'var(--bg-white, #fff)', fontWeight: 600, whiteSpace: 'nowrap' }}>{g.name}</td>
+                        {/* 이름 셀도 좌측 고정 — 앞에 순번 배지 표기 */}
+                        <td style={{ position: 'sticky', left: 0, background: 'var(--bg-white, #fff)', fontWeight: 600, whiteSpace: 'nowrap', padding: '8px 14px' }}>
+                          <span style={{ display: 'inline-block', minWidth: '20px', color: 'var(--text-light, #9ca3af)', fontWeight: 700, marginRight: '10px', textAlign: 'right' }}>{i + 1}</span>
+                          {g.name}
+                        </td>
                         {CLASS_DAYS.map(d => {
                           // 해당 사람·날짜의 통합 상태를 룩업
                           // 앞서 만든 monthLookup 사전에서 '사람키|날짜' 로 상태를 즉시 꺼낸다.
                           const st = monthLookup[`${g.key}|${dateOfJune(d)}`];
                           return (
-                            <td key={d} style={{ textAlign: 'center', padding: '6px 2px' }}>
+                            <td key={d} style={{ textAlign: 'center', padding: '8px 5px' }}>
                               {/* 기록 있으면 색상 약어, 없으면 점(·) 표시 */}
                               {st ? <span style={{ fontWeight: 800, color: ABBR_COLOR[st] }}>{ABBR[st]}</span> : <span style={{ color: 'var(--border-light, #d1d5db)' }}>·</span>}
                             </td>

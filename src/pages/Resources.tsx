@@ -98,7 +98,7 @@ const Resources = (): ReactElement => {
         }}
       >
         {/* 그룹 아이콘(이모지 등) */}
-        <span style={{ fontSize: '18px' }}>{g.icon}</span>
+        <span style={{ fontSize: '18px' }}><EmojiIcon char={g.icon} /></span>
         {/* 그룹 이름. flex:1 로 남는 가로공간을 모두 차지해 개수 표시를 오른쪽 끝으로 밀어냄 */}
         <span style={{ flex: 1 }}>{g.label}</span>
         {/* 그룹에 속한 사이트 개수 표시 (g.sites 는 사이트 배열, .length 는 그 개수) */}
@@ -161,7 +161,7 @@ const Resources = (): ReactElement => {
             <div style={{ minWidth: 0, order: 2 }} className="resources-main">
               <h3 style={{ margin: '0 0 4px', fontSize: '20px', color: 'var(--text-primary)' }}>
                 {/* 현재 선택된 그룹의 아이콘과 이름 */}
-                {group.icon} {group.label}
+                <EmojiIcon char={group.icon} /> {group.label}
                 {/* 선택된 그룹의 사이트 개수 */}
                 <span style={{ fontSize: '14px', fontWeight: 500, color: 'var(--text-secondary)' }}> · {group.sites.length}개</span>
               </h3>

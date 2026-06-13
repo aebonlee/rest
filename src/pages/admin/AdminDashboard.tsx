@@ -33,7 +33,6 @@
 // import: 다른 파일에 있는 기능을 이 파일로 가져오는 구문.
 // - useState/useEffect: React 훅. type ReactElement는 "타입만" 가져오는 표시(실행 코드 아님).
 import { useState, useEffect, type ReactElement } from 'react';
-import { EmojiIcon } from '../../utils/emojiIcon';
 // Link: 페이지 새로고침 없이 다른 경로로 이동시키는 react-router의 링크 컴포넌트(SPA 라우팅).
 import { Link } from 'react-router-dom';
 // AdminSidebar: 관리자 화면 왼쪽에 공통으로 들어가는 내비게이션 컴포넌트.
@@ -168,13 +167,13 @@ const AdminDashboard = (): ReactElement => {
           <div className="admin-quick-links">
             <h3>바로가기</h3>
             <div className="quick-links">
-              <Link to="/admin/students" className="quick-link-card"><EmojiIcon char="👥" /> 수강생 관리</Link>
-              <Link to="/admin/materials" className="quick-link-card"><EmojiIcon char="📁" /> 자료 관리</Link>
-              <Link to="/admin/assignments" className="quick-link-card"><EmojiIcon char="📝" /> 과제 관리</Link>
-              <Link to="/admin/attendance" className="quick-link-card"><EmojiIcon char="✅" /> 출석 관리</Link>
-              <Link to="/admin/announcements" className="quick-link-card"><EmojiIcon char="📢" /> 공지사항</Link>
-              <Link to="/admin/teams" className="quick-link-card"><EmojiIcon char="🤝" /> 팀 편성</Link>
-              <Link to="/admin/projects" className="quick-link-card"><EmojiIcon char="🚀" /> 프로젝트</Link>
+              <Link to="/admin/students" className="quick-link-card"><span className="ql-num">1</span> 수강생 관리</Link>
+              <Link to="/admin/materials" className="quick-link-card"><span className="ql-num">2</span> 자료 관리</Link>
+              <Link to="/admin/assignments" className="quick-link-card"><span className="ql-num">3</span> 과제 관리</Link>
+              <Link to="/admin/attendance" className="quick-link-card"><span className="ql-num">4</span> 출석 관리</Link>
+              <Link to="/admin/announcements" className="quick-link-card"><span className="ql-num">5</span> 공지사항</Link>
+              <Link to="/admin/teams" className="quick-link-card"><span className="ql-num">6</span> 팀 편성</Link>
+              <Link to="/admin/projects" className="quick-link-card"><span className="ql-num">7</span> 프로젝트</Link>
             </div>
           </div>
         </div>
