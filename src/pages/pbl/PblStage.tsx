@@ -3,13 +3,13 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import SEOHead from '../../components/SEOHead';
-import { PBL_STAGES, stageByKey, autoStagePoints } from '../../config/pblActivity';
+import { PBL_STAGES, stageByKey, autoStagePoints, type PblField } from '../../config/pblActivity';
 import { getMySubmission, saveStageContent, type PblSubmission } from '../../utils/pblStore';
 import { evaluateWriting, PBL_STAGE_KEYWORDS, type EvalResult } from '../../utils/promptEval';
 import PblSidebar from './PblSidebar';
 
 const textarea: React.CSSProperties = {
-  width: '100%', minHeight: '120px', padding: '12px 14px', fontSize: '15px', lineHeight: 1.7,
+  width: '100%', minHeight: '110px', padding: '12px 14px', fontSize: '15px', lineHeight: 1.7,
   boxSizing: 'border-box', border: '1px solid var(--border-light)', borderRadius: '10px',
   background: 'var(--bg-white)', color: 'var(--text-primary)', resize: 'vertical', fontFamily: 'inherit',
 };
@@ -62,6 +62,7 @@ const PblStage = (): ReactElement => {
   const next = PBL_STAGES[idx + 1];
   // 사이드바에 실시간 자동 점수도 반영
   const liveAuto = { ...(sub?.auto || {}), ...(evalResult ? { [stage.key]: evalResult.score } : {}) };
+  const filled = stage.fields.filter((f) => (values[f.id] || '').trim().length > 0).length;
 
   const handleSave = async () => {
     setSaving(true);
@@ -74,6 +75,58 @@ const PblStage = (): ReactElement => {
     } catch (e: any) {
       showToast('저장 실패: ' + (e?.message || ''), 'error');
     } finally { setSaving(false); }
+  };
+
+  // koreatech식 단계 카드 — 풍부한 안내(desc/guide/example)가 있으면 카드형, 없으면 단순 라벨형
+  const renderField = (f: PblField): ReactElement => {
+    const c = f.color || stage.color;
+    const rich = !!(f.desc || (f.guide && f.guide.length) || f.example);
+    if (!rich) {
+      return (
+        <div key={f.id}>
+          <label style={{ fontSize: '14px', fontWeight: 700, marginBottom: '6px', display: 'block' }}>{f.label}</label>
+          <textarea style={textarea} value={values[f.id] || ''} placeholder={f.placeholder}
+            onChange={(e) => setValues({ ...values, [f.id]: e.target.value })} />
+        </div>
+      );
+    }
+    return (
+      <div key={f.id} style={{ border: '1px solid var(--border-light)', borderRadius: '14px', padding: '20px', background: 'var(--bg-white)' }}>
+        {/* 헤더: STEP no + 아이콘 + 제목 */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+          <span style={{ width: '40px', height: '40px', flexShrink: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', background: c, color: '#fff', borderRadius: '10px', fontSize: '20px', fontWeight: 700 }}>{f.icon || '📝'}</span>
+          <div>
+            {typeof f.no === 'number' && <span style={{ fontSize: '12.5px', fontWeight: 700, color: c, letterSpacing: '0.04em' }}>STEP {f.no}</span>}
+            <h3 style={{ margin: '2px 0 0', fontSize: '18px', fontWeight: 700, color: 'var(--text-primary)' }}>{f.label}</h3>
+          </div>
+        </div>
+
+        {f.desc && <p style={{ margin: '0 0 14px', fontSize: '15px', lineHeight: 1.7, color: 'var(--text-secondary)' }}>{f.desc}</p>}
+
+        {/* 작성 가이드 */}
+        {f.guide && f.guide.length > 0 && (
+          <div style={{ marginBottom: '14px' }}>
+            <p style={{ margin: '0 0 6px', fontSize: '13.5px', fontWeight: 700, color: 'var(--text-primary)' }}>✍️ 이렇게 작성하세요</p>
+            <ul style={{ margin: 0, paddingLeft: '20px', fontSize: '14px', lineHeight: 1.7, color: 'var(--text-secondary)' }}>
+              {f.guide.map((g, i) => <li key={i}>{g}</li>)}
+            </ul>
+          </div>
+        )}
+
+        {/* 예시 */}
+        {f.example && (
+          <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: '8px', padding: '12px 14px', marginBottom: '14px' }}>
+            <p style={{ margin: '0 0 4px', fontSize: '12.5px', fontWeight: 700, color: '#1d4ed8' }}>💡 예시{stage.exampleProject ? ` — ${stage.exampleProject}` : ''}</p>
+            <p style={{ margin: 0, fontSize: '14px', lineHeight: 1.7, color: '#1e3a5f', whiteSpace: 'pre-wrap' }}>{f.example}</p>
+          </div>
+        )}
+
+        {/* 작성란 */}
+        <label style={{ display: 'block', fontSize: '13.5px', fontWeight: 700, color: 'var(--text-primary)', marginBottom: '6px' }}>내 프로젝트 작성</label>
+        <textarea style={textarea} value={values[f.id] || ''} placeholder={f.placeholder}
+          onChange={(e) => setValues({ ...values, [f.id]: e.target.value })} />
+      </div>
+    );
   };
 
   return (
@@ -89,7 +142,17 @@ const PblStage = (): ReactElement => {
       <div className="sidebar-layout">
         <PblSidebar active={stage.key} auto={liveAuto} scores={sub?.scores} />
 
-        <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '820px' }}>
+        <div className="sidebar-content" style={{ display: 'flex', flexDirection: 'column', gap: '18px', maxWidth: '860px' }}>
+          {/* 단계 개요(가이드) */}
+          {stage.intro && (
+            <div style={{ background: 'var(--bg-light-gray)', borderLeft: `4px solid ${stage.color}`, borderRadius: '0 12px 12px 0', padding: '18px 22px', lineHeight: 1.75 }}>
+              <p style={{ margin: '0 0 10px', fontSize: '15.5px', fontWeight: 600, color: 'var(--text-primary)' }}>{stage.intro.lead}</p>
+              <ul style={{ margin: 0, paddingLeft: '20px', color: 'var(--text-secondary)', fontSize: '14.5px' }}>
+                {stage.intro.points.map((p, i) => <li key={i} style={{ marginBottom: '4px' }}>{p}</li>)}
+              </ul>
+            </div>
+          )}
+
           {/* 루브릭 */}
           <div style={{ padding: '12px 16px', borderRadius: '10px', background: `${stage.color}12`, fontSize: '13.5px', color: 'var(--text-secondary)' }}>
             <strong style={{ color: stage.color }}>평가 기준 ({stage.max}점)</strong> · {stage.rubric}
@@ -99,15 +162,16 @@ const PblStage = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }} /></div>
           ) : (
             <>
-              {stage.fields.map((f) => (
-                <div key={f.id}>
-                  <label style={{ fontSize: '14px', fontWeight: 700, marginBottom: '6px', display: 'block' }}>{f.label}</label>
-                  <textarea style={textarea} value={values[f.id] || ''} placeholder={f.placeholder}
-                    onChange={(e) => setValues({ ...values, [f.id]: e.target.value })} />
-                </div>
-              ))}
+              {/* 작성 진행 상태 */}
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', padding: '10px 16px', background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderRadius: '10px', fontSize: '14px', color: 'var(--text-secondary)' }}>
+                작성 진행: <strong style={{ color: stage.color }}>{filled}</strong> / {stage.fields.length} 단계
+                {savedAuto !== null && <span style={{ marginLeft: 'auto', color: '#10b981' }}>✓ 저장된 자동 점수 {savedAuto}/100 (환산 {autoStagePoints(savedAuto, stage.max)}/{stage.max})</span>}
+              </div>
 
-              {/* 자동 평가 결과 (항목별) */}
+              {/* 단계별 워크시트 카드 */}
+              {stage.fields.map((f) => renderField(f))}
+
+              {/* 자동 평가 결과 (단계 합산) */}
               {evalResult ? (
                 <div style={{ padding: '18px 20px', borderRadius: '14px', border: `2px solid ${evalResult.color}`, background: 'var(--bg-white)' }}>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: '10px', flexWrap: 'wrap', marginBottom: '12px' }}>
@@ -137,12 +201,6 @@ const PblStage = (): ReactElement => {
                 <div style={{ padding: '14px 16px', borderRadius: '10px', background: 'var(--bg-light-gray)', fontSize: '13.5px', color: 'var(--text-secondary)' }}>
                   내용을 작성하면 자동 평가 점수가 즉시 표시됩니다.
                 </div>
-              )}
-
-              {savedAuto !== null && (
-                <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  💾 저장된 자동 점수: <strong>{savedAuto}/100</strong> (환산 {autoStagePoints(savedAuto, stage.max)}/{stage.max}점)
-                </p>
               )}
 
               {(score !== null || feedback) && (
