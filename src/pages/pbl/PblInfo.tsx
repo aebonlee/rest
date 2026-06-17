@@ -3,11 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useToast } from '../../contexts/ToastContext';
 import SEOHead from '../../components/SEOHead';
 import { updateProfile } from '../../utils/auth';
-import { REGIONS, topicsByRegion, type Region } from '../../data/pblTopics';
-import {
-  COLLEGES, departmentsOf, majorsOf, matchRoster, COURSE_TITLE,
-} from '../../data/pblRoster';
-import { PBL_STAGES, PBL_TOTAL, TRACKS, autoTotal, autoStagePoints } from '../../config/pblActivity';
+import { PBL_STAGES, PBL_TOTAL, autoTotal, autoStagePoints } from '../../config/pblActivity';
 import { getMySubmission, saveInfo, type PblSubmission } from '../../utils/pblStore';
 import PblSidebar from './PblSidebar';
 
@@ -22,15 +18,13 @@ const PblInfo = (): ReactElement => {
   const { user, profile, refreshProfile } = useAuth() as any;
   const { showToast } = useToast();
   const [form, setForm] = useState({
-    student_name: '', student_no: '', college: '', department: '', major: '', phone: '',
-    region: '서울' as Region, topic_key: '', track: '기술',
+    student_name: '', student_no: '', phone: '',
   });
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
   const [sub, setSub] = useState<PblSubmission | null>(null);
 
   const email = profile?.email || user?.email || '';
-  const matched = matchRoster(form.college, form.department, form.major);
 
   const load = useCallback(async () => {
     const row = await getMySubmission(user);
@@ -38,39 +32,27 @@ const PblInfo = (): ReactElement => {
     setForm({
       student_name: row?.student_name || profile?.name || profile?.display_name || '',
       student_no: row?.student_no || profile?.student_no || '',
-      college: row?.college || profile?.college || '',
-      department: row?.department || profile?.department || '',
-      major: row?.major || profile?.major || '',
       phone: row?.phone || profile?.phone || '',
-      region: (row?.region as Region) || '서울',
-      topic_key: row?.topic_key || '',
-      track: row?.track || '기술',
     });
     setLoaded(true);
   }, [user, profile]);
 
   useEffect(() => { load(); }, [load]);
 
-  const topics = topicsByRegion(form.region);
-  const departments = form.college ? departmentsOf(form.college) : [];
-  const majors = form.college && form.department ? majorsOf(form.college, form.department) : [];
-
   const handleSave = async () => {
     if (!form.student_name.trim()) { showToast('이름을 입력해 주세요.', 'warning'); return; }
     if (!form.student_no.trim()) { showToast('학번을 입력해 주세요.', 'warning'); return; }
-    if (!form.college || !form.department) { showToast('대학(원)·학과(부)를 선택해 주세요.', 'warning'); return; }
     setSaving(true);
     try {
-      await saveInfo(user, { ...form, roster_matched: matched });
+      await saveInfo(user, { ...form });
       try {
         await updateProfile(user.id, {
           name: form.student_name, display_name: form.student_name,
           phone: form.phone, student_no: form.student_no,
-          college: form.college, department: form.department, major: form.major,
         });
         if (refreshProfile) await refreshProfile();
       } catch { /* 프로필 반영 실패 무시 */ }
-      showToast(matched ? '저장 완료 — 명단 확인됨 ✓' : '저장했습니다. (명단에서 확인되지 않음)', matched ? 'success' : 'warning');
+      showToast('기본정보를 저장했습니다.', 'success');
       load();
     } catch (e: any) {
       showToast('저장 실패: ' + (e?.message || ''), 'error');
@@ -84,8 +66,8 @@ const PblInfo = (): ReactElement => {
         <div className="container">
           <h2>개인별 PBL활동 · 기본정보</h2>
           <p>
-            나의 정보를 입력하고 단계별 활동을 진행합니다.<br />
-            소속(대학·학과·전공)으로 수강 명단과 대조하며, 작성 내용은 자동 평가되어 점수로 저장됩니다.
+            나의 정보를 입력하고 컴퓨팅 사고 7단계로 개발 프로젝트를 진행합니다.<br />
+            각 단계에서 작성한 내용은 자동 평가되어 점수로 저장되고, 아래에서 내 점수를 확인할 수 있습니다.
           </p>
         </div>
       </section>
@@ -98,17 +80,6 @@ const PblInfo = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '40px' }}><div className="loading-spinner" style={{ margin: '0 auto' }} /></div>
           ) : (
             <>
-              {/* 명단 대조 상태 */}
-              <div style={{
-                fontSize: '13.5px', borderRadius: '10px', padding: '12px 16px', fontWeight: 600,
-                background: !form.college ? 'var(--bg-light-gray)' : matched ? '#d1fae5' : '#fee2e2',
-                color: !form.college ? 'var(--text-secondary)' : matched ? '#065f46' : '#991b1b',
-              }}>
-                {!form.college ? `📋 소속을 선택하면 「${COURSE_TITLE}」 수강 명단과 대조합니다.`
-                  : matched ? '✓ 수강 명단에서 확인된 소속입니다.'
-                  : '⚠ 선택한 소속이 수강 명단과 일치하지 않습니다. 대학·학과를 다시 확인하세요.'}
-              </div>
-
               {/* 개인정보 */}
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '16px' }}>
                 <div>
@@ -129,59 +100,8 @@ const PblInfo = (): ReactElement => {
                 </div>
               </div>
 
-              {/* 소속·트랙 4가지 확인 (명단 대조) */}
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)' }}>
-                소속·트랙 확인 — 대학(원) · 학과(부) · 전공 · 트랙 (수강 명단과 대조)
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '16px' }}>
-                <div>
-                  <label style={labelStyle}>대학(원) *</label>
-                  <select style={input} value={form.college} onChange={(e) => setForm({ ...form, college: e.target.value, department: '', major: '' })}>
-                    <option value="">— 선택 —</option>
-                    {COLLEGES.map((c) => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>학과(부) *</label>
-                  <select style={input} value={form.department} disabled={!form.college} onChange={(e) => setForm({ ...form, department: e.target.value, major: '' })}>
-                    <option value="">— 선택 —</option>
-                    {departments.map((d) => <option key={d} value={d}>{d}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>전공</label>
-                  <select style={input} value={form.major} disabled={!form.department} onChange={(e) => setForm({ ...form, major: e.target.value })}>
-                    <option value="">— 선택/해당없음 —</option>
-                    {majors.map((m) => <option key={m} value={m}>{m}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>트랙 *</label>
-                  <select style={input} value={form.track} onChange={(e) => setForm({ ...form, track: e.target.value })}>
-                    {TRACKS.map((t) => <option key={t} value={t}>{t} 트랙</option>)}
-                  </select>
-                </div>
-              </div>
-
-              {/* 관심 주제 */}
-              <div style={{ display: 'grid', gridTemplateColumns: '160px 1fr', gap: '12px' }}>
-                <div>
-                  <label style={labelStyle}>관심 지역</label>
-                  <select style={input} value={form.region} onChange={(e) => setForm({ ...form, region: e.target.value as Region, topic_key: '' })}>
-                    {REGIONS.map((r) => <option key={r} value={r}>{r}</option>)}
-                  </select>
-                </div>
-                <div>
-                  <label style={labelStyle}>관심 주제 (선택)</label>
-                  <select style={input} value={form.topic_key} onChange={(e) => setForm({ ...form, topic_key: e.target.value })}>
-                    <option value="">— 주제 선택 —</option>
-                    {topics.map((t) => <option key={t.key} value={t.key}>{t.title}</option>)}
-                  </select>
-                </div>
-              </div>
-
               <button className="btn btn-primary" style={{ alignSelf: 'flex-start', padding: '11px 26px' }} disabled={saving} onClick={handleSave}>
-                {saving ? '저장 중…' : '기본정보 저장 (명단 대조·회원정보 반영)'}
+                {saving ? '저장 중…' : '기본정보 저장 (회원정보 반영)'}
               </button>
 
               {/* 내 점수 요약 — 항목별 */}

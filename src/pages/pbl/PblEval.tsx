@@ -3,7 +3,6 @@ import { useToast } from '../../contexts/ToastContext';
 import SEOHead from '../../components/SEOHead';
 import { PBL_STAGES, PBL_TOTAL, totalScore, autoTotal, autoStagePoints } from '../../config/pblActivity';
 import { getAllSubmissions, saveGrade, type PblSubmission } from '../../utils/pblStore';
-import { getTopic } from '../../data/pblTopics';
 
 const PblEval = (): ReactElement => {
   const { showToast } = useToast();
@@ -90,18 +89,12 @@ const PblEval = (): ReactElement => {
                   <span className="pgd-hero-icon" style={{ background: '#0046C818', color: '#0046C8' }}>🎓</span>
                   <div style={{ minWidth: 0 }}>
                     <h3 className="pgd-hero-title" style={{ marginBottom: '6px' }}>{sel.student_name || '(이름없음)'}</h3>
-                    {/* 1줄: 개인정보 + 소속 + 명단 대조 */}
+                    {/* 1줄: 개인정보 (학번 · 연락처 · 이메일) */}
                     <p className="pgd-hero-subtitle" style={{ margin: '0 0 8px' }}>
-                      {sel.student_no || '-'} · {sel.college || '-'} {sel.department || ''} {sel.major || ''} · {sel.phone || '-'} · {sel.track || '-'} 트랙
-                      {sel.roster_matched
-                        ? <span style={{ marginLeft: '8px', fontSize: '11.5px', fontWeight: 700, padding: '1px 8px', borderRadius: '999px', background: '#d1fae5', color: '#065f46' }}>명단 확인</span>
-                        : <span style={{ marginLeft: '8px', fontSize: '11.5px', fontWeight: 700, padding: '1px 8px', borderRadius: '999px', background: '#fee2e2', color: '#991b1b' }}>명단외</span>}
+                      {sel.student_no || '-'} · {sel.phone || '-'} · {sel.email || '-'}
                     </p>
-                    {/* 2줄: 주제 + 점수 */}
+                    {/* 2줄: 점수 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '13px' }}>
-                      {sel.topic_key && getTopic(sel.topic_key) && (
-                        <span style={{ color: 'var(--text-secondary)' }}>📌 {getTopic(sel.topic_key)!.title}</span>
-                      )}
                       <span style={{ fontWeight: 700, padding: '3px 12px', borderRadius: '999px', background: '#eff6ff', color: '#1e40af' }}>
                         🤖 자동 {autoTotal(sel.auto)} / {PBL_TOTAL}
                       </span>

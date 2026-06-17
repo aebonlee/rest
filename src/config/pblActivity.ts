@@ -1,6 +1,7 @@
 /**
- * PBL 활동 단계 정의 — 기본정보 + 6단계 워크시트(저장) + 루브릭(평가, 합계 100점).
- * 운영 흐름: 문제정의·아이디어 → 팀빌딩·구체화 → 심사·평가(중간) → 컨설팅·멘토링 → 구현 → 고도화·최종발표.
+ * PBL 활동 단계 정의 — 기본정보 + 컴퓨팅 사고 7단계 개발 워크시트(저장) + 루브릭(평가, 합계 100점).
+ * 개발 프로젝트 흐름: 문제인식 → 문제정의 → 문제분해 → 추상화 → 알고리즘 설계 → 구현 → 결과 시연/발표.
+ * (koreatech 프로젝트활동과 동일한 CT 7단계 / 루브릭 배점 15·10·10·20·20·15·10 = 100)
  */
 
 export interface PblField {
@@ -24,70 +25,73 @@ export interface PblStage {
 
 export const PBL_STAGES: PblStage[] = [
   {
-    key: 'problem', label: '문제정의·아이디어 도출', icon: '🔍', color: '#10B981', max: 20,
-    desc: 'ESG·환경 관점에서 지역문제를 선정하고, 생성형 AI로 문제를 구조화해 정의합니다.',
-    rubric: '문제 상황이 구체적이고(누가·언제·무엇이), 데이터로 다룰 수 있게 타당하게 정의되었는가.',
+    key: 'recognition', label: '문제 인식', icon: '🔭', color: '#DC2626', max: 15,
+    desc: '내 일상·학습·업무에서 불편하거나 번거로운 순간을 관찰해 “해결할 가치가 있는 문제”를 찾고 선정합니다.',
+    rubric: '실제 상황의 불편함을 명확하고 구체적으로(누가·언제·어디서·무엇이) 설명했는가.',
     fields: [
-      { id: 'topic', label: '선정 주제 (지역·문제)', placeholder: '예) 서울 — 폭염 사각지대 무더위쉼터 접근성 / 제주 — 해녀 어업영역 아카이브' },
-      { id: 'situation', label: '문제 상황 기술 (누가·언제·어디서·무엇이)', placeholder: '문제를 다른 사람도 이해하도록 구체적으로 기술하고 한 문장으로 요약하세요.' },
-      { id: 'idea', label: '핵심 아이디어 / 해결 방향', placeholder: '생성형 AI·데이터로 어떻게 해결할지 핵심 아이디어를 적으세요.' },
+      { id: 'observe', label: '관찰한 불편함 / 문제 후보', placeholder: '예) 최근 불편했던 순간을 “누가·언제·어디서·무엇이” 형태로 3가지 이상 적어보세요.' },
+      { id: 'select', label: '선정한 문제 + 선정 이유', placeholder: '후보 중 이번에 다룰 문제 하나를 고르고, 자주 일어나는가·해결 가능한 크기인가 관점에서 이유를 적으세요.' },
     ],
   },
   {
-    key: 'teaming', label: '팀 빌딩·아이디어 구체화', icon: '🤝', color: '#22A06B', max: 10,
-    desc: '기술·인문 트랙으로 역할을 나누고, 타깃 사용자와 가치를 구체화합니다.',
-    rubric: '팀 역할(기술/인문)이 명확하고, 타깃 사용자·핵심 가치가 구체적인가.',
+    key: 'definition', label: '문제 정의', icon: '🎯', color: '#EA580C', max: 10,
+    desc: '선정한 문제를 “무엇을 만들면 해결되는가” 관점에서 달성 가능한 목표로 구체화합니다.',
+    rubric: '해결 목표가 구체적이며 달성 가능하게 정의되었는가.',
     fields: [
-      { id: 'roles', label: '팀 구성 / 역할 분담 (기술 2 · 인문 2)', placeholder: '예) 기술: 데이터 분석/프로토타입 OO·OO / 인문: 사용자 분석/정책 OO·OO' },
-      { id: 'users', label: '타깃 사용자 / 가치 제안', placeholder: '누구의 어떤 문제를, 어떤 가치로 해결하는지 한두 문장으로.' },
+      { id: 'goal', label: '해결 목표 (무엇을 만들 것인가)', placeholder: '예) “지금 앉을 수 있는 도서관 빈자리를 한눈에 보여주는 웹앱을 만든다”처럼 한 문장으로.' },
+      { id: 'users', label: '대상 사용자 / 사용 시나리오', placeholder: '누가 언제 이 결과물을 어떻게 쓰는지 한두 문장으로 적으세요.' },
     ],
   },
   {
-    key: 'midreview', label: '심사 및 평가 (중간 설계 발표)', icon: '📐', color: '#3B82F6', max: 15,
-    desc: '중간 설계를 발표하고 문제정의·데이터 활용·해커톤 확장 가능성을 검토받습니다.',
-    rubric: '문제정의의 명확성, 데이터 활용 가능성, 해커톤 확장 가능성이 검토되었는가.',
+    key: 'decomposition', label: '문제 분해', icon: '🧩', color: '#F59E0B', max: 10,
+    desc: '큰 문제를 다루기 쉬운 하위 문제로 쪼개고, 입력 → 처리 → 출력으로 정리합니다.',
+    rubric: '문제를 논리적으로 2개 이상 명확히 분해했는가.',
     fields: [
-      { id: 'definition', label: '문제정의 명확성 (중간 점검)', placeholder: '중간 발표 기준으로 문제정의를 다시 정리하세요.' },
-      { id: 'dataplan', label: '데이터 활용 계획', placeholder: '확보한/확보할 공공데이터와 분석 방향을 적으세요.' },
-      { id: 'hackathon', label: '해커톤 확장 가능성', placeholder: '제주국제 생태포럼 해커톤 등으로 확장할 포인트.' },
+      { id: 'subproblems', label: '하위 문제로 분해 (2개 이상)', placeholder: '예) ① 좌석 상태를 어떻게 수집할까 ② 빈자리를 어떻게 보여줄까 ③ 갱신 주기는?' },
+      { id: 'inout', label: '입력 → 처리 → 출력 정리', placeholder: '어떤 데이터를 입력받아 → 어떻게 처리해 → 무엇을 출력할지 한 줄로 정리하세요.' },
     ],
   },
   {
-    key: 'mentoring', label: '팀별 컨설팅·기술 멘토링', icon: '🧭', color: '#6B21A8', max: 10,
-    desc: '트랙별 방법론·기술 멘토링을 받고 개선점을 반영합니다.',
-    rubric: '멘토링 내용을 구체적으로 반영해 설계·구현 방향을 개선했는가.',
+    key: 'abstraction', label: '추상화', icon: '🔍', color: '#059669', max: 20,
+    desc: '불필요한 요소를 걷어내고, 문제 해결에 꼭 필요한 핵심 데이터와 규칙(패턴)만 남깁니다.',
+    rubric: '불필요한 요소를 제거하고 핵심 데이터/패턴을 잘 도출했는가.',
     fields: [
-      { id: 'feedback', label: '받은 멘토링 / 피드백', placeholder: '강사·멘토에게 받은 핵심 피드백을 정리하세요.' },
-      { id: 'applied', label: '반영한 개선점', placeholder: '피드백을 어떻게 반영해 무엇을 바꿨는지 적으세요.' },
+      { id: 'core_data', label: '핵심 데이터 / 다룰 정보', placeholder: '예) 좌석ID, 사용여부(빈자리/사용중), 갱신시각 — 색·재질 등 무관한 정보는 제외.' },
+      { id: 'pattern', label: '규칙 · 패턴 / 자료구조', placeholder: '데이터를 어떤 규칙·구조(리스트/표/딕셔너리 등)로 다룰지 적으세요.' },
     ],
   },
   {
-    key: 'build', label: '기술 기반 아이디어 구현', icon: '⚙️', color: '#9333EA', max: 25,
-    desc: '기술 트랙(분석·시각화·프로토타입)과 인문 트랙(서비스·정책·콘텐츠) 산출물을 구현합니다.',
-    rubric: '결과물이 목표에 맞게 동작하고, 기술·인문 산출물이 통합되었는가.',
+    key: 'algorithm', label: '알고리즘 설계', icon: '🧮', color: '#2563EB', max: 20,
+    desc: '문제를 푸는 처리 절차를 단계별로 설계하고, 흐름도나 의사코드(슈도코드)로 표현합니다.',
+    rubric: '단계별 절차가 명확하며 흐름이 논리적인가.',
     fields: [
-      { id: 'tech', label: '기술 트랙 산출물', placeholder: '데이터 분석·시각화·대시보드·지도·프로토타입 등 구현 내용.' },
-      { id: 'human', label: '인문 트랙 산출물', placeholder: '사용자 여정·서비스 흐름·정책 제안·콘텐츠 기획 등.' },
-      { id: 'links', label: '구현/프로토타입 링크', placeholder: '배포 URL, GitHub, 노션, 대시보드 링크 등.' },
+      { id: 'steps', label: '처리 절차 (단계별 알고리즘)', placeholder: '예) 1. 좌석 데이터를 불러온다 2. 빈자리만 필터링한다 3. 층별로 묶어 표시한다 …' },
+      { id: 'flow', label: '흐름도 / 의사코드(슈도코드)', placeholder: '핵심 로직을 의사코드로 적거나 흐름도 링크를 넣으세요.' },
     ],
   },
   {
-    key: 'final', label: '결과물 고도화·최종 발표', icon: '🏆', color: '#0D2B5E', max: 20,
-    desc: '결과보고서·3분 피치덱을 완성해 최종 발표하고 해커톤 제출형으로 정리합니다.',
-    rubric: '핵심 메시지를 조리있게 발표하고 해커톤 제출형 결과물로 완성되었는가.',
+    key: 'implementation', label: '구현', icon: '⚙️', color: '#7C3AED', max: 15,
+    desc: '설계한 알고리즘을 코드·프로토타입으로 구현합니다. AI 코딩 도구를 적극 활용합니다.',
+    rubric: '결과물이 목표에 맞게 정상적으로 동작하는가.',
     fields: [
-      { id: 'report', label: '결과보고서 요약', placeholder: '문제→데이터→해결→효과를 요약하세요.' },
-      { id: 'pitch', label: '3분 피치덱 / 발표자료 링크', placeholder: '발표자료 링크와 핵심 메시지 3가지.' },
-      { id: 'demo', label: '데이터 시각화 / 데모 링크', placeholder: '핵심 시각화·데모 링크.' },
-      { id: 'retro', label: '회고 / 향후 확장', placeholder: '배운 점과 비교과·해커톤 후속 확장 방향.' },
+      { id: 'stack', label: '사용 기술 / 도구', placeholder: '예) Python, Flask, React, Supabase, ChatGPT·Claude 등 사용한 언어·프레임워크·AI 도구.' },
+      { id: 'result', label: '구현 결과 / 동작 설명', placeholder: '무엇을 구현했고 실제로 어떻게 동작하는지 적으세요. 막힌 부분과 해결 방법도 좋습니다.' },
+      { id: 'links', label: '코드 · 데모 · 배포 링크', placeholder: 'GitHub, 배포 URL, 노션 등 결과물을 확인할 수 있는 링크.' },
+    ],
+  },
+  {
+    key: 'presentation', label: '결과 시연/발표', icon: '🎤', color: '#0891B2', max: 10,
+    desc: '결과물을 시연하고 문제→해결→효과를 조리있게 발표합니다. 회고로 마무리합니다.',
+    rubric: '주요 핵심을 조리있게 발표하고 결과를 시연했는가.',
+    fields: [
+      { id: 'demo', label: '시연 시나리오 / 데모 링크', placeholder: '무엇을 어떤 순서로 보여줄지, 데모(영상·배포) 링크와 함께 적으세요.' },
+      { id: 'pitch', label: '발표 핵심 메시지 / 발표자료 링크', placeholder: '문제→해결→효과를 3가지 핵심 메시지로 요약하고 발표자료 링크를 넣으세요.' },
+      { id: 'retro', label: '회고 / 개선점', placeholder: '배운 점과 다음에 개선하고 싶은 점을 적으세요.' },
     ],
   },
 ];
 
 export const PBL_TOTAL = PBL_STAGES.reduce((s, st) => s + st.max, 0); // 100
-
-/** 트랙 구분 (기본정보 선택용) — snu PBL과 동일 */
-export const TRACKS = ['기술', '인문'] as const;
 
 export const stageByKey = (key: string): PblStage | undefined =>
   PBL_STAGES.find((s) => s.key === key);

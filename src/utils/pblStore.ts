@@ -13,14 +13,15 @@ export const PBL_TABLE = `${site.dbPrefix}pbl_submissions`;
 export interface PblInfo {
   student_name: string;
   student_no: string;
-  college: string;
-  department: string;
-  major: string;
-  roster_matched: boolean;
   phone: string;
-  region: string;
-  topic_key: string;
-  track: string;
+  // 아래 항목들은 사이트별로 선택 사용 — rest는 사용하지 않으므로 모두 선택(optional).
+  college?: string;
+  department?: string;
+  major?: string;
+  roster_matched?: boolean;
+  region?: string;
+  topic_key?: string;
+  track?: string;
   course_type?: string;
   major_type?: string;
 }
