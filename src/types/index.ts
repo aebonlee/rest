@@ -260,6 +260,7 @@ export interface MenuItem {
                        //   현재 언어에 맞는 번역문을 찾아 보여준다 → 한/영 전환이 쉬워진다)
   activePath?: string; // 활성 상태 판단용 경로(현재 경로와 비교). 현재 보고 있는 페이지면 메뉴를 강조 표시.
   dropdown?: SubMenuItem[]; // 하위 메뉴 목록. 없으면(undefined) 단순 링크 메뉴.
+  className?: string;  // 이 메뉴 링크에 추가로 붙일 CSS 클래스(특정 메뉴만 자간·여백 등 별도 스타일링용).
 }
 
 // 드롭다운 하위 메뉴 항목.

@@ -77,6 +77,11 @@ const ProjectChecklist = lazy(() => import('../pages/ProjectChecklist'));
 const ProjectTimeline = lazy(() => import('../pages/ProjectTimeline'));
 const ProjectPadlets = lazy(() => import('../pages/ProjectPadlets'));
 const ProjectSubmit = lazy(() => import('../pages/ProjectSubmit'));
+// 개인별 PBL활동 — 기본정보·단계 워크시트(자동 채점·DB 저장)·평가(강사)·루브릭
+const PblInfo = lazy(() => import('../pages/pbl/PblInfo'));
+const PblStage = lazy(() => import('../pages/pbl/PblStage'));
+const PblEval = lazy(() => import('../pages/pbl/PblEval'));
+const PblRubric = lazy(() => import('../pages/pbl/PblRubric'));
 const NotFound = lazy(() => import('../pages/NotFound')); // 어떤 경로에도 안 맞을 때 보여줄 404 페이지
 
 // Auth 페이지 — 로그인/회원가입/비밀번호 찾기/마이페이지 등 "인증" 관련 화면
@@ -173,6 +178,15 @@ const PublicLayout = (): ReactElement => {
             </Route>
             {/* 구 경로 → 신 경로 리다이렉트(/project-teams → /project-vote) */}
             <Route path="/project-teams" element={<Navigate to="/project-vote" replace />} />
+
+            {/* 개인별 PBL활동 — 로그인 사용자가 단계별로 작성하면 자동 채점되어 DB에 저장되고,
+                관리자(/pbl/eval)는 개인별 점수·피드백을 확인/입력할 수 있다.
+                주의: 더 구체적인 경로(info·rubric·eval)를 먼저 두고, 마지막에 /pbl/:stage(단계 와일드카드)를 둔다. */}
+            <Route path="/pbl" element={<Navigate to="/pbl/info" replace />} />
+            <Route path="/pbl/info" element={<AuthGuard><PblInfo /></AuthGuard>} />
+            <Route path="/pbl/rubric" element={<PblRubric />} />
+            <Route path="/pbl/eval" element={<AdminGuard><PblEval /></AdminGuard>} />
+            <Route path="/pbl/:stage" element={<AuthGuard><PblStage /></AuthGuard>} />
 
             {/* Auth — site.features.auth가 켜진 경우에만 등록.
                 {조건 && <JSX />} 패턴: 조건이 true일 때만 뒤의 JSX를 렌더하고, false면 아무것도 안 그립니다.

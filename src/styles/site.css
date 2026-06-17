@@ -1090,3 +1090,25 @@ html[data-color="purple"] {
   /* 표 안 셀은 줄바꿈 최소화해 좌우 스크롤로 읽히게 */
   .content-table-wrap th { white-space: nowrap; }
 }
+
+/* ============================================
+   개인별 PBL활동 — snu에서 이식한 점수 항목 행 스타일
+   데스크톱은 고정폭, 모바일은 가변폭으로 막대 그래프가 깨지지 않게.
+   ============================================ */
+.pbl-score-row { display: flex; align-items: center; gap: 8px; }
+.pbl-score-label { flex: 0 0 230px; }
+.pbl-score-bar { flex: 0 0 180px; }
+@media (max-width: 768px) {
+  .pbl-score-label { flex: 1 1 120px; }
+  .pbl-score-bar { flex: 1 1 50px; min-width: 40px; }
+}
+
+/* 상단 메뉴 'PBL활동' 전용 — 자간(letter-spacing)과 영역별 마진·패딩 조정.
+   다른 메뉴보다 살짝 또렷하게 보이도록 자간을 넓히고, 좌우 여백/패딩을 균형 있게 줬다. */
+.nav-link.nav-link-pbl {
+  letter-spacing: 0.04em;   /* 자간: 글자 사이를 약간 넓혀 가독성↑ */
+  margin: 0 2px;            /* 영역 마진: 인접 메뉴와의 좌우 간격 */
+  padding: 8px 12px;        /* 영역 패딩: 클릭 영역(상하 8 / 좌우 12) */
+  border-radius: 8px;
+}
+.nav-link.nav-link-pbl:hover { background: var(--bg-light-gray, rgba(0,0,0,0.04)); }

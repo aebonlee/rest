@@ -234,8 +234,8 @@ const Navbar = (): ReactElement => {
                     </ul>
                   </>
                 ) : (
-                  // 드롭다운이 없는 단일 링크 항목
-                  <Link to={item.path} className={`nav-link ${isActive(item) ? 'active' : ''}`}>
+                  // 드롭다운이 없는 단일 링크 항목 (item.className이 있으면 추가로 붙여 개별 스타일링)
+                  <Link to={item.path} className={`nav-link ${isActive(item) ? 'active' : ''} ${item.className || ''}`}>
                     {item.label}
                   </Link>
                 )}

@@ -160,6 +160,8 @@ const site: SiteConfig = {
         { path: '/project-submit', labelKey: 'site.nav.projectSubmit' },
       ]
     },
+    // 개인별 PBL활동 — 단일 링크(드롭다운 없음). className으로 자간·여백을 별도 조정한다.
+    { path: '/pbl', activePath: '/pbl', labelKey: 'site.nav.pbl', className: 'nav-link-pbl' },
     { path: '/resources', labelKey: 'site.nav.resources' },
     {
       labelKey: 'site.nav.lms',
