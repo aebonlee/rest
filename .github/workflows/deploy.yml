@@ -27,6 +27,8 @@ jobs:
           # 로그인/LMS DB 연동에 필수 — Settings → Secrets and variables → Actions 에 등록됨
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          # 카카오 지도(온라인강의실 /classroom) — 미등록 시 지도 자리에 폴백 표시(빌드는 정상)
+          VITE_KAKAO_JS_KEY: ${{ secrets.VITE_KAKAO_JS_KEY }}
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:

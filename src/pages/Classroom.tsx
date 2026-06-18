@@ -38,6 +38,8 @@ import { type ReactElement } from 'react';
 import { EmojiIcon } from '../utils/emojiIcon';
 // SEOHead: 페이지 제목/설명 등 검색엔진용 정보를 넣어주는 우리 프로젝트의 컴포넌트.
 import SEOHead from '../components/SEOHead';
+// KakaoMap: 카카오 지도(JS SDK)를 실제로 띄우는 컴포넌트.
+import KakaoMap from '../components/KakaoMap';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // [상수(constant) 정의]
@@ -172,6 +174,10 @@ const Classroom = (): ReactElement => {
             <p style={{ margin: '0 0 6px', fontSize: '14px', color: 'var(--text-secondary)' }}>매주 월요일은 아래 장소에서 대면으로 진행합니다.</p>
             {/* 상수 OFFLINE_ADDR(주소)을 화면에 꽂아 표시. */}
             <p style={{ margin: '0 0 16px', fontSize: '16px', fontWeight: 600 }}>{OFFLINE_ADDR}</p>
+            {/* 카카오 지도 임베드 — 주소를 지오코딩해 마커+말풍선을 표시(키 없으면 안내 폴백). */}
+            <div style={{ margin: '0 0 16px' }}>
+              <KakaoMap address={OFFLINE_ADDR} placeName="공간 햅삐 서울역점" height={340} level={3} />
+            </div>
             {/* 네이버 지도 링크 — 위 Zoom 링크와 동일하게 새 탭 + 보안 속성으로 연다. */}
             <a href={OFFLINE_MAP} target="_blank" rel="noopener noreferrer" className="btn btn-secondary" style={{ padding: '11px 22px' }}>
               네이버 지도로 보기 →
