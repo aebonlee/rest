@@ -21,7 +21,7 @@ import SEOHead from '../../components/SEOHead';
 import { PBL_STAGES, PBL_TOTAL, totalScore, autoTotal, autoStagePoints } from '../../config/pblActivity';
 import { getAllSubmissions, type PblSubmission } from '../../utils/pblStore';
 import { exportTableExcel, exportTablePdf, type Cell } from '../../utils/exportTable';
-import { ACTIVE_ROSTER } from '../../config/roster';
+import { STUDENT_ROSTER, type RosterStatus } from '../../config/roster';
 
 // 강사 점수 표시 색상(점수대별) — 보기 쉽게 구간으로 색을 나눈다.
 const scoreColor = (got: number, max: number): string => {
@@ -32,8 +32,11 @@ const scoreColor = (got: number, max: number): string => {
   return '#ef4444';
 };
 
-// 명단 한 명 = 한 행. sub가 null이면 미제출.
-interface Row { no: number; name: string; sub: PblSubmission | null }
+// 집계 제외 상태 표기 라벨 (active는 빈 문자열)
+const STATUS_LABEL: Record<RosterStatus, string> = { active: '', not_registered: '미가입', withdrawn: '중도포기' };
+
+// 명단 한 명 = 한 행. sub가 null이면 미제출. status로 집계 제외(미가입·중도포기) 구분.
+interface Row { no: number; name: string; sub: PblSubmission | null; status: RosterStatus }
 
 const AdminPblScores = (): ReactElement => {
   const [subs, setSubs] = useState<PblSubmission[]>([]);
@@ -62,12 +65,15 @@ const AdminPblScores = (): ReactElement => {
       if (n && !byName.has(n)) byName.set(n, s);
     });
     const matched = new Set<string>();
-    const list: Row[] = ACTIVE_ROSTER.map((st) => {
+    const list: Row[] = STUDENT_ROSTER.map((st) => {
       let sub: PblSubmission | null = null;
-      for (const e of st.emails) { const f = byEmail.get(e.toLowerCase()); if (f) { sub = f; break; } }
-      if (!sub) { const f = byName.get(st.name); if (f) sub = f; }
-      if (sub) matched.add(sub.user_id);
-      return { no: st.no, name: st.name, sub };
+      // 집계 제외(미가입·중도포기)는 제출 매칭하지 않고 명단 표기만 한다.
+      if (st.status === 'active') {
+        for (const e of st.emails) { const f = byEmail.get(e.toLowerCase()); if (f) { sub = f; break; } }
+        if (!sub) { const f = byName.get(st.name); if (f) sub = f; }
+        if (sub) matched.add(sub.user_id);
+      }
+      return { no: st.no, name: st.name, sub, status: st.status };
     });
     // 명단 어디에도 매칭되지 않은 제출(명단 외 계정/이름)
     const orph = subs.filter((s) => !matched.has(s.user_id));
@@ -75,6 +81,8 @@ const AdminPblScores = (): ReactElement => {
   }, [subs]);
 
   const submittedCount = people.filter((p) => p.sub).length;
+  const activeCount = people.filter((p) => p.status === 'active').length;
+  const excludedCount = people.length - activeCount; // 미가입·중도포기
 
   // 정렬
   const sorted = useMemo(() => {
@@ -101,13 +109,13 @@ const AdminPblScores = (): ReactElement => {
     sub ? autoTotal(sub.auto) : '',
   ];
   const buildRows = (): Cell[][] => [
-    ...sorted.map((p) => rowToCells(p.no, p.name, p.sub)),
+    ...sorted.map((p) => rowToCells(p.no, p.status === 'active' ? p.name : `${p.name} (${STATUS_LABEL[p.status]})`, p.sub)),
     ...orphans.map((s, i) => rowToCells(`외${i + 1}`, `${s.student_name || '(이름없음)'} (명단외)`, s)),
   ];
   const downloadExcel = () => exportTableExcel('PBL_항목별_점수표.xlsx', 'PBL 항목별 점수', COLUMNS, buildRows());
   const downloadPdf = () => exportTablePdf(
     'PBL 활동 항목별 점수표', COLUMNS, buildRows(),
-    `AI Reboot Academy · 명단 ${people.length}명 · 제출 ${submittedCount}명 · 만점 ${PBL_TOTAL}점 · 발행 ${new Date().toLocaleDateString('ko-KR')}`,
+    `AI Reboot Academy · 명단 ${activeCount}명 · 제출 ${submittedCount}명 · 만점 ${PBL_TOTAL}점 · 발행 ${new Date().toLocaleDateString('ko-KR')}`,
   );
 
   // 점수 행 셀들(명단/명단외 공용 렌더)
@@ -142,7 +150,8 @@ const AdminPblScores = (): ReactElement => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '8px', marginBottom: '8px' }}>
             <h2 style={{ margin: 0, fontSize: '20px' }}>PBL 활동 항목별 점수표</h2>
             <span style={{ fontSize: '13px', color: 'var(--text-secondary, #6b7280)' }}>
-              명단 {people.length}명 · 제출 {submittedCount}명 · 미제출 {people.length - submittedCount}명
+              명단 {activeCount}명 · 제출 {submittedCount}명 · 미제출 {activeCount - submittedCount}명
+              {excludedCount > 0 && <> · 제외 {excludedCount}명(미가입·중도포기)</>}
               {orphans.length > 0 && <> · 명단외 {orphans.length}건</>}
               {' '}· 개별 채점은 <a href="/pbl/eval" style={{ color: 'var(--primary-blue, #0046C8)' }}>PBL 평가</a>
             </span>
@@ -182,19 +191,24 @@ const AdminPblScores = (): ReactElement => {
                   </tr>
                 </thead>
                 <tbody>
-                  {sorted.map((p) => (
-                    <tr key={p.no} style={p.sub ? undefined : { background: 'var(--bg-light-gray, #f9fafb)' }}>
-                      <td style={{ textAlign: 'center', padding: '5px 4px', color: 'var(--text-secondary, #6b7280)' }}>{p.no}</td>
-                      <td style={{ padding: '5px 6px' }} title={p.sub?.project_topic ? `${p.name} · ${p.sub.project_topic}` : p.name}>
-                        <div style={{ fontWeight: 600 }}>
-                          {p.name}
-                          {!p.sub && <span style={{ marginLeft: '6px', fontSize: '11px', fontWeight: 700, color: '#9ca3af' }}>미제출</span>}
-                        </div>
-                        {p.sub?.project_topic && <div style={{ fontSize: '11px', color: 'var(--text-secondary, #9ca3af)', lineHeight: 1.25, wordBreak: 'keep-all' }}>{p.sub.project_topic}</div>}
-                      </td>
-                      {renderScoreCells(p.sub)}
-                    </tr>
-                  ))}
+                  {sorted.map((p) => {
+                    const excluded = p.status !== 'active';        // 미가입·중도포기
+                    const strike = p.status === 'withdrawn';        // 중도포기 → 취소선
+                    return (
+                      <tr key={p.no} style={excluded || !p.sub ? { background: 'var(--bg-light-gray, #f9fafb)' } : undefined}>
+                        <td style={{ textAlign: 'center', padding: '5px 4px', color: 'var(--text-secondary, #6b7280)' }}>{p.no}</td>
+                        <td style={{ padding: '5px 6px' }} title={p.sub?.project_topic ? `${p.name} · ${p.sub.project_topic}` : p.name}>
+                          <div style={{ fontWeight: 600, color: excluded ? '#9ca3af' : undefined, textDecoration: strike ? 'line-through' : undefined }}>
+                            {p.name}
+                            {excluded && <span style={{ marginLeft: '6px', fontSize: '11px', fontWeight: 700, color: '#9ca3af' }}>{STATUS_LABEL[p.status]}</span>}
+                            {!excluded && !p.sub && <span style={{ marginLeft: '6px', fontSize: '11px', fontWeight: 700, color: '#9ca3af' }}>미제출</span>}
+                          </div>
+                          {p.sub?.project_topic && <div style={{ fontSize: '11px', color: 'var(--text-secondary, #9ca3af)', lineHeight: 1.25, wordBreak: 'keep-all' }}>{p.sub.project_topic}</div>}
+                        </td>
+                        {renderScoreCells(p.sub)}
+                      </tr>
+                    );
+                  })}
 
                   {/* 명단 외 제출 — 누락 없이 별도 표기 */}
                   {orphans.length > 0 && (
