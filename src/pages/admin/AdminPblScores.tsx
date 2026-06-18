@@ -115,7 +115,7 @@ const AdminPblScores = (): ReactElement => {
                 <thead>
                   <tr>
                     <th style={{ width: '34px', textAlign: 'center', padding: '6px 4px' }}>No</th>
-                    <th style={{ width: '13%', textAlign: 'left', padding: '6px 6px' }}>이름</th>
+                    <th style={{ width: '16%', textAlign: 'left', padding: '6px 6px' }}>이름 / 프로젝트명</th>
                     {PBL_STAGES.map((s) => (
                       <th key={s.key} style={{ textAlign: 'center', padding: '6px 2px', fontSize: '12px', lineHeight: 1.2, wordBreak: 'keep-all' }} title={`${s.label} (${s.max}점)`}>
                         {s.label}<span style={{ fontWeight: 400, color: 'var(--text-secondary, #9ca3af)' }}> /{s.max}</span>
@@ -129,8 +129,9 @@ const AdminPblScores = (): ReactElement => {
                   {sorted.map((r, idx) => (
                     <tr key={r.user_id}>
                       <td style={{ textAlign: 'center', padding: '5px 4px', color: 'var(--text-secondary, #6b7280)' }}>{idx + 1}</td>
-                      <td style={{ padding: '5px 6px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }} title={r.project_topic ? `${r.student_name} · ${r.project_topic}` : (r.student_name || '')}>
-                        {r.student_name || '(이름없음)'}
+                      <td style={{ padding: '5px 6px' }} title={r.project_topic ? `${r.student_name} · ${r.project_topic}` : (r.student_name || '')}>
+                        <div style={{ fontWeight: 600 }}>{r.student_name || '(이름없음)'}</div>
+                        {r.project_topic && <div style={{ fontSize: '11px', color: 'var(--text-secondary, #9ca3af)', lineHeight: 1.25, wordBreak: 'keep-all' }}>{r.project_topic}</div>}
                       </td>
                       {PBL_STAGES.map((s) => {
                         const sc = r.scores?.[s.key];
