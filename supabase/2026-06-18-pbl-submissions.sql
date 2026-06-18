@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS rest_pbl_submissions (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
     email TEXT DEFAULT '',
     student_name TEXT DEFAULT '',
+    project_topic TEXT DEFAULT '',
     team_name TEXT DEFAULT '',
     region TEXT DEFAULT '',
     topic_key TEXT DEFAULT '',
@@ -54,6 +55,7 @@ CREATE POLICY "rest_pbl_delete" ON rest_pbl_submissions FOR DELETE
 -- 추가 컬럼 동기화 (기존 DB 대비 멱등) — 이미 테이블이 있던 경우 보강
 -- ============================================
 ALTER TABLE rest_pbl_submissions ADD COLUMN IF NOT EXISTS auto JSONB NOT NULL DEFAULT '{}'::jsonb;
+ALTER TABLE rest_pbl_submissions ADD COLUMN IF NOT EXISTS project_topic TEXT DEFAULT '';
 ALTER TABLE rest_pbl_submissions ADD COLUMN IF NOT EXISTS student_no TEXT DEFAULT '';
 ALTER TABLE rest_pbl_submissions ADD COLUMN IF NOT EXISTS major TEXT DEFAULT '';
 ALTER TABLE rest_pbl_submissions ADD COLUMN IF NOT EXISTS phone TEXT DEFAULT '';

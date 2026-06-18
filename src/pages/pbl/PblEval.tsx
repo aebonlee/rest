@@ -75,7 +75,7 @@ const PblEval = (): ReactElement => {
                 <button key={r.user_id} className={`sidebar-item ${r.user_id === selId ? 'active' : ''}`} onClick={() => setSelId(r.user_id)}>
                   <span className="sidebar-item-text">
                     {r.student_name || '(이름없음)'} · {totalScore(r.scores)}/{PBL_TOTAL}
-                    <br /><span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{r.student_no || '-'} · {r.major || '-'}</span>
+                    <br /><span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>{r.project_topic || '주제 미입력'}</span>
                   </span>
                 </button>
               ))}
@@ -89,9 +89,9 @@ const PblEval = (): ReactElement => {
                   <span className="pgd-hero-icon" style={{ background: '#0046C818', color: '#0046C8' }}>🎓</span>
                   <div style={{ minWidth: 0 }}>
                     <h3 className="pgd-hero-title" style={{ marginBottom: '6px' }}>{sel.student_name || '(이름없음)'}</h3>
-                    {/* 1줄: 개인정보 (학번 · 연락처 · 이메일) */}
+                    {/* 1줄: 프로젝트 주제 · 연락처 · 이메일 */}
                     <p className="pgd-hero-subtitle" style={{ margin: '0 0 8px' }}>
-                      {sel.student_no || '-'} · {sel.phone || '-'} · {sel.email || '-'}
+                      📌 {sel.project_topic || '주제 미입력'} · {sel.phone || '-'} · {sel.email || '-'}
                     </p>
                     {/* 2줄: 점수 */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '13px' }}>

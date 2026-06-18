@@ -12,9 +12,11 @@ export const PBL_TABLE = `${site.dbPrefix}pbl_submissions`;
 
 export interface PblInfo {
   student_name: string;
-  student_no: string;
   phone: string;
+  /** 학생이 정한 프로젝트 주제(자유 입력) */
+  project_topic?: string;
   // 아래 항목들은 사이트별로 선택 사용 — rest는 사용하지 않으므로 모두 선택(optional).
+  student_no?: string;
   college?: string;
   department?: string;
   major?: string;
@@ -30,6 +32,7 @@ export interface PblSubmission {
   user_id: string;
   email: string;
   student_name: string;
+  project_topic?: string;
   student_no: string;
   college?: string;
   department?: string;
@@ -66,16 +69,17 @@ export async function saveInfo(user: AuthUser, info: PblInfo): Promise<void> {
     user_id: user.id,
     email: user.email || '',
     student_name: info.student_name || '',
-    student_no: info.student_no || '',
-    major: info.major || '',
     phone: info.phone || '',
-    region: info.region || '',
-    topic_key: info.topic_key || '',
-    track: info.track || '',
     updated_at: new Date().toISOString(),
   };
   const full = {
     ...core,
+    project_topic: info.project_topic || '',
+    student_no: info.student_no || '',
+    major: info.major || '',
+    region: info.region || '',
+    topic_key: info.topic_key || '',
+    track: info.track || '',
     college: info.college || '',
     department: info.department || '',
     course_type: info.course_type || '',

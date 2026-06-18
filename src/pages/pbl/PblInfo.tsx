@@ -18,7 +18,7 @@ const PblInfo = (): ReactElement => {
   const { user, profile, refreshProfile } = useAuth() as any;
   const { showToast } = useToast();
   const [form, setForm] = useState({
-    student_name: '', student_no: '', phone: '',
+    student_name: '', project_topic: '', phone: '',
   });
   const [saving, setSaving] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -31,7 +31,7 @@ const PblInfo = (): ReactElement => {
     setSub(row);
     setForm({
       student_name: row?.student_name || profile?.name || profile?.display_name || '',
-      student_no: row?.student_no || profile?.student_no || '',
+      project_topic: row?.project_topic || '',
       phone: row?.phone || profile?.phone || '',
     });
     setLoaded(true);
@@ -41,14 +41,13 @@ const PblInfo = (): ReactElement => {
 
   const handleSave = async () => {
     if (!form.student_name.trim()) { showToast('이름을 입력해 주세요.', 'warning'); return; }
-    if (!form.student_no.trim()) { showToast('학번을 입력해 주세요.', 'warning'); return; }
     setSaving(true);
     try {
       await saveInfo(user, { ...form });
       try {
         await updateProfile(user.id, {
           name: form.student_name, display_name: form.student_name,
-          phone: form.phone, student_no: form.student_no,
+          phone: form.phone,
         });
         if (refreshProfile) await refreshProfile();
       } catch { /* 프로필 반영 실패 무시 */ }
@@ -88,16 +87,16 @@ const PblInfo = (): ReactElement => {
                   <input style={input} value={form.student_name} onChange={(e) => setForm({ ...form, student_name: e.target.value })} placeholder="이름" />
                 </div>
                 <div>
-                  <label style={labelStyle}>학번 *</label>
-                  <input style={input} value={form.student_no} onChange={(e) => setForm({ ...form, student_no: e.target.value })} placeholder="예) 2026-12345" />
-                </div>
-                <div>
                   <label style={labelStyle}>연락처</label>
                   <input style={input} value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} placeholder="010-0000-0000" />
                 </div>
                 <div>
                   <label style={labelStyle}>이메일 (회원 계정)</label>
                   <input style={{ ...input, background: 'var(--bg-light-gray)', color: 'var(--text-secondary)' }} value={email} readOnly />
+                </div>
+                <div style={{ gridColumn: '1 / -1' }}>
+                  <label style={labelStyle}>프로젝트 주제</label>
+                  <input style={input} value={form.project_topic} onChange={(e) => setForm({ ...form, project_topic: e.target.value })} placeholder="예) 한국형 AI 동화책 제작 앱 — 내가 정한 주제를 적어주세요" />
                 </div>
               </div>
 
