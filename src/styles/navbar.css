@@ -56,13 +56,15 @@
 
 .nav-link {
     display: block;
-    padding: 12px 14px;
+    padding: 12px 11px;
     color: var(--text-primary);
     text-decoration: none;
     font-weight: 600;
     font-size: 15px;
+    letter-spacing: -0.01em;
     transition: color 0.2s ease;
     position: relative;
+    white-space: nowrap;
 }
 
 .nav-link:hover,
@@ -74,8 +76,8 @@
     content: '';
     position: absolute;
     bottom: -1px;
-    left: 14px;
-    right: 14px;
+    left: 11px;
+    right: 11px;
     height: 3px;
     background: var(--primary-blue);
     border-radius: 2px;
@@ -319,6 +321,116 @@
     border-color: var(--text-primary);
     box-shadow: 0 0 0 2px var(--bg-white), 0 0 0 4px var(--text-primary);
     transform: scale(1.1);
+}
+
+/* ── 표시 설정(언어·컬러·모드) 통합 풍선 팝오버 ──
+   언어/컬러/테마 버튼을 하나의 ⚙️ 버튼 + 팝오버로 묶어 상단바를 간결하게 한다. */
+.nav-settings {
+    position: relative;
+}
+
+.nav-settings-btn {
+    background: transparent;
+    border: 1px solid var(--border-medium);
+    border-radius: var(--radius-sm);
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-base);
+    padding: 0;
+}
+
+.nav-settings-btn:hover {
+    background: var(--bg-light-gray);
+    border-color: var(--primary-blue);
+}
+
+.nav-settings-btn svg {
+    width: 20px;
+    height: 20px;
+    color: var(--text-secondary);
+}
+
+.nav-settings-popover {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    min-width: 240px;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    padding: 14px 16px;
+    z-index: 1100;
+    animation: navSettingsIn 0.18s ease;
+}
+
+@keyframes navSettingsIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav-settings-arrow {
+    position: absolute;
+    top: -6px;
+    right: 14px;
+    width: 12px;
+    height: 12px;
+    background: var(--bg-white);
+    border-left: 1px solid var(--border-light);
+    border-top: 1px solid var(--border-light);
+    transform: rotate(45deg);
+}
+
+.nav-settings-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 9px 0;
+}
+
+.nav-settings-section + .nav-settings-section {
+    border-top: 1px solid var(--border-light);
+}
+
+.nav-settings-colorsection {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.nav-settings-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.nav-settings-pill {
+    background: var(--bg-light-gray);
+    border: 1px solid var(--border-light);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: var(--transition-base);
+}
+
+.nav-settings-pill:hover {
+    border-color: var(--primary-blue);
+    color: var(--primary-blue);
+}
+
+.nav-settings-dots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
 .mobile-toggle {
@@ -615,16 +727,14 @@
     gap: 8px;
   }
 
-  .theme-toggle,
-  .color-picker-btn,
+  .nav-settings-btn,
   .nav-search-btn,
   .cart-icon-link {
     width: 32px;
     height: 32px;
   }
 
-  .theme-toggle svg,
-  .color-picker-btn svg,
+  .nav-settings-btn svg,
   .nav-search-btn svg {
     width: 16px;
     height: 16px;

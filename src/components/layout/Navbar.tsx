@@ -63,8 +63,8 @@ const Navbar = (): ReactElement => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   // 현재 열려있는 드롭다운 메뉴의 인덱스(없으면 null). <number | null>은 "숫자 또는 null"(유니온 타입).
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  // 컬러 테마 선택 팝업(툴팁) 표시 여부
-  const [showColorPicker, setShowColorPicker] = useState(false);
+  // 표시 설정(언어·컬러·모드) 풍선 팝오버 표시 여부 — 상단바를 간결하게 하려고 한곳에 묶음
+  const [showSettings, setShowSettings] = useState(false);
   // 사용자 메뉴 드롭다운 표시 여부
   const [showUserMenu, setShowUserMenu] = useState(false);
   // 검색 모달 표시 여부
@@ -74,6 +74,8 @@ const Navbar = (): ReactElement => {
   // useRef는 DOM 요소를 가리키는 상자. JSX의 ref={userMenuRef}로 연결하면 .current가 실제 <div>가 된다.
   // 주의: ref 값이 바뀌어도 화면은 다시 안 그려진다(상태와 다른 점).
   const userMenuRef = useRef<HTMLDivElement>(null);
+  // 표시 설정 팝오버 영역 참조 — 바깥 클릭 시 닫기
+  const settingsRef = useRef<HTMLDivElement>(null);
 
   // 현재 라우트 정보 — 변경 시 메뉴 자동 닫기 트리거. location.pathname 에 현재 경로(예: '/courses')가 들어 있다.
   const location = useLocation();
@@ -103,6 +105,7 @@ const Navbar = (): ReactElement => {
     setIsMobileMenuOpen(false);
     setActiveDropdown(null);
     setShowUserMenu(false);
+    setShowSettings(false);
   }, [location]); // location이 바뀔 때(=페이지 이동 시)마다 실행
 
   // 유저 메뉴 바깥 클릭(outside click) 감지: 메뉴 밖을 누르면 닫는다.
@@ -112,6 +115,9 @@ const Navbar = (): ReactElement => {
       // 즉 "메뉴가 떠 있고 && 클릭한 곳이 메뉴 바깥"이면 닫는다.
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setShowUserMenu(false);
+      }
+      if (settingsRef.current && !settingsRef.current.contains(e.target as Node)) {
+        setShowSettings(false);
       }
     };
     // 주의: 'click'이 아닌 'mousedown'을 쓰면 더 먼저 발생해 타이밍 충돌(눌렀는데 바로 닫힘)을 줄인다.
@@ -256,82 +262,59 @@ const Navbar = (): ReactElement => {
                 </svg>
               </button>
             )}
-            {/* 언어 전환: 현재 ko면 'EN', 그 외엔 'KR'. (글자는 "바꿀 대상 언어"를 보여줌) */}
-            <button className="lang-switcher" onClick={toggleLanguage} aria-label={language === 'ko' ? 'Switch to English' : '한국어로 전환'}>
-              {language === 'ko' ? 'EN' : 'KR'}
-            </button>
-            {/* 컬러 테마 선택 영역 */}
-            <div className="color-picker-wrapper">
+            {/* 표시 설정(언어·컬러·모드)을 한 버튼(⚙️) 풍선 팝오버로 묶어 상단바를 간결하게 유지 */}
+            <div className="nav-settings" ref={settingsRef}>
               <button
-                className="color-picker-btn"
-                // 클릭 시 컬러 피커 툴팁 토글 (!현재값 = 반대값)
-                onClick={() => setShowColorPicker(!showColorPicker)}
-                aria-label="Color theme"
+                className="nav-settings-btn"
+                onClick={() => setShowSettings((v) => !v)}
+                aria-label="표시 설정 (언어·컬러·화면 모드)"
+                title="표시 설정 (언어·컬러·화면 모드)"
               >
-                {/* 팔레트 아이콘(SVG). 점들은 인라인 style로 색을 직접 지정 */}
+                {/* 톱니바퀴(설정) 아이콘 */}
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <circle cx="13.5" cy="6.5" r="2.5" style={{ fill: '#C8102E', stroke: 'none' }} />
-                  <circle cx="17.5" cy="10.5" r="2.5" style={{ fill: '#C87200', stroke: 'none' }} />
-                  <circle cx="8.5" cy="7.5" r="2.5" style={{ fill: '#00855A', stroke: 'none' }} />
-                  <circle cx="6.5" cy="12" r="2.5" style={{ fill: '#0046C8', stroke: 'none' }} />
-                  <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.93 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.04-.24-.3-.39-.65-.39-1.04 0-.83.67-1.5 1.5-1.5H16c3.31 0 6-2.69 6-6 0-5.17-4.5-9-10-9z" />
+                  <circle cx="12" cy="12" r="3" />
+                  <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
                 </svg>
               </button>
-              {/* 컬러 피커가 열렸을 때만 오버레이와 툴팁 렌더 */}
-              {showColorPicker && (
-                <>
-                  {/* 오버레이(화면을 덮는 투명층) 클릭 시 피커 닫기 */}
-                  <div className="color-picker-overlay" onClick={() => setShowColorPicker(false)} />
-                  <div className="color-picker-tooltip">
-                    <div className="color-picker-arrow" />
-                    {/* 설정의 컬러 목록을 점(dot) 버튼으로 나열, 현재 테마는 'active' */}
-                    {site.colors.map((c) => (
-                      <button
-                        // key는 고유해야 하므로 색 이름(c.name)을 사용
-                        key={c.name}
-                        // 현재 선택된 컬러면 ' active'를 덧붙여 강조
-                        className={`color-dot${colorTheme === c.name ? ' active' : ''}`}
-                        style={{ background: c.color }} // 점의 배경색을 해당 컬러로
-                        // 컬러 선택 시 테마 변경 후 피커 닫기(두 동작을 한 줄에 묶음)
-                        onClick={() => { setColorTheme(c.name); setShowColorPicker(false); }}
-                        aria-label={`${c.name} theme`}
-                      />
-                    ))}
+              {showSettings && (
+                <div className="nav-settings-popover">
+                  <div className="nav-settings-arrow" />
+
+                  {/* 언어 */}
+                  <div className="nav-settings-section">
+                    <span className="nav-settings-label">언어 / Language</span>
+                    <button className="nav-settings-pill" onClick={toggleLanguage}>
+                      {language === 'ko' ? '한국어 → English' : 'English → 한국어'}
+                    </button>
                   </div>
-                </>
+
+                  {/* 화면 모드 (라이트/다크/오토 순환) */}
+                  <div className="nav-settings-section">
+                    <span className="nav-settings-label">화면 모드</span>
+                    <button className="nav-settings-pill" onClick={toggleTheme} data-mode={mode}>
+                      {mode === 'light' ? '☀️ 라이트' : mode === 'dark' ? '🌙 다크' : '🌗 자동'}
+                    </button>
+                  </div>
+
+                  {/* 컬러 테마 */}
+                  <div className="nav-settings-section nav-settings-colorsection">
+                    <span className="nav-settings-label">컬러 테마</span>
+                    <div className="nav-settings-dots">
+                      {site.colors.map((c) => (
+                        <button
+                          key={c.name}
+                          className={`color-dot${colorTheme === c.name ? ' active' : ''}`}
+                          style={{ background: c.color }}
+                          onClick={() => setColorTheme(c.name)}
+                          aria-label={`${c.name} theme`}
+                          title={c.name}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
               )}
             </div>
-            {/* 라이트/다크/오토 테마 토글. data-mode 값에 따라 CSS가 보여줄 아이콘을 결정 */}
-            <button className="theme-toggle" onClick={toggleTheme} aria-label="테마 전환" data-mode={mode}>
-              {/* 아래 3개 아이콘은 항상 모두 그려두고, CSS가 현재 mode에 맞는 하나만 보여준다.
-                  Light mode icon (sun) — 해 모양 */}
-              <svg className="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="5" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="21" y1="12" x2="23" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22" />
-              </svg>
-              {/* Dark mode icon (moon) — 달 모양 */}
-              <svg className="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
-              </svg>
-              {/* Auto mode icon (sun+moon half) — 자동(기기 설정 따름) 모양 */}
-              <svg className="auto-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="9" />
-                <path d="M12 3a9 9 0 0 1 0 18" fill="currentColor" opacity="0.3" />
-                <circle cx="12" cy="12" r="4" />
-                <line x1="12" y1="1" x2="12" y2="3" />
-                <line x1="12" y1="21" x2="12" y2="23" />
-                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" />
-                <line x1="1" y1="12" x2="3" y2="12" />
-                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36" />
-              </svg>
-            </button>
             {/* User Auth */}
             {/* 로그인 상태에 따라 유저 메뉴 또는 로그인 버튼 분기 (삼항 ? :) */}
             {isLoggedIn ? (
