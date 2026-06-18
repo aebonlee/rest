@@ -36,7 +36,7 @@ ALTER TABLE rest_pbl_submissions ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "rest_pbl_select" ON rest_pbl_submissions;
 CREATE POLICY "rest_pbl_select" ON rest_pbl_submissions FOR SELECT
   USING (auth.uid() = user_id
-    OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr'));
+    OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr','a01094819953@gmail.com','jotu117@gmail.com','jooym6016@kidico.or.kr','tlskaksmf@naver.com'));
 
 DROP POLICY IF EXISTS "rest_pbl_insert" ON rest_pbl_submissions;
 CREATE POLICY "rest_pbl_insert" ON rest_pbl_submissions FOR INSERT
@@ -45,11 +45,11 @@ CREATE POLICY "rest_pbl_insert" ON rest_pbl_submissions FOR INSERT
 DROP POLICY IF EXISTS "rest_pbl_update" ON rest_pbl_submissions;
 CREATE POLICY "rest_pbl_update" ON rest_pbl_submissions FOR UPDATE
   USING (auth.uid() = user_id
-    OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr'));
+    OR (auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr','a01094819953@gmail.com','jotu117@gmail.com','jooym6016@kidico.or.kr','tlskaksmf@naver.com'));
 
 DROP POLICY IF EXISTS "rest_pbl_delete" ON rest_pbl_submissions;
 CREATE POLICY "rest_pbl_delete" ON rest_pbl_submissions FOR DELETE
-  USING ((auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr'));
+  USING ((auth.jwt() ->> 'email') IN ('aebon@kakao.com','radical8566@gmail.com','aebon@kyonggi.ac.kr','a01094819953@gmail.com','jotu117@gmail.com','jooym6016@kidico.or.kr','tlskaksmf@naver.com'));
 
 -- ============================================
 -- 추가 컬럼 동기화 (기존 DB 대비 멱등) — 이미 테이블이 있던 경우 보강
