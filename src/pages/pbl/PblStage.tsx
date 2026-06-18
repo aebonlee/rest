@@ -77,6 +77,21 @@ const PblStage = (): ReactElement => {
     } finally { setSaving(false); }
   };
 
+  // 이 단계의 작성 내용을 모두 지우고 저장(삭제) — CRUD의 Delete
+  const handleClear = async () => {
+    if (!window.confirm('이 단계에 작성한 내용을 모두 지울까요? 저장된 내용이 삭제됩니다.')) return;
+    setSaving(true);
+    try {
+      setValues({});
+      await saveStageContent(user, stage.key, {}, null);
+      setSavedAuto(null);
+      setSub((p) => p ? { ...p, content: { ...p.content, [stage.key]: {} } } : p);
+      showToast('이 단계의 작성 내용을 지웠습니다.', 'success');
+    } catch (e: any) {
+      showToast('삭제 실패: ' + (e?.message || ''), 'error');
+    } finally { setSaving(false); }
+  };
+
   // koreatech식 단계 카드 — 풍부한 안내(desc/guide/example)가 있으면 카드형, 없으면 단순 라벨형
   const renderField = (f: PblField): ReactElement => {
     const c = f.color || stage.color;
@@ -214,8 +229,9 @@ const PblStage = (): ReactElement => {
 
               <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
                 <button className="btn btn-primary" style={{ padding: '11px 26px' }} disabled={saving} onClick={handleSave}>
-                  {saving ? '저장 중…' : '저장 (내용 + 점수)'}
+                  {saving ? '처리 중…' : (savedAuto !== null ? '수정 저장 (내용 + 점수)' : '저장 (내용 + 점수)')}
                 </button>
+                <button type="button" className="btn btn-secondary" style={{ padding: '11px 18px', color: '#dc2626' }} disabled={saving} onClick={handleClear}>작성 지우기</button>
                 {prev && <button className="btn btn-secondary" style={{ padding: '11px 18px' }} onClick={() => navigate(`/pbl/${prev.key}`)}>← {prev.label}</button>}
                 {next && <button className="btn btn-secondary" style={{ padding: '11px 18px' }} onClick={() => navigate(`/pbl/${next.key}`)}>{next.label} →</button>}
                 <Link to="/pbl/info" style={{ marginLeft: 'auto', fontSize: '13.5px', color: 'var(--primary-blue)' }}>기본정보·내 점수</Link>
