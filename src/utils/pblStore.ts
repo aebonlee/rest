@@ -112,8 +112,34 @@ export async function saveStageContent(
     auto,
     updated_at: new Date().toISOString(),
   };
-  const { error } = await client.from(PBL_TABLE).upsert(row, { onConflict: 'user_id' });
-  if (error) throw error;
+  // select()로 반환 행을 함께 요청 → 저장이 실제로 반영됐는지 확인(저장됐다고 떴는데 사라지는 문제 방지)
+  const { data, error } = await client
+    .from(PBL_TABLE)
+    .upsert(row, { onConflict: 'user_id' })
+    .select('user_id')
+    .maybeSingle();
+  if (error) throw enrichSaveError(error);
+  if (!data) {
+    // 에러는 없지만 반영된 행이 없음 = RLS/제약 문제로 사실상 저장 실패. 조용히 사라지지 않도록 명시적으로 알림.
+    throw new Error(
+      '저장이 서버에 반영되지 않았습니다. 관리자에게 문의하세요. ' +
+      '(Supabase rest_pbl_submissions 테이블/권한 설정 확인 필요)',
+    );
+  }
+}
+
+/** Supabase 저장 오류를 사람이 읽을 수 있는 메시지로 보강 (테이블 없음/제약 없음 등) */
+function enrichSaveError(error: { code?: string; message?: string }): Error {
+  const code = error?.code || '';
+  const msg = error?.message || '';
+  // 42P01: relation does not exist (테이블 미생성), 42P10/23505: onConflict 제약 문제
+  if (code === '42P01' || /does not exist/i.test(msg)) {
+    return new Error('저장 테이블(rest_pbl_submissions)이 아직 생성되지 않았습니다. 관리자: 마이그레이션 SQL을 실행하세요.');
+  }
+  if (/on conflict|unique or exclusion/i.test(msg)) {
+    return new Error('저장 설정 오류(user_id 고유 제약 누락). 관리자: 복구 SQL을 실행하세요.');
+  }
+  return new Error(msg || '알 수 없는 저장 오류');
 }
 
 /** 강사 평가 저장 — 특정 학생 행의 단계 점수·피드백 병합(관리자 RLS) */
