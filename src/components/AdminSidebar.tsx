@@ -72,6 +72,7 @@ const adminMenuItems = [
   { path: '/admin/assignments', label: '과제 관리', icon: '📝' },
   { path: '/admin/attendance', label: '출석 관리', icon: '✅' },
   { path: '/admin/grades', label: '학습평가 성적', icon: '🎯' },
+  { path: '/admin/pbl-scores', label: 'PBL 항목별 점수', icon: '📋' },
   { path: '/admin/announcements', label: '공지사항', icon: '📢' },
   { path: '/admin/teams', label: '팀 편성', icon: '🤝' },
   { path: '/admin/projects', label: '프로젝트', icon: '🚀' },
