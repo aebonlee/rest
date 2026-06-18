@@ -20,7 +20,11 @@
 
 ## 발견 사항 (우선순위순)
 
-### 🔴 HIGH — 관리자 이메일 목록 불일치 (기능 버그)
+### ✅ HIGH — 관리자 이메일 목록 불일치 (기능 버그) — **해결됨 (2026-06-18)**
+> PBL RLS(select/update/delete)를 관리자 7명으로 동기화 완료. `pg_policies` 검증 통과.
+> 적용 SQL: `supabase/2026-06-18-pbl-rls-admin-sync.sql` (+ 원본 2개 파일 정합).
+> 보조 관리자(백진주·조두수·주윤미) `/admin/pbl-scores` 전체 점수표 정상 조회 확인.
+
 - **위치**: `src/config/admin.ts:46-53` (7명) vs `supabase/2026-06-18-pbl-submissions.sql:39,48,52` (3명)
 - **내용**: 클라이언트 관리자 7명(대표 + 백진주·조두수·주윤미 등 rest 한정 관리자) 중,
   PBL RLS 정책에는 **3명만**(`aebon@kakao.com`, `radical8566@gmail.com`, `aebon@kyonggi.ac.kr`) 등록됨.
