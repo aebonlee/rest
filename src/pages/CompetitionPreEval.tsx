@@ -212,7 +212,6 @@ const CompetitionPreEval = (): ReactElement => {
                       {/* 헤더: 번호 · 제목 · 상태 */}
                       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
                         <span style={{ fontSize: '13px', fontWeight: 800, color: 'var(--primary-blue)' }}>{p.id}팀</span>
-                        <span style={{ fontSize: '20px' }}><EmojiIcon char={p.icon} /></span>
                         <h3 style={{ margin: 0, fontSize: '16px', flex: 1, minWidth: 0 }}>{p.title}</h3>
                         {isMyTeam && <span style={chip('#fef3c7', '#92400e')}>우리 팀 · 평가 제외</span>}
                         {saved && !isMyTeam && <span style={chip('#dbeafe', '#1e3a8a')}>저장됨 {totalOf(saved)}점</span>}
@@ -306,7 +305,7 @@ const CompetitionPreEval = (): ReactElement => {
                             <td style={{ padding: '8px 6px', fontWeight: 800, color: idx < 3 ? 'var(--primary-blue)' : 'var(--text-secondary)' }}>{idx + 1}</td>
                             <td style={{ padding: '8px 6px', textAlign: 'left' }}>
                               <span style={{ fontWeight: 700, color: 'var(--primary-blue)' }}>{r.project.id}팀</span>{' '}
-                              <span><EmojiIcon char={r.project.icon} /> {r.project.title}</span>
+                              <span>{r.project.title}</span>
                             </td>
                             {r.avgBy.map((a) => (
                               <td key={a.key} style={{ padding: '8px 6px', color: 'var(--text-secondary)' }}>{a.avg.toFixed(1)}</td>
