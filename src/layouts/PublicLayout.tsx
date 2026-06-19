@@ -67,7 +67,8 @@ const Schedule = lazy(() => import('../pages/Schedule'));
 const Competition = lazy(() => import('../pages/Competition'));
 const CompetitionPreEval = lazy(() => import('../pages/CompetitionPreEval'));
 const CompetitionEvalSummary = lazy(() => import('../pages/CompetitionEvalSummary'));
-const CompetitionResult = lazy(() => import('../pages/CompetitionResult'));
+const CompetitionResultEval = lazy(() => import('../pages/CompetitionResultEval'));
+const CompetitionResultSummary = lazy(() => import('../pages/CompetitionResultSummary'));
 const Resources = lazy(() => import('../pages/Resources'));
 const Instructor = lazy(() => import('../pages/Instructor'));
 const Classroom = lazy(() => import('../pages/Classroom'));
@@ -157,7 +158,8 @@ const PublicLayout = (): ReactElement => {
             {/* 경진대회 하위 — 사전평가(로그인 필요), 결과평가(공개 예정) */}
             <Route path="/competition/pre-eval" element={<AuthGuard><CompetitionPreEval /></AuthGuard>} />
             <Route path="/competition/eval-summary" element={<AuthGuard><CompetitionEvalSummary /></AuthGuard>} />
-            <Route path="/competition/result" element={<CompetitionResult />} />
+            <Route path="/competition/result" element={<AuthGuard><CompetitionResultEval /></AuthGuard>} />
+            <Route path="/competition/result-summary" element={<AuthGuard><CompetitionResultSummary /></AuthGuard>} />
             <Route path="/resources" element={<Resources />} />
             <Route path="/instructor" element={<Instructor />} />
             <Route path="/classroom" element={<Classroom />} />

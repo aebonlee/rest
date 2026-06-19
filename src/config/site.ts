@@ -145,9 +145,14 @@ const site: SiteConfig = {
       activePath: '/competition',                // /competition/* 전체에서 부모 활성
       dropdown: [
         { path: '/competition', labelKey: 'site.nav.competitionInfo' },
+        // [사전평가] 그룹
+        { divider: true, labelKey: 'site.nav.competitionPreGroup' },
         { path: '/competition/pre-eval', labelKey: 'site.nav.competitionPreEval' },
         { path: '/competition/eval-summary', labelKey: 'site.nav.competitionEvalSummary' },
+        // [결과평가] 그룹 — 사전평가 상위 10팀 대상
+        { divider: true, labelKey: 'site.nav.competitionResultGroup' },
         { path: '/competition/result', labelKey: 'site.nav.competitionResult' },
+        { path: '/competition/result-summary', labelKey: 'site.nav.competitionResultSummary' },
       ]
     },
     {
