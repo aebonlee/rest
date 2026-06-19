@@ -1,7 +1,7 @@
 -- ============================================================
 -- 2026-06-19 프로젝트 결과평가(경진대회 · 최종) 테이블 신설
 --  · Supabase SQL Editor에서 1회 실행
---  · 사전평가 상위 10팀을 대상으로 10개 항목(각 20점, 합 200점)으로 평가
+--  · 사전평가 상위 10팀을 대상으로 10개 항목(각 10점, 합 100점)으로 평가
 --    - score_topic      : 주제
 --    - score_idea       : 아이디어
 --    - score_team       : 팀역량(AI리터러시·협업)
@@ -22,16 +22,16 @@ create table if not exists rest_project_result_evals (
   project_id      int  not null,
   evaluator_id    uuid not null,
   evaluator_name  text not null default '',
-  score_topic      int not null default 0 check (score_topic      between 0 and 20),
-  score_idea       int not null default 0 check (score_idea       between 0 and 20),
-  score_team       int not null default 0 check (score_team       between 0 and 20),
-  score_biz        int not null default 0 check (score_biz        between 0 and 20),
-  score_design     int not null default 0 check (score_design     between 0 and 20),
-  score_program    int not null default 0 check (score_program    between 0 and 20),
-  score_ai         int not null default 0 check (score_ai         between 0 and 20),
-  score_solar      int not null default 0 check (score_solar      between 0 and 20),
-  score_completion int not null default 0 check (score_completion between 0 and 20),
-  score_present    int not null default 0 check (score_present    between 0 and 20),
+  score_topic      int not null default 0 check (score_topic      between 0 and 10),
+  score_idea       int not null default 0 check (score_idea       between 0 and 10),
+  score_team       int not null default 0 check (score_team       between 0 and 10),
+  score_biz        int not null default 0 check (score_biz        between 0 and 10),
+  score_design     int not null default 0 check (score_design     between 0 and 10),
+  score_program    int not null default 0 check (score_program    between 0 and 10),
+  score_ai         int not null default 0 check (score_ai         between 0 and 10),
+  score_solar      int not null default 0 check (score_solar      between 0 and 10),
+  score_completion int not null default 0 check (score_completion between 0 and 10),
+  score_present    int not null default 0 check (score_present    between 0 and 10),
   comment         text not null default '',
   created_at      timestamptz not null default now(),
   updated_at      timestamptz not null default now(),

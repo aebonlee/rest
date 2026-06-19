@@ -150,7 +150,7 @@ const CompetitionResultEval = (): ReactElement => {
         <div className="container">
           <h2>프로젝트 결과평가</h2>
           <p>
-            사전평가 상위 10팀을 대상으로 <strong>10개 항목(각 20점, 합 200점)</strong>으로 최종 평가합니다.
+            사전평가 상위 10팀을 대상으로 <strong>10개 항목(각 {RESULT_MAX_PER_CRITERION}점, 합 {RESULT_MAX_TOTAL}점)</strong>으로 최종 평가합니다.
             저장 후 <strong>결과평가 집계표</strong>에서 결과를 확인할 수 있습니다.
           </p>
         </div>

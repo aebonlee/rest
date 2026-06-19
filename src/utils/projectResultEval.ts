@@ -19,9 +19,9 @@ import site from '../config/site';
 // 사이트 접두사를 붙인 실제 테이블명 (예: 'rest_project_result_evals')
 export const RESULT_EVALS_TABLE = `${site.dbPrefix}project_result_evals`;
 
-// 항목당 만점 / 전체 만점 (사전평가와 동일한 항목당 20점, 10항목 → 200점)
-export const RESULT_MAX_PER_CRITERION = 20;
-export const RESULT_MAX_TOTAL = 200;
+// 항목당 만점 / 전체 만점 (항목당 10점, 10항목 → 100점)
+export const RESULT_MAX_PER_CRITERION = 10;
+export const RESULT_MAX_TOTAL = 100;
 
 // 결과평가 10개 항목 — 화면 라벨/순서/설명의 단일 진실 공급원. key는 DB 컬럼명과 1:1.
 export const RESULT_CRITERIA = [
