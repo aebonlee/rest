@@ -43,6 +43,9 @@ type Draft = EvalScores & { comment: string };
 // 이름 정규화(공백 제거·소문자) — 본인 팀 판별 시 표기 차이를 무시하기 위함.
 const norm = (s: string): string => (s || '').replace(/\s+/g, '').toLowerCase();
 
+// 팀 번호 → 패들렛 보드 주소(2자리 0패딩). 팀별 패들렛 페이지와 동일 규칙(padlet.com/aebon/projectNN).
+const padletUrl = (n: number): string => `https://padlet.com/aebon/project${String(n).padStart(2, '0')}`;
+
 const CompetitionPreEval = (): ReactElement => {
   const { user, profile, isAdmin } = useAuth();
   const { showToast } = useToast();
@@ -195,7 +198,19 @@ const CompetitionPreEval = (): ReactElement => {
                         {isMyTeam && <span style={chip('#fef3c7', '#92400e')}>우리 팀 · 평가 제외</span>}
                         {saved && !isMyTeam && <span style={chip('#dbeafe', '#1e3a8a')}>저장됨 {totalOf(saved)}점</span>}
                       </div>
-                      <p style={{ margin: '0 0 12px', fontSize: '13px', color: 'var(--text-secondary)' }}>{p.tagline}</p>
+                      <p style={{ margin: '0 0 10px', fontSize: '13px', color: 'var(--text-secondary)' }}>{p.tagline}</p>
+
+                      {/* 팀원 + 패들렛 할당 */}
+                      <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '8px', marginBottom: '14px', paddingBottom: '12px', borderBottom: '1px dashed var(--border-light)' }}>
+                        <span style={{ fontSize: '12px', fontWeight: 700, color: 'var(--text-secondary)' }}>팀원</span>
+                        <span style={{ fontSize: '13px' }}>{p.members.join(' · ') || '모집 중'}</span>
+                        <a
+                          href={padletUrl(p.id)} target="_blank" rel="noopener noreferrer"
+                          style={{ ...chip('#fef9c3', '#854d0e'), marginLeft: 'auto', textDecoration: 'none', display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                        >
+                          <EmojiIcon char="📌" /> 패들렛 project{String(p.id).padStart(2, '0')} ↗
+                        </a>
+                      </div>
 
                       {/* 5개 항목 점수 입력 */}
                       <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
