@@ -103,6 +103,43 @@ export async function upsertEval(
   return error ? { ok: false, error: error.message } : { ok: true };
 }
 
+// 한 프로젝트(팀)의 평가 집계 결과(점수표 + 피드백).
+export interface ProjectAgg {
+  project_id: number;                                              // 팀 번호 1~23
+  count: number;                                                   // 평가 건수
+  avgBy: { key: keyof EvalScores; label: string; avg: number }[];  // 항목별 평균
+  avgTotal: number;                                                // 총점 평균(0~100)
+  comments: { name: string; comment: string; total: number }[];    // 피드백(종합평, 점수 높은 순)
+}
+
+/**
+ * 전체 평가를 프로젝트별로 집계한다(점수표 + 피드백).
+ * @param evals listEvals() 결과
+ * @returns project_id → ProjectAgg 맵
+ */
+export function aggregateEvals(evals: ProjectEval[]): Map<number, ProjectAgg> {
+  const byProject = new Map<number, ProjectEval[]>();
+  for (const e of evals) {
+    const arr = byProject.get(e.project_id) || [];
+    arr.push(e); byProject.set(e.project_id, arr);
+  }
+  const out = new Map<number, ProjectAgg>();
+  for (const [pid, arr] of byProject) {
+    const n = arr.length;
+    const avgBy = EVAL_CRITERIA.map((c) => ({
+      key: c.key as keyof EvalScores, label: c.label,
+      avg: n ? arr.reduce((s, e) => s + (e[c.key] || 0), 0) / n : 0,
+    }));
+    const avgTotal = n ? arr.reduce((s, e) => s + totalOf(e), 0) / n : 0;
+    const comments = arr
+      .filter((e) => (e.comment || '').trim())
+      .map((e) => ({ name: e.evaluator_name || '익명', comment: e.comment.trim(), total: totalOf(e) }))
+      .sort((a, b) => b.total - a.total);
+    out.set(pid, { project_id: pid, count: n, avgBy, avgTotal, comments });
+  }
+  return out;
+}
+
 /**
  * 내가 작성한 특정 프로젝트 평가 삭제(RLS로 본인 것만 삭제됨).
  * @returns { ok, error? }

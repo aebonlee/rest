@@ -146,6 +146,7 @@ const site: SiteConfig = {
       dropdown: [
         { path: '/competition', labelKey: 'site.nav.competitionInfo' },
         { path: '/competition/pre-eval', labelKey: 'site.nav.competitionPreEval' },
+        { path: '/competition/eval-summary', labelKey: 'site.nav.competitionEvalSummary' },
         { path: '/competition/result', labelKey: 'site.nav.competitionResult' },
       ]
     },

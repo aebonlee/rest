@@ -20,6 +20,7 @@
  *  - 데이터 저장/조회는 직접 하지 않고 utils/projectEval 함수에 맡긴다(역할 분리).
  */
 import { useState, useEffect, useCallback, useMemo, type ReactElement } from 'react';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
@@ -84,29 +85,7 @@ const CompetitionPreEval = (): ReactElement => {
     return m;
   }, [evals, user]);
 
-  // 프로젝트별 집계(평가 수·항목 평균·총점 평균) — 화면 아래 결과표용.
-  const results = useMemo(() => {
-    const byProject = new Map<number, ProjectEval[]>();
-    for (const e of evals) {
-      const arr = byProject.get(e.project_id) || [];
-      arr.push(e); byProject.set(e.project_id, arr);
-    }
-    const rows = TEAM_PROJECTS.map((p) => {
-      const arr = byProject.get(p.id) || [];
-      const n = arr.length;
-      // 항목별 평균(평가 없으면 0).
-      const avgBy = EVAL_CRITERIA.map((c) => ({
-        key: c.key, label: c.label,
-        avg: n ? arr.reduce((s, e) => s + (e[c.key] || 0), 0) / n : 0,
-      }));
-      const avgTotal = n ? arr.reduce((s, e) => s + totalOf(e), 0) / n : 0;
-      return { project: p, count: n, avgBy, avgTotal };
-    });
-    // 평가가 1건 이상인 항목을 총점 평균 내림차순으로(동점이면 평가 수 많은 순) 정렬.
-    return rows
-      .filter((r) => r.count > 0)
-      .sort((a, b) => b.avgTotal - a.avgTotal || b.count - a.count);
-  }, [evals]);
+  // (집계 결과는 별도 메뉴 '프로젝트 사전평가 집계표'에서 보여 준다.)
 
   // 내 평가 진행 수(저장된 것 기준).
   const myDoneCount = myEvalByProject.size;
@@ -277,47 +256,13 @@ const CompetitionPreEval = (): ReactElement => {
                 })}
               </div>
 
-              {/* ── 집계 결과 ── */}
-              <div style={{ ...card, marginTop: '10px' }}>
-                <h3 style={{ margin: '0 0 4px', fontSize: '18px' }}><EmojiIcon char="📊" /> 평가 결과 (집계)</h3>
-                <p style={{ margin: '0 0 14px', fontSize: '13px', color: 'var(--text-secondary)' }}>
-                  현재까지 등록된 평가의 프로젝트별 평균 점수입니다. 평가가 추가될 때마다 자동으로 갱신됩니다.
-                </p>
-                {results.length === 0 ? (
-                  <p style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>아직 등록된 평가가 없습니다. 위에서 첫 평가를 남겨 보세요.</p>
-                ) : (
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13.5px', minWidth: '720px' }}>
-                      <thead>
-                        <tr style={{ textAlign: 'center', color: 'var(--text-secondary)', borderBottom: '2px solid var(--border-light)' }}>
-                          <th style={{ padding: '8px 6px', textAlign: 'center' }}>순위</th>
-                          <th style={{ padding: '8px 6px', textAlign: 'left' }}>프로젝트</th>
-                          {EVAL_CRITERIA.map((c) => (
-                            <th key={c.key} style={{ padding: '8px 6px' }}>{c.label.replace(' · ', '·')}</th>
-                          ))}
-                          <th style={{ padding: '8px 6px' }}>평균 총점</th>
-                          <th style={{ padding: '8px 6px' }}>평가 수</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {results.map((r, idx) => (
-                          <tr key={r.project.id} style={{ borderBottom: '1px solid var(--border-light)', textAlign: 'center' }}>
-                            <td style={{ padding: '8px 6px', fontWeight: 800, color: idx < 3 ? 'var(--primary-blue)' : 'var(--text-secondary)' }}>{idx + 1}</td>
-                            <td style={{ padding: '8px 6px', textAlign: 'left' }}>
-                              <span style={{ fontWeight: 700, color: 'var(--primary-blue)' }}>{r.project.id}팀</span>{' '}
-                              <span>{r.project.title}</span>
-                            </td>
-                            {r.avgBy.map((a) => (
-                              <td key={a.key} style={{ padding: '8px 6px', color: 'var(--text-secondary)' }}>{a.avg.toFixed(1)}</td>
-                            ))}
-                            <td style={{ padding: '8px 6px', fontWeight: 800, color: 'var(--primary-blue)' }}>{r.avgTotal.toFixed(1)}</td>
-                            <td style={{ padding: '8px 6px', color: 'var(--text-secondary)' }}>{r.count}</td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                )}
+              {/* 집계 결과 안내 — 별도 메뉴로 이동 */}
+              <div style={{ ...card, marginTop: '10px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '12px', flexWrap: 'wrap' }}>
+                <div>
+                  <h3 style={{ margin: '0 0 4px', fontSize: '16px' }}><EmojiIcon char="📊" /> 평가 결과가 궁금하신가요?</h3>
+                  <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>팀별 평균 점수·차트·피드백은 <strong>프로젝트 사전평가 집계표</strong>에서 확인하세요.</p>
+                </div>
+                <Link to="/competition/eval-summary" className="btn btn-primary" style={{ padding: '9px 20px', fontSize: '14px', whiteSpace: 'nowrap' }}>집계표 보기 →</Link>
               </div>
             </>
           )}
