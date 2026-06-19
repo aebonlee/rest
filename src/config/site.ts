@@ -139,7 +139,16 @@ const site: SiteConfig = {
         { path: '/assessment/summative', labelKey: 'site.nav.assessmentSum' },
       ]
     },
-    { path: '/competition', labelKey: 'site.nav.competition' },
+    {
+      labelKey: 'site.nav.competition',
+      path: '/competition',                      // 부모 클릭 시 경진대회 안내로 이동
+      activePath: '/competition',                // /competition/* 전체에서 부모 활성
+      dropdown: [
+        { path: '/competition', labelKey: 'site.nav.competitionInfo' },
+        { path: '/competition/pre-eval', labelKey: 'site.nav.competitionPreEval' },
+        { path: '/competition/result', labelKey: 'site.nav.competitionResult' },
+      ]
+    },
     {
       labelKey: 'site.nav.project',
       path: '/project-guide',                    // 대표 경로는 /project-guide 이지만
