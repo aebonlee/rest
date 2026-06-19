@@ -19,6 +19,7 @@
 import { useState, useEffect, useCallback, useMemo, type ReactElement } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import SEOHead from '../components/SEOHead';
+import { EmojiIcon } from '../utils/emojiIcon';
 import { TEAM_PROJECTS, getTeamProject } from '../data/teamProjects';
 import { listEvals, aggregateEvals, MAX_PER_CRITERION, MAX_TOTAL, type ProjectAgg } from '../utils/projectEval';
 
@@ -100,6 +101,43 @@ const CompetitionEvalSummary = (): ReactElement => {
                 평가된 팀 <strong style={{ color: 'var(--primary-blue)' }}>{evaluatedCount}</strong> / {TEAM_PROJECTS.length}개
                 {' · '}총 평가 <strong style={{ color: 'var(--primary-blue)' }}>{totalCount}</strong>건
               </div>
+
+              {/* ── TOP 10 순위 ── */}
+              {ranking.length > 0 && (
+                <div style={{ ...card, padding: '20px 22px' }}>
+                  <h3 style={{ margin: '0 0 3px', fontSize: '17px' }}><EmojiIcon char="🏆" /> TOP 10</h3>
+                  <p style={{ margin: '0 0 14px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>평균 총점 기준 상위 10팀 · 행을 누르면 상세 집계가 열립니다.</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                    {ranking.slice(0, 10).map((x, i) => {
+                      const rank = i + 1;
+                      const on = x.p.id === effId;
+                      // 1·2·3위 메달색, 그 외 회색 배지.
+                      const medalBg = rank === 1 ? '#f59e0b' : rank === 2 ? '#94a3b8' : rank === 3 ? '#c2812f' : 'var(--bg-light-gray)';
+                      const medalFg = rank <= 3 ? '#fff' : 'var(--text-secondary)';
+                      return (
+                        <button
+                          key={x.p.id}
+                          onClick={() => setSelected(x.p.id)}
+                          title={x.p.title}
+                          style={{
+                            display: 'flex', alignItems: 'center', gap: '12px', width: '100%', textAlign: 'left', cursor: 'pointer',
+                            padding: '8px 12px', borderRadius: '10px',
+                            border: on ? `1px solid ${x.p.color}` : '1px solid transparent',
+                            background: on ? 'var(--bg-light-gray)' : 'transparent',
+                          }}
+                        >
+                          <span style={{ width: '26px', height: '26px', borderRadius: '50%', background: medalBg, color: medalFg, fontWeight: 800, fontSize: '13px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>{rank}</span>
+                          <span style={{ fontSize: '13px', fontWeight: 800, color: x.p.color, flexShrink: 0, width: '38px' }}>{x.p.id}팀</span>
+                          <span style={{ flex: 1, minWidth: 0, fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.p.title}</span>
+                          <span style={{ fontSize: '12.5px', color: 'var(--text-secondary)', flexShrink: 0 }}>평가 {x.a.count}건</span>
+                          <strong style={{ fontSize: '16px', color: x.p.color, flexShrink: 0, width: '54px', textAlign: 'right' }}>{x.a.avgTotal.toFixed(1)}</strong>
+                          <span style={{ fontSize: '11px', color: 'var(--text-secondary)', flexShrink: 0 }}>/ {MAX_TOTAL}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* ── 팀 선택 버튼(1팀~23팀) ── */}
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
