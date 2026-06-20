@@ -3,8 +3,8 @@
  *
  * [역할]
  *  - 사전평가 상위 10팀(대상)을 버튼으로 나열하고, 클릭한 팀의 결과평가 집계를 보여 준다.
- *  - 상단 TOP 10(결과평가 평균 총점 순) + 선택 팀: 평균 총점·순위 + 10개 항목 레이더 차트
- *    + 항목별 평균 막대 + 피드백(종합평).
+ *  - 상단 TOP 10(결과평가 평균 총점 순) + 선택 팀: 평균 총점·순위 + 레이더 차트 2개
+ *    (10개 항목을 '기획·비즈니스'/'구현·기술' 2계열 각 5축으로 분할) + 항목별 평균 막대 + 피드백(종합평).
  *  - 구조·UX는 사전평가 집계표(CompetitionEvalSummary)와 동일, 항목만 10개.
  *
  * [주요 export]
@@ -19,7 +19,7 @@ import { TEAM_PROJECTS, getTeamProject } from '../data/teamProjects';
 import { listEvals, aggregateEvals } from '../utils/projectEval'; // 사전평가 → 대상 10팀
 import {
   listResultEvals, aggregateResultEvals,
-  RESULT_MAX_PER_CRITERION, RESULT_MAX_TOTAL, type ProjectResultAgg,
+  RESULT_MAX_PER_CRITERION, RESULT_MAX_TOTAL, RESULT_CRITERIA_GROUPS, type ProjectResultAgg,
 } from '../utils/projectResultEval';
 
 const CX = 150, CY = 145, R = 100;
@@ -29,6 +29,43 @@ const pointAt = (val: number, i: number, n: number): [number, number] => {
   return [CX + r * Math.cos(angleFor(i, n)), CY + r * Math.sin(angleFor(i, n))];
 };
 const toPoints = (pts: [number, number][]): string => pts.map(([x, y]) => `${x.toFixed(1)},${y.toFixed(1)}`).join(' ');
+
+// 한 계열(항목 n개)의 레이더 차트. avgBy의 부분집합을 받아 n각형으로 그린다.
+type AvgItem = { key: string; label: string; avg: number };
+const RadarChart = ({ items, accent, title }: { items: AvgItem[]; accent: string; title: string }): ReactElement => {
+  const n = items.length;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+      <div style={{ fontSize: '13px', fontWeight: 800, color: accent, marginBottom: '2px' }}>{title}</div>
+      <svg viewBox="0 0 300 290" width="100%" style={{ maxWidth: '300px' }} role="img" aria-label={`${title} 레이더 차트`}>
+        {[0.25, 0.5, 0.75, 1].map((lv) => (
+          <polygon key={lv}
+            points={toPoints(items.map((_, i) => pointAt(lv * RESULT_MAX_PER_CRITERION, i, n)))}
+            fill="none" stroke="var(--border-light)" strokeWidth={1} />
+        ))}
+        {items.map((_, i) => {
+          const [x, y] = pointAt(RESULT_MAX_PER_CRITERION, i, n);
+          return <line key={i} x1={CX} y1={CY} x2={x} y2={y} stroke="var(--border-light)" strokeWidth={1} />;
+        })}
+        <polygon
+          points={toPoints(items.map((c, i) => pointAt(c.avg, i, n)))}
+          fill={accent} fillOpacity={0.22} stroke={accent} strokeWidth={2.5} strokeLinejoin="round" />
+        {items.map((c, i) => {
+          const [x, y] = pointAt(c.avg, i, n);
+          return <circle key={i} cx={x} cy={y} r={3} fill={accent} />;
+        })}
+        {items.map((c, i) => {
+          const [lx, ly] = pointAt(RESULT_MAX_PER_CRITERION + 3.4, i, n);
+          const anchor = lx > CX + 8 ? 'start' : lx < CX - 8 ? 'end' : 'middle';
+          return (
+            <text key={i} x={lx} y={ly} fontSize={10} fontWeight={600} fill="var(--text-secondary)"
+              textAnchor={anchor} dominantBaseline="middle">{c.label}</text>
+          );
+        })}
+      </svg>
+    </div>
+  );
+};
 
 const CompetitionResultSummary = (): ReactElement => {
   const { isAdmin } = useAuth();
@@ -189,40 +226,20 @@ const CompetitionResultSummary = (): ReactElement => {
                     </div>
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '20px', marginTop: '20px', alignItems: 'center' }}>
-                    {/* 레이더 차트(10축) */}
-                    <div style={{ display: 'flex', justifyContent: 'center' }}>
-                      <svg viewBox="0 0 300 290" width="100%" style={{ maxWidth: '340px' }} role="img" aria-label="항목별 평균 레이더 차트">
-                        {[0.25, 0.5, 0.75, 1].map((lv) => (
-                          <polygon key={lv}
-                            points={toPoints(a.avgBy.map((_, i) => pointAt(lv * RESULT_MAX_PER_CRITERION, i, a.avgBy.length)))}
-                            fill="none" stroke="var(--border-light)" strokeWidth={1} />
-                        ))}
-                        {a.avgBy.map((_, i) => {
-                          const [x, y] = pointAt(RESULT_MAX_PER_CRITERION, i, a.avgBy.length);
-                          return <line key={i} x1={CX} y1={CY} x2={x} y2={y} stroke="var(--border-light)" strokeWidth={1} />;
-                        })}
-                        <polygon
-                          points={toPoints(a.avgBy.map((c, i) => pointAt(c.avg, i, a.avgBy.length)))}
-                          fill={accent} fillOpacity={0.22} stroke={accent} strokeWidth={2.5} strokeLinejoin="round" />
-                        {a.avgBy.map((c, i) => {
-                          const [x, y] = pointAt(c.avg, i, a.avgBy.length);
-                          return <circle key={i} cx={x} cy={y} r={3} fill={accent} />;
-                        })}
-                        {a.avgBy.map((c, i) => {
-                          const [lx, ly] = pointAt(RESULT_MAX_PER_CRITERION + 3.4, i, a.avgBy.length);
-                          const anchor = lx > CX + 8 ? 'start' : lx < CX - 8 ? 'end' : 'middle';
-                          return (
-                            <text key={i} x={lx} y={ly} fontSize={10} fontWeight={600} fill="var(--text-secondary)"
-                              textAnchor={anchor} dominantBaseline="middle">{c.label}</text>
-                          );
-                        })}
-                      </svg>
-                    </div>
+                  {/* 레이더 차트 — 10개 항목을 2개 계열(각 5축)로 분할 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '12px', marginTop: '20px' }}>
+                    {RESULT_CRITERIA_GROUPS.map((g) => (
+                      <RadarChart key={g.title} title={g.title} accent={accent}
+                        items={g.keys.map((k) => a.avgBy.find((c) => c.key === k)).filter((c): c is typeof a.avgBy[number] => !!c)} />
+                    ))}
+                  </div>
 
-                    {/* 항목별 평균 막대 */}
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                      {a.avgBy.map((c) => (
+                  {/* 항목별 평균 막대 — 계열 순서대로 2열 */}
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '10px 28px', marginTop: '22px' }}>
+                    {RESULT_CRITERIA_GROUPS.flatMap((g) => g.keys)
+                      .map((k) => a.avgBy.find((c) => c.key === k))
+                      .filter((c): c is typeof a.avgBy[number] => !!c)
+                      .map((c) => (
                         <div key={c.key}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px', marginBottom: '4px' }}>
                             <span style={{ fontWeight: 600 }}>{c.label}</span>
@@ -233,7 +250,6 @@ const CompetitionResultSummary = (): ReactElement => {
                           </div>
                         </div>
                       ))}
-                    </div>
                   </div>
 
                   {/* 피드백 */}

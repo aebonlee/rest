@@ -37,6 +37,13 @@ export const RESULT_CRITERIA = [
   { key: 'score_present',    label: '발표·시연',      desc: '발표 전달력·데모' },
 ] as const;
 
+// 10개 항목을 2개 계열(각 5개)로 분할 — 집계표 레이더 차트를 계열별로 분리해 그리기 위함.
+// 두 계열의 keys 합집합 = RESULT_CRITERIA 전체.
+export const RESULT_CRITERIA_GROUPS = [
+  { title: '기획·비즈니스', keys: ['score_topic', 'score_idea', 'score_team', 'score_biz', 'score_present'] },
+  { title: '구현·기술',     keys: ['score_design', 'score_program', 'score_ai', 'score_solar', 'score_completion'] },
+] as const;
+
 // 점수 10개 항목만 모은 타입.
 export type ResultScores = {
   score_topic: number;
