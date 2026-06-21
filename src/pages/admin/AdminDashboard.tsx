@@ -173,7 +173,8 @@ const AdminDashboard = (): ReactElement => {
               <Link to="/admin/attendance" className="quick-link-card"><span className="ql-num">4</span> 출석 관리</Link>
               <Link to="/admin/announcements" className="quick-link-card"><span className="ql-num">5</span> 공지사항</Link>
               <Link to="/admin/teams" className="quick-link-card"><span className="ql-num">6</span> 팀 편성</Link>
-              <Link to="/admin/projects" className="quick-link-card"><span className="ql-num">7</span> 프로젝트</Link>
+              <Link to="/admin/projects/pre-eval" className="quick-link-card"><span className="ql-num">7</span> 사전평가 집계표</Link>
+              <Link to="/admin/projects/result-eval" className="quick-link-card"><span className="ql-num">8</span> 결과평가 집계표</Link>
             </div>
           </div>
         </div>

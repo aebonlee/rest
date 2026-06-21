@@ -75,7 +75,8 @@ const adminMenuItems = [
   { path: '/admin/pbl-scores', label: 'PBL 항목별 점수', icon: '📋' },
   { path: '/admin/announcements', label: '공지사항', icon: '📢' },
   { path: '/admin/teams', label: '팀 편성', icon: '🤝' },
-  { path: '/admin/projects', label: '프로젝트', icon: '🚀' },
+  { path: '/admin/projects/pre-eval', label: '프로젝트 사전평가 집계표', icon: '🗳️' },
+  { path: '/admin/projects/result-eval', label: '프로젝트 결과평가 집계표', icon: '🏆' },
 ];
 
 /**

@@ -118,7 +118,7 @@ const AdminGrades = lazy(() => import('../pages/admin/AdminGrades'));
 const AdminPblScores = lazy(() => import('../pages/admin/AdminPblScores'));
 const AdminAnnouncements = lazy(() => import('../pages/admin/AdminAnnouncements'));
 const AdminTeams = lazy(() => import('../pages/admin/AdminTeams'));
-const AdminProjects = lazy(() => import('../pages/admin/AdminProjects'));
+const AdminProjectEval = lazy(() => import('../pages/admin/AdminProjectEval'));
 const About = lazy(() => import('../pages/About'));
 
 // Loading — lazy 청크 로딩 중 보여줄 스피너(Suspense fallback).
@@ -243,7 +243,10 @@ const PublicLayout = (): ReactElement => {
             <Route path="/admin/pbl-scores" element={<AdminGuard><AdminPblScores /></AdminGuard>} />
             <Route path="/admin/announcements" element={<AdminGuard><AdminAnnouncements /></AdminGuard>} />
             <Route path="/admin/teams" element={<AdminGuard><AdminTeams /></AdminGuard>} />
-            <Route path="/admin/projects" element={<AdminGuard><AdminProjects /></AdminGuard>} />
+            <Route path="/admin/projects/pre-eval" element={<AdminGuard><AdminProjectEval mode="pre" /></AdminGuard>} />
+            <Route path="/admin/projects/result-eval" element={<AdminGuard><AdminProjectEval mode="result" /></AdminGuard>} />
+            {/* 구 경로 호환: /admin/projects → 사전평가 집계표로 */}
+            <Route path="/admin/projects" element={<AdminGuard><AdminProjectEval mode="pre" /></AdminGuard>} />
 
             {/* 404 */}
             <Route path="/about" element={<About />} />
