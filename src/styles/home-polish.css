@@ -1,0 +1,119 @@
+/* ============================================
+   Home polish — scroll reveal + card/section finishing touches
+   (기존 카드 규칙은 site.css에 두고, 여기서는 "더하는" 폴리시만 둔다)
+   ============================================ */
+
+/* ── 스크롤 등장 애니메이션 (JS: useScrollReveal가 .is-visible 토글) ── */
+.reveal {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+        opacity 0.7s ease,
+        transform 0.7s cubic-bezier(0.2, 0.7, 0.2, 1);
+    transition-delay: var(--reveal-delay, 0s);
+    will-change: opacity, transform;
+}
+.reveal.is-visible {
+    opacity: 1;
+    transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+    .reveal { opacity: 1; transform: none; transition: none; }
+}
+
+/* ── 섹션 제목 밑 그라데이션 언더라인(디자인 포인트) ── */
+.section-header { position: relative; }
+.section-title { position: relative; display: inline-block; }
+.section-title::after {
+    content: '';
+    display: block;
+    width: 56px;
+    height: 4px;
+    margin: 14px auto 0;
+    border-radius: 999px;
+    background: var(--accent-gradient, linear-gradient(90deg, #0046C8, #4F8BFF));
+}
+
+/* ── 과정 개요 카드: 상단 컬러 보더 강조 + 호버 상승(기존 hover 보강) ── */
+.course-card {
+    position: relative;
+    overflow: hidden;
+    border-top-width: 4px;
+    border-top-style: solid;
+    transition:
+        transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+        box-shadow 0.28s ease;
+}
+.course-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(120% 80% at 50% 0%, rgba(0, 70, 200, 0.06), transparent 60%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+}
+.course-card:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg, 0 18px 40px rgba(0, 0, 0, 0.12)); }
+.course-card:hover::after { opacity: 1; }
+.course-card-icon { transition: transform 0.3s ease; }
+.course-card:hover .course-card-icon { transform: scale(1.12) translateY(-2px); }
+
+/* ── 프로젝트 예시 카드: 호버 상승 + 좌측 강조선 ── */
+.example-card {
+    position: relative;
+    border-left: 3px solid transparent;
+    transition:
+        transform 0.26s ease,
+        box-shadow 0.26s ease,
+        border-color 0.26s ease;
+}
+.example-card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-md, 0 12px 28px rgba(0, 0, 0, 0.1));
+    border-left-color: var(--primary-blue, #0046C8);
+}
+.example-llm {
+    display: inline-block;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--primary-blue, #0046C8);
+    background: var(--bg-light-gray, #f1f5fb);
+    padding: 4px 12px;
+    border-radius: 999px;
+}
+
+/* ── 타임라인 마커: 은은한 글로우 + 호버 펄스 ── */
+.timeline-marker {
+    box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 6px 16px rgba(0, 0, 0, 0.12);
+    transition: transform 0.25s ease;
+}
+.timeline-item:hover .timeline-marker { transform: scale(1.12); }
+
+/* ── 교육 대상/혜택 카드: 호버 상승 + 상단 그라데이션 바 ── */
+.eligibility-card {
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.26s ease, box-shadow 0.26s ease;
+}
+.eligibility-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--accent-gradient, linear-gradient(90deg, #0046C8, #4F8BFF));
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s ease;
+}
+.eligibility-card:hover { transform: translateY(-6px); box-shadow: var(--shadow-lg, 0 18px 40px rgba(0, 0, 0, 0.12)); }
+.eligibility-card:hover::before { transform: scaleX(1); }
+
+/* ── 히어로 정보 카드: 살짝 더 유리감(glass) ── */
+.hero-info-card {
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+}
+
+/* ── 대회 카드 등장 시 살짝 떠 있는 느낌 ── */
+.competition-card { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.competition-card:hover { transform: translateY(-4px); }

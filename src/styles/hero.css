@@ -169,11 +169,49 @@
     50% { transform: rotate(calc(var(--start-rotation, 0deg) + 180deg)) translateY(-30px); opacity: 0.7; }
 }
 
+/* ── Interactive JS layer: particle network canvas + cursor spotlight ── */
+.hero-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+    pointer-events: none;
+    display: block;
+}
+
+/* 커서를 따라다니는 부드러운 빛 번짐(스포트라이트). JS가 --mx/--my를 갱신한다. */
+.hero-spotlight {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    background: radial-gradient(
+        260px circle at var(--mx, 50%) var(--my, 50%),
+        rgba(255, 255, 255, 0.14),
+        rgba(255, 255, 255, 0.05) 40%,
+        transparent 70%
+    );
+}
+
 /* ── Hero content ── */
 .hero-content {
     position: relative;
     z-index: 1;
     max-width: 880px;
+    animation: hero-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes hero-rise {
+    from { opacity: 0; transform: translateY(28px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero-content { animation: none; }
+    .hero-spotlight { display: none; }
 }
 
 .hero-title {
@@ -191,9 +229,20 @@
 
 .highlight {
     background: var(--highlight-gradient);
+    background-size: 220% auto;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    animation: highlight-shine 6s ease-in-out infinite;
+}
+
+@keyframes highlight-shine {
+    0%, 100% { background-position: 0% center; }
+    50% { background-position: 100% center; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .highlight { animation: none; }
 }
 
 .hero-description {

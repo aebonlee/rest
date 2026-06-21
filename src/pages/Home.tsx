@@ -33,13 +33,17 @@ import { useLanguage } from '../contexts/LanguageContext';
 import SEOHead from '../components/SEOHead';
 // 이모지 → Font Awesome 치환 헬퍼
 import { EmojiIcon } from '../utils/emojiIcon';
+// 히어로 배경의 인터랙티브 JS 효과(파티클 네트워크 + 커서 스포트라이트)
+import HeroParticles from '../components/HeroParticles';
+// 스크롤 등장 애니메이션 훅(.reveal → 뷰포트 진입 시 .is-visible)
+import { useScrollReveal } from '../hooks/useScrollReveal';
 // site: 사이트 이름/설명 등 전역 설정값이 담긴 객체.
 import site from '../config/site';
 // coursePhases(과정 단계 배열), projectExamples(프로젝트 예시 배열) — 화면에 반복 렌더할 데이터.
 import { coursePhases, projectExamples } from '../config/curriculum';
 // type 으로 가져오는 import: 실제 코드가 아니라 "타입(자료형) 정보"만 가져온다는 표시.
 // ReactElement = 컴포넌트가 돌려주는 "화면 한 덩어리"의 타입. (TS에서 반환형을 명시하기 위함)
-import type { ReactElement } from 'react';
+import type { ReactElement, CSSProperties } from 'react';
 
 // Home — 홈 화면 전체를 렌더하는 표시용 컴포넌트.
 // (): ReactElement => { ... } 는 "매개변수 없고, ReactElement(화면)를 반환하는 화살표 함수"라는 뜻.
@@ -47,6 +51,7 @@ const Home = (): ReactElement => {
   // useLanguage()가 돌려주는 객체에서 t(번역 함수)만 꺼낸다(구조 분해 할당).
   // t('site.home.title') 처럼 키를 넣으면 현재 언어에 맞는 문장을 돌려준다.
   const { t } = useLanguage();   // i18n 번역 함수
+  useScrollReveal();             // .reveal 요소들을 스크롤 진입 시 부드럽게 등장시킴
 
   // 아래 return 이 "이 컴포넌트가 그릴 화면(JSX)"이다.
   // <> ... </> 는 Fragment(빈 껍데기): 불필요한 <div> 없이 여러 요소를 한 덩어리로 묶을 때 쓴다.
@@ -60,35 +65,10 @@ const Home = (): ReactElement => {
       {/* Hero — 타이틀/설명/핵심 정보 카드/CTA 버튼 */}
       {/* CTA(Call To Action) = 사용자가 누르길 유도하는 버튼(예: "커리큘럼 보기"). */}
       <section className="hero">
+        {/* 히어로 배경 인터랙티브 효과: 마우스에 반응하는 파티클 네트워크 + 커서 스포트라이트.
+            (pointer-events:none 레이어라 버튼/링크 클릭을 가리지 않는다) */}
         <div className="hero-bg-effect">
-          {/* 장식용 파티클 20개 — 위치/크기/애니메이션 타이밍을 랜덤으로 부여(순수 시각 효과) */}
-          <div className="particles">
-            {/*
-              Array.from({ length: 20 }, (_, i) => ...) 설명:
-               - { length: 20 } 은 "길이가 20인 비어 있는 배열"처럼 동작한다.
-               - 두 번째 인자(콜백)는 각 칸마다 호출된다. (_, i) 에서 첫 인자는 값(여기선 안 씀 → 관례상 _),
-                 i 는 인덱스(0,1,2,...,19). 즉 div 20개를 만들어 배열로 돌려준다.
-              JSX에서 배열을 그리면 그 안의 요소들이 차례로 화면에 나열된다.
-            */}
-            {Array.from({ length: 20 }, (_, i) => (
-              // key: 리스트의 각 항목을 React가 구분하기 위한 고유 표식. 반복 렌더 시 필수.
-              // 주의: 여기선 항목 순서가 절대 안 바뀌는 단순 장식이라 index(i)를 key로 써도 무방하다.
-              //       (순서가 바뀌거나 추가/삭제되는 목록에서는 index를 key로 쓰면 버그가 날 수 있다.)
-              <div key={i} className="particle" style={{
-                // style={{ ... }} : JSX에서 인라인 스타일은 "객체"로 준다(바깥 {}는 JS표현식, 안쪽 {}는 객체).
-                // Math.random() 은 0 이상 1 미만의 난수. 100을 곱해 0~100% 위치를 랜덤으로 만든다.
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                // 3 + (0~6) → 3px~9px 사이의 랜덤 크기. (너무 작거나 0이 되지 않게 최소 3을 더함)
-                width: `${3 + Math.random() * 6}px`,
-                height: `${3 + Math.random() * 6}px`,
-                // 시작 지연 0~20초: 파티클마다 다른 시점에 움직이게 해 자연스럽게 보이게 함.
-                animationDelay: `${Math.random() * 20}s`,
-                // 한 바퀴 도는 시간 15~25초: 제각각 속도로 떠다니게 함.
-                animationDuration: `${15 + Math.random() * 10}s`,
-              }} />
-            ))}
-          </div>
+          <HeroParticles />
         </div>
         <div className="container">
           <div className="hero-content">
@@ -130,16 +110,16 @@ const Home = (): ReactElement => {
       {/* 과정 개요 — coursePhases를 카드로(단계 색을 상단 보더로) */}
       <section className="section">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header reveal">
             <h2 className="section-title">{t('site.home.courseOverview')}</h2>
             <p className="section-subtitle">{t('site.home.courseOverviewDesc')}</p>
           </div>
           <div className="course-cards">
             {/* coursePhases 배열의 각 원소(phase)를 카드(JSX)로 변환. 데이터 개수만큼 카드가 자동 생성된다. */}
-            {coursePhases.map((phase) => (
+            {coursePhases.map((phase, i) => (
               // key={phase.id} : 각 단계의 고유 id를 key로 사용(index보다 안전한 권장 방식).
-              // style의 borderTopColor: 카드마다 단계 색을 윗 테두리에 입힌다.
-              <div key={phase.id} className="course-card" style={{ borderTopColor: phase.color }}>
+              // reveal + --reveal-delay: 스크롤 진입 시 카드가 순차적으로(스태거) 등장.
+              <div key={phase.id} className="course-card reveal" style={{ borderTopColor: phase.color, '--reveal-delay': `${i * 0.08}s` } as CSSProperties}>
                 <div className="course-card-icon"><EmojiIcon char={phase.icon} /></div>
                 <h3 className="course-card-title">{phase.name}</h3>
                 {/* phase.hours 숫자 뒤에 "시간"이 붙어 출력된다. */}
@@ -156,12 +136,12 @@ const Home = (): ReactElement => {
       {/* 프로젝트 산출물 — 3단계 타임라인 + 프로젝트 예시 카드 */}
       <section className="section section-alt">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header reveal">
             <h2 className="section-title">{t('site.home.projectOutputs')}</h2>
             <p className="section-subtitle">{t('site.home.projectOutputsDesc')}</p>
           </div>
           {/* 타임라인 3단계: 아래 세 항목은 고정 내용이라 배열 map 대신 직접 나열했다. 마커 숫자/색만 다름. */}
-          <div className="project-timeline">
+          <div className="project-timeline reveal">
             <div className="timeline-item">
               <div className="timeline-marker" style={{ background: '#10B981' }}>1</div>
               <div className="timeline-content">
@@ -189,7 +169,7 @@ const Home = (): ReactElement => {
             <h3>프로젝트 예시</h3>
             <div className="example-cards">
               {projectExamples.map((ex, i) => (
-                <div key={i} className="example-card">
+                <div key={i} className="example-card reveal" style={{ '--reveal-delay': `${i * 0.07}s` } as CSSProperties}>
                   <h4>{ex.title}</h4>
                   <p>{ex.description}</p>
                   <span className="example-llm">LLM: {ex.llm}</span>
@@ -203,12 +183,12 @@ const Home = (): ReactElement => {
       {/* AI 리부트 대회 안내 */}
       <section className="section">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header reveal">
             <h2 className="section-title">{t('site.home.competition')}</h2>
             <p className="section-subtitle">{t('site.home.competitionDesc')}</p>
           </div>
           <div className="competition-highlight">
-            <div className="competition-card">
+            <div className="competition-card reveal">
               <h3>AI 리부트 경진대회</h3>
               <p>국내 LLM(Solar 등)을 활용한 서비스 개발 경진대회에 출품합니다.</p>
               <ul>
@@ -225,19 +205,19 @@ const Home = (): ReactElement => {
       {/* 특이사항 — 교육 대상/지원/혜택 */}
       <section className="section section-alt">
         <div className="container">
-          <div className="section-header">
+          <div className="section-header reveal">
             <h2 className="section-title">{t('site.home.eligibility')}</h2>
           </div>
           <div className="eligibility-cards">
-            <div className="eligibility-card">
+            <div className="eligibility-card reveal" style={{ '--reveal-delay': '0s' } as CSSProperties}>
               <h4>교육 대상</h4>
               <p>고용보험 미가입, 아르바이트/계약직에 비참여 중인 청년</p>
             </div>
-            <div className="eligibility-card">
+            <div className="eligibility-card reveal" style={{ '--reveal-delay': '0.1s' } as CSSProperties}>
               <h4>AI 도구 지원</h4>
               <p>Claude 유료 플랜 1개월 제공 (6월 한 달) + 국내 LLM API 비용 지원</p>
             </div>
-            <div className="eligibility-card">
+            <div className="eligibility-card reveal" style={{ '--reveal-delay': '0.2s' } as CSSProperties}>
               <h4>수료 후 혜택</h4>
               <p>AI 리부트 경진대회 출품 + 포트폴리오 완성</p>
             </div>
