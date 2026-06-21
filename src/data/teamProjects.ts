@@ -83,7 +83,7 @@ export interface TeamProject {
 export const TEAM_PROJECTS: TeamProject[] = [
   {
     id: 1, slug: 'ai-fairytale', title: '한국형 AI 동화책 제작 앱',
-    tagline: '한국 정서를 담은 창작 동화와 삽화를 AI로 생성하는 앱',
+    tagline: '아이에겐 몰입감을, 부모의 육아고민을 담은 ai 그림동화 생성 앱',
     icon: '📖', color: '#e1567c', members: ['이소민', '신슬', '유용주', '구자성'],
   },
   {
@@ -114,9 +114,9 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '💼', color: '#0ea5e9', members: ['최재영', '김권우'],
   },
   {
-    id: 7, slug: 'resilience-coach', title: '회복탄력성 루틴 코치',
-    tagline: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱',
-    icon: '🌱', color: '#10b981', members: ['이초월', '김서우', '최윤정'],
+    id: 7, slug: 'resilience-coach', title: "회복탄력성 루틴코치 - '오늘만큼'",
+    tagline: '무기력한 날에도 부담없이, 오늘 할 수 있는 만큼만 시작하게 도와주는 웹/앱 하이브리드 서비스',
+    icon: '🌱', color: '#10b981', members: ['김서우'],
   },
   {
     id: 8, slug: 'myopia-care', title: '내 아이 근시 관리용 플랫폼',
@@ -135,9 +135,9 @@ export const TEAM_PROJECTS: TeamProject[] = [
     icon: '🎨', color: '#f472b6', members: ['박정우', '한승우', '이수현'], note: '학생 제안',
   },
   {
-    id: 11, slug: 'resilience-coach-2', title: '회복탄력성 루틴 코치 (2팀)',
-    tagline: '멘탈 회복을 돕는 맞춤 루틴·습관 코칭 앱',
-    icon: '🧘', color: '#14b8a6', members: ['전유미', '오지원', '윤혜수'], note: '동일 주제 2팀',
+    id: 11, slug: 'resilience-coach-2', title: 'Lumiverse 목표 관리 코칭 앱',
+    tagline: '장기목표를 AI와 함께 쪼개고, 행동을 쌓을수록 흐릿한 행성이 또렷해져 나만의 우주를 완성하는 목표 관리 코칭 앱',
+    icon: '🧘', color: '#14b8a6', members: ['전유미', '오지원', '윤혜수'],
   },
   {
     id: 12, slug: 'jd-match', title: 'JD 기반 채용 진단 서비스',
