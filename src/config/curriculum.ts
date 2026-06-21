@@ -177,4 +177,7 @@ export const projectExamples = [
   { title: 'AI 학습 도우미', description: '개인 맞춤형 학습 경로 추천 시스템', llm: 'Solar + Gemini' },
   { title: '건강 관리 어시스턴트', description: 'AI 기반 운동/식단 추천 서비스', llm: 'ChatGPT' },
   { title: '환경 데이터 분석 대시보드', description: '공공데이터 기반 환경 모니터링', llm: 'Solar' },
+  { title: 'AI 창업 아이디어 코치', description: '아이템 검증·사업화 단계를 돕는 코칭 AI', llm: 'Solar' },
+  { title: '반려동물 케어 도우미', description: '맞춤 건강·돌봄 루틴을 추천하는 AI', llm: 'Solar + ChatGPT' },
+  { title: '청년 정책 안내 챗봇', description: '조건 입력 시 맞춤 청년지원정책 안내', llm: 'Solar' },
 ];
