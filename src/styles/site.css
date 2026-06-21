@@ -154,8 +154,11 @@ html[data-color="purple"] {
 /* -- Project Examples -- */
 .project-examples { margin-top: 40px; text-align: center; }
 .project-examples h3 { font-size: 22px; font-weight: 700; margin-bottom: 24px; }
-.example-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 16px; }
-.example-card { background: var(--bg-white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); text-align: left; }
+/* 데스크톱 4열 고정 + 마지막 줄(개수가 안 떨어질 때) 가운데 정렬 */
+.example-cards { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; }
+.example-card { flex: 0 1 calc(25% - 12px); background: var(--bg-white); border-radius: 12px; padding: 20px; box-shadow: var(--shadow-sm); text-align: left; }
+@media (max-width: 1024px) { .example-card { flex-basis: calc(50% - 8px); } }   /* 태블릿 2열 */
+@media (max-width: 640px)  { .example-card { flex-basis: 100%; } }              /* 모바일 1열 */
 .example-card h4 { font-size: 17px; font-weight: 600; margin-bottom: 8px; color: var(--text-primary); }
 .example-card p { font-size: 16px; color: var(--text-secondary); margin-bottom: 8px; }
 .example-llm { font-size: 14px; color: var(--primary-blue); font-weight: 500; }
