@@ -248,7 +248,9 @@ const PublicLayout = (): ReactElement => {
             <Route path="/admin/announcements" element={<AdminGuard><AdminAnnouncements /></AdminGuard>} />
             <Route path="/admin/teams" element={<AdminGuard><AdminTeams /></AdminGuard>} />
             <Route path="/admin/projects/pre-eval" element={<AdminGuard><AdminProjectEval mode="pre" /></AdminGuard>} />
+            <Route path="/admin/projects/pre-ranking" element={<AdminGuard><CompetitionEvalRanking admin /></AdminGuard>} />
             <Route path="/admin/projects/result-eval" element={<AdminGuard><AdminProjectEval mode="result" /></AdminGuard>} />
+            <Route path="/admin/projects/result-ranking" element={<AdminGuard><CompetitionResultRanking admin /></AdminGuard>} />
             {/* 구 경로 호환: /admin/projects → 사전평가 집계표로 */}
             <Route path="/admin/projects" element={<AdminGuard><AdminProjectEval mode="pre" /></AdminGuard>} />
 

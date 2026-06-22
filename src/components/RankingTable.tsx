@@ -25,7 +25,7 @@ type AvgItem = { key: string; label: string; avg: number };
 
 // 표에 들어갈 한 팀(행)의 데이터.
 export interface RankingRow {
-  project: { id: number; title: string; color: string };
+  project: { id: number; title: string; color: string; members?: string[] };
   avgBy: AvgItem[];
   avgTotal: number;
   count: number;
@@ -38,6 +38,7 @@ interface RankingTableProps {
   maxTotal: number;                                // 총점 만점(100)
   highlightId?: number | null;                     // 강조할 팀(선택 팀)
   onRowClick?: (id: number) => void;               // 행 클릭 시 콜백(상세로 이동 등)
+  showMembers?: boolean;                           // 팀원 컬럼 표시 여부(관리자 화면)
 }
 
 // 1·2·3위 메달색, 그 외 회색.
@@ -50,24 +51,32 @@ const rankFor = (rows: RankingRow[], i: number): number =>
   1 + rows.filter((r) => r.avgTotal > rows[i].avgTotal + 1e-9).length;
 
 const RankingTable = ({
-  rows, criteria, maxPerCriterion, maxTotal, highlightId, onRowClick,
+  rows, criteria, maxPerCriterion, maxTotal, highlightId, onRowClick, showMembers = false,
 }: RankingTableProps): ReactElement => {
   const th: React.CSSProperties = {
     padding: '11px 10px', fontSize: '12.5px', fontWeight: 700, color: 'var(--text-secondary)',
     textAlign: 'center', whiteSpace: 'nowrap', borderBottom: '2px solid var(--border-light)', background: 'var(--bg-light-gray)',
   };
   const td: React.CSSProperties = {
-    padding: '10px', fontSize: '13.5px', textAlign: 'center', borderBottom: '1px solid var(--border-light)', whiteSpace: 'nowrap',
+    padding: '10px', fontSize: '13.5px', textAlign: 'center', borderBottom: '1px solid var(--border-light)', whiteSpace: 'nowrap', verticalAlign: 'top',
   };
+  // 주제(프로젝트명)·팀원은 줄바꿈으로 전부 보이게(한글은 단어 단위로 끊기).
+  const tdWrap: React.CSSProperties = {
+    ...td, whiteSpace: 'normal', wordBreak: 'keep-all', overflowWrap: 'anywhere', textAlign: 'left', lineHeight: 1.45, verticalAlign: 'top',
+  };
+
+  // 프로젝트(주제) 컬럼은 가변폭이지만, 표가 가로로만 늘지 않게 항목 컬럼 최소폭만 합산.
+  const minWidth = 200 + (showMembers ? 150 : 0) + criteria.length * 64 + 180;
 
   return (
     <div style={{ overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '14px', background: 'var(--bg-white)' }}>
-      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: `${380 + criteria.length * 76}px` }}>
+      <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: `${minWidth}px`, tableLayout: 'auto' }}>
         <thead>
           <tr>
             <th style={{ ...th, width: '60px' }}>순위</th>
             <th style={{ ...th, width: '56px' }}>팀</th>
-            <th style={{ ...th, textAlign: 'left', minWidth: '180px' }}>프로젝트</th>
+            <th style={{ ...th, textAlign: 'left', minWidth: '220px' }}>{showMembers ? '주제' : '프로젝트'}</th>
+            {showMembers && <th style={{ ...th, textAlign: 'left', minWidth: '130px' }}>팀원</th>}
             {criteria.map((c) => (
               <th key={c.key} style={th} title={`${c.label} (만점 ${maxPerCriterion})`}>{c.label}</th>
             ))}
@@ -97,11 +106,15 @@ const RankingTable = ({
                   }}>{rank}</span>
                 </td>
                 {/* 팀 번호 */}
-                <td style={{ ...td, fontWeight: 800, color: r.project.color }}>{r.project.id}팀</td>
-                {/* 프로젝트명 */}
-                <td style={{ ...td, textAlign: 'left', maxWidth: '320px', overflow: 'hidden', textOverflow: 'ellipsis' }} title={r.project.title}>
-                  {r.project.title}
-                </td>
+                <td style={{ ...td, fontWeight: 800, color: r.project.color, verticalAlign: 'top' }}>{r.project.id}팀</td>
+                {/* 주제(프로젝트명) — 줄바꿈으로 전부 표시 */}
+                <td style={tdWrap}>{r.project.title}</td>
+                {/* 팀원(관리자 화면) */}
+                {showMembers && (
+                  <td style={{ ...tdWrap, fontSize: '13px', color: 'var(--text-secondary)' }}>
+                    {r.project.members && r.project.members.length > 0 ? r.project.members.join(', ') : '—'}
+                  </td>
+                )}
                 {/* 항목별 평균 */}
                 {criteria.map((c) => {
                   const avg = r.avgBy.find((a) => a.key === c.key)?.avg ?? 0;

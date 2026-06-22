@@ -17,6 +17,7 @@
 import { useState, useEffect, useCallback, useMemo, type ReactElement } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import SEOHead from '../components/SEOHead';
+import AdminSidebar from '../components/AdminSidebar';
 import RankingTable, { type RankingRow } from '../components/RankingTable';
 import { TEAM_PROJECTS } from '../data/teamProjects';
 import { listEvals, aggregateEvals } from '../utils/projectEval'; // 사전평가 → 대상 10팀
@@ -28,7 +29,8 @@ import {
 // 표 항목 컬럼: 결과평가 10개 항목(짧은 라벨).
 const CRITERIA = RESULT_CRITERIA.map((c) => ({ key: c.key, label: c.label.replace(' · ', '·') }));
 
-const CompetitionResultRanking = (): ReactElement => {
+// admin=true 면 관리자 레이아웃(사이드바 유지) 안에서, 아니면 공개 페이지로 렌더.
+const CompetitionResultRanking = ({ admin = false }: { admin?: boolean }): ReactElement => {
   const navigate = useNavigate();
   const [preEvals, setPreEvals] = useState<Awaited<ReturnType<typeof listEvals>>>([]);
   const [evals, setEvals] = useState<Awaited<ReturnType<typeof listResultEvals>>>([]);
@@ -62,13 +64,81 @@ const CompetitionResultRanking = (): ReactElement => {
       .filter((x): x is { p: typeof x.p; a: ProjectResultAgg } => !!x.a && x.a.count > 0)
       .sort((a, b) => b.a.avgTotal - a.a.avgTotal || b.a.count - a.a.count)
       .map((x) => ({
-        project: { id: x.p.id, title: x.p.title, color: x.p.color },
+        project: { id: x.p.id, title: x.p.title, color: x.p.color, members: x.p.members },
         avgBy: x.a.avgBy,
         avgTotal: x.a.avgTotal,
         count: x.a.count,
       }))
   ), [agg, targetProjects]);
 
+  // 집계표/등수표 경로: 관리자 화면이면 관리자 경로, 공개면 경진대회 경로.
+  const summaryPath = admin ? '/admin/projects/result-eval' : '/competition/result-summary';
+  const preRankingPath = admin ? '/admin/projects/pre-ranking' : '/competition/eval-ranking';
+
+  // 본문(요약줄 + 표 + 안내) — 공개/관리자 공용.
+  const body = loading ? (
+    <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
+  ) : targetProjects.length === 0 ? (
+    <div style={{
+      background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderRadius: '14px',
+      padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)',
+    }}>
+      <p style={{ margin: 0, fontSize: '14px' }}>아직 대상 팀(사전평가 상위 10팀)이 선정되지 않았습니다.</p>
+      <Link to={preRankingPath} className="btn btn-secondary" style={{ marginTop: '12px', padding: '8px 18px', fontSize: '14px' }}>사전평가 등수표 보기 →</Link>
+    </div>
+  ) : (
+    <>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
+        <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
+          순위에 오른 팀 <strong style={{ color: 'var(--primary-blue)' }}>{rows.length}</strong> / {targetProjects.length}개
+          {' · '}총 평가 <strong style={{ color: 'var(--primary-blue)' }}>{evals.length}</strong>건
+        </div>
+        <Link to={summaryPath} className="btn btn-secondary" style={{ padding: '7px 16px', fontSize: '13.5px' }}>
+          상세 집계표 보기 →
+        </Link>
+      </div>
+
+      {rows.length === 0 ? (
+        <div style={{
+          background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderRadius: '14px',
+          padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)',
+        }}>
+          아직 등록된 결과평가가 없습니다.
+        </div>
+      ) : (
+        <RankingTable
+          rows={rows}
+          criteria={CRITERIA}
+          maxPerCriterion={RESULT_MAX_PER_CRITERION}
+          maxTotal={RESULT_MAX_TOTAL}
+          showMembers={admin}
+          onRowClick={() => navigate(summaryPath)}
+        />
+      )}
+
+      <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)' }}>
+        ※ 순위는 <strong>총점 평균</strong> 기준입니다(동점은 같은 순위). 항목별 숫자는 각 항목의 평균 점수(만점 {RESULT_MAX_PER_CRITERION})입니다.
+      </p>
+    </>
+  );
+
+  // ── 관리자 레이아웃(사이드바 유지) ──
+  if (admin) {
+    return (
+      <>
+        <SEOHead title="프로젝트 결과평가 등수표 — 관리자" path="/admin/projects/result-ranking" noindex />
+        <div className="admin-layout">
+          <AdminSidebar />
+          <div className="admin-content" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <h2 style={{ borderLeft: '5px solid #0046C8', paddingLeft: 12 }}>프로젝트 결과평가 등수표</h2>
+            {body}
+          </div>
+        </div>
+      </>
+    );
+  }
+
+  // ── 공개 페이지 레이아웃 ──
   return (
     <>
       <SEOHead title="프로젝트 결과평가 등수표 — AI 리부트 경진대회" path="/competition/result-ranking" noindex />
@@ -82,50 +152,7 @@ const CompetitionResultRanking = (): ReactElement => {
 
       <section className="section">
         <div className="container" style={{ display: 'flex', flexDirection: 'column', gap: '16px', maxWidth: '1180px' }}>
-          {loading ? (
-            <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
-          ) : targetProjects.length === 0 ? (
-            <div style={{
-              background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderRadius: '14px',
-              padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)',
-            }}>
-              <p style={{ margin: 0, fontSize: '14px' }}>아직 대상 팀(사전평가 상위 10팀)이 선정되지 않았습니다.</p>
-              <Link to="/competition/eval-ranking" className="btn btn-secondary" style={{ marginTop: '12px', padding: '8px 18px', fontSize: '14px' }}>사전평가 등수표 보기 →</Link>
-            </div>
-          ) : (
-            <>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '10px' }}>
-                <div style={{ fontSize: '14px', color: 'var(--text-secondary)' }}>
-                  순위에 오른 팀 <strong style={{ color: 'var(--primary-blue)' }}>{rows.length}</strong> / {targetProjects.length}개
-                  {' · '}총 평가 <strong style={{ color: 'var(--primary-blue)' }}>{evals.length}</strong>건
-                </div>
-                <Link to="/competition/result-summary" className="btn btn-secondary" style={{ padding: '7px 16px', fontSize: '13.5px' }}>
-                  상세 집계표 보기 →
-                </Link>
-              </div>
-
-              {rows.length === 0 ? (
-                <div style={{
-                  background: 'var(--bg-white)', border: '1px solid var(--border-light)', borderRadius: '14px',
-                  padding: '40px 24px', textAlign: 'center', color: 'var(--text-secondary)',
-                }}>
-                  아직 등록된 결과평가가 없습니다.
-                </div>
-              ) : (
-                <RankingTable
-                  rows={rows}
-                  criteria={CRITERIA}
-                  maxPerCriterion={RESULT_MAX_PER_CRITERION}
-                  maxTotal={RESULT_MAX_TOTAL}
-                  onRowClick={() => navigate('/competition/result-summary')}
-                />
-              )}
-
-              <p style={{ margin: 0, fontSize: '12.5px', color: 'var(--text-secondary)' }}>
-                ※ 순위는 <strong>총점 평균</strong> 기준입니다(동점은 같은 순위). 항목별 숫자는 각 항목의 평균 점수(만점 {RESULT_MAX_PER_CRITERION})입니다.
-              </p>
-            </>
-          )}
+          {body}
         </div>
       </section>
     </>
