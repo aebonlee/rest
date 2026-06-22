@@ -22,7 +22,7 @@ import RankingTable, { type RankingRow } from '../components/RankingTable';
 import { TEAM_PROJECTS } from '../data/teamProjects';
 import { listEvals, aggregateEvals } from '../utils/projectEval'; // 사전평가 → 대상 10팀
 import {
-  listResultEvals, aggregateResultEvals, selectResultTargets, RESULT_CRITERIA,
+  listResultEvals, aggregateResultEvals, RESULT_CRITERIA,
   RESULT_MAX_PER_CRITERION, RESULT_MAX_TOTAL, type ProjectResultAgg,
 } from '../utils/projectResultEval';
 
@@ -46,11 +46,16 @@ const CompetitionResultRanking = ({ admin = false }: { admin?: boolean }): React
 
   const agg = useMemo(() => aggregateResultEvals(evals), [evals]);
 
-  // 대상 10팀: 사전평가 상위 10팀(+ 수동 보정). 선정 로직은 selectResultTargets로 일원화.
-  const targetProjects = useMemo(
-    () => selectResultTargets(aggregateEvals(preEvals), TEAM_PROJECTS),
-    [preEvals],
-  );
+  // 대상 10팀: 사전평가 상위 10팀(결과평가 집계표와 동일 기준).
+  const targetProjects = useMemo(() => {
+    const a = aggregateEvals(preEvals);
+    return TEAM_PROJECTS
+      .map((p) => ({ p, agg: a.get(p.id) }))
+      .filter((x) => x.agg && x.agg.count > 0)
+      .sort((x, y) => (y.agg!.avgTotal - x.agg!.avgTotal) || (y.agg!.count - x.agg!.count))
+      .slice(0, 10)
+      .map((x) => x.p);
+  }, [preEvals]);
 
   // 대상 10팀 중 결과평가가 있는 팀, 총점 평균 내림차순.
   const rows = useMemo<RankingRow[]>(() => (

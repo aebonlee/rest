@@ -15,7 +15,6 @@
  */
 import getSupabase from './supabase';
 import site from '../config/site';
-import type { ProjectAgg } from './projectEval';
 
 // 사이트 접두사를 붙인 실제 테이블명 (예: 'rest_project_result_evals')
 export const RESULT_EVALS_TABLE = `${site.dbPrefix}project_result_evals`;
@@ -144,72 +143,6 @@ export function aggregateResultEvals(evals: ProjectResultEval[]): Map<number, Pr
     out.set(pid, { project_id: pid, count: n, avgBy, avgTotal, comments });
   }
   return out;
-}
-
-// ──────────────────────────────────────────────────────────────────────────
-// 결과평가 대상(기본: 사전평가 상위 10팀) 선정 — 단일 진실 공급원
-// ──────────────────────────────────────────────────────────────────────────
-
-/**
- * RESULT_TARGET_OVERRIDE — 결과평가 대상(기본 10팀) 수동 보정 설정.
- *
- * [왜 필요?]
- *  - 동점/중복(예: 한 학생이 여러 팀으로 상위권을 차지) 등으로 자동 상위 10팀만으로는
- *    운영이 어려울 때, 순위 번호가 아니라 "팀 번호"로 보정한다.
- *    (라이브 점수가 바뀌어도 의도가 유지되도록 팀 id로 고정.)
- *
- * [필드]
- *  - include: 상위 10에 들지 못해도 결과평가 대상에 **추가로 넣을** 팀 id(예: 차순위 팀).
- *             기존 상위 10팀을 밀어내지 않고 그 위에 더한다(사전평가 등수 표시는 불변).
- *  - exclude: 결과평가 대상에서 **뺄** 팀 id(현재 미사용, 향후 필요 시).
- *
- * [운영 메모] 값만 바꾸면 결과평가 입력/집계표/등수표 모든 화면에 동시 반영된다.
- *   현재 운영: 한 학생(최윤정)이 사전평가 9·10·11위를 차지 → 빼지 않고 차순위 팀을
- *   결과발표 대상에 추가하기 위해 include에 차순위 팀 번호를 넣는다.
- */
-export const RESULT_TARGET_OVERRIDE: { include: number[]; exclude: number[] } = {
-  // 6팀(AI 자기소개서·면접 코치) = 사전평가 12위. 최윤정 학생이 9·10·11위를 차지해
-  // 차순위인 6팀을 결과발표 대상에 추가(기존 상위 10팀은 유지, 사전평가 등수는 불변).
-  include: [6],
-  exclude: [],
-};
-
-/**
- * 사전평가 집계로부터 결과평가 대상 팀 목록을 산정한다.
- *  1) 사전평가 총점 평균 내림차순으로 정렬(동점은 평가 건수 많은 순) → 상위 size팀,
- *  2) include 팀을 (상위 size 밖이라도) **추가**(기존 팀을 밀어내지 않음 = 등수 불변),
- *  3) exclude 팀은 결과에서 제거.
- * → 반환 팀 수는 size + (추가된 include 수)일 수 있다.
- *
- * @param preAgg   aggregateEvals(사전평가) 결과 맵
- * @param projects 전체 팀 목록(id를 가진 객체 배열) — 반환은 이 배열의 부분집합
- * @param size     기본 대상 팀 수(기본 10)
- * @returns 대상 팀 객체 배열(사전평가 순위 순서, 추가 팀은 제 순위 위치에 삽입)
- */
-export function selectResultTargets<T extends { id: number }>(
-  preAgg: Map<number, ProjectAgg>,
-  projects: T[],
-  size = 10,
-): T[] {
-  const byId = new Map(projects.map((p) => [p.id, p]));
-
-  // 사전평가가 1건 이상인 팀을 순위대로 나열.
-  const ranked = projects
-    .map((p) => ({ id: p.id, a: preAgg.get(p.id) }))
-    .filter((x) => x.a && x.a.count > 0)
-    .sort((x, y) => (y.a!.avgTotal - x.a!.avgTotal) || (y.a!.count - x.a!.count))
-    .map((x) => x.id);
-
-  const topSet = new Set(ranked.slice(0, size));                 // 자동 상위 size팀
-  const included = new Set(RESULT_TARGET_OVERRIDE.include.filter((id) => byId.has(id)));
-  const excluded = new Set(RESULT_TARGET_OVERRIDE.exclude);
-
-  // 대상 = (상위 size ∪ 추가 팀) − 제외 팀. 순위 순서 유지.
-  const targetIds = ranked.filter((id) => (topSet.has(id) || included.has(id)) && !excluded.has(id));
-  // 사전평가가 없어 ranked에 없는 추가 팀은 맨 뒤에 붙인다.
-  for (const id of included) if (!ranked.includes(id) && !excluded.has(id)) targetIds.push(id);
-
-  return targetIds.map((id) => byId.get(id)!).filter(Boolean);
 }
 
 /** 내가 작성한 특정 프로젝트 결과평가 삭제(RLS로 본인 것만). */
