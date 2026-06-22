@@ -76,7 +76,9 @@ const adminMenuItems = [
   { path: '/admin/announcements', label: '공지사항', icon: '📢' },
   { path: '/admin/teams', label: '팀 편성', icon: '🤝' },
   { path: '/admin/projects/pre-eval', label: '프로젝트 사전평가 집계표', icon: '🗳️' },
+  { path: '/competition/eval-ranking', label: '프로젝트 사전평가 등수표', icon: '🥇' },
   { path: '/admin/projects/result-eval', label: '프로젝트 결과평가 집계표', icon: '🏆' },
+  { path: '/competition/result-ranking', label: '프로젝트 결과평가 등수표', icon: '🏅' },
 ];
 
 /**
