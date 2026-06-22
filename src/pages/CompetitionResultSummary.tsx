@@ -18,7 +18,7 @@ import { EmojiIcon } from '../utils/emojiIcon';
 import { TEAM_PROJECTS, getTeamProject } from '../data/teamProjects';
 import { listEvals, aggregateEvals } from '../utils/projectEval'; // 사전평가 → 대상 10팀
 import {
-  listResultEvals, aggregateResultEvals,
+  listResultEvals, aggregateResultEvals, selectResultTargets,
   RESULT_MAX_PER_CRITERION, RESULT_MAX_TOTAL, RESULT_CRITERIA_GROUPS, type ProjectResultAgg,
 } from '../utils/projectResultEval';
 
@@ -85,16 +85,11 @@ const CompetitionResultSummary = (): ReactElement => {
   // 결과평가 집계 맵.
   const agg = useMemo(() => aggregateResultEvals(evals), [evals]);
 
-  // 대상 10팀: 사전평가 상위 10팀.
-  const targetProjects = useMemo(() => {
-    const a = aggregateEvals(preEvals);
-    return TEAM_PROJECTS
-      .map((p) => ({ p, agg: a.get(p.id) }))
-      .filter((x) => x.agg && x.agg.count > 0)
-      .sort((x, y) => (y.agg!.avgTotal - x.agg!.avgTotal) || (y.agg!.count - x.agg!.count))
-      .slice(0, 10)
-      .map((x) => x.p);
-  }, [preEvals]);
+  // 대상 10팀: 사전평가 상위 10팀(+ 수동 보정). 선정 로직은 selectResultTargets로 일원화.
+  const targetProjects = useMemo(
+    () => selectResultTargets(aggregateEvals(preEvals), TEAM_PROJECTS),
+    [preEvals],
+  );
 
   // 결과평가 순위(대상 10팀 중 결과평가가 있는 팀, 총점 평균 내림차순).
   const { ranking, rankOf, evaluatedCount, totalCount } = useMemo(() => {
