@@ -147,7 +147,10 @@ const CompetitionResultSummary = (): ReactElement => {
               {/* ── TOP 10(결과평가) ── */}
               {ranking.length > 0 && (
                 <div style={{ ...card, padding: '20px 22px' }}>
-                  <h3 style={{ margin: '0 0 3px', fontSize: '17px' }}><EmojiIcon char="🏆" /> 결과평가 순위 TOP 10</h3>
+                  <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '10px', flexWrap: 'wrap' }}>
+                    <h3 style={{ margin: '0 0 3px', fontSize: '17px' }}><EmojiIcon char="🏆" /> 결과평가 순위 TOP 10</h3>
+                    <Link to="/competition/result-ranking" style={{ fontSize: '13px', fontWeight: 700, color: 'var(--primary-blue)', textDecoration: 'none', flexShrink: 0 }}>전체 등수표 보기 →</Link>
+                  </div>
                   <p style={{ margin: '0 0 14px', fontSize: '12.5px', color: 'var(--text-secondary)' }}>결과평가 평균 총점 기준 · 행을 누르면 상세 집계가 열립니다.</p>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
                     {ranking.slice(0, 10).map((x, i) => {

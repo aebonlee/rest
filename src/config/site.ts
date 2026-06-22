@@ -149,10 +149,12 @@ const site: SiteConfig = {
         { divider: true, labelKey: 'site.nav.competitionPreGroup' },
         { path: '/competition/pre-eval', labelKey: 'site.nav.competitionPreEval' },
         { path: '/competition/eval-summary', labelKey: 'site.nav.competitionEvalSummary' },
+        { path: '/competition/eval-ranking', labelKey: 'site.nav.competitionEvalRanking' },
         // [결과평가] 그룹 — 사전평가 상위 10팀 대상
         { divider: true, labelKey: 'site.nav.competitionResultGroup' },
         { path: '/competition/result', labelKey: 'site.nav.competitionResult' },
         { path: '/competition/result-summary', labelKey: 'site.nav.competitionResultSummary' },
+        { path: '/competition/result-ranking', labelKey: 'site.nav.competitionResultRanking' },
       ]
     },
     {
