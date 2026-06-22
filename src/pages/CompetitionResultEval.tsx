@@ -20,6 +20,7 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import { EmojiIcon } from '../utils/emojiIcon';
 import { TEAM_PROJECTS } from '../data/teamProjects';
+import { EVAL_CLOSED, EVAL_CLOSED_NOTICE } from '../config/competition';
 import { listEvals, aggregateEvals } from '../utils/projectEval'; // 사전평가 → 상위 10팀 산정
 import {
   listResultEvals, upsertResultEval, deleteResultEval, totalOfResult,
@@ -162,6 +163,13 @@ const CompetitionResultEval = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : (
             <>
+              {/* 평가 마감 배너 */}
+              {EVAL_CLOSED && (
+                <div style={{ fontSize: '14px', color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px', fontWeight: 600 }}>
+                  <EmojiIcon char="🔒" /> {EVAL_CLOSED_NOTICE}
+                </div>
+              )}
+
               {/* 대상 안내 */}
               <div style={{ fontSize: '13.5px', color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '10px 14px' }}>
                 <EmojiIcon char="🏅" /> 결과평가 대상은 <strong>사전평가 상위 10팀</strong>입니다. 대상 팀은 사전평가 집계 기준으로 자동 선정되며, 집계가 확정되기 전에는 잠정 순위입니다.
@@ -191,7 +199,7 @@ const CompetitionResultEval = (): ReactElement => {
                       const saved = myEvalByProject.get(p.id);
                       const total = totalOfResult(d);
                       const isMyTeam = !isAdmin && !!user && p.members.some((m) => norm(m) === norm(userName));
-                      const disabled = isMyTeam || busy === p.id;
+                      const disabled = isMyTeam || busy === p.id || EVAL_CLOSED;
                       return (
                         <div key={p.id} style={{ ...card, borderLeft: saved ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)' }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginBottom: '4px' }}>
@@ -241,6 +249,10 @@ const CompetitionResultEval = (): ReactElement => {
 
                           {isMyTeam ? (
                             <p style={{ margin: 0, fontSize: '13px', color: '#92400e' }}>본인이 속한 팀이라 평가할 수 없습니다.</p>
+                          ) : EVAL_CLOSED ? (
+                            <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
+                              평가가 마감되었습니다{saved ? ` · 내 평가 ${totalOfResult(saved)}점` : ''}.
+                            </p>
                           ) : (
                             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                               <button className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '14px' }} disabled={busy === p.id} onClick={() => handleSave(p.id)}>

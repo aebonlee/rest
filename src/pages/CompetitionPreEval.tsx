@@ -26,6 +26,7 @@ import { useToast } from '../contexts/ToastContext';
 import SEOHead from '../components/SEOHead';
 import { EmojiIcon } from '../utils/emojiIcon';
 import { TEAM_PROJECTS } from '../data/teamProjects';
+import { EVAL_CLOSED, EVAL_CLOSED_NOTICE } from '../config/competition';
 import {
   listEvals, upsertEval, deleteEval, totalOf,
   EVAL_CRITERIA, MAX_PER_CRITERION, MAX_TOTAL,
@@ -168,6 +169,13 @@ const CompetitionPreEval = (): ReactElement => {
             <div style={{ textAlign: 'center', padding: '60px 0' }}><div className="loading-spinner" style={{ margin: '0 auto' }}></div></div>
           ) : (
             <>
+              {/* 평가 마감 배너 */}
+              {EVAL_CLOSED && (
+                <div style={{ fontSize: '14px', color: '#92400e', background: '#fef3c7', border: '1px solid #fde68a', borderRadius: '8px', padding: '12px 16px', fontWeight: 600 }}>
+                  <EmojiIcon char="🔒" /> {EVAL_CLOSED_NOTICE}
+                </div>
+              )}
+
               {/* 진행 요약 */}
               <div style={{ fontSize: '15px', color: 'var(--text-secondary)' }}>
                 내 평가 진행: <strong style={{ color: 'var(--primary-blue)' }}>{myDoneCount}</strong> / {TEAM_PROJECTS.length}개
@@ -188,7 +196,7 @@ const CompetitionPreEval = (): ReactElement => {
                   const total = totalOf(d);
                   // 본인 팀 판별: 내 이름이 이 프로젝트 팀원 명단에 있으면 평가 제외(강사는 제외 안 함).
                   const isMyTeam = !isAdmin && !!user && p.members.some((m) => norm(m) === norm(userName));
-                  const disabled = isMyTeam || busy === p.id;
+                  const disabled = isMyTeam || busy === p.id || EVAL_CLOSED;
                   return (
                     <div key={p.id} style={{ ...card, borderLeft: saved ? '4px solid var(--primary-blue)' : '1px solid var(--border-light)' }}>
                       {/* 헤더: 번호 · 제목 · 상태 */}
@@ -254,6 +262,10 @@ const CompetitionPreEval = (): ReactElement => {
                       {/* 액션 */}
                       {isMyTeam ? (
                         <p style={{ margin: 0, fontSize: '13px', color: '#92400e' }}>본인이 속한 팀이라 평가할 수 없습니다.</p>
+                      ) : EVAL_CLOSED ? (
+                        <p style={{ margin: 0, fontSize: '13px', color: 'var(--text-secondary)' }}>
+                          평가가 마감되었습니다{saved ? ` · 내 평가 ${totalOf(saved)}점` : ''}.
+                        </p>
                       ) : (
                         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                           <button className="btn btn-primary" style={{ padding: '8px 20px', fontSize: '14px' }} disabled={busy === p.id} onClick={() => handleSave(p.id)}>

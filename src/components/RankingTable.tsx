@@ -54,34 +54,41 @@ const RankingTable = ({
   rows, criteria, maxPerCriterion, maxTotal, highlightId, onRowClick, showMembers = false,
 }: RankingTableProps): ReactElement => {
   const th: React.CSSProperties = {
-    padding: '11px 10px', fontSize: '12.5px', fontWeight: 700, color: 'var(--text-secondary)',
+    padding: '10px 8px', fontSize: '12.5px', fontWeight: 700, color: 'var(--text-secondary)',
     textAlign: 'center', whiteSpace: 'nowrap', borderBottom: '2px solid var(--border-light)', background: 'var(--bg-light-gray)',
   };
   const td: React.CSSProperties = {
-    padding: '10px', fontSize: '13.5px', textAlign: 'center', borderBottom: '1px solid var(--border-light)', whiteSpace: 'nowrap', verticalAlign: 'top',
+    padding: '9px 8px', fontSize: '13.5px', textAlign: 'center', borderBottom: '1px solid var(--border-light)', whiteSpace: 'nowrap', verticalAlign: 'top',
+  };
+  // 항목(숫자) 컬럼은 좁게: 패딩·폰트를 줄이고 헤더 라벨은 줄바꿈 허용 → 10개 항목도 가로스크롤 없이 들어가게.
+  const thNum: React.CSSProperties = {
+    ...th, padding: '10px 3px', fontSize: '11px', whiteSpace: 'normal', wordBreak: 'keep-all', lineHeight: 1.2, width: '1%',
+  };
+  const tdNum: React.CSSProperties = {
+    ...td, padding: '9px 3px', fontSize: '12.5px', color: 'var(--text-secondary)', width: '1%',
   };
   // 주제(프로젝트명)·팀원은 줄바꿈으로 전부 보이게(한글은 단어 단위로 끊기).
   const tdWrap: React.CSSProperties = {
     ...td, whiteSpace: 'normal', wordBreak: 'keep-all', overflowWrap: 'anywhere', textAlign: 'left', lineHeight: 1.45, verticalAlign: 'top',
   };
 
-  // 프로젝트(주제) 컬럼은 가변폭이지만, 표가 가로로만 늘지 않게 항목 컬럼 최소폭만 합산.
-  const minWidth = 200 + (showMembers ? 150 : 0) + criteria.length * 64 + 180;
+  // 항목 수가 많아도(결과평가 10개) 컨테이너(≈1180px) 안에 들어가도록 최소폭을 빠듯하게만 잡는다.
+  const minWidth = 130 + (showMembers ? 104 : 0) + criteria.length * 40 + 140;
 
   return (
     <div style={{ overflowX: 'auto', border: '1px solid var(--border-light)', borderRadius: '14px', background: 'var(--bg-white)' }}>
       <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: `${minWidth}px`, tableLayout: 'auto' }}>
         <thead>
           <tr>
-            <th style={{ ...th, width: '60px' }}>순위</th>
-            <th style={{ ...th, width: '56px' }}>팀</th>
-            <th style={{ ...th, textAlign: 'left', minWidth: '220px' }}>{showMembers ? '주제' : '프로젝트'}</th>
-            {showMembers && <th style={{ ...th, textAlign: 'left', minWidth: '130px' }}>팀원</th>}
+            <th style={{ ...th, padding: '10px 4px', width: '46px' }}>순위</th>
+            <th style={{ ...th, padding: '10px 4px', width: '46px' }}>팀</th>
+            <th style={{ ...th, textAlign: 'left', minWidth: '130px' }}>{showMembers ? '주제' : '프로젝트'}</th>
+            {showMembers && <th style={{ ...th, textAlign: 'left', minWidth: '96px' }}>팀원</th>}
             {criteria.map((c) => (
-              <th key={c.key} style={th} title={`${c.label} (만점 ${maxPerCriterion})`}>{c.label}</th>
+              <th key={c.key} style={thNum} title={`${c.label} (만점 ${maxPerCriterion})`}>{c.label}</th>
             ))}
-            <th style={{ ...th, color: 'var(--primary-blue)' }}>총점평균</th>
-            <th style={th}>평가</th>
+            <th style={{ ...th, padding: '10px 4px', color: 'var(--primary-blue)' }}>총점<br />평균</th>
+            <th style={{ ...th, padding: '10px 4px' }}>평가</th>
           </tr>
         </thead>
         <tbody>
@@ -98,35 +105,35 @@ const RankingTable = ({
                 }}
               >
                 {/* 순위 메달 */}
-                <td style={td}>
+                <td style={{ ...td, padding: '9px 4px' }}>
                   <span style={{
                     display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                    width: '28px', height: '28px', borderRadius: '50%',
+                    width: '26px', height: '26px', borderRadius: '50%',
                     background: medalBg(rank), color: medalFg(rank), fontWeight: 800, fontSize: '13px',
                   }}>{rank}</span>
                 </td>
                 {/* 팀 번호 */}
-                <td style={{ ...td, fontWeight: 800, color: r.project.color, verticalAlign: 'top' }}>{r.project.id}팀</td>
+                <td style={{ ...td, padding: '9px 4px', fontWeight: 800, color: r.project.color }}>{r.project.id}팀</td>
                 {/* 주제(프로젝트명) — 줄바꿈으로 전부 표시 */}
                 <td style={tdWrap}>{r.project.title}</td>
                 {/* 팀원(관리자 화면) */}
                 {showMembers && (
-                  <td style={{ ...tdWrap, fontSize: '13px', color: 'var(--text-secondary)' }}>
+                  <td style={{ ...tdWrap, fontSize: '12.5px', color: 'var(--text-secondary)' }}>
                     {r.project.members && r.project.members.length > 0 ? r.project.members.join(', ') : '—'}
                   </td>
                 )}
                 {/* 항목별 평균 */}
                 {criteria.map((c) => {
                   const avg = r.avgBy.find((a) => a.key === c.key)?.avg ?? 0;
-                  return <td key={c.key} style={{ ...td, color: 'var(--text-secondary)' }}>{avg.toFixed(1)}</td>;
+                  return <td key={c.key} style={tdNum}>{avg.toFixed(1)}</td>;
                 })}
                 {/* 총점 평균 */}
-                <td style={{ ...td }}>
-                  <strong style={{ fontSize: '16px', color: r.project.color }}>{r.avgTotal.toFixed(1)}</strong>
-                  <span style={{ fontSize: '11px', color: 'var(--text-secondary)' }}> / {maxTotal}</span>
+                <td style={{ ...td, padding: '9px 4px' }}>
+                  <strong style={{ fontSize: '15px', color: r.project.color }}>{r.avgTotal.toFixed(1)}</strong>
+                  <span style={{ fontSize: '10px', color: 'var(--text-secondary)' }}>/{maxTotal}</span>
                 </td>
                 {/* 평가 건수 */}
-                <td style={{ ...td, color: 'var(--text-secondary)' }}>{r.count}건</td>
+                <td style={{ ...td, padding: '9px 4px', color: 'var(--text-secondary)' }}>{r.count}건</td>
               </tr>
             );
           })}
